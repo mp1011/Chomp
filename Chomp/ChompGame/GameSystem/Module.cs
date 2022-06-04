@@ -33,4 +33,9 @@ namespace ChompGame.GameSystem
     {
         void OnVBlank();
     }
+
+    public interface ILogicUpdateHandler : IModule
+    {
+        void OnLogicUpdate();
+    }
 }

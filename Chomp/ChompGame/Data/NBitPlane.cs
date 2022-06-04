@@ -8,8 +8,11 @@ namespace ChompGame.Data
     {
         private BitPlane[] _planes;
 
+        public int Address { get; }
+
         public NBitPlane(int address, SystemMemory memory, int planeCount, int width, int height)
         {
+            Address = address;
             Width = width;
             Height = height;
 

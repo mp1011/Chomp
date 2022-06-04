@@ -46,7 +46,7 @@ namespace ChompGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            _gameSystem.OnLogicUpdate();
 
             base.Update(gameTime);
         }

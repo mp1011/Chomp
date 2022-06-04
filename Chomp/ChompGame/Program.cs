@@ -11,8 +11,10 @@ namespace ChompGame
         static void Main()
         {
             var specs = new Specs();
-            
-            var gameSystem = new MainSystem(specs, s=> new CoreGraphicsModule(s), s=> new TileModule(s));
+
+            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+                s => new TileModule(s),
+                s => new TestModule(s));
 
             Task.Run(() =>
             {

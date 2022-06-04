@@ -11,6 +11,7 @@ namespace ChompGame.GameSystem
         private IModule[] _modules;
         private IHBlankHandler[] _hBlankHandlers;
         private IVBlankHandler[] _vBlankHandlers;
+        private ILogicUpdateHandler[] _logicUpdateHandlers;
 
         public Specs Specs { get; }
         public SystemMemory Memory { get; }
@@ -26,6 +27,7 @@ namespace ChompGame.GameSystem
             _modules = createModules.Select(p => p(this)).ToArray();
             _hBlankHandlers = _modules.OfType<IHBlankHandler>().ToArray();
             _vBlankHandlers = _modules.OfType<IVBlankHandler>().ToArray();
+            _logicUpdateHandlers = _modules.OfType<ILogicUpdateHandler>().ToArray();
 
             Memory = new SystemMemory(builder =>
             {
@@ -37,6 +39,17 @@ namespace ChompGame.GameSystem
             CoreGraphicsModule.OnStartup();
             foreach (var module in _modules)
                 module.OnStartup();
+        }
+
+        public T GetModule<T>() where T:IModule
+        {
+            return _modules.OfType<T>().Single();
+        }
+
+        public void OnLogicUpdate()
+        {
+            foreach (var handler in _logicUpdateHandlers)
+                handler.OnLogicUpdate();
         }
 
         public void OnHBlank()

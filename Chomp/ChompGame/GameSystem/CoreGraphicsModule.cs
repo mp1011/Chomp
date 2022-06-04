@@ -10,25 +10,25 @@ namespace ChompGame.GameSystem
 {
     public class CoreGraphicsModule : Module
     {
-
+        private Color[] _systemPalette;
         private Color[] _screenData;
         public GameByteGridPoint ScreenPoint { get; private set; }
         public GameByte DrawInstructionAddress { get; private set; }
         public GameByte DrawInstructionAddressOffset { get; private set; }
         public GameByte DrawHoldCounter { get; private set; }
-        public BitPlane PatternTable { get; private set; }
+        public NBitPlane PatternTable { get; private set; }
         public GameByteGridPoint PatternTablePoint { get; private set; }
-
 
         public CoreGraphicsModule(MainSystem gameSystem) : base(gameSystem) 
         {
             _screenData = new Color[gameSystem.Specs.ScreenWidth * gameSystem.Specs.ScreenHeight];
+            _systemPalette = gameSystem.Specs.SystemColors;
         }
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             PatternTablePoint = builder.AddGridPoint((byte)Specs.PatternTableWidth, (byte)Specs.PatternTableHeight, (Bit)7);
-            PatternTable = builder.AddBitPlane(Specs.PatternTableWidth, Specs.PatternTableHeight);
+            PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, (Bit)31);
             DrawInstructionAddress = builder.AddByte();
             DrawInstructionAddressOffset = builder.AddByte();
@@ -40,9 +40,9 @@ namespace ChompGame.GameSystem
         {
             DrawInstructionAddress.Value = (byte)(DrawHoldCounter.Address + 1);
 
-            var patternTableLoader = new DiskBitPlaneLoader();
+            var patternTableLoader = new DiskNBitPlaneLoader();
             patternTableLoader.Load(
-                new DiskFile(ContentFolder.PatternTables, "test.pt"),
+                new DiskFile(ContentFolder.PatternTables, "test_4color.pt"),
                 PatternTable);
         }
 
@@ -62,7 +62,7 @@ namespace ChompGame.GameSystem
                     DrawHoldCounter.Value--;
 
                 var patternTableValue = PatternTable[PatternTablePoint.Index];
-                _screenData[i] = patternTableValue ? Color.LightBlue : Color.DarkBlue;
+                _screenData[i] = GetColor(patternTableValue);
 
                 PatternTablePoint.Next();
                 if (ScreenPoint.Next())
@@ -72,6 +72,11 @@ namespace ChompGame.GameSystem
             GameSystem.OnVBlank();
             canvas.SetData(_screenData);
             spriteBatch.Draw(canvas, Vector2.Zero, Color.White);
+        }
+
+        private Color GetColor(byte value)
+        {
+            return Specs.SystemColors[value];
         }
 
         private void IncDrawInstruction()
