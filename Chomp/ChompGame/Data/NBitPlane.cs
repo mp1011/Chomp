@@ -1,0 +1,68 @@
+﻿using ChompGame.Extensions;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ChompGame.Data
+{
+    public class NBitPlane : IGrid<byte>
+    {
+        private BitPlane[] _planes;
+
+        public NBitPlane(int address, SystemMemory memory, int planeCount, int width, int height)
+        {
+            Width = width;
+            Height = height;
+
+            List<BitPlane> planes = new List<BitPlane>();
+            while(planeCount-- > 0)
+            {
+                var plane = new BitPlane(address, memory, width, height);
+                planes.Add(plane);
+                address += plane.Bytes;
+            }
+
+            _planes = planes.ToArray();
+            Bytes = _planes.Sum(p => p.Bytes);
+        }
+
+        public byte this[int index]
+        {
+            get
+            {
+                int value = 0;
+                for(int i=0; i< _planes.Length;i++)
+                {
+                    var planeValue = _planes[i][index] ? 2.Power(i) : 0;
+                    value += planeValue;
+                }
+
+                return (byte)value;
+            }
+            set
+            {
+                for (int i = 0; i < _planes.Length; i++)
+                {
+                    var planeValue = (value & 2.Power(i)) > 0;
+                    _planes[i][index] = planeValue;
+                }
+            }
+        }
+        
+        public byte this[int x, int y]
+        {
+            get => this[(y * Width) + x];
+            set => this[(y * Width) + x] = value;
+        }
+        public int Width { get; }
+
+        public int Height { get; }
+
+        public int Bytes { get; }
+
+        public byte ValueFromChar(char s)
+        {
+            var value = (byte)(s - '0');
+            return value;
+        }
+    }
+}
