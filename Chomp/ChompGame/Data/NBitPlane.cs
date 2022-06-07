@@ -1,5 +1,6 @@
 ﻿using ChompGame.Extensions;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace ChompGame.Data
@@ -64,7 +65,7 @@ namespace ChompGame.Data
 
         public byte ValueFromChar(char s)
         {
-            var value = (byte)(s - '0');
+            var value = byte.Parse(s.ToString(), NumberStyles.HexNumber);
             return value;
         }
     }

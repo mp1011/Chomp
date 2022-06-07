@@ -7,6 +7,7 @@ namespace ChompGame.GameSystem
     {
         private CoreGraphicsModule _coreGraphicsModule => GameSystem.CoreGraphicsModule;
 
+        public GameByteGridPoint Scroll { get; private set; }
         public GameByteGridPoint PatternTablePoint => _coreGraphicsModule.PatternTablePoint;
         public GameByte DrawInstructionAddressOffset => _coreGraphicsModule.DrawInstructionAddressOffset;
         public GameByte DrawHoldCounter => _coreGraphicsModule.DrawHoldCounter;
@@ -19,7 +20,13 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
-            NameTable = builder.AddNBitPlane(2, Specs.NameTableWidth, Specs.NameTableHeight);
+            Scroll = builder.AddGridPoint(
+                (byte)(Specs.NameTableWidth * Specs.TileWidth),
+                (byte)(Specs.NameTableHeight * Specs.TileHeight), 
+                Specs.ScrollXMask, 
+                Specs.ScrollYMask);
+            
+            NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
 
         public override void OnStartup()
@@ -34,36 +41,44 @@ namespace ChompGame.GameSystem
         {
             DrawInstructionAddressOffset.Value = 0;
             PatternTablePoint.Reset();
-            var pt = new ByteGridPoint(PatternTablePoint);
 
             var nameTablePoint = new ByteGridPoint(Specs.NameTableWidth, Specs.NameTableHeight);
-            nameTablePoint.X = 0;
-            nameTablePoint.Y = (byte)(ScreenPoint.Y / Specs.TileHeight);
+            nameTablePoint.X = (byte)(Scroll.X / Specs.TileHeight);
+            nameTablePoint.Y = (byte)((ScreenPoint.Y+Scroll.Y) / Specs.TileHeight);
 
-            int row = ScreenPoint.Y % Specs.TileHeight;
-
+            int row = (ScreenPoint.Y + Scroll.Y) % Specs.TileHeight;
+            int col = (ScreenPoint.X + Scroll.X) % Specs.TileWidth;
             var tilePoint = new ByteGridPoint(Specs.PatternTableTilesAcross, Specs.PatternTableTilesDown);
             var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
+ 
+            int colsRemaining = Specs.ScreenWidth / Specs.TileWidth;
+            if (col != 0)
+                colsRemaining++;
 
-            do
+            while(colsRemaining-- > 0)
             {
                 tilePoint.Index = NameTable[nameTablePoint.Index];
-                nextPatternTablePoint.X = (byte)(tilePoint.X * Specs.TileWidth);
+                nextPatternTablePoint.X = (byte)((tilePoint.X * Specs.TileWidth) + col);
                 nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
 
                 PatternTablePoint.Advance(_coreGraphicsModule.AddMoveBrushToCommand(
                     destination: nextPatternTablePoint.Index,
                     currentOffset: PatternTablePoint.Index));
 
-                PatternTablePoint.Advance(_coreGraphicsModule.AddDrawHoldCommand(Specs.TileWidth));
+                var hold = Specs.TileWidth - col;
+                PatternTablePoint.Advance(_coreGraphicsModule.AddDrawHoldCommand(hold));
+                col = 0;
+
+                nameTablePoint.NextColumn();
             }
-            while (nameTablePoint.NextColumn());
 
             PatternTablePoint.X = 0;
             PatternTablePoint.Y = 0;
             DrawHoldCounter.Value = 0;
             DrawInstructionAddressOffset.Value = 0;
         }
+
+
 
         public void OnVBlank()
         {

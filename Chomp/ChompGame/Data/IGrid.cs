@@ -19,7 +19,8 @@ namespace ChompGame.Data
         public static void SetFromString<T>(this IGrid<T> grid, string block)
         {
             var lines = block.Split(Environment.NewLine)
-                                .Select(p => p.Trim())
+                                .Select(p => p.Trim().Replace(" ",""))
+                                .Where(p=>!string.IsNullOrEmpty(p))
                                 .ToArray();
 
             for (int y = 0; y < lines.Length; y++)

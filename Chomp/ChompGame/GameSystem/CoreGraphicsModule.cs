@@ -4,7 +4,9 @@ using ChompGame.Graphics;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ChompGame.GameSystem
 {
@@ -27,9 +29,13 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
-            PatternTablePoint = builder.AddGridPoint((byte)Specs.PatternTableWidth, (byte)Specs.PatternTableHeight, (Bit)7);
+            PatternTablePoint = builder.AddGridPoint(
+                (byte)Specs.PatternTableWidth, 
+                (byte)Specs.PatternTableHeight,
+                Specs.PatternTablePointMask);
+
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
-            ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, (Bit)31);
+            ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
             DrawInstructionAddress = builder.AddByte();
             DrawInstructionAddressOffset = builder.AddByte();
             DrawHoldCounter = builder.AddByte();
@@ -46,6 +52,7 @@ namespace ChompGame.GameSystem
                 PatternTable);
         }
 
+        long dummy = 0;
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
         {
             PatternTablePoint.Reset();
@@ -54,6 +61,9 @@ namespace ChompGame.GameSystem
 
             for (int i = 0; i < _screenData.Length; i++)
             {
+                if (i == 31)
+                    dummy++;
+
                 if (DrawHoldCounter == 0)
                 {
                     ProcessNextDrawInstruction();
@@ -86,21 +96,32 @@ namespace ChompGame.GameSystem
                 DrawInstructionAddressOffset.Value = 0;
         }
 
-        private void ProcessNextDrawInstruction()
+        private DrawCommand NextDrawInstruction()
         {
             var drawInstruction = new DrawCommand(DrawInstructionAddress.Value + DrawInstructionAddressOffset.Value, GameSystem.Memory);
             IncDrawInstruction();
+            return drawInstruction;
+        }
 
-            if (drawInstruction.CommandType == DrawCommandType.Hold)
-                DrawHoldCounter.Value = (byte)(drawInstruction.Value - 1);
-            else
+        private void ProcessNextDrawInstruction()
+        {
+            int totalAdvance = 0;
+
+            while(true)
             {
-                PatternTablePoint.Advance(drawInstruction.Value);
-                drawInstruction = new DrawCommand(DrawInstructionAddress.Value + DrawInstructionAddressOffset.Value, GameSystem.Memory);
+                var drawInstruction = NextDrawInstruction();
                 if (drawInstruction.CommandType == DrawCommandType.Hold)
+                {
                     DrawHoldCounter.Value = (byte)(drawInstruction.Value - 1);
-
-                IncDrawInstruction();
+                    return;
+                }
+                else if(drawInstruction.CommandType == DrawCommandType.MoveBrush)
+                {
+                    totalAdvance += (int)drawInstruction.Value;
+                    PatternTablePoint.Advance(drawInstruction.Value);
+                    if (totalAdvance >= PatternTable.Width * PatternTable.Height)
+                        return;
+                }
             }
         }
 
@@ -108,7 +129,7 @@ namespace ChompGame.GameSystem
         {
             List<DrawCommand> commands = new List<DrawCommand>();
             int offset = 0;
-            while (GameSystem.Memory[DrawInstructionAddress.Value + offset] != 0)
+            while (GameSystem.Memory[DrawInstructionAddress.Value + offset] != 0 && offset < DrawInstructionAddressOffset.Value)
             {
                 var cmd = new DrawCommand(DrawInstructionAddress.Value + offset, GameSystem.Memory);
                 commands.Add(cmd);
@@ -117,6 +138,12 @@ namespace ChompGame.GameSystem
             }
 
             return commands.ToArray();
+        }
+
+        public int Info_DrawCommandColumn()
+        {
+            var commands = Info_GetDrawCommands();
+            return commands.Sum(p => p.Value).Wrap(Specs.ScreenWidth);
         }
 
         public int AddDrawHoldCommand(int holdAmount) => AddDrawHoldCommand((byte)holdAmount);
@@ -132,12 +159,26 @@ namespace ChompGame.GameSystem
         }
         public int AddMoveBrushCommand(int amount)
         {
-            var d = new DrawCommand(DrawInstructionAddress + DrawInstructionAddressOffset, GameSystem.Memory);
-            d.CommandType = DrawCommandType.MoveBrush;
-            d.Value = (byte)amount;
-
-            if (amount != 0)
-                DrawInstructionAddressOffset.Value++;
+            int a = amount;
+            while(a > 0)
+            {
+                if(a >= 128)
+                {
+                    var d = new DrawCommand(DrawInstructionAddress + DrawInstructionAddressOffset, GameSystem.Memory);
+                    d.CommandType = DrawCommandType.MoveBrush;
+                    d.Value = (byte)127;
+                    a -= 127;
+                    DrawInstructionAddressOffset.Value++;
+                }
+                else
+                {
+                    var d = new DrawCommand(DrawInstructionAddress + DrawInstructionAddressOffset, GameSystem.Memory);
+                    d.CommandType = DrawCommandType.MoveBrush;
+                    d.Value = (byte)a;
+                    a = 0;
+                    DrawInstructionAddressOffset.Value++;
+                }
+            }
 
             return amount;
         }

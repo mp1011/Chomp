@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace ChompGame.GameSystem
@@ -13,10 +14,35 @@ namespace ChompGame.GameSystem
         {
         }
 
+        private bool wasLeftDown;
+        private bool wasRightDown;
+
         public void OnLogicUpdate()
         {
-            // GameSystem.Memory[_tileModule.NameTable.Address]++;
-            GameSystem.Memory[GameSystem.CoreGraphicsModule.PatternTable.Address]++;
+            KeyboardState state = Keyboard.GetState();
+            bool leftDown = state.IsKeyDown(Keys.Left);
+            bool rightDown = state.IsKeyDown(Keys.Right);
+
+            if (state.IsKeyDown(Keys.LeftShift))
+            {
+                if (leftDown)
+                    _tileModule.Scroll.X++;
+
+                if (rightDown)
+                    _tileModule.Scroll.X--;
+            }
+            else
+            {
+                if (leftDown && !wasLeftDown)
+                    _tileModule.Scroll.X++;
+
+                if (rightDown && !wasRightDown)
+                    _tileModule.Scroll.X--;
+            }
+
+            wasLeftDown = leftDown;
+            wasRightDown = rightDown;
+
         }
 
         public override void OnStartup()

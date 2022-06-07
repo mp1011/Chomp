@@ -51,18 +51,15 @@ namespace ChompGame.Data
             return false;
         }
 
-        public bool NextColumn()
+        public void NextColumn()
         {
             if (X == Width - 1)
-                return false;
+                X = 0;
             else
-            {
                 X++;
-                return true;
-            }
         }
 
-        public override string ToString() => $"{X} {Y}";
+        public override string ToString() => $"{X},{Y} ({Index})";
 
         public void Reset()
         {

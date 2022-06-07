@@ -5,6 +5,7 @@ namespace ChompGame.Data
 {
     public enum Bit : byte
     {
+        None=0,
         Bit0 = 1,
         Bit1 = 2,
         Bit2 = 4,
@@ -14,7 +15,6 @@ namespace ChompGame.Data
         Bit6 = 64,
         Bit7 = 128
     }
-
 
     class GameBit
     {

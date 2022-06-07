@@ -10,8 +10,11 @@ namespace ChompGame.Data
 
         public byte this[int index] 
         {
-            get => _memory[index];
-            set => _memory[index] = value;
+            get => (index >= _memory.Length) ? (byte)0 : _memory[index];
+            set
+            {   if (index < _memory.Length)                
+                    _memory[index] = value;
+            }
         }
 
         public SystemMemory(Action<SystemMemoryBuilder> configureMemory)
@@ -81,11 +84,15 @@ namespace ChompGame.Data
 
             return b;
         }
+
         public GameByteGridPoint AddGridPoint(byte width, byte height, Bit mask)
+            => AddGridPoint(width, height, mask, mask);
+
+        public GameByteGridPoint AddGridPoint(byte width, byte height, Bit xMask, Bit yMask)
         {
             var b = new GameByteGridPoint(
-                AddByte().WithMask(mask), 
-                AddByte().WithMask(mask), 
+                AddByte().WithMask(xMask), 
+                AddByte().WithMask(yMask), 
                 width, 
                 height);
 

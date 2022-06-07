@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChompGame.Data;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.GameSystem
 {
@@ -6,16 +7,27 @@ namespace ChompGame.GameSystem
     {
         public int ScreenWidth => 32;
         public int ScreenHeight => 32;
-        public int PatternTableWidth => 8;
-        public int PatternTableHeight => 8;
-        public int NameTableWidth => 8;
-        public int NameTableHeight => 8;
+
+        public Bit ScreenPointMask => (Bit)31;
+
+        public int PatternTableWidth => 16;
+        public int PatternTableHeight => 16;
         public int PatternTablePlanes => 2;
-        public int TileWidth => ScreenWidth / NameTableWidth;
-        public int TileHeight => ScreenHeight / NameTableHeight;
+        public Bit PatternTablePointMask => (Bit)15;
+
+        public int NameTableWidth => 16;
+        public int NameTableHeight => 8;
+        public int NameTableBitPlanes = 4;
+
+        public Bit ScrollXMask => (Bit)63;
+        public Bit ScrollYMask => (Bit)31;
+
+
+        public int TileWidth => 4;
+        public int TileHeight => 4;
         public int PatternTableTilesAcross => PatternTableWidth / TileWidth;
         public int PatternTableTilesDown => PatternTableHeight / TileHeight;
         public int MaxDrawInstructions => 32;
-        public Color[] SystemColors => new Color[] { Color.Black, Color.DarkBlue, Color.LightBlue, Color.White };
+        public Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
     };
 }

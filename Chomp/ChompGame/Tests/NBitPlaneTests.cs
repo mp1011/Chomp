@@ -25,7 +25,29 @@ namespace ChompGame.Tests
             Assert.Equal(2, plane[0, 0]);
             Assert.Equal(3, plane[1, 1]);
             Assert.Equal(1, plane[2, 3]);
-
         }
+
+        [Fact]
+        public void TestLoadFromString()
+        {
+            SystemMemory memory = new SystemMemory(b =>
+            {
+                b.AddBytes(256);
+            });
+
+            var text = @"FAFA
+                         9999
+                         5555
+                         FBBF";
+
+            var plane = new NBitPlane(0, memory, 4, 4, 4);
+            plane.SetFromString(text);
+
+            Assert.Equal(15, plane[0, 0]);
+            Assert.Equal(15, plane[2, 0]);
+            Assert.Equal(10, plane[1, 0]);
+            Assert.Equal(11, plane[1, 3]);
+        }
+
     }
 }
