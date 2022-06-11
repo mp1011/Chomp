@@ -34,7 +34,7 @@ namespace ChompGame.GameSystem
                 CoreGraphicsModule.BuildMemory(builder);
                 foreach (var module in _modules)
                     module.BuildMemory(builder);
-            });
+            }, specs);
 
             CoreGraphicsModule.OnStartup();
             foreach (var module in _modules)

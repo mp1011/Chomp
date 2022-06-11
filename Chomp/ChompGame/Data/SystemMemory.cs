@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChompGame.GameSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,9 +18,9 @@ namespace ChompGame.Data
             }
         }
 
-        public SystemMemory(Action<SystemMemoryBuilder> configureMemory)
+        public SystemMemory(Action<SystemMemoryBuilder> configureMemory, Specs specs)
         {
-            var memoryBuilder = new SystemMemoryBuilder(this);
+            var memoryBuilder = new SystemMemoryBuilder(this, specs);
             configureMemory(memoryBuilder);
             _memory = memoryBuilder.Build();
         }
@@ -29,11 +30,13 @@ namespace ChompGame.Data
     {
         private List<byte> _bytes = new List<byte>();
         private SystemMemory _systemMemory;
+        private Specs _specs;
 
         public int CurrentAddress => _bytes.Count;
 
-        public SystemMemoryBuilder(SystemMemory systemMemory)
+        public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs)
         {
+            _specs = specs;
             _systemMemory = systemMemory;
         }
 
@@ -97,6 +100,13 @@ namespace ChompGame.Data
                 height);
 
             return b;
+        }
+
+        public Sprite[] AddSprite(int count)
+        {
+            return Enumerable.Range(0, count)
+                .Select(p => new Sprite(AddGridPoint(0,0), AddByte(), _specs))
+                .ToArray();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +19,7 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 b.AddByte();
-            });
+            }, new Specs());
 
             memory[0] = original;
 

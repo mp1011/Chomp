@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 b.AddBytes(256);
-            });
+            },new Specs());
 
             var plane = new NBitPlane(0, memory, 2, 4, 4);
             plane[0, 0] = 2;
@@ -33,7 +34,7 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 b.AddBytes(256);
-            });
+            }, new Specs());
 
             var text = @"FAFA
                          9999
