@@ -7,16 +7,26 @@ namespace ChompGame.GameSystem
     class TestModule : Module, ILogicUpdateHandler
     {
         private TileModule _tileModule;
-        
+        private SpritesModule _spritesModule;
+
         public TestModule(MainSystem mainSystem) : base(mainSystem) { }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
         }
 
+        public override void OnStartup()
+        {
+            _tileModule = GameSystem.GetModule<TileModule>();
+            _spritesModule = GameSystem.GetModule<SpritesModule>();
+
+            _spritesModule.Sprites[0].Tile = 4;
+            _spritesModule.Sprites[0].X = 12;
+            _spritesModule.Sprites[0].Y = 12;
+        }
+
         private bool wasLeftDown;
         private bool wasRightDown;
-
         public void OnLogicUpdate()
         {
             KeyboardState state = Keyboard.GetState();
@@ -28,14 +38,14 @@ namespace ChompGame.GameSystem
             if (state.IsKeyDown(Keys.S))
             {
                 if (leftKey)
-                    _tileModule.Sprites[0].X--;
+                    _spritesModule.Sprites[0].X--;
                 else if (righKey)
-                    _tileModule.Sprites[0].X++;
+                    _spritesModule.Sprites[0].X++;
 
                 if (upKey)
-                    _tileModule.Sprites[0].Y--;
+                    _spritesModule.Sprites[0].Y--;
                 else if (downKey)
-                    _tileModule.Sprites[0].Y++;
+                    _spritesModule.Sprites[0].Y++;
             }
             else if (state.IsKeyDown(Keys.LeftShift))
             {
@@ -59,13 +69,6 @@ namespace ChompGame.GameSystem
 
         }
 
-        public override void OnStartup()
-        {
-            _tileModule = GameSystem.GetModule<TileModule>();
-
-            _tileModule.Sprites[0].Tile = 4;
-            _tileModule.Sprites[0].X = 12;
-            _tileModule.Sprites[0].Y = 12;
-        }
+       
     }
 }

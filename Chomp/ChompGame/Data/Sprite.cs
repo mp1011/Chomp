@@ -4,6 +4,8 @@ namespace ChompGame.Data
 {
     public class Sprite
     {
+        public int Address => _position.Address;
+
         private readonly Specs _specs;
         private readonly GameByteGridPoint _position;
         private readonly GameByte _tile;

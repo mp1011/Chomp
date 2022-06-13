@@ -90,6 +90,8 @@ namespace ChompGame.Data
 
     public class GameByteGridPoint : GridPoint
     {
+        public int Address => _xByte.Address;
+
         private GameByte _xByte, _yByte;
 
         public GameByteGridPoint(GameByte xByte, GameByte yByte, byte width, byte height) :  base(width,height)

@@ -19,6 +19,8 @@ namespace ChompGame.GameSystem
         public int NameTableHeight => 8;
         public int NameTableBitPlanes = 4;
 
+        public int ScanlineDrawPlanes = 1;
+
         public Bit ScrollXMask => (Bit)63;
         public Bit ScrollYMask => (Bit)31;
 
@@ -29,7 +31,7 @@ namespace ChompGame.GameSystem
         public int TileHeight => 4;
         public int PatternTableTilesAcross => PatternTableWidth / TileWidth;
         public int PatternTableTilesDown => PatternTableHeight / TileHeight;
-        public int MaxDrawInstructions => 32;
+        public int MaxDrawInstructions => 64;
         public Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
     };
 }

@@ -14,6 +14,7 @@ namespace ChompGame
 
             var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
                 s => new TileModule(s),
+                s => new SpritesModule(s),
                 s => new TestModule(s));
 
             Task.Run(() =>

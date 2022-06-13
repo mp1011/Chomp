@@ -34,6 +34,8 @@ namespace ChompGame.Data
 
         public int CurrentAddress => _bytes.Count;
 
+        public SystemMemory Memory => _systemMemory;
+
         public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs)
         {
             _specs = specs;
@@ -45,9 +47,11 @@ namespace ChompGame.Data
             return _bytes.ToArray();
         }
 
-        public void AddBytes(int count)
+        public GameByte[] AddBytes(int count)
         {
-            _bytes.AddRange(Enumerable.Repeat((byte)0, count));
+            return Enumerable.Range(0, count)
+                .Select(p => AddByte(0))
+                .ToArray();
         }
 
         public BitPlane AddBitPlane(int width, int height)
@@ -73,8 +77,7 @@ namespace ChompGame.Data
         public GameByte AddByte(byte value=0)
         {
             var b = new GameByte(CurrentAddress, _systemMemory);
-            AddBytes(1);
-            _bytes[CurrentAddress - 1] = value;
+            _bytes.Add(value);
             return b;
         }
         public GameByteGridPoint AddGridPoint(byte width, byte height)
