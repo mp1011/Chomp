@@ -100,6 +100,13 @@ namespace ChompGame.Data
             _yByte = yByte;
         }
 
+        public GameByteGridPoint(int address, SystemMemory memory, byte width, byte height) 
+            :base(width,height)
+        {
+            _xByte = new GameByte(address, memory);
+            _yByte = new GameByte(address + 1, memory);
+        }
+
         public override byte X
         {
             get => _xByte.Value;

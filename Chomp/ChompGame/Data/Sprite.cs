@@ -17,6 +17,13 @@ namespace ChompGame.Data
             _specs = specs;
         }
 
+        public Sprite(int address, SystemMemory systemMemory, Specs specs)
+        {
+            _position = new GameByteGridPoint(address, systemMemory, 1,1);
+            _tile = new GameByte(address+2, systemMemory);
+            _specs = specs;
+        }
+
         public bool IntersectsScanline(byte scanLine)
         {
             return scanLine >= Y && scanLine < (Y + _specs.TileHeight);

@@ -39,43 +39,23 @@ namespace ChompGame.GameSystem
                 PatternTable);
         }
 
-        private bool UpdatePlane(int scanlinePlane, int pixelIndex)
-        {
-            var colorIndex = ScanlineDrawCommands[scanlinePlane].Update();
-            if (colorIndex > 0)
-                _screenData[pixelIndex] = Specs.SystemColors[colorIndex];
-
-            return colorIndex != 0;
-        }
-
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
         {
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
 
-            bool drawn;
-
             for (int i = 0; i < _screenData.Length; i++)
             {
-                switch(Specs.ScanlineDrawPlanes)
+                byte colorIndex=0;
+
+                for(int plane = Specs.ScanlineDrawPlanes-1; plane >= 0; plane--)
                 {
-                    case 1:
-                        drawn = UpdatePlane(0, i);
-                        break;
-                    case 2:
-                        drawn = UpdatePlane(1, i) || UpdatePlane(0, i);                        
-                        break;
-                    case 3:
-                        drawn = UpdatePlane(2, i) || UpdatePlane(1, i) || UpdatePlane(0, i);
-                        break;
-                    case 4:
-                        drawn = UpdatePlane(3, i) || UpdatePlane(2, i) || UpdatePlane(1, i) || UpdatePlane(0, i);
-                        break;
-                    default: throw new System.Exception("Unsupported number of scanline planes");
+                    var planeColor = ScanlineDrawCommands[plane].Update();
+                    if (colorIndex == 0)
+                        colorIndex = planeColor;
                 }
 
-                if (!drawn)
-                    _screenData[i] = Specs.SystemColors[0];
+                _screenData[i] = Specs.SystemColors[colorIndex];
 
                 if (ScreenPoint.Next())
                     GameSystem.OnHBlank();

@@ -44,13 +44,7 @@ namespace ChompGame.Graphics
                 DrawInstructionAddressOffset.Value = 0;
         }
 
-        private DrawCommand NextDrawInstruction()
-        {
-            var cmd = GetCurrentCommand();
-            IncDrawInstruction();
-            return cmd;
-        }
-
+   
         public byte Update()
         {
             if (DrawHoldCounter == 0)
@@ -69,22 +63,26 @@ namespace ChompGame.Graphics
 
         private void ProcessNextDrawInstruction()
         {
-            var drawInstruction = NextDrawInstruction();
+            IncDrawInstruction();
+            var drawInstruction = GetCurrentCommand();
             int totalAdvance = 0;
 
             if(drawInstruction.IsRepositionMarker)
             {
-                drawInstruction = NextDrawInstruction();
+                IncDrawInstruction();
+                drawInstruction = GetCurrentCommand();
                 while(drawInstruction.PTMove && totalAdvance < _specs.PatternTableWidth*_specs.PatternTableHeight)
                 {
                     if (drawInstruction.Value == 0)
                         break;
                     totalAdvance += drawInstruction.Value;
                     PatternTablePoint.Advance(drawInstruction.Value);
-                    drawInstruction = NextDrawInstruction();
+                    IncDrawInstruction();
+                    drawInstruction = GetCurrentCommand();
                 }
                 PatternTablePoint.Advance(drawInstruction.Value);
-                drawInstruction = NextDrawInstruction();
+                IncDrawInstruction();
+                drawInstruction = GetCurrentCommand();
             }
            
             DrawHoldCounter.Value = drawInstruction.Value;         
@@ -131,6 +129,13 @@ namespace ChompGame.Graphics
             DrawInstructionAddressOffset.Value++;
         }
 
+        public void AddInstructionEndMarker()
+        {
+            var cmd = GetCurrentCommand();
+            cmd.IsEndMarker = true;
+            DrawInstructionAddressOffset.Value = 0;
+        }
+
         public void AddDrawEndCommand()
         {
             var cmd = GetCurrentCommand();
@@ -141,6 +146,8 @@ namespace ChompGame.Graphics
         {
             int amount = destination - currentIndex;
             amount = amount.Wrap(_specs.PatternTableWidth * _specs.PatternTableHeight);
+            if (amount == 0)
+                return;
 
             GetCurrentCommand().IsRepositionMarker = true;
             DrawInstructionAddressOffset.Value++;
@@ -155,10 +162,13 @@ namespace ChompGame.Graphics
                 DrawInstructionAddressOffset.Value++;
             }
 
-            cmd = GetCurrentCommand();
-            cmd.PTMove = false;
-            cmd.Value = (byte)amount;
-            DrawInstructionAddressOffset.Value++;
+            if (amount > 0)
+            {
+                cmd = GetCurrentCommand();
+                cmd.PTMove = false;
+                cmd.Value = (byte)amount;
+                DrawInstructionAddressOffset.Value++;
+            }
         }
 
     }

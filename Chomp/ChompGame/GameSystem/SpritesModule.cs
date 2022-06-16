@@ -3,15 +3,15 @@ using System.Linq;
 
 namespace ChompGame.GameSystem
 {
-    class SpritesModule : Module, IHBlankHandler, IVBlankHandler
+    class SpritesModule : ScanlineGraphicsModule
     {
-        private CoreGraphicsModule _coreGraphicsModule => GameSystem.CoreGraphicsModule;
-        public GameByteGridPoint ScreenPoint => _coreGraphicsModule.ScreenPoint;
-
         public SpritesModule(MainSystem mainSystem) : base(mainSystem)
         {
         }
 
+        public override int Layer => 1;
+
+        private int _sprite0Address;
         public Sprite[] Sprites { get; private set; }
         public GameByte[] ScanlineSprites { get; private set; }
 
@@ -21,17 +21,58 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
+            base.BuildMemory(builder);
+
+            _sprite0Address = builder.CurrentAddress;
             Sprites = builder.AddSprite(Specs.MaxSprites);
             ScanlineSprites = builder.AddBytes(Specs.SpritesPerScanline);
         }
 
-        public void OnHBlank()
+        public override void OnHBlank()
         {
+            DrawInstructionAddressOffset.Value = 0;
             FillScanlineSprites();
+
+            DrawInstructionAddressOffset.Value = 0;
+            PatternTablePoint.Reset();
+
+            var tilePoint = new ByteGridPoint(Specs.PatternTableTilesAcross, Specs.PatternTableTilesDown);
+            var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
+
+            var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
+            
+            for (int i=0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
+            {
+                var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
+                commands.AddDrawCommand(false, sprite.X);
+                tilePoint.Index = sprite.Tile;
+
+                int row = (ScreenPoint.Y - sprite.Y) % Specs.TileHeight;
+
+                nextPatternTablePoint.X = (byte)(tilePoint.X * Specs.TileWidth);
+                nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight)+row);
+
+                commands.AddMoveCommands(nextPatternTablePoint.Index, PatternTablePoint.Index);
+                commands.AddDrawCommand(true, (byte)Specs.TileWidth);
+
+                nextPatternTablePoint.Advance(Specs.TileWidth);
+                commands.AddMoveCommands(0, nextPatternTablePoint.Index);
+
+                commands.AddDrawCommand(false, (byte)(Specs.ScreenWidth - (sprite.X+Specs.TileWidth)));
+
+                PatternTablePoint.Index = nextPatternTablePoint.Index;
+            }
+
+            if (DrawInstructionAddressOffset.Value == 0)
+                commands.AddDrawCommand(false, (byte)Specs.ScreenWidth);
+
+            commands.AddInstructionEndMarker();
+            DrawInstructionAddressOffset.Value = 255;
+            PatternTablePoint.Reset();
         }
 
 
-        public void OnVBlank()
+        public override void OnVBlank()
         {
         }
 
@@ -49,7 +90,7 @@ namespace ChompGame.GameSystem
                 if (i < scanlineSprites.Length)
                     ScanlineSprites[i].Value = (byte)(scanlineSprites[i].Address - sprite0Address);
                 else
-                    ScanlineSprites[i].Value = 0;
+                    ScanlineSprites[i].Value = 255;
             }
         }
     }

@@ -19,7 +19,7 @@ namespace ChompGame.GameSystem
         public int NameTableHeight => 8;
         public int NameTableBitPlanes = 4;
 
-        public int ScanlineDrawPlanes = 1;
+        public int ScanlineDrawPlanes = 2;
 
         public Bit ScrollXMask => (Bit)63;
         public Bit ScrollYMask => (Bit)31;

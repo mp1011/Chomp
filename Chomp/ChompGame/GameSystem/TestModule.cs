@@ -22,7 +22,7 @@ namespace ChompGame.GameSystem
 
             _spritesModule.Sprites[0].Tile = 4;
             _spritesModule.Sprites[0].X = 12;
-            _spritesModule.Sprites[0].Y = 12;
+            _spritesModule.Sprites[0].Y = 0;
         }
 
         private bool wasLeftDown;

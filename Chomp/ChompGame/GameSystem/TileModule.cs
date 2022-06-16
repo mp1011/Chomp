@@ -1,34 +1,13 @@
 ﻿using ChompGame.Data;
-using ChompGame.Graphics;
 using ChompGame.ROM;
-using System.Linq;
 
 namespace ChompGame.GameSystem
 {
-    public class TileModule : Module, IHBlankHandler, IVBlankHandler
+    public class TileModule : ScanlineGraphicsModule
     {
-        private CoreGraphicsModule _coreGraphicsModule => GameSystem.CoreGraphicsModule;
-
-        public GameByteGridPoint Scroll { get; private set; }
-        public GameByteGridPoint PatternTablePoint => _coreGraphicsModule.ScanlineDrawCommands[0].PatternTablePoint;
-        public int CurrentDrawInstructionAddress => _coreGraphicsModule.ScanlineDrawCommands[0].CurrentDrawInstructionAddress;
-        public GameByte DrawInstructionAddressOffset => _coreGraphicsModule.ScanlineDrawCommands[0].DrawInstructionAddressOffset;
-        public GameByte DrawHoldCounter => _coreGraphicsModule.ScanlineDrawCommands[0].DrawHoldCounter;
-        public GameByteGridPoint ScreenPoint => _coreGraphicsModule.ScreenPoint;
-        public NBitPlane NameTable { get; private set; }
+        public override int Layer => 0;
         public TileModule(MainSystem gameSystem) : base(gameSystem) 
         { 
-        }
-
-        public override void BuildMemory(SystemMemoryBuilder builder)
-        {
-            Scroll = builder.AddGridPoint(
-                (byte)(Specs.NameTableWidth * Specs.TileWidth),
-                (byte)(Specs.NameTableHeight * Specs.TileHeight), 
-                Specs.ScrollXMask, 
-                Specs.ScrollYMask);
-            
-            NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
 
         public override void OnStartup()
@@ -39,7 +18,7 @@ namespace ChompGame.GameSystem
                NameTable);
         }
 
-        public void OnHBlank()
+        public override void OnHBlank()
         {
             DrawInstructionAddressOffset.Value = 0;
             PatternTablePoint.Reset();
@@ -65,7 +44,7 @@ namespace ChompGame.GameSystem
                 nextPatternTablePoint.X = (byte)((tilePoint.X * Specs.TileWidth) + col);
                 nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
 
-                _coreGraphicsModule.ScanlineDrawCommands[0].AddMoveCommands(
+                _coreGraphicsModule.ScanlineDrawCommands[Layer].AddMoveCommands(
                     destination: nextPatternTablePoint.Index,
                     currentIndex: PatternTablePoint.Index);
 
@@ -83,10 +62,13 @@ namespace ChompGame.GameSystem
             PatternTablePoint.X = 0;
             PatternTablePoint.Y = 0;
             DrawHoldCounter.Value = 0;
-            DrawInstructionAddressOffset.Value = 0;
+
+            _coreGraphicsModule.ScanlineDrawCommands[0].AddInstructionEndMarker();
+            DrawInstructionAddressOffset.Value = 255;
+            PatternTablePoint.Reset();
         }
 
-        public void OnVBlank()
+        public override void OnVBlank()
         {
             PatternTablePoint.X = 0;
             PatternTablePoint.Y = 0;
