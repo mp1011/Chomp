@@ -23,6 +23,12 @@ namespace ChompGame.GameSystem
             _spritesModule.Sprites[0].Tile = 4;
             _spritesModule.Sprites[0].X = 12;
             _spritesModule.Sprites[0].Y = 0;
+
+            _spritesModule.Sprites[1].Tile = 5;
+            _spritesModule.Sprites[1].X = 20;
+            _spritesModule.Sprites[1].Y = 16;
+
+
         }
 
         private bool wasLeftDown;
@@ -47,6 +53,19 @@ namespace ChompGame.GameSystem
                 else if (downKey)
                     _spritesModule.Sprites[0].Y++;
             }
+            else if (state.IsKeyDown(Keys.D))
+            {
+                if (leftKey)
+                    _spritesModule.Sprites[1].X--;
+                else if (righKey)
+                    _spritesModule.Sprites[1].X++;
+
+                if (upKey)
+                    _spritesModule.Sprites[1].Y--;
+                else if (downKey)
+                    _spritesModule.Sprites[1].Y++;
+            }
+
             else if (state.IsKeyDown(Keys.LeftShift))
             {
                 if (leftKey)
