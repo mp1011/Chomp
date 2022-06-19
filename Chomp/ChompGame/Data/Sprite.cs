@@ -4,7 +4,7 @@ namespace ChompGame.Data
 {
     public class Sprite
     {
-        public static int Bytes => 5; //todo, needs to be configurable
+        public static int Bytes => 3; //todo, needs to be configurable
 
         public int Address => _position.Address;
 

@@ -80,6 +80,15 @@ namespace ChompGame.Data
             _bytes.Add(value);
             return b;
         }
+
+        public GameShort AddShort()
+        {
+            var s = new GameShort(CurrentAddress, _systemMemory);
+            _bytes.Add(0);
+            _bytes.Add(0);
+            return s;
+        }
+
         public GameByteGridPoint AddGridPoint(byte width, byte height)
         {
             var b = new GameByteGridPoint(

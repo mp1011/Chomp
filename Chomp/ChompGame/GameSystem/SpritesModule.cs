@@ -26,8 +26,6 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
-            base.BuildMemory(builder);
-
             _sprite0Address = builder.CurrentAddress;
             Sprites = builder.AddSprite(Specs.MaxSprites);
             ScanlineSprites = builder.AddBytes(Specs.SpritesPerScanline);

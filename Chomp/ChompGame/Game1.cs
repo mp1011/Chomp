@@ -3,6 +3,7 @@ using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace ChompGame
 {
@@ -24,6 +25,9 @@ namespace ChompGame
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
+
+            IsFixedTimeStep = true;
+            TargetElapsedTime = TimeSpan.FromMilliseconds(16.7);
         }
 
         protected override void Initialize()

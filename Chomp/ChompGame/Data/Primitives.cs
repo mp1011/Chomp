@@ -126,7 +126,7 @@ namespace ChompGame.Data
         }
     }
 
-    class GameShort
+    public class GameShort
     {
         private int _address;
         private SystemMemory _memory;
@@ -135,11 +135,20 @@ namespace ChompGame.Data
         {
             get
             {
-                throw new NotImplementedException();
+                var low = (ushort)_memory[_address];
+                var high = (ushort)_memory[_address + 1];
+
+                var unsigned = (high << 8) + low;
+                return (ushort)unsigned;
+            }
+            set
+            {
+                _memory[_address] = (byte)value;
+                _memory[_address+1] = (byte)(value >> 8);
             }
         }
 
-        public GameShort(SystemMemory memory, int address)
+        public GameShort(int address, SystemMemory memory)
         {
             _memory = memory;
             _address = address;
