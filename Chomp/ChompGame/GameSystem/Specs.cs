@@ -25,7 +25,7 @@ namespace ChompGame.GameSystem
         public Bit ScrollYMask => (Bit)31;
 
         public int MaxSprites = 4;
-        public int SpritesPerScanline = 2;
+        public int SpritesPerScanline = 3;
 
         public int TileWidth => 4;
         public int TileHeight => 4;

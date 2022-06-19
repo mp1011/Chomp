@@ -12,10 +12,7 @@ namespace ChompGame.GameSystem
 
         public override void OnStartup()
         {
-            var nameTableLoader = new DiskNBitPlaneLoader();
-            nameTableLoader.Load(
-               new DiskFile(ContentFolder.NameTables, "test.nt"),
-               NameTable);
+           
         }
 
         public override void OnHBlank()

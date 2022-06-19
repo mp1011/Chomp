@@ -32,11 +32,7 @@ namespace ChompGame.GameSystem
         }
 
         public override void OnStartup()
-        {
-            var patternTableLoader = new DiskNBitPlaneLoader();
-            patternTableLoader.Load(
-                new DiskFile(ContentFolder.PatternTables, "test_4color.pt"),
-                PatternTable);
+        { 
         }
 
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)

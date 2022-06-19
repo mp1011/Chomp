@@ -15,7 +15,8 @@ namespace ChompGame
             var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
                 s => new TileModule(s),
                 s => new SpritesModule(s),
-                s => new TestModule(s));
+                s => new InputModule(s),
+                s => new PongModule(s, s.GetModule<InputModule>(), s.GetModule<SpritesModule>()));
 
             Task.Run(() =>
             {

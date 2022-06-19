@@ -24,7 +24,11 @@ namespace ChompGame.GameSystem
         {
             Specs = specs;
             CoreGraphicsModule = createCoreGraphicsModule(this);
-            _modules = createModules.Select(p => p(this)).ToArray();
+
+            _modules = new IModule[createModules.Length];
+            for (int i = 0; i < _modules.Length; i++)
+                _modules[i] = createModules[i].Invoke(this);
+
             _hBlankHandlers = _modules.OfType<IHBlankHandler>().ToArray();
             _vBlankHandlers = _modules.OfType<IVBlankHandler>().ToArray();
             _logicUpdateHandlers = _modules.OfType<ILogicUpdateHandler>().ToArray();

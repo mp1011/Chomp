@@ -19,6 +19,11 @@ namespace ChompGame.GameSystem
         {
         }
 
+        public Sprite GetSprite(int index)
+        {
+            return new Sprite(_sprite0Address + Sprite.Bytes * index, GameSystem.Memory, Specs);
+        }
+
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);
