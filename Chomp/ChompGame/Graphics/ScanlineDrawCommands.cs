@@ -67,7 +67,8 @@ namespace ChompGame.Graphics
             var drawInstruction = GetCurrentCommand();
             int totalAdvance = 0;
 
-            if(drawInstruction.IsRepositionMarker)
+            while(totalAdvance < _specs.PatternTableWidth * _specs.PatternTableHeight 
+                && drawInstruction.IsRepositionMarker)
             {
                 IncDrawInstruction();
                 drawInstruction = GetCurrentCommand();
@@ -88,13 +89,16 @@ namespace ChompGame.Graphics
             DrawHoldCounter.Value = drawInstruction.Value;         
         }
 
-        public string[] Info_GetDrawCommandDescriptions()
+        public string[] Info_GetDrawCommandDescriptions(bool stopAtCurrentIndex)
         {
             bool isReposition = false;
             List<string> commands = new List<string>();
             int offset = 0;
             while (true)
             {
+                if (stopAtCurrentIndex && offset == DrawInstructionAddressOffset.Value)
+                    break;
+
                 var cmd = new DrawCommand(FirstDrawInstructionAddress + offset, _memory);
                 if (cmd.IsEndMarker)
                     break;
@@ -123,6 +127,9 @@ namespace ChompGame.Graphics
 
         public void AddDrawCommand(bool moveIndex, byte amount)
         {
+            if (amount == 0)
+                return;
+
             var cmd = GetCurrentCommand();
             cmd.PTMove = moveIndex;
             cmd.Value = amount;

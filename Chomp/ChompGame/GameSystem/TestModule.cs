@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.ROM;
 using Microsoft.Xna.Framework.Input;
 using System;
 
@@ -28,7 +29,23 @@ namespace ChompGame.GameSystem
             _spritesModule.Sprites[1].X = 20;
             _spritesModule.Sprites[1].Y = 16;
 
+            _spritesModule.Sprites[2].Tile = 6;
+            _spritesModule.Sprites[2].X = 24;
+            _spritesModule.Sprites[2].Y = 20;
 
+
+            var tileModule = GameSystem.GetModule<TileModule>();
+            var graphicsModule = GameSystem.CoreGraphicsModule;
+
+            var nameTableLoader = new DiskNBitPlaneLoader();
+            nameTableLoader.Load(
+               new DiskFile(ContentFolder.NameTables, "test.nt"),
+               tileModule.NameTable);
+
+            var patternTableLoader = new DiskNBitPlaneLoader();
+            patternTableLoader.Load(
+                new DiskFile(ContentFolder.PatternTables, "test_4color.pt"),
+                graphicsModule.PatternTable);
         }
 
         private bool wasLeftDown;
@@ -64,6 +81,18 @@ namespace ChompGame.GameSystem
                     _spritesModule.Sprites[1].Y--;
                 else if (downKey)
                     _spritesModule.Sprites[1].Y++;
+            }
+            else if (state.IsKeyDown(Keys.F))
+            {
+                if (leftKey)
+                    _spritesModule.Sprites[2].X--;
+                else if (righKey)
+                    _spritesModule.Sprites[2].X++;
+
+                if (upKey)
+                    _spritesModule.Sprites[2].Y--;
+                else if (downKey)
+                    _spritesModule.Sprites[2].Y++;
             }
 
             else if (state.IsKeyDown(Keys.LeftShift))

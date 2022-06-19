@@ -48,7 +48,8 @@ namespace ChompGame.GameSystem
             for (int i=0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
-                commands.AddDrawCommand(false, (byte)(sprite.X-currentRow));
+                commands.AddDrawCommand(false, (byte)(sprite.X - currentRow));
+                
                 tilePoint.Index = sprite.Tile;
 
                 int row = (ScreenPoint.Y - sprite.Y) % Specs.TileHeight;
@@ -62,7 +63,6 @@ namespace ChompGame.GameSystem
                 currentRow = sprite.X + Specs.TileWidth;
                 nextPatternTablePoint.Advance(Specs.TileWidth);
                 commands.AddMoveCommands(0, nextPatternTablePoint.Index);
-
                 PatternTablePoint.Index = 0;
             }
 

@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.ROM;
+using System;
 
 namespace ChompGame.GameSystem
 {
@@ -7,20 +8,28 @@ namespace ChompGame.GameSystem
     {
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
+        private readonly TileModule _tileModule;
+
         private ByteVector _ballMotion;
         private GameShort _timer;
+        private GameByte _p1Score;
+        private GameByte _p2Score;
 
-        public PongModule(MainSystem mainSystem, InputModule inputModule, SpritesModule spritesModule) 
+        public PongModule(MainSystem mainSystem, InputModule inputModule, SpritesModule spritesModule,
+            TileModule tileModule) 
             : base(mainSystem)
         {
             _inputModule = inputModule;
             _spritesModule = spritesModule;
+            _tileModule = tileModule;
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _ballMotion =new ByteVector(memoryBuilder.AddByte(),memoryBuilder.AddByte());
             _timer = memoryBuilder.AddShort();
+            _p1Score = memoryBuilder.AddByte();
+            _p2Score = memoryBuilder.AddByte();
         }
 
         public override void OnStartup()
@@ -56,6 +65,8 @@ namespace ChompGame.GameSystem
 
         public void OnLogicUpdate()
         {
+            ShowScores();
+
             _timer.Value++;
 
             var playerPaddle = _spritesModule.GetSprite(0);
@@ -72,9 +83,45 @@ namespace ChompGame.GameSystem
                 _ballMotion.Y = 0;
             }
 
-            HandleBallMotion();
+            if((_timer.Value % 3) == 0)
+                HandleBallMotion();
         }
 
+        private void ShowScores()
+        {
+            switch(_p1Score.Value)
+            {
+                case 1:
+                    _tileModule.NameTable[1, 1] = 0xD;
+                    _tileModule.NameTable[2, 1] = 0xC;
+                    break;
+                case 2:
+                    _tileModule.NameTable[1, 1] = 0xD;
+                    _tileModule.NameTable[2, 1] = 0xD;
+                    break;
+                default:
+                    _tileModule.NameTable[1, 1] = 0xC;
+                    _tileModule.NameTable[2, 1] = 0xC;
+                    break;
+            }
+
+            switch (_p2Score.Value)
+            {
+                case 1:
+                    _tileModule.NameTable[5, 1] = 0xD;
+                    _tileModule.NameTable[6, 1] = 0xC;
+                    break;
+                case 2:
+                    _tileModule.NameTable[5, 1] = 0xD;
+                    _tileModule.NameTable[6, 1] = 0xD;
+                    break;
+                default:
+                    _tileModule.NameTable[5, 1] = 0xC;
+                    _tileModule.NameTable[6, 1] = 0xC;
+                    break;
+            }
+
+        }
         private void HandleBallMotion()
         {
             var ball = _spritesModule.GetSprite(2);
@@ -83,11 +130,17 @@ namespace ChompGame.GameSystem
 
             if (ball.X > Specs.ScreenWidth-Specs.TileWidth)
             {
+                if (_p1Score < 2)
+                    _p1Score.Value++;
+
                 _ballMotion.X = -1;
                 _ballMotion.Y = Random(-2, -1, 1, 2);
             }
             else if (ball.X < 2)
             {
+                if (_p2Score < 2)
+                    _p2Score.Value++;
+
                 _ballMotion.X = 1;
                 _ballMotion.Y = Random(-2, -1, 1, 2);
             }
@@ -104,8 +157,9 @@ namespace ChompGame.GameSystem
 
         private int Random(params int[] choices)
         {
-             var r = _timer.Value % choices.Length;
-            return choices[r];
+            //todo, don't rely on Random
+            var r = new Random(_timer.Value);
+            return choices[r.Next(choices.Length)];
         }
     }
 }
