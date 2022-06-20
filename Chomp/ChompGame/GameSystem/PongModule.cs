@@ -63,21 +63,31 @@ namespace ChompGame.GameSystem
             _ballMotion.Y = 0;
         }
 
+        public void UpdatePaddle(Sprite playerPaddle, GameInput input)
+        {
+            if (playerPaddle.Y > 0 && input.UpKey.IsDown())
+                playerPaddle.Y--;
+            else if (playerPaddle.Y < Specs.ScreenHeight - Specs.TileHeight && input.DownKey.IsDown())
+                playerPaddle.Y++;
+        }
+
         public void OnLogicUpdate()
         {
             ShowScores();
 
             _timer.Value++;
 
-            var playerPaddle = _spritesModule.GetSprite(0);
-            if (playerPaddle.Y > 0 && _inputModule.UpKey.IsDown())
-                playerPaddle.Y--;
-            else if (playerPaddle.Y < Specs.ScreenHeight-Specs.TileHeight && _inputModule.DownKey.IsDown())
-                playerPaddle.Y++;
+            UpdatePaddle(_spritesModule.GetSprite(0), _inputModule.Player1);
+            UpdatePaddle(_spritesModule.GetSprite(1), _inputModule.Player2);
 
-            if(_ballMotion.X==0 && _ballMotion.Y == 0 && _inputModule.StartKey == GameKeyState.Pressed)
+
+            if (_ballMotion.X == 0 && _ballMotion.Y == 0 && _inputModule.Player1.StartKey == GameKeyState.Pressed)
+            {
                 _ballMotion.X = 1;
-            else if(_inputModule.StartKey == GameKeyState.Pressed)
+                _p1Score.Value = 0;
+                _p2Score.Value = 0;
+            }
+            else if (_inputModule.Player1.StartKey == GameKeyState.Pressed)
             {
                 _ballMotion.X = 0;
                 _ballMotion.Y = 0;
@@ -122,13 +132,36 @@ namespace ChompGame.GameSystem
             }
 
         }
+
+        private bool CheckCollision(Sprite s1, Sprite s2)
+        {
+            return !(s2.Right < s1.X
+                || s2.X > s1.Right
+                || s2.Bottom < s1.Y
+                || s2.Y > s1.Bottom);                
+        }
+
         private void HandleBallMotion()
         {
             var ball = _spritesModule.GetSprite(2);
             ball.X = (byte)(ball.X + _ballMotion.X);
             ball.Y = (byte)(ball.Y + _ballMotion.Y);
 
-            if (ball.X > Specs.ScreenWidth-Specs.TileWidth)
+            var paddle1 = _spritesModule.GetSprite(0);
+            var paddle2 = _spritesModule.GetSprite(1);
+
+
+            if (CheckCollision(paddle1,ball))
+            {
+                _ballMotion.X = 1;
+                _ballMotion.Y = Random(-2, -1, 1, 2);
+            }
+            else if (CheckCollision(paddle2, ball))
+            {
+                _ballMotion.X = -1;
+                _ballMotion.Y = Random(-2, -1, 1, 2);
+            }
+            else if (ball.X > Specs.ScreenWidth-Specs.TileWidth)
             {
                 if (_p1Score < 2)
                     _p1Score.Value++;

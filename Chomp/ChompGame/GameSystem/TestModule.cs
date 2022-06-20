@@ -50,6 +50,16 @@ namespace ChompGame.GameSystem
 
         private bool wasLeftDown;
         private bool wasRightDown;
+
+        private byte noteTimer;
+        private void Note(ushort value)
+        {
+            var audio = GameSystem.GetModule<AudioModule>();
+            audio.Channels[0].Value = value;
+            audio.Channels[0].Playing = true;
+            noteTimer = 10;
+        }
+
         public void OnLogicUpdate()
         {
             KeyboardState state = Keyboard.GetState();
@@ -57,6 +67,58 @@ namespace ChompGame.GameSystem
             bool righKey = state.IsKeyDown(Keys.Right);
             bool upKey = state.IsKeyDown(Keys.Up);
             bool downKey = state.IsKeyDown(Keys.Down);
+
+            if(noteTimer > 0)
+            {
+                noteTimer--;
+                if(noteTimer == 0)
+                {
+                    var audio = GameSystem.GetModule<AudioModule>();
+                    audio.Channels[0].Playing = false;
+
+                }
+            }
+
+            if (state.IsKeyDown(Keys.D1))
+                Note(200);
+            if (state.IsKeyDown(Keys.D2))
+                Note(220); // 10
+            if (state.IsKeyDown(Keys.D3))
+                Note(250); // 15
+            if (state.IsKeyDown(Keys.D4))
+                Note(260); // 5
+            if (state.IsKeyDown(Keys.D5))
+                Note(300); // 20
+            if (state.IsKeyDown(Keys.D6))
+                Note(330); // 15
+            if (state.IsKeyDown(Keys.D7))
+                Note(380); // 25
+            if (state.IsKeyDown(Keys.D8))
+                Note(400); // 10
+
+
+            //if (state.IsKeyDown(Keys.D1))
+            //    Note(100);
+            //if (state.IsKeyDown(Keys.D2))
+            //    Note(110); // 10
+            //if (state.IsKeyDown(Keys.D3))
+            //    Note(125); // 15
+            //if (state.IsKeyDown(Keys.D4))
+            //    Note(130); // 5
+            //if (state.IsKeyDown(Keys.D5))
+            //    Note(150); // 20
+            //if (state.IsKeyDown(Keys.D6))
+            //    Note(165); // 15
+            //if (state.IsKeyDown(Keys.D7))
+            //    Note(190); // 25
+            //if (state.IsKeyDown(Keys.D8))
+            //    Note(200); // 10
+            //if (state.IsKeyDown(Keys.D9))
+            //    Note(900);
+            //if (state.IsKeyDown(Keys.D0))
+            //    Note(1000);
+
+
 
             if (state.IsKeyDown(Keys.S))
             {

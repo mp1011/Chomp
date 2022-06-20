@@ -43,6 +43,9 @@ namespace ChompGame.Data
             set => _position.Y = value;
         }
 
+        public byte Right => (byte)(X + _specs.TileWidth);
+        public byte Bottom => (byte)(Y + _specs.TileHeight);
+
         public byte Tile
         {
             get => _tile.Value;

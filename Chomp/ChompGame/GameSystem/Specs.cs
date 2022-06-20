@@ -32,6 +32,8 @@ namespace ChompGame.GameSystem
         public int PatternTableTilesAcross => PatternTableWidth / TileWidth;
         public int PatternTableTilesDown => PatternTableHeight / TileHeight;
         public int MaxDrawInstructions => 64;
+
+        public int AudioChannels = 1;
         public Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
     };
 }
