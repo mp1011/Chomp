@@ -50,16 +50,22 @@ namespace ChompGame.GameSystem
 
         private bool wasLeftDown;
         private bool wasRightDown;
-
+        
         private byte noteTimer;
-        private void Note(ushort value)
+        private void Note(int basis, int octave, int semitone)
         {
+          
+            var thisOctave = basis * Math.Pow(2, octave);
+            var frequency = thisOctave * Math.Pow(2, (double)semitone / 12.0);
+        
             var audio = GameSystem.GetModule<AudioModule>();
-            audio.Channels[0].Value = value;
+            audio.Channels[0].Value = (ushort)(frequency);
+            audio.Channels[0].Volume=200;
             audio.Channels[0].Playing = true;
             noteTimer = 10;
         }
 
+        private int _octave = 1;
         public void OnLogicUpdate()
         {
             KeyboardState state = Keyboard.GetState();
@@ -79,23 +85,42 @@ namespace ChompGame.GameSystem
                 }
             }
 
-            if (state.IsKeyDown(Keys.D1))
-                Note(200);
-            if (state.IsKeyDown(Keys.D2))
-                Note(220); // 10
-            if (state.IsKeyDown(Keys.D3))
-                Note(250); // 15
-            if (state.IsKeyDown(Keys.D4))
-                Note(260); // 5
-            if (state.IsKeyDown(Keys.D5))
-                Note(300); // 20
-            if (state.IsKeyDown(Keys.D6))
-                Note(330); // 15
-            if (state.IsKeyDown(Keys.D7))
-                Note(380); // 25
-            if (state.IsKeyDown(Keys.D8))
-                Note(400); // 10
+            int lowOctave = 110;
 
+            if (state.IsKeyDown(Keys.Q))
+                Note(lowOctave,_octave,0);
+            if (state.IsKeyDown(Keys.W))
+                Note(lowOctave, _octave, 1);
+            if (state.IsKeyDown(Keys.E))
+                Note(lowOctave, _octave, 2);
+            if (state.IsKeyDown(Keys.R))
+                Note(lowOctave, _octave, 3);
+            if (state.IsKeyDown(Keys.T))
+                Note(lowOctave, _octave, 4);
+            if (state.IsKeyDown(Keys.Y))
+                Note(lowOctave, _octave, 5);
+            if (state.IsKeyDown(Keys.U))
+                Note(lowOctave, _octave, 6);
+            if (state.IsKeyDown(Keys.I))
+                Note(lowOctave, _octave, 7);
+            if (state.IsKeyDown(Keys.O))
+                Note(lowOctave, _octave, 8);
+            if (state.IsKeyDown(Keys.P))
+                Note(lowOctave, _octave, 9);
+            if (state.IsKeyDown(Keys.OemOpenBrackets))
+                Note(lowOctave, _octave, 10);
+            if (state.IsKeyDown(Keys.OemCloseBrackets))
+                Note(lowOctave, _octave, 11);
+            if (state.IsKeyDown(Keys.OemPipe))
+                Note(lowOctave, _octave, 12);
+
+
+            if (!wasLeftDown && state.IsKeyDown(Keys.Left))
+                _octave--;
+            if (!wasRightDown && state.IsKeyDown(Keys.Right))
+                _octave++;
+
+    
 
             //if (state.IsKeyDown(Keys.D1))
             //    Note(100);

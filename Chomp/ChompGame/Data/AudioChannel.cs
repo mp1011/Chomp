@@ -1,17 +1,26 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using ChompGame.GameSystem;
+using Microsoft.Xna.Framework.Audio;
 
 namespace ChompGame.Data
 {
     class AudioChannel
     {
-        private SoundEffectInstance _sfx;
+        private readonly AudioModule _audioModule;
+        private readonly GameByte _volume;
         private readonly GameShort _value;
         private readonly GameBit _playing;
+        private SoundEffectInstance _sfx;
 
         public bool Playing
         {
             get => _playing.Value;
-            set => _playing.Value = value;
+            set
+            {
+                if (_sfx != null && _sfx.State == SoundState.Playing && !value)
+                    _sfx.Stop();
+
+                _playing.Value = value;
+            }
         }
 
         public ushort Value
@@ -22,27 +31,33 @@ namespace ChompGame.Data
                 if(value != _value.Value)
                 {
                     _value.Value = value;
-                    Generate();
+                    GenerateSound();
                 }
             }
         }
 
-        private void Generate()
+        public byte Volume
         {
-            byte[] buffer = new byte[(int)(44100 * 0.5)];
-            buffer = new byte[44100 * 1];
-            short v = 10000;
-            for (int i = 0; i < buffer.Length; i += 2)
+            get => _volume.Value;
+            set
             {
-                buffer[i] = (byte)v;
-                buffer[i + 1] = (byte)(v >> 8);
-                v += (short)Value;
+                if (value != _volume.Value)
+                {
+                    _volume.Value = value;
+                    GenerateSound();
+                }
             }
-
-
-            var sfx = new SoundEffect(buffer, 44100, AudioChannels.Mono);
-            _sfx = sfx.CreateInstance();
         }
+
+        private void GenerateSound()
+        {
+            if(_sfx != null && _sfx.State == SoundState.Playing)
+                _sfx.Stop();
+
+            _sfx = null;
+            _sfx = _audioModule.GenerateSpecial(_value.Value, _volume.Value, 1).CreateInstance();
+        }
+       
 
         public void Update()
         {
@@ -50,9 +65,11 @@ namespace ChompGame.Data
                 _sfx.Play();
         }
 
-        public AudioChannel(GameShort value, GameBit playing)
+        public AudioChannel(AudioModule audio, GameShort value, GameByte volume, GameBit playing)
         {
+            _audioModule = audio;
             _value = value;
+            _volume = volume;
             _playing = playing;
         }
     }
