@@ -17,6 +17,7 @@ namespace ChompGame
                 s => new TileModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
+                s => new CorruptionTestModule(s),
                 s => new PongModule(s, s.GetModule<InputModule>(),
                                        s.GetModule<AudioModule>(),
                                        s.GetModule<SpritesModule>(),

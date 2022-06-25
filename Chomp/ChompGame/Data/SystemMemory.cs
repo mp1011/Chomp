@@ -1,4 +1,5 @@
-﻿using ChompGame.GameSystem;
+﻿using ChompGame.Extensions;
+using ChompGame.GameSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,21 @@ namespace ChompGame.Data
     public class SystemMemory
     {
         private byte[] _memory;
+        private byte[] _corruptionMask;
+
         private int _romStartAddress;
         private bool _enableSetRom = true;
+
+        public void CorruptBit(int bit)
+        {
+            var index = bit / 8;
+            var b = 2.Power(bit % 8);
+            b = ~b;
+
+            _corruptionMask[index] = (byte)(_corruptionMask[index] & b);
+        }
+
+        public int RAMSize => _romStartAddress;
 
         public byte this[int index] 
         {
@@ -18,7 +32,10 @@ namespace ChompGame.Data
                 if (index < 0 || index >= _memory.Length)
                     return 0;
 
-                return (index >= _memory.Length) ? (byte)0 : _memory[index];
+                if (index >= _memory.Length)
+                    return 0;
+
+                return (byte)(_memory[index] & _corruptionMask[index]);
             }
             set
             {
@@ -44,6 +61,8 @@ namespace ChompGame.Data
             var memoryBuilder = new SystemMemoryBuilder(this, specs);
             configureMemory(memoryBuilder);
             _memory = memoryBuilder.Build();
+            _corruptionMask = Enumerable.Repeat((byte)255, _memory.Length).ToArray();
+
             _romStartAddress = memoryBuilder.ROMStartAddress;
         }
 
