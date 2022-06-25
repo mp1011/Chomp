@@ -76,6 +76,31 @@ namespace ChompGame.Data
         }                    
     }
 
+    class GameByteEnum<T>
+    {
+        private GameByte _value;
+        
+            
+        public GameByteEnum(GameByte value)
+        {
+            _value = value;
+        }
+
+        public T Value
+        {
+            get
+            {
+                object currentValue = _value.Value;
+                return (T)currentValue;
+            }
+            set
+            {
+                var byteValue = (byte)(object)value;
+                _value.Value = byteValue;
+            }            
+        }
+    }
+
     public class GameByte
     {
         private int _address;

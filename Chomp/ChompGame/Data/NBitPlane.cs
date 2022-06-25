@@ -68,5 +68,11 @@ namespace ChompGame.Data
             var value = byte.Parse(s.ToString(), NumberStyles.HexNumber);
             return value;
         }
+
+        public void CopyTo(NBitPlane destination, SystemMemory memory)
+        {
+            var totalLength = _planes[0].Bytes * _planes.Length;
+            memory.BlockCopy(sourceStart: Address, destinationStart: destination.Address, length: totalLength);
+        }
     }
 }

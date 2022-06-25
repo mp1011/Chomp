@@ -8,14 +8,35 @@ namespace ChompGame.Data
     public class SystemMemory
     {
         private byte[] _memory;
+        private int _romStartAddress;
+        private bool _enableSetRom = true;
 
         public byte this[int index] 
         {
-            get => (index >= _memory.Length) ? (byte)0 : _memory[index];
+            get
+            {
+                if (index < 0 || index >= _memory.Length)
+                    return 0;
+
+                return (index >= _memory.Length) ? (byte)0 : _memory[index];
+            }
             set
-            {   if (index < _memory.Length)                
+            {
+                if (!_enableSetRom && _romStartAddress != -1 && index >= _romStartAddress)
+                    throw new Exception("Memory Violation");
+
+                if (index < _memory.Length)                
                     _memory[index] = value;
             }
+        }
+
+        public void BlockCopy(int sourceStart, int destinationStart, int length)
+        {
+            Array.Copy(sourceArray: _memory,
+                sourceIndex: sourceStart,
+                destinationArray: _memory,
+                destinationIndex: destinationStart,
+                length: length);
         }
 
         public SystemMemory(Action<SystemMemoryBuilder> configureMemory, Specs specs)
@@ -23,6 +44,12 @@ namespace ChompGame.Data
             var memoryBuilder = new SystemMemoryBuilder(this, specs);
             configureMemory(memoryBuilder);
             _memory = memoryBuilder.Build();
+            _romStartAddress = memoryBuilder.ROMStartAddress;
+        }
+
+        public void Ready()
+        {
+            _enableSetRom = false;
         }
     }
 
@@ -32,6 +59,7 @@ namespace ChompGame.Data
         private SystemMemory _systemMemory;
         private Specs _specs;
 
+        public int ROMStartAddress { get; private set; } = -1;
         public int CurrentAddress => _bytes.Count;
 
         public SystemMemory Memory => _systemMemory;
@@ -40,6 +68,14 @@ namespace ChompGame.Data
         {
             _specs = specs;
             _systemMemory = systemMemory;
+        }
+
+        public void BeginROM()
+        {
+            if (ROMStartAddress != -1)
+                throw new Exception("ROM already started");
+
+            ROMStartAddress = CurrentAddress;
         }
 
         public byte[] Build()
