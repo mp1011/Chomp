@@ -24,7 +24,11 @@ namespace ChompGame.GameSystem
         {
             CurrentColorIndex = builder.AddByte();
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
-            ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
+            
+            if(Specs.ScreenWidth==255 && Specs.ScreenHeight==255)
+                ScreenPoint = builder.AddFullGridPoint();
+            else 
+                ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
 
             ScanlineDrawCommands = Enumerable.Range(0, Specs.ScanlineDrawPlanes)
                 .Select(p => new ScanlineDrawCommands(builder, PatternTable, Specs))
@@ -39,17 +43,15 @@ namespace ChompGame.GameSystem
         {
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
+            byte colorIndex = 0;
+            byte planeColor = 0;
 
             for (int i = 0; i < _screenData.Length; i++)
             {
-                byte colorIndex=0;
-
-                for(int plane = Specs.ScanlineDrawPlanes-1; plane >= 0; plane--)
-                {
-                    var planeColor = ScanlineDrawCommands[plane].Update();
-                    if (colorIndex == 0)
-                        colorIndex = planeColor;
-                }
+                colorIndex = ScanlineDrawCommands[1].Update();             
+                planeColor = ScanlineDrawCommands[0].Update();
+                if (colorIndex == 0)
+                    colorIndex = planeColor;
 
                 _screenData[i] = Specs.SystemColors[colorIndex];
 

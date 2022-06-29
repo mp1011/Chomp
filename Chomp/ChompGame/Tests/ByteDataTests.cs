@@ -19,7 +19,7 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 b.AddByte();
-            }, new Specs());
+            }, new PongSpecs());
 
             memory[0] = original;
 

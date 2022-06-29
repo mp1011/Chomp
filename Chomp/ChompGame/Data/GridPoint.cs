@@ -32,8 +32,7 @@ namespace ChompGame.Data
             newIndex = newIndex.Wrap(Width * Height);
             Index = newIndex;
         }
-
-        public bool Next() 
+        public virtual bool Next() 
         {
             if (X == Width - 1)
             {
@@ -117,6 +116,26 @@ namespace ChompGame.Data
         {
             get => _yByte.Value;
             set => _yByte.Value = value;
+        }
+    }
+
+    public class FullGameByteGridPoint : GameByteGridPoint
+    {
+        public FullGameByteGridPoint(GameByte xByte, GameByte yByte) : base(xByte, yByte, 255, 255)
+        {
+        }
+
+        public override bool Next()
+        {
+            X++;
+
+            if (X == 0)
+            {
+                Y++;
+                return true;
+            }
+
+            return false;
         }
     }
 }

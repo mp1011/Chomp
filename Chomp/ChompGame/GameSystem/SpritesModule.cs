@@ -33,6 +33,8 @@ namespace ChompGame.GameSystem
 
         public override void OnHBlank()
         {
+            var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
+            commands.BeginAddDrawInstructions();
             DrawInstructionAddressOffset.Value = 0;
             FillScanlineSprites();
 
@@ -42,27 +44,26 @@ namespace ChompGame.GameSystem
             var tilePoint = new ByteGridPoint(Specs.PatternTableTilesAcross, Specs.PatternTableTilesDown);
             var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
 
-            var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
             int currentRow = 0;
 
-            for (int i=0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
+            for (int i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
                 commands.AddDrawCommand(false, (byte)(sprite.X - currentRow));
-                
+
                 tilePoint.Index = sprite.Tile;
 
                 int row = (ScreenPoint.Y - sprite.Y) % Specs.TileHeight;
 
                 nextPatternTablePoint.X = (byte)(tilePoint.X * Specs.TileWidth);
-                nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight)+row);
+                nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
 
-                commands.AddMoveCommands(nextPatternTablePoint.Index, PatternTablePoint.Index);
+                commands.AddTileMoveCommand(nextPatternTablePoint.Index, PatternTablePoint.Index);
                 commands.AddDrawCommand(true, (byte)Specs.TileWidth);
 
                 currentRow = sprite.X + Specs.TileWidth;
                 nextPatternTablePoint.Advance(Specs.TileWidth);
-                commands.AddMoveCommands(0, nextPatternTablePoint.Index);
+                commands.AddTileMoveCommand(0, nextPatternTablePoint.Index);
                 PatternTablePoint.Index = 0;
             }
 
@@ -71,10 +72,11 @@ namespace ChompGame.GameSystem
             if (DrawInstructionAddressOffset.Value == 0)
                 commands.AddDrawCommand(false, (byte)Specs.ScreenWidth);
 
-            commands.AddInstructionEndMarker();
             DrawInstructionAddressOffset.Value = 255;
             DrawHoldCounter.Value = 0;
             PatternTablePoint.Reset();
+
+            DrawInstructionAddressOffset.Value = 255;
         }
 
 

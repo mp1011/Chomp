@@ -5,7 +5,7 @@ using System;
 
 namespace ChompGame.GameSystem
 {
-    class PongModule : Module, ILogicUpdateHandler
+    class PongModule : Module, IMasterModule
     {
         enum GameState : byte 
         {
@@ -93,6 +93,9 @@ namespace ChompGame.GameSystem
 
         public void OnLogicUpdate()
         {
+            _audioModule.OnLogicUpdate();
+            _inputModule.OnLogicUpdate();
+
             if(_soundTimer.Value > 0)
             {
                 _soundTimer.Value--;
@@ -411,6 +414,18 @@ namespace ChompGame.GameSystem
             //todo, don't rely on Random
             var r = new Random(_timer.Value);
             return choices[r.Next(choices.Length)];
+        }
+
+        public void OnVBlank()
+        {
+            _tileModule.OnVBlank();
+            _spritesModule.OnVBlank();
+        }
+
+        public void OnHBlank()
+        {
+            _tileModule.OnHBlank();
+            _spritesModule.OnHBlank();
         }
     }
 }

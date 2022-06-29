@@ -8,7 +8,7 @@ using System.Text;
 
 namespace ChompGame.GameSystem
 {
-    class AudioModule : Module, ILogicUpdateHandler
+    class AudioModule : Module, ILogicUpdateModule
     {
         public AudioChannel[] Channels { get; private set; }
 

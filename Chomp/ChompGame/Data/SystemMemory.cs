@@ -28,22 +28,15 @@ namespace ChompGame.Data
         public byte this[int index] 
         {
             get
-            {
-                if (index < 0 || index >= _memory.Length)
-                    return 0;
-
-                if (index >= _memory.Length)
-                    return 0;
-
-                return (byte)(_memory[index] & _corruptionMask[index]);
+            {                
+                // return (byte)(_memory[index] & _corruptionMask[index]);
+                return _memory[index];
             }
             set
             {
-                if (!_enableSetRom && _romStartAddress != -1 && index >= _romStartAddress)
-                    throw new Exception("Memory Violation");
-
-                if (index < _memory.Length)                
-                    _memory[index] = value;
+                //if (!_enableSetRom && _romStartAddress != -1 && index >= _romStartAddress)
+                //    throw new Exception("Memory Violation");
+                _memory[index] = value;
             }
         }
 
@@ -118,7 +111,7 @@ namespace ChompGame.Data
 
         public NBitPlane AddNBitPlane(int planes, int width, int height)
         {
-            var bitPlane = new NBitPlane(CurrentAddress, _systemMemory, planes, width, height);
+            var bitPlane = NBitPlane.Create(CurrentAddress, _systemMemory, planes, width, height);
             AddBytes(bitPlane.Bytes);
             return bitPlane;
         }
@@ -154,6 +147,9 @@ namespace ChompGame.Data
 
             return b;
         }
+
+        public FullGameByteGridPoint AddFullGridPoint() =>
+            new FullGameByteGridPoint(AddByte(), AddByte());
 
         public GameByteGridPoint AddGridPoint(byte width, byte height, Bit mask)
             => AddGridPoint(width, height, mask, mask);

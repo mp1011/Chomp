@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ChompGame.GameSystem
 {
-    class InputModule : Module, ILogicUpdateHandler
+    class InputModule : Module, ILogicUpdateModule
     {
         public GameInput Player1 { get; private set; }
         public GameInput Player2 { get; private set; }

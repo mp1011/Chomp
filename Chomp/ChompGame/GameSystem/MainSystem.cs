@@ -9,9 +9,7 @@ namespace ChompGame.GameSystem
     public class MainSystem
     {
         private IModule[] _modules;
-        private IHBlankHandler[] _hBlankHandlers;
-        private IVBlankHandler[] _vBlankHandlers;
-        private ILogicUpdateHandler[] _logicUpdateHandlers;
+        private IMasterModule _masterModule;
 
         public Specs Specs { get; }
         public SystemMemory Memory { get; }
@@ -29,9 +27,9 @@ namespace ChompGame.GameSystem
             for (int i = 0; i < _modules.Length; i++)
                 _modules[i] = createModules[i].Invoke(this);
 
-            _hBlankHandlers = _modules.OfType<IHBlankHandler>().ToArray();
-            _vBlankHandlers = _modules.OfType<IVBlankHandler>().ToArray();
-            _logicUpdateHandlers = _modules.OfType<ILogicUpdateHandler>().ToArray();
+            _masterModule = _modules.Last() as IMasterModule;
+            if (_masterModule == null)
+                throw new Exception("Last module must implement IMasterModule");
 
             Memory = new SystemMemory(builder =>
             {
@@ -54,20 +52,17 @@ namespace ChompGame.GameSystem
 
         public void OnLogicUpdate()
         {
-            foreach (var handler in _logicUpdateHandlers)
-                handler.OnLogicUpdate();
+            _masterModule.OnLogicUpdate();
         }
 
         public void OnHBlank()
         {
-            foreach (var handler in _hBlankHandlers)
-                handler.OnHBlank();           
+            _masterModule.OnHBlank();
         }
 
         public void OnVBlank()
         {
-            foreach (var handler in _vBlankHandlers)
-                handler.OnVBlank();
+            _masterModule.OnVBlank();
         }
 
        

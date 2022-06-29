@@ -17,7 +17,7 @@ namespace ChompGame.GameSystem
 
         public override void OnHBlank()
         {
-            DrawInstructionAddressOffset.Value = 0;
+            _coreGraphicsModule.ScanlineDrawCommands[Layer].BeginAddDrawInstructions();
             PatternTablePoint.Reset();
 
             var nameTablePoint = new ByteGridPoint(Specs.NameTableWidth, Specs.NameTableHeight);
@@ -41,7 +41,7 @@ namespace ChompGame.GameSystem
                 nextPatternTablePoint.X = (byte)((tilePoint.X * Specs.TileWidth) + col);
                 nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
 
-                _coreGraphicsModule.ScanlineDrawCommands[Layer].AddMoveCommands(
+                _coreGraphicsModule.ScanlineDrawCommands[Layer].AddTileMoveCommand(
                     destination: nextPatternTablePoint.Index,
                     currentIndex: PatternTablePoint.Index);
 
@@ -60,7 +60,6 @@ namespace ChompGame.GameSystem
             PatternTablePoint.Y = 0;
             DrawHoldCounter.Value = 0;
 
-            _coreGraphicsModule.ScanlineDrawCommands[0].AddInstructionEndMarker();
             DrawInstructionAddressOffset.Value = 255;
             PatternTablePoint.Reset();
         }

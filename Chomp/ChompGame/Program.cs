@@ -10,30 +10,8 @@ namespace ChompGame
         [STAThread]
         static void Main()
         {
-            var specs = new Specs();
-
-            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
-                s => new AudioModule(s),
-                s => new TileModule(s),
-                s => new SpritesModule(s),
-                s => new InputModule(s),
-                s => new CorruptionTestModule(s),
-                s => new PongModule(s, s.GetModule<InputModule>(),
-                                       s.GetModule<AudioModule>(),
-                                       s.GetModule<SpritesModule>(),
-                                       s.GetModule<TileModule>()));
-
-            //var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
-            //   s => new TileModule(s),
-            //   s => new AudioModule(s),
-            //   s => new SpritesModule(s),
-            //   s => new TestModule(s));
-
-            Task.Run(() =>
-            {
-                using (var game = new Game1(specs, gameSystem))
-                    game.Run();
-            });
+            var gameSystem = RunPong();
+            //var gameSystem = RunFullScreenTest();
 
             bool quit = false;
             while (!quit)
@@ -60,10 +38,65 @@ namespace ChompGame
                     case "cls":
                         Console.Clear();
                         break; 
-
                 }
             }
         }
 
+        private static MainSystem RunTest()
+        {
+            var specs = new PongSpecs();
+            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+               s => new TileModule(s),
+               s => new AudioModule(s),
+               s => new SpritesModule(s),
+               s => new TestModule(s));
+
+            return RunGame(gameSystem);
+        }
+
+        private static MainSystem RunFullScreenTest()
+        {
+            var specs = new FullScreenTestSpecs();
+            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+               s => new TileModule(s),
+               s => new SpritesModule(s),
+               s => new InputModule(s),
+               s => new FullScreenTestModule(s));
+
+            return RunGame(gameSystem);
+        }
+
+        private static MainSystem RunGame(MainSystem mainSystem)
+        {
+            Task.Run(() =>
+            {
+                using (var game = new Game1(mainSystem))
+                    game.Run();
+            });
+
+            return mainSystem;
+        }
+
+        private static MainSystem RunPong()
+        {
+            var specs = new PongSpecs();
+
+            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+                s => new AudioModule(s),
+                s => new TileModule(s),
+                s => new SpritesModule(s),
+                s => new InputModule(s),
+                s => new PongModule(s, s.GetModule<InputModule>(),
+                                       s.GetModule<AudioModule>(),
+                                       s.GetModule<SpritesModule>(),
+                                       s.GetModule<TileModule>()));
+
+            return RunGame(gameSystem);
+            
+        }
+
+
+
     }
+
 }

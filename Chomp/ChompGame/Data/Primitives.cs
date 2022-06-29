@@ -103,28 +103,40 @@ namespace ChompGame.Data
 
     public class GameByte
     {
-        private int _address;
         private SystemMemory _memory;
 
-        public int Address => _address;
+        public int Address { get; set; }
 
         public virtual byte Value
         {
-            get => _memory[_address];
-            set => _memory[_address] = value;
+            get => _memory[Address];
+            set => _memory[Address] = value;
         }
 
         public GameByte(int address, SystemMemory memory)
         {
             _memory = memory;
-            _address = address;
-        }      
+            Address = address;
+        }     
+        
+        public bool GetBit(Bit b)
+        {
+            return (_memory[Address] & (byte)b) != 0;
+        }
+
+        public void SetBit(Bit b, bool value)
+        {
+            if (value)
+                _memory[Address] = (byte)(_memory[Address] | (byte)b);
+            else
+                _memory[Address] = (byte)(_memory[Address] & (byte)~b);
+        }
         
         public static implicit operator byte(GameByte g) => g.Value;
 
         public override string ToString() => $"{Value} {Value.ToString("X2")}";
 
-        public MaskedByte WithMask(Bit mask) => new MaskedByte(_address, mask, _memory);
+        public MaskedByte WithMask(Bit mask) => new MaskedByte(Address, mask, _memory);
     }
 
     public class MaskedByte : GameByte

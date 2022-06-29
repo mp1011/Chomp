@@ -15,9 +15,9 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 b.AddBytes(256);
-            },new Specs());
+            },new PongSpecs());
 
-            var plane = new NBitPlane(0, memory, 2, 4, 4);
+            var plane = NBitPlane.Create(0, memory, 2, 4, 4);
             plane[0, 0] = 2;
             plane[1, 1] = 3;
             plane[2, 3] = 1;
@@ -34,14 +34,14 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 b.AddBytes(256);
-            }, new Specs());
+            }, new PongSpecs());
 
             var text = @"FAFA
                          9999
                          5555
                          FBBF";
 
-            var plane = new NBitPlane(0, memory, 4, 4, 4);
+            var plane = NBitPlane.Create(0, memory, 4, 4, 4);
             plane.SetFromString(text);
 
             Assert.Equal(15, plane[0, 0]);

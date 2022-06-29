@@ -13,7 +13,7 @@ namespace ChompGame.Tests
             SystemMemory memory = new SystemMemory(b =>
             {
                 s = b.AddShort();
-            }, new Specs());
+            }, new PongSpecs());
 
             s.Value = 1000;
             Assert.Equal(1000, s.Value);

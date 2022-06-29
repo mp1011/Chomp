@@ -1,17 +1,31 @@
 ﻿using ChompGame.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
 namespace ChompGame.Data
 {
-    public class NBitPlane : IGrid<byte>
+    public abstract class NBitPlane : IGrid<byte>
     {
-        private BitPlane[] _planes;
+        protected BitPlane[] _planes;
 
         public int Address { get; }
 
-        public NBitPlane(int address, SystemMemory memory, int planeCount, int width, int height)
+        public static NBitPlane Create(int address, SystemMemory memory, int planeCount, int width, int height)
+        {
+            switch (planeCount)
+            {
+                case 2:
+                    return new TwoBitPlane(address, memory, width, height);
+                case 4:
+                    return new FourBitPlane(address, memory, width, height);
+                default:
+                    throw new Exception("Invalid plane count");
+            }
+        }
+
+        protected NBitPlane(int address, SystemMemory memory, int planeCount, int width, int height)
         {
             Address = address;
             Width = width;
@@ -29,7 +43,7 @@ namespace ChompGame.Data
             Bytes = _planes.Sum(p => p.Bytes);
         }
 
-        public byte this[int index]
+        public virtual byte this[int index]
         {
             get
             {
@@ -75,4 +89,56 @@ namespace ChompGame.Data
             memory.BlockCopy(sourceStart: Address, destinationStart: destination.Address, length: totalLength);
         }
     }
+
+    public class TwoBitPlane : NBitPlane
+    {
+        public TwoBitPlane(int address, SystemMemory memory, int width, int height) 
+            : base(address, memory, 2, width, height)
+        {
+        }
+
+        public override byte this[int index]
+        {
+            get
+            {
+                var p0 = _planes[0][index] ? 1 : 0;
+                var p1 = _planes[1][index] ? 2 : 0;
+                return (byte)(p0 + p1);
+            }
+            set
+            {
+                _planes[0][index] = (value & 1) > 0;
+                _planes[1][index] = (value & 2) > 0;
+            }
+        }
+    }
+
+    public class FourBitPlane : NBitPlane
+    {
+        public FourBitPlane(int address, SystemMemory memory, int width, int height)
+            : base(address, memory, 4, width, height)
+        {
+        }
+
+        public override byte this[int index]
+        {
+            get
+            {
+                var p0 = _planes[0][index] ? 1 : 0;
+                var p1 = _planes[1][index] ? 2 : 0;
+                var p2 = _planes[2][index] ? 4 : 0;
+                var p3 = _planes[3][index] ? 8 : 0;
+
+                return (byte)(p0 + p1 + p2 + p3);
+            }
+            set
+            {
+                _planes[0][index] = (value & 1) > 0;
+                _planes[1][index] = (value & 2) > 0;
+                _planes[2][index] = (value & 4) > 0;
+                _planes[3][index] = (value & 8) > 0;
+            }
+        }
+    }
+
 }

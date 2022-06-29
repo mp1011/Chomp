@@ -5,7 +5,7 @@ using System;
 
 namespace ChompGame.GameSystem
 {
-    class TestModule : Module, ILogicUpdateHandler
+    class TestModule : Module, IMasterModule
     {
         private TileModule _tileModule;
         private SpritesModule _spritesModule;
@@ -204,6 +204,14 @@ namespace ChompGame.GameSystem
 
         }
 
-       
+        public void OnVBlank()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnHBlank()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -68,7 +68,7 @@ namespace ChompGame.Data
                 _up.Value = state.IsKeyDown(Keys.Up);
                 _down.Value = state.IsKeyDown(Keys.Down);
                 _left.Value = state.IsKeyDown(Keys.Left);
-                _right.Value = state.IsKeyDown(Keys.R);
+                _right.Value = state.IsKeyDown(Keys.Right);
                 _a.Value = state.IsKeyDown(Keys.A);
                 _b.Value = state.IsKeyDown(Keys.S);
                 _start.Value = state.IsKeyDown(Keys.Space);

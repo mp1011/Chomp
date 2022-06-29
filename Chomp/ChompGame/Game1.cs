@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
+using System.Text;
 
 namespace ChompGame
 {
@@ -16,10 +18,12 @@ namespace ChompGame
         private SpriteBatch _spriteBatch;
         private RenderTarget2D _renderTarget;
         private Texture2D _canvas;
+        private SpriteFont _font;
+        private string _memoryString="";
 
-        public Game1(Specs specs, MainSystem mainSystem)
+        public Game1(MainSystem mainSystem)
         {
-            _specs = specs;
+            _specs = mainSystem.Specs;
             _gameSystem = mainSystem;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -42,7 +46,7 @@ namespace ChompGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
             _canvas = new Texture2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
-            // TODO: use this.Content to load your game content here
+            _font = Content.Load<SpriteFont>("Font"); 
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,11 +56,29 @@ namespace ChompGame
 
             _gameSystem.OnLogicUpdate();
 
+            var sb = new StringBuilder();
+            int w = 0;
+            for(int i =0; i < _gameSystem.Memory.RAMSize; i++)
+            {
+                sb.Append(_gameSystem.Memory[i].ToString("X2"));
+                w++;
+                if(w==10)
+                {
+                    w = 0;
+                    sb.AppendLine();
+                }
+            }
+            _memoryString = sb.ToString();
+
             base.Update(gameTime);
         }
 
+        private Stopwatch _renderTimer = new Stopwatch();
+        private long _drawMS;
+     
         protected override void Draw(GameTime gameTime)
         {
+            _renderTimer.Restart();
             GraphicsDevice.SetRenderTarget(_renderTarget);
             GraphicsDevice.Clear(Color.Black);
 
@@ -66,6 +88,11 @@ namespace ChompGame
 
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
+
+            _spriteBatch.Begin(SpriteSortMode.Immediate);
+            _spriteBatch.DrawString(_font, _drawMS.ToString(), new Vector2(0, 0), Color.Green);
+            _spriteBatch.DrawString(_font, _memoryString, new Vector2(0, 16), Color.White);
+            _spriteBatch.End();
 
             var aspectRatio = (double)_renderTarget.Height / _renderTarget.Width;
 
@@ -84,6 +111,10 @@ namespace ChompGame
                 width: renderWidth,
                 height: renderHeight), Color.White);
             _spriteBatch.End();
+
+            _renderTimer.Stop();
+            _drawMS = _renderTimer.ElapsedMilliseconds;
+
 
             base.Draw(gameTime);
         }

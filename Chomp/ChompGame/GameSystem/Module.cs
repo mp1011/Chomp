@@ -10,6 +10,11 @@ namespace ChompGame.GameSystem
         void OnStartup();
     }
 
+    public interface IMasterModule : IModule, ILogicUpdateModule, IVBlankHandler, IHBlankHandler
+    {
+        
+    }
+
     public abstract class Module : IModule
     {
         public MainSystem GameSystem { get; }
@@ -34,7 +39,7 @@ namespace ChompGame.GameSystem
         void OnVBlank();
     }
 
-    public interface ILogicUpdateHandler : IModule
+    public interface ILogicUpdateModule : IModule
     {
         void OnLogicUpdate();
     }

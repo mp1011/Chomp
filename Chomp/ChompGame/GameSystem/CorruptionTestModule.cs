@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ChompGame.GameSystem
 {
-    class CorruptionTestModule : Module, ILogicUpdateHandler
+    class CorruptionTestModule : Module, ILogicUpdateModule
     {
         public CorruptionTestModule(MainSystem mainSystem) : base(mainSystem)
         {
@@ -20,12 +20,12 @@ namespace ChompGame.GameSystem
 
         public void OnLogicUpdate()
         {
-            i++;
-            if(i == 16)
-            {
-                i = 0;
-                GameSystem.Memory.CorruptBit(new Random().Next(GameSystem.Memory.RAMSize * 8));
-            }
+            //i++;
+            //if(i == 16)
+            //{
+            //    i = 0;
+            //    GameSystem.Memory.CorruptBit(new Random().Next(GameSystem.Memory.RAMSize * 8));
+            //}
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
