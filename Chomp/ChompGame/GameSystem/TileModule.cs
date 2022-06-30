@@ -5,7 +5,6 @@ namespace ChompGame.GameSystem
 {
     public class TileModule : ScanlineGraphicsModule
     {
-        public override int Layer => 0;
         public TileModule(MainSystem gameSystem) : base(gameSystem) 
         { 
         }

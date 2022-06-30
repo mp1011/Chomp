@@ -65,10 +65,44 @@ namespace ChompGame.GameSystem
         public override Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
     };
 
+
+    public class SnakeSpecs : Specs
+    {
+        public override int ScreenWidth => 64;
+        public override int ScreenHeight => 64;
+
+        public override Bit ScreenPointMask => (Bit)63;
+
+        public override int PatternTableWidth => 16;
+        public override int PatternTableHeight => 16;
+        public override int PatternTablePlanes => 2;
+        public override Bit PatternTablePointMask => (Bit)15;
+
+        public override int NameTableWidth => 64;
+        public override int NameTableHeight => 64;
+        public override int NameTableBitPlanes => 4;
+
+        public override int ScanlineDrawPlanes => 2;
+
+        public override Bit ScrollXMask => (Bit)255;
+        public override Bit ScrollYMask => (Bit)255;
+
+        public override int MaxSprites => 4;
+        public override int SpritesPerScanline => 3;
+
+        public override int TileWidth => 4;
+        public override int TileHeight => 4;
+        public override int MaxDrawInstructions => 512;
+
+        public override int AudioChannels => 1;
+        public override Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
+
+    }
+
     public class FullScreenTestSpecs : Specs
     {
-        public override int ScreenWidth => 255;
-        public override int ScreenHeight => 255;
+        public override int ScreenWidth => 256;
+        public override int ScreenHeight => 256;
 
         public override Bit ScreenPointMask => (Bit)255;
 

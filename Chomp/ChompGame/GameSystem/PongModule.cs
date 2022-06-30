@@ -67,6 +67,9 @@ namespace ChompGame.GameSystem
 
         public override void OnStartup()
         {
+            _tileModule.Layer = 0;
+            _spritesModule.Layer = 1;
+
             new DiskNBitPlaneLoader()
                .Load(new DiskFile(ContentFolder.PatternTables, "pong.pt"),
                    _romPatternTable);

@@ -10,8 +10,9 @@ namespace ChompGame
         [STAThread]
         static void Main()
         {
-            var gameSystem = RunPong();
+            //var gameSystem = RunPong();
             //var gameSystem = RunFullScreenTest();
+            var gameSystem = RunSnake();
 
             bool quit = false;
             while (!quit)
@@ -91,11 +92,25 @@ namespace ChompGame
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>()));
 
-            return RunGame(gameSystem);
-            
+            return RunGame(gameSystem); 
         }
 
+        private static MainSystem RunSnake()
+        {
+            var specs = new SnakeSpecs();
 
+            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+                s => new AudioModule(s),
+                s => new SpritesModule(s),
+                s => new InputModule(s),
+                s => new TileModule(s),
+                s => new SnakeModule(s, s.GetModule<InputModule>(),
+                                       s.GetModule<AudioModule>(),
+                                       s.GetModule<SpritesModule>(),
+                                       s.GetModule<TileModule>()));
+
+            return RunGame(gameSystem);
+        }
 
     }
 

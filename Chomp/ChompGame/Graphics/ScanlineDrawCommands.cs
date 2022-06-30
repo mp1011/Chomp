@@ -28,7 +28,7 @@ namespace ChompGame.Graphics
             _specs = specs;
             _patternTable = patternTable;
 
-            if (specs.PatternTableWidth == 255 && specs.PatternTableHeight == 255)
+            if (specs.PatternTableWidth == 256 && specs.PatternTableHeight == 256)
             {
                 PatternTablePoint = builder.AddFullGridPoint();
             }

@@ -9,8 +9,6 @@ namespace ChompGame.GameSystem
         {
         }
 
-        public override int Layer => 1;
-
         private int _sprite0Address;
         public Sprite[] Sprites { get; private set; }
         public GameByte[] ScanlineSprites { get; private set; }

@@ -6,7 +6,7 @@ namespace ChompGame.GameSystem
     {
         protected CoreGraphicsModule _coreGraphicsModule => GameSystem.CoreGraphicsModule;
         
-        public abstract int Layer { get; }
+        public int Layer { get; set; }
         public GameByteGridPoint Scroll { get; private set; }
         public GameByteGridPoint PatternTablePoint => _coreGraphicsModule.ScanlineDrawCommands[Layer].PatternTablePoint;
         public int CurrentDrawInstructionAddress => _coreGraphicsModule.ScanlineDrawCommands[Layer].CurrentDrawInstructionAddress;

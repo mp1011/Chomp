@@ -49,6 +49,8 @@ namespace ChompGame.Data
             _address = address;
             _memory = memory;
         }
+
+        public static implicit operator bool(GameBit b) => b.Value;
     }
 
     class GameEnum2<T>

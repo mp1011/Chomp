@@ -25,7 +25,7 @@ namespace ChompGame.GameSystem
             CurrentColorIndex = builder.AddByte();
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
-            if(Specs.ScreenWidth==255 && Specs.ScreenHeight==255)
+            if(Specs.ScreenWidth==256 && Specs.ScreenHeight==256)
                 ScreenPoint = builder.AddFullGridPoint();
             else 
                 ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
@@ -48,8 +48,17 @@ namespace ChompGame.GameSystem
 
             for (int i = 0; i < _screenData.Length; i++)
             {
-                colorIndex = ScanlineDrawCommands[1].Update();             
-                planeColor = ScanlineDrawCommands[0].Update();
+                //todo, optimize/generalize
+                if (ScanlineDrawCommands.Length == 2)
+                {
+                    colorIndex = ScanlineDrawCommands[1].Update();
+                    planeColor = ScanlineDrawCommands[0].Update();
+                }
+                else
+                {
+                    colorIndex = ScanlineDrawCommands[0].Update();
+                }
+
                 if (colorIndex == 0)
                     colorIndex = planeColor;
 
