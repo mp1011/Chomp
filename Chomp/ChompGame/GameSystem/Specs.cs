@@ -92,7 +92,7 @@ namespace ChompGame.GameSystem
 
         public override int TileWidth => 4;
         public override int TileHeight => 4;
-        public override int MaxDrawInstructions => 512;
+        public override int MaxDrawInstructions => 64;
 
         public override int AudioChannels => 1;
         public override Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };

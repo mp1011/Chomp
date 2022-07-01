@@ -62,7 +62,7 @@ namespace ChompGame
             {
                 sb.Append(_gameSystem.Memory[i].ToString("X2"));
                 w++;
-                if(w==10)
+                if(w==20)
                 {
                     w = 0;
                     sb.AppendLine();

@@ -42,6 +42,11 @@ namespace ChompGame.GameSystem
 
         private GameBit _upPressed, _downPressed, _leftPressed, _rightPressed;
 
+        private GameByte _maxSnakeSize;
+        private GameByte _currentSnakeSize;
+
+        private NibbleArray _positionHistory;
+
         public SnakeModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule, 
             SpritesModule spritesModule, TileModule tileModule) 
             : base(mainSystem)
@@ -59,6 +64,12 @@ namespace ChompGame.GameSystem
             _score = memoryBuilder.AddByte();
             _soundTimer = memoryBuilder.AddByte();
             _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
+
+            _currentSnakeSize = memoryBuilder.AddByte();
+            _maxSnakeSize = memoryBuilder.AddByte();
+
+            _positionHistory = new NibbleArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            memoryBuilder.AddBytes(32);
 
             var lastInput = memoryBuilder.AddByte();
             _upPressed = new GameBit(lastInput.Address, Bit.Bit0, memoryBuilder.Memory);
@@ -99,6 +110,8 @@ namespace ChompGame.GameSystem
 
             _snakeMotion.X = 0;
             _snakeMotion.Y = -1;
+
+            _maxSnakeSize.Value = 5;
 
             SetNextTurnPosition();
         }
@@ -152,6 +165,30 @@ namespace ChompGame.GameSystem
             _rightPressed.Value = false;
         }
 
+        private void AddSnakeTile(int tileX, int tileY, Tile tile)
+        {
+            if(_currentSnakeSize < _maxSnakeSize)
+                _currentSnakeSize.Value++;
+            else
+            {
+                var x = _positionHistory[0];
+                var y = _positionHistory[1];
+                _tileModule.NameTable[x, y] = 0;
+
+                for(int i =0; i < _maxSnakeSize*2; i+=2)
+                {
+                    _positionHistory[i] = _positionHistory[i + 2];
+                    _positionHistory[i+1] = _positionHistory[i + 3];
+                }
+            }
+            
+            _positionHistory[_currentSnakeSize * 2] = (byte)tileX;
+            _positionHistory[(_currentSnakeSize * 2)+1] = (byte)tileY;
+
+            if(_tileModule.NameTable[tileX, tileY] == 0)
+                _tileModule.NameTable[tileX, tileY] = (byte)tile;
+        }
+
         private void CheckTurn()
         {
             var snakeHead = _spritesModule.GetSprite(1);
@@ -166,7 +203,7 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = -1;
                     _snakeMotion.Y = 0;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_ul;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_ul);
                     snakeHead.Tile = (byte)Tile.Snake_lr;
                 }
                 else if (_rightPressed)
@@ -176,7 +213,7 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = 1;
                     _snakeMotion.Y = 0;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_ur;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_ur);
                     snakeHead.Tile = (byte)Tile.Snake_lr;
                 }
                 else
@@ -184,8 +221,7 @@ namespace ChompGame.GameSystem
                     tileX = (byte)(snakeHead.X / Specs.TileWidth);
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
 
-                    if (_tileModule.NameTable[tileX, tileY + 1] == 0)
-                        _tileModule.NameTable[tileX, tileY + 1] = (byte)Tile.Snake_ud;
+                    AddSnakeTile(tileX, tileY + 1,Tile.Snake_ud);
                 }
 
                 SetNextTurnPosition();
@@ -199,7 +235,7 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = -1;
                     _snakeMotion.Y = 0;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_dl;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_dl);
                     snakeHead.Tile = (byte)Tile.Snake_lr;
                 }
                 else if (_rightPressed)
@@ -209,7 +245,7 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = 1;
                     _snakeMotion.Y = 0;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_dr;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_dr);
                     snakeHead.Tile = (byte)Tile.Snake_lr;
                 }
                 else
@@ -217,8 +253,7 @@ namespace ChompGame.GameSystem
                     tileX = (byte)(snakeHead.X / Specs.TileWidth);
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
 
-                    if (_tileModule.NameTable[tileX, tileY] == 0)
-                        _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_ud;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_ud);
                 }
 
                 SetNextTurnPosition();
@@ -232,7 +267,8 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = 0;
                     _snakeMotion.Y = -1;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_dr;
+
+                    AddSnakeTile(tileX, tileY, Tile.Snake_dr);
                     snakeHead.Tile = (byte)Tile.Snake_ud;
                 }
                 else if (_downPressed)
@@ -242,16 +278,14 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = 0;
                     _snakeMotion.Y = 1;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_ur;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_ur);
                     snakeHead.Tile = (byte)Tile.Snake_ud;
                 }
                 else
                 {
                     tileX = (byte)(snakeHead.X / Specs.TileWidth);
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
-
-                    if (_tileModule.NameTable[tileX + 1, tileY] == 0)
-                        _tileModule.NameTable[tileX + 1, tileY] = (byte)Tile.Snake_lr;
+                    AddSnakeTile(tileX + 1, tileY,Tile.Snake_lr);
                 }
 
                 SetNextTurnPosition();
@@ -265,7 +299,7 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = 0;
                     _snakeMotion.Y = -1;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_dl;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_dl);
                     snakeHead.Tile = (byte)Tile.Snake_ud;
                 }
                 else if (_downPressed)
@@ -275,7 +309,7 @@ namespace ChompGame.GameSystem
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
                     _snakeMotion.X = 0;
                     _snakeMotion.Y = 1;
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_ul;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_ul);
                     snakeHead.Tile = (byte)Tile.Snake_ud;
                 }
                 else
@@ -283,7 +317,7 @@ namespace ChompGame.GameSystem
                     tileX = (byte)(snakeHead.X / Specs.TileWidth);
                     tileY = (byte)(snakeHead.Y / Specs.TileHeight);
 
-                    _tileModule.NameTable[tileX, tileY] = (byte)Tile.Snake_lr;
+                    AddSnakeTile(tileX, tileY,Tile.Snake_lr);
                 }
 
                 SetNextTurnPosition();
