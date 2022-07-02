@@ -11,6 +11,8 @@ namespace ChompGame.GameSystem
         {
             PlaceNextTarget,
             Playing,
+            CollectDot,
+            LoseLife
         }
 
         enum Tile : byte
@@ -31,11 +33,13 @@ namespace ChompGame.GameSystem
         private readonly TileModule _tileModule;
 
         private NBitPlane _romPatternTable;
+        private NBitPlane _romNameTable;
 
         private GameByte _soundTimer;
+        private GameByte _soundVar;
+
         private ByteVector _snakeMotion;
         private GameByte _timer;
-        private GameByte _score;
         
         private GameByteEnum<GameState> _gameState;
         private GameByte _nextTurnPosition;
@@ -46,6 +50,8 @@ namespace ChompGame.GameSystem
         private GameByte _currentSnakeSize;
 
         private NibbleArray _positionHistory;
+        private GameByte _throttle;
+        private GameByte _collected;
 
         public SnakeModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule, 
             SpritesModule spritesModule, TileModule tileModule) 
@@ -61,9 +67,11 @@ namespace ChompGame.GameSystem
         {
             _snakeMotion =new ByteVector(memoryBuilder.AddByte(),memoryBuilder.AddByte());
             _timer = memoryBuilder.AddByte();
-            _score = memoryBuilder.AddByte();
             _soundTimer = memoryBuilder.AddByte();
+            _soundVar = memoryBuilder.AddByte();
             _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
+            _throttle = memoryBuilder.AddByte();
+            _collected = memoryBuilder.AddByte();
 
             _currentSnakeSize = memoryBuilder.AddByte();
             _maxSnakeSize = memoryBuilder.AddByte();
@@ -81,6 +89,7 @@ namespace ChompGame.GameSystem
             memoryBuilder.BeginROM();
 
             _romPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
+            _romNameTable = memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
 
         public void PlayBeep(MusicNote note, int octave, byte duration=4)
@@ -100,8 +109,14 @@ namespace ChompGame.GameSystem
               .Load(new DiskFile(ContentFolder.PatternTables, "snake.pt"),
                   _romPatternTable);
 
-             var graphicsModule = GameSystem.CoreGraphicsModule;
+            new DiskNBitPlaneLoader()
+             .Load(new DiskFile(ContentFolder.NameTables, "snake.nt"),
+                 _romNameTable);
+
+
+            var graphicsModule = GameSystem.CoreGraphicsModule;
             _romPatternTable.CopyTo(graphicsModule.PatternTable, GameSystem.Memory);
+            _romNameTable.CopyTo(_tileModule.NameTable, GameSystem.Memory);
 
             var snakeHead = _spritesModule.GetSprite(1);
             snakeHead.Tile = (byte)Tile.Snake_ud;
@@ -111,8 +126,8 @@ namespace ChompGame.GameSystem
             _snakeMotion.X = 0;
             _snakeMotion.Y = -1;
 
-            _maxSnakeSize.Value = 5;
-
+            _maxSnakeSize.Value = 2;
+            _throttle.Value = 8;
             SetNextTurnPosition();
         }
 
@@ -137,11 +152,81 @@ namespace ChompGame.GameSystem
                 case GameState.Playing:
                     UpdatePlaying();
                     break;
+                case GameState.CollectDot:
+                    UpdateCollectDot();
+                    break;
+                case GameState.LoseLife:
+                    UpdateLoseLife();
+                    break;
                 default:
                     break;
             }           
         }
 
+        private void UpdateLoseLife()
+        {
+            if (_timer.Value == 0)
+                PlayBeep(MusicNote.A, 0, 24);
+
+            _timer.Value++;
+            if(_timer.Value==30)
+            {
+                _timer.Value = 0;
+                _maxSnakeSize.Value = 2;
+                _currentSnakeSize.Value = 0;
+                _romNameTable.CopyTo(_tileModule.NameTable, GameSystem.Memory);
+                _gameState.Value = GameState.PlaceNextTarget;
+
+                var snakeHead = _spritesModule.GetSprite(1);
+                snakeHead.Tile = (byte)Tile.Snake_ud;
+                snakeHead.X = 32;
+                snakeHead.Y = 48;
+
+                _snakeMotion.X = 0;
+                _snakeMotion.Y = -1;
+
+                _maxSnakeSize.Value = 2;
+                _throttle.Value = 8;
+                SetNextTurnPosition();
+            }
+        }
+
+        private void UpdateCollectDot()
+        {
+            if(_timer.Value == 0)
+                PlayBeep(MusicNote.F, 2, 2);
+            else if (_timer.Value == 16)
+                PlayBeep(MusicNote.F, 3, 2);
+
+            _timer.Value++;
+            var target = _spritesModule.GetSprite(0);
+            target.Tile = 0;
+
+            
+            if(_timer.Value==32)
+            {
+                _collected.Value++;
+
+                if (_collected.Value == 2)
+                    _throttle.Value = 6;
+                else if (_collected.Value == 5)
+                    _throttle.Value = 4;
+                else if (_collected.Value == 10)
+                    _throttle.Value = 2;
+                else if (_collected.Value == 20)
+                    _throttle.Value = 1;
+
+                if (_maxSnakeSize.Value < 32)
+                {
+                    _maxSnakeSize.Value += 4;
+                    if (_maxSnakeSize.Value > 32)
+                        _maxSnakeSize.Value = 32;
+                }
+
+                _timer.Value = 0;
+                _gameState.Value = GameState.PlaceNextTarget;
+            }
+        }
 
         private void SetNextTurnPosition()
         {
@@ -187,6 +272,28 @@ namespace ChompGame.GameSystem
 
             if(_tileModule.NameTable[tileX, tileY] == 0)
                 _tileModule.NameTable[tileX, tileY] = (byte)tile;
+        }
+
+        private bool CheckWallOrSelfCollision()
+        {
+            var snake = _spritesModule.GetSprite(1);
+            var tileX = (byte)(snake.X / Specs.TileWidth);
+            var tileY = (byte)(snake.Y / Specs.TileHeight);
+
+            var tile = _tileModule.NameTable[tileX, tileY];
+
+            //todo, self collision, but don't count second-to-last
+            if (tile != 0)
+            {
+                if (tile == 14 || tile == 15)
+                {
+                    _gameState.Value = GameState.LoseLife;
+                    _timer.Value = 0;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void CheckTurn()
@@ -347,21 +454,76 @@ namespace ChompGame.GameSystem
                 _rightPressed.Value = true;
 
 
-            if ((_timer.Value % 8) == 0)
+            if ((_timer.Value % _throttle.Value) == 0)
             {
                 var snakeHead = _spritesModule.GetSprite(1);
                 snakeHead.Y = (byte)(snakeHead.Y + _snakeMotion.Y);
                 snakeHead.X = (byte)(snakeHead.X + _snakeMotion.X);
 
+                if (CheckWallOrSelfCollision())
+                    return;
+
                 CheckTurn();
+                CheckCollectTarget();
             }
+
+            UpdateMelody();
+        }
+
+        private void UpdateMelody()
+        {
+            if ((_timer.Value % 32) == 0)
+            {
+                switch (_soundVar.Value)
+                {
+                    case 0:
+                    case 2:
+                    case 4:
+                        PlayBeep(MusicNote.C, 0, 8);
+                        break;
+                    case 1:
+                    case 3:
+                    case 5:
+                    case 7:
+                        PlayBeep(MusicNote.ESharp, 0, 8);
+                        break;
+                    case 6:
+                        PlayBeep(MusicNote.DSharp, 0, 8);
+                        break;
+                }
+
+                _soundVar.Value++;
+
+                if (_collected.Value == 0)
+                    _soundVar.Value = 0;
+                else if (_collected.Value < 5 && _soundVar >= 2)
+                    _soundVar.Value = 0;
+                else if (_soundVar >= 8)
+                    _soundVar.Value = 0;
+
+            }
+
+        }
+
+        private void CheckCollectTarget()
+        {
+            var target = _spritesModule.GetSprite(0);
+            var snake = _spritesModule.GetSprite(1);
+
+            if (snake.Right < target.X
+               || snake.X > target.Right
+               || snake.Bottom < target.Y
+               || snake.Y > target.Bottom) return;
+
+            _gameState.Value = GameState.CollectDot;
+            _timer.Value = 0;
         }
 
         private void UpdatePlaceNextTarget()
         {
             //todo, more "accurate" way of doing random
-            var x = new Random().Next(Specs.ScreenWidth);
-            var y = new Random().Next(Specs.ScreenHeight);
+            var x = 8 + new Random().Next(Specs.ScreenWidth - 16);
+            var y = 8 + new Random().Next(Specs.ScreenHeight - 16);
 
             var dot = _spritesModule.GetSprite(0);
             dot.X = (byte)x;
