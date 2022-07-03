@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.Graphics;
-using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
@@ -13,8 +12,14 @@ namespace ChompGame.GameSystem
         public GameByteGridPoint ScreenPoint { get; private set; }
         public GameByte CurrentColorIndex { get; private set; }
         public ScanlineDrawCommands[] ScanlineDrawCommands { get; private set; }
-        public NBitPlane PatternTable { get; private set; }
-      
+        public NBitPlane PatternTable { get; private set; }      
+
+        public GameByte CurrentPaletteAddress { get; private set; }
+
+        public Palette GetCurrentPalette() => new Palette(Specs, _graphicsMemoryBegin + CurrentPaletteAddress.Value, GameSystem.Memory);
+
+        private int _graphicsMemoryBegin;
+
         public CoreGraphicsModule(MainSystem gameSystem) : base(gameSystem) 
         {
             _screenData = new Color[gameSystem.Specs.ScreenWidth * gameSystem.Specs.ScreenHeight];
@@ -22,6 +27,10 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
+            _graphicsMemoryBegin = builder.CurrentAddress;
+            builder.AddBytes(8); //todo, adjust based on color needs
+
+            CurrentPaletteAddress = builder.AddByte();
             CurrentColorIndex = builder.AddByte();
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
@@ -46,6 +55,8 @@ namespace ChompGame.GameSystem
             byte colorIndex = 0;
             byte planeColor = 0;
 
+            var palette = GetCurrentPalette();
+
             for (int i = 0; i < _screenData.Length; i++)
             {
                 //todo, optimize/generalize
@@ -62,7 +73,7 @@ namespace ChompGame.GameSystem
                 if (colorIndex == 0)
                     colorIndex = planeColor;
 
-                _screenData[i] = Specs.SystemColors[colorIndex];
+                _screenData[i] = palette[colorIndex];
 
                 if (ScreenPoint.Next())
                     GameSystem.OnHBlank();

@@ -77,7 +77,7 @@ namespace ChompGame.GameSystem
             _maxSnakeSize = memoryBuilder.AddByte();
 
             _positionHistory = new NibbleArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            memoryBuilder.AddBytes(32);
+            memoryBuilder.AddBytes(34);
 
             var lastInput = memoryBuilder.AddByte();
             _upPressed = new GameBit(lastInput.Address, Bit.Bit0, memoryBuilder.Memory);
@@ -129,6 +129,34 @@ namespace ChompGame.GameSystem
             _maxSnakeSize.Value = 2;
             _throttle.Value = 8;
             SetNextTurnPosition();
+
+            var palette = graphicsModule.GetCurrentPalette();
+            palette.SetColor(0, 13);
+            palette.SetColor(1, 7);
+            palette.SetColor(2, 8);
+            palette.SetColor(3, 9);
+        }
+
+        private void ChangeGameState(GameState newState)
+        {
+            _gameState.Value = newState;
+            switch(newState)
+            {
+                case GameState.Playing:
+                    var palette = GameSystem.CoreGraphicsModule.GetCurrentPalette();
+                    palette.SetColor(0, 13);
+                    palette.SetColor(1, 7);
+                    palette.SetColor(2, 8);
+                    palette.SetColor(3, 9);
+                    return;
+                case GameState.LoseLife:
+                case GameState.CollectDot:
+                case GameState.PlaceNextTarget:
+                    _timer.Value = 0;
+                    return;
+                default:
+                    return;
+            }
         }
 
 
@@ -168,6 +196,23 @@ namespace ChompGame.GameSystem
             if (_timer.Value == 0)
                 PlayBeep(MusicNote.A, 0, 24);
 
+            var palette = GameSystem.CoreGraphicsModule.GetCurrentPalette();
+
+            switch (_timer.Value)
+            {                
+                case 4:                
+                case 12:               
+                case 20:    
+                case 28:
+                    palette.SetColor(3, 6);
+                    break;
+                case 8:
+                case 16:
+                case 24:
+                    palette.SetColor(3, 9);
+                    break;
+            }
+
             _timer.Value++;
             if(_timer.Value==30)
             {
@@ -175,7 +220,8 @@ namespace ChompGame.GameSystem
                 _maxSnakeSize.Value = 2;
                 _currentSnakeSize.Value = 0;
                 _romNameTable.CopyTo(_tileModule.NameTable, GameSystem.Memory);
-                _gameState.Value = GameState.PlaceNextTarget;
+
+                ChangeGameState(GameState.PlaceNextTarget);
 
                 var snakeHead = _spritesModule.GetSprite(1);
                 snakeHead.Tile = (byte)Tile.Snake_ud;
@@ -187,6 +233,7 @@ namespace ChompGame.GameSystem
 
                 _maxSnakeSize.Value = 2;
                 _throttle.Value = 8;
+                _collected.Value = 0;
                 SetNextTurnPosition();
             }
         }
@@ -209,11 +256,11 @@ namespace ChompGame.GameSystem
 
                 if (_collected.Value == 2)
                     _throttle.Value = 6;
-                else if (_collected.Value == 5)
+                if (_collected.Value == 4)
                     _throttle.Value = 4;
-                else if (_collected.Value == 10)
+                else if (_collected.Value == 6)
                     _throttle.Value = 2;
-                else if (_collected.Value == 20)
+                else if (_collected.Value == 10)
                     _throttle.Value = 1;
 
                 if (_maxSnakeSize.Value < 32)
@@ -223,8 +270,7 @@ namespace ChompGame.GameSystem
                         _maxSnakeSize.Value = 32;
                 }
 
-                _timer.Value = 0;
-                _gameState.Value = GameState.PlaceNextTarget;
+                ChangeGameState(GameState.PlaceNextTarget);
             }
         }
 
@@ -287,10 +333,18 @@ namespace ChompGame.GameSystem
             {
                 if (tile == 14 || tile == 15)
                 {
-                    _gameState.Value = GameState.LoseLife;
-                    _timer.Value = 0;
+                    ChangeGameState(GameState.LoseLife);
                     return true;
                 }
+
+                var lastSnakeX = _positionHistory[_currentSnakeSize * 2];
+                var lastSnakeY = _positionHistory[(_currentSnakeSize * 2)+1];
+
+                if (tileX == lastSnakeX && tileY == lastSnakeY)
+                    return false;
+
+                ChangeGameState(GameState.LoseLife);
+                return true;
             }
 
             return false;
@@ -515,8 +569,7 @@ namespace ChompGame.GameSystem
                || snake.Bottom < target.Y
                || snake.Y > target.Bottom) return;
 
-            _gameState.Value = GameState.CollectDot;
-            _timer.Value = 0;
+            ChangeGameState(GameState.CollectDot);
         }
 
         private void UpdatePlaceNextTarget()
@@ -529,7 +582,7 @@ namespace ChompGame.GameSystem
             dot.X = (byte)x;
             dot.Y = (byte)y;
 
-            _gameState.Value = GameState.Playing;
+            ChangeGameState(GameState.Playing);
         }
 
        
