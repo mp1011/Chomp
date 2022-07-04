@@ -118,6 +118,60 @@ namespace ChompGame.GameSystem
 
     }
 
+    public class PlatformerSpecs : Specs
+    {
+        public override int ScreenWidth => 64;
+        public override int ScreenHeight => 64;
+
+        public override Bit ScreenPointMask => (Bit)63;
+
+        public override int PatternTableWidth => 32;
+        public override int PatternTableHeight => 32;
+        public override int PatternTablePlanes => 2;
+        public override Bit PatternTablePointMask => (Bit)15;
+
+        public override int NameTableWidth => 32;
+        public override int NameTableHeight => 32;
+        public override int NameTableBitPlanes => 4;
+
+        public override int ScanlineDrawPlanes => 2;
+
+        public override Bit ScrollXMask => (Bit)255;
+        public override Bit ScrollYMask => (Bit)255;
+
+        public override int MaxSprites => 4;
+        public override int SpritesPerScanline => 3;
+
+        public override int TileWidth => 4;
+        public override int TileHeight => 4;
+        public override int MaxDrawInstructions => 64;
+
+        public override int AudioChannels => 1;
+
+        public override Color[] SystemColors => new Color[]
+        {
+            Color.Black,        //0
+            Color.Silver,       //1
+            Color.White,        //2
+            Color.DarkBlue,     //3
+            Color.BlueViolet,   //4
+            Color.LightBlue,    //5
+            Color.DarkRed,      //6
+            Color.IndianRed,    //7
+            Color.LightSalmon,  //8
+            Color.DarkOliveGreen,//9
+            Color.GreenYellow,  //10
+            Color.LightSeaGreen,//11
+            Color.SaddleBrown,  //12
+            Color.SandyBrown,   //13
+            Color.Tan,          //14
+            Color.DarkOrange    //15
+        };
+
+    }
+
+
+
     public class FullScreenTestSpecs : Specs
     {
         public override int ScreenWidth => 256;

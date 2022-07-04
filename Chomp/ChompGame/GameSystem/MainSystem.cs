@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
-using ChompGame.Extensions;
-using ChompGame.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Linq;
 
@@ -14,12 +13,15 @@ namespace ChompGame.GameSystem
         public Specs Specs { get; }
         public SystemMemory Memory { get; }
 
+        public GraphicsDevice GraphicsDevice { get;  }
+
         public CoreGraphicsModule CoreGraphicsModule { get; }
       
-        public MainSystem(Specs specs, 
+        public MainSystem(Specs specs, GraphicsDevice graphicsDevice,
             Func<MainSystem,CoreGraphicsModule> createCoreGraphicsModule,
             params Func<MainSystem, IModule>[] createModules)
         {
+            GraphicsDevice = graphicsDevice;
             Specs = specs;
             CoreGraphicsModule = createCoreGraphicsModule(this);
 

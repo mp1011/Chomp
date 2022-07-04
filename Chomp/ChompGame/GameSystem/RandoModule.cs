@@ -14,7 +14,7 @@ namespace ChompGame.GameSystem
             var rng = new Random();
             for (int i = 0; i < GameSystem.Memory.RAMSize-1; i++)
             {
-                GameSystem.Memory[i] = (byte)rng.Next(0, 256);
+                GameSystem.Memory[i] = (byte)(~i); // (byte)rng.Next(0, 256);
             }
         }
 

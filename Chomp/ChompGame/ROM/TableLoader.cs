@@ -1,7 +1,12 @@
 ﻿using ChompGame.Data;
 using ChompGame.Extensions;
+using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.IO;
+using System.Linq;
 
 namespace ChompGame.ROM
 {
@@ -54,6 +59,34 @@ namespace ChompGame.ROM
         }
     }
 
+    public abstract class DiskBitmapLoader<TPlane, TData>
+         : ITableLoader<DiskFile, TPlane, TData>
+         where TPlane : IGrid<TData>
+    {
+        protected MainSystem _gameSystem;
+
+        protected DiskBitmapLoader(MainSystem gameSystem)
+        {
+            _gameSystem = gameSystem;
+        }
+
+        public void Load(DiskFile file, TPlane plane)
+        {
+            using (var fs = file.GetFile().OpenRead())
+            {
+                using (var t = Texture2D.FromStream(_gameSystem.GraphicsDevice, fs))
+                {
+                    Color[] colorData = new Color[t.Width * t.Height];
+                    t.GetData(colorData);
+                    LoadFromColorData(colorData, plane);
+                }
+            }
+        }
+
+        public abstract void LoadFromColorData(Color[] colors, TPlane plane);
+    }
+
+
     public class DiskBitPlaneLoader : DiskTableLoader<BitPlane, bool>
     {
         protected override void LoadFromString(string text, BitPlane plane)
@@ -67,6 +100,30 @@ namespace ChompGame.ROM
         protected override void LoadFromString(string text, NBitPlane plane)
         {
             plane.SetFromString(text);
+        }
+    }
+
+    public class DiskNBitPlaneBitmapLoader : DiskBitmapLoader<NBitPlane, byte>
+    {
+        public DiskNBitPlaneBitmapLoader(MainSystem gameSystem) : base(gameSystem)
+        {
+        }
+
+        public override void LoadFromColorData(Color[] colors, NBitPlane plane)
+        {
+            Color[] indexColors = new Color[] { Color.Black, Color.Red, new Color(0,255,0,255), Color.Blue };
+
+            var indices = colors
+                .Select(c => Array.IndexOf(indexColors, c))
+                .ToArray();
+
+            if (indices.Any(p => p < 0))
+                throw new Exception("Image contains invalid colors");
+
+            for(int i = 0; i < indices.Length;i++)
+            {
+                plane[i] = (byte)indices[i];
+            }
         }
     }
 }

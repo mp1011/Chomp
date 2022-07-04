@@ -11,8 +11,10 @@ namespace ChompGame
 {
     public class Game1 : Game
     {
-        private readonly Specs _specs;
-        private readonly MainSystem _gameSystem;
+        private Specs _specs;
+
+        private Func<GraphicsDevice, MainSystem> _createSystem;
+        private MainSystem _gameSystem;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -21,10 +23,11 @@ namespace ChompGame
         private SpriteFont _font;
         private string _memoryString="";
 
-        public Game1(MainSystem mainSystem)
+        public MainSystem GameSystem => _gameSystem;
+
+        public Game1(Func<GraphicsDevice, MainSystem> createSystem)
         {
-            _specs = mainSystem.Specs;
-            _gameSystem = mainSystem;
+            _createSystem = createSystem;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -36,8 +39,8 @@ namespace ChompGame
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            _gameSystem = _createSystem(GraphicsDevice);
+            _specs = _gameSystem.Specs;
             base.Initialize();
         }
 
@@ -46,7 +49,7 @@ namespace ChompGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
             _canvas = new Texture2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
-            _font = Content.Load<SpriteFont>("Font"); 
+            _font = Content.Load<SpriteFont>("Font");
         }
 
         protected override void Update(GameTime gameTime)

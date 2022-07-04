@@ -1,5 +1,6 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Threading.Tasks;
 
@@ -12,12 +13,17 @@ namespace ChompGame
         {
             //var gameSystem = RunPong();
             //var gameSystem = RunFullScreenTest();
-            var gameSystem = RunSnake();
-           // var gameSystem = RunRando();
+            // var gameSystem = RunSnake();
+            // var gameSystem = RunRando();
+            var game = RunPlatformer();
 
             bool quit = false;
             while (!quit)
             {
+                var gs = game.GameSystem;
+                if (gs == null)
+                    continue;
+
                 Console.Write(">");
                 var command = Console.ReadLine();
                 var parts = command.Split(' ');
@@ -29,12 +35,12 @@ namespace ChompGame
                         break;
                     case "peek":
                         int address = int.Parse(parts[1]);
-                        Console.WriteLine(gameSystem.Memory[address]);
+                        Console.WriteLine(gs.Memory[address]);
                         break;
                     case "poke":
                         address = int.Parse(parts[1]);
                         var newValue = byte.Parse(parts[2]);
-                        Console.WriteLine(gameSystem.Memory[address] = newValue);
+                        Console.WriteLine(gs.Memory[address] = newValue);
                         break;
                     case "clear":
                     case "cls":
@@ -44,22 +50,24 @@ namespace ChompGame
             }
         }
 
-        private static MainSystem RunTest()
+        private static Game1 RunTest()
         {
             var specs = new PongSpecs();
-            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
-               s => new TileModule(s),
-               s => new AudioModule(s),
-               s => new SpritesModule(s),
-               s => new TestModule(s));
+            Func<GraphicsDevice,MainSystem> gameSystem = 
+                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+                   s => new TileModule(s),
+                   s => new AudioModule(s),
+                   s => new SpritesModule(s),
+                   s => new TestModule(s));
 
             return RunGame(gameSystem);
         }
 
-        private static MainSystem RunFullScreenTest()
+        private static Game1 RunFullScreenTest()
         {
             var specs = new FullScreenTestSpecs();
-            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, MainSystem> gameSystem =
+                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                s => new TileModule(s),
                s => new SpritesModule(s),
                s => new InputModule(s),
@@ -68,22 +76,25 @@ namespace ChompGame
             return RunGame(gameSystem);
         }
 
-        private static MainSystem RunGame(MainSystem mainSystem)
+        private static Game1 RunGame(Func<GraphicsDevice, MainSystem> createSystem)
         {
+            var game = new Game1(createSystem);
+            var mainSystem = game.GameSystem;
+
             Task.Run(() =>
             {
-                using (var game = new Game1(mainSystem))
-                    game.Run();
+                game.Run();
             });
 
-            return mainSystem;
+            return game;
         }
 
-        private static MainSystem RunPong()
+        private static Game1 RunPong()
         {
             var specs = new PongSpecs();
 
-            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, MainSystem> gameSystem =
+                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new AudioModule(s),
                 s => new TileModule(s),
                 s => new SpritesModule(s),
@@ -96,11 +107,12 @@ namespace ChompGame
             return RunGame(gameSystem); 
         }
 
-        private static MainSystem RunSnake()
+        private static Game1 RunSnake()
         {
             var specs = new SnakeSpecs();
 
-            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, MainSystem> gameSystem =
+                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new AudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
@@ -113,11 +125,30 @@ namespace ChompGame
             return RunGame(gameSystem);
         }
 
-        private static MainSystem RunRando()
+        private static Game1 RunPlatformer()
+        {
+            var specs = new PlatformerSpecs();
+
+            Func<GraphicsDevice, MainSystem> gameSystem =
+                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+                s => new AudioModule(s),
+                s => new SpritesModule(s),
+                s => new InputModule(s),
+                s => new TileModule(s),
+                s => new PlatformerModule(s, s.GetModule<InputModule>(),
+                                       s.GetModule<AudioModule>(),
+                                       s.GetModule<SpritesModule>(),
+                                       s.GetModule<TileModule>()));
+
+            return RunGame(gameSystem);
+        }
+
+        private static Game1 RunRando()
         {
             var specs = new FullScreenTestSpecs();
 
-            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, MainSystem> gameSystem =
+                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new AudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
