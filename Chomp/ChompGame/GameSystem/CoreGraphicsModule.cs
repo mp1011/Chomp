@@ -45,7 +45,13 @@ namespace ChompGame.GameSystem
         }
 
         public override void OnStartup()
-        { 
+        {
+            var palette = GetCurrentPalette();
+            palette.SetColor(0, 0);
+            palette.SetColor(1, 1);
+            palette.SetColor(2, 2);
+            palette.SetColor(3, 3);
+
         }
 
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
@@ -74,7 +80,7 @@ namespace ChompGame.GameSystem
                     colorIndex = planeColor;
 
                 _screenData[i] = palette[colorIndex];
-
+               
                 if (ScreenPoint.Next())
                     GameSystem.OnHBlank();
             }
@@ -83,5 +89,6 @@ namespace ChompGame.GameSystem
             canvas.SetData(_screenData);
             spriteBatch.Draw(canvas, Vector2.Zero, Color.White);
         }
+
     }
 }

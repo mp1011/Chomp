@@ -147,7 +147,25 @@ namespace ChompGame.GameSystem
         public override int MaxDrawInstructions => 512;
 
         public override int AudioChannels => 1;
-        public override Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
+        public override Color[] SystemColors => new Color[]
+       {
+            Color.Black,        //0
+            Color.Silver,       //1
+            Color.White,        //2
+            Color.DarkBlue,     //3
+            Color.BlueViolet,   //4
+            Color.LightBlue,    //5
+            Color.DarkRed,      //6
+            Color.IndianRed,    //7
+            Color.LightSalmon,  //8
+            Color.DarkOliveGreen,//9
+            Color.GreenYellow,  //10
+            Color.LightSeaGreen,//11
+            Color.SaddleBrown,  //12
+            Color.SandyBrown,   //13
+            Color.Tan,          //14
+            Color.DarkOrange    //15
+       };
     };
 
 }

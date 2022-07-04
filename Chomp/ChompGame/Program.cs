@@ -13,6 +13,7 @@ namespace ChompGame
             //var gameSystem = RunPong();
             //var gameSystem = RunFullScreenTest();
             var gameSystem = RunSnake();
+           // var gameSystem = RunRando();
 
             bool quit = false;
             while (!quit)
@@ -112,6 +113,19 @@ namespace ChompGame
             return RunGame(gameSystem);
         }
 
+        private static MainSystem RunRando()
+        {
+            var specs = new FullScreenTestSpecs();
+
+            var gameSystem = new MainSystem(specs, s => new CoreGraphicsModule(s),
+                s => new AudioModule(s),
+                s => new SpritesModule(s),
+                s => new InputModule(s),
+                s => new TileModule(s),
+                s => new RandoModule(s));
+
+            return RunGame(gameSystem);
+        }
     }
 
 }

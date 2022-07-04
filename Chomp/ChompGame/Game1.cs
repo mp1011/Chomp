@@ -80,7 +80,7 @@ namespace ChompGame
         {
             _renderTimer.Restart();
             GraphicsDevice.SetRenderTarget(_renderTarget);
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.White);
 
             _spriteBatch.Begin();
             _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);

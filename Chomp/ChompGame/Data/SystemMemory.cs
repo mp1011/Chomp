@@ -28,8 +28,10 @@ namespace ChompGame.Data
         public byte this[int index] 
         {
             get
-            {                
+            {
                 // return (byte)(_memory[index] & _corruptionMask[index]);
+                if (index >= _memory.Length)
+                    index = _memory.Length - 1;
                 return _memory[index];
             }
             set
