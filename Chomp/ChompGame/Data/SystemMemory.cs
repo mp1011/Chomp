@@ -170,7 +170,12 @@ namespace ChompGame.Data
         public Sprite[] AddSprite(int count)
         {
             return Enumerable.Range(0, count)
-                .Select(p => new Sprite(AddGridPoint(0,0), AddByte(), _specs))
+                .Select(p =>
+                {
+                    var addr = CurrentAddress;
+                    AddBytes(_specs.BytesPerSprite);
+                    return new Sprite(addr, Memory, _specs);
+                })
                 .ToArray();
         }
     }

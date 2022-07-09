@@ -11,10 +11,6 @@ namespace ChompGame.Graphics
         RepositionTile=3
     }
 
-    /// <summary>
-    /// 2=quick instruction
-    /// 0,1 = opcode index
-    /// </summary>
     public class DrawInstruction
     {
         private GameByte _byte;

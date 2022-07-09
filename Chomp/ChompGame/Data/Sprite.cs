@@ -4,31 +4,46 @@ namespace ChompGame.Data
 {
     public class Sprite
     {
-        public static int Bytes => 3; //todo, needs to be configurable
-
         public int Address => _position.Address;
 
         private readonly Specs _specs;
         private readonly GameByteGridPoint _position;
-        private readonly GameByte _tile;
+        private readonly MaskedByte _tile;
+        private readonly GameBit _flipX;
+        private readonly GameBit _flipY;
 
-        public Sprite(GameByteGridPoint position, GameByte tile, Specs specs)
+        private readonly MaskedByte _secondTileOffset;
+        private readonly MaskedByte _palette;
+        private readonly GameEnum2<Orientation> _orientation;
+        private readonly GameBit _priority;
+        private readonly GameBit _screenX;
+        private readonly GameBit _screenY;
+
+        public Orientation Orientation
         {
-            _position = position;
-            _tile = tile;
-            _specs = specs;
+            get => _orientation.Value;
+            set => _orientation.Value = value;
         }
 
-        public Sprite(int address, SystemMemory systemMemory, Specs specs)
+        public Sprite(int address, SystemMemory memory, Specs specs)
         {
-            _position = new GameByteGridPoint(address, systemMemory, 1,1);
-            _tile = new GameByte(address+2, systemMemory);
+            _position = new GameByteGridPoint(address, memory, (byte)specs.ScreenWidth, (byte)specs.ScreenHeight);
             _specs = specs;
+            _tile = new MaskedByte(address + 2, Bit.Right6, memory);
+            _flipX = new GameBit(address + 2, Bit.Bit6, memory);
+            _flipY = new GameBit(address + 2, Bit.Bit7, memory);
+
+            _secondTileOffset = new MaskedByte(address + 3, Bit.Right2, memory);
+            _palette = new MaskedByte(address + 3, (Bit)12, memory);
+            _orientation = new GameEnum2<Orientation>(address + 3, Bit.Bit4, memory);
+            _priority = new GameBit(address + 3, Bit.Bit5, memory);
+            _screenX = new GameBit(address + 3, Bit.Bit6, memory);
+            _screenY = new GameBit(address + 3, Bit.Bit7, memory);
         }
 
         public bool IntersectsScanline(byte scanLine)
         {
-            return scanLine >= Y && scanLine < (Y + _specs.TileHeight);
+            return scanLine >= Y && scanLine < Bottom;
         }
 
         public byte X
@@ -43,13 +58,65 @@ namespace ChompGame.Data
             set => _position.Y = value;
         }
 
-        public byte Right => (byte)(X + _specs.TileWidth);
-        public byte Bottom => (byte)(Y + _specs.TileHeight);
+        public byte Width
+        {
+            get
+            {
+                if (Tile2Offset != 0 && Orientation == Orientation.Horizontal)
+                    return (byte)(_specs.TileWidth * 2);
+                else
+                    return (byte)(_specs.TileWidth);
+            }
+        }
+
+        public byte Height
+        {
+            get
+            {
+                if (Tile2Offset != 0 && Orientation == Orientation.Vertical)
+                    return (byte)(_specs.TileHeight * 2);
+                else
+                    return (byte)(_specs.TileHeight);
+            }
+        }
+
+        public byte Right
+        {
+            get
+            {
+                if (Tile2Offset != 0 && Orientation == Orientation.Horizontal)
+                    return (byte)(X + _specs.TileWidth * 2);
+                else
+                    return (byte)(X + _specs.TileWidth);
+            }
+        }
+        public byte Bottom
+        {
+            get
+            {
+                if (Tile2Offset == 0 || Orientation == Orientation.Horizontal)
+                    return (byte)(Y + _specs.TileHeight);
+                else
+                    return (byte)(Y + _specs.TileHeight*2);
+            }
+        }
 
         public byte Tile
         {
             get => _tile.Value;
             set => _tile.Value = value;
+        }
+
+        public byte Tile2Offset
+        {
+            get => _secondTileOffset.Value;
+            set => _secondTileOffset.Value = value;
+        }
+
+        public byte Palette
+        {
+            get => (byte)(_palette.Value >> 2);
+            set => _palette.Value = (byte)(value << 2);
         }
 
     }

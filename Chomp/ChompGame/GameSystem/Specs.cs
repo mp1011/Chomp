@@ -20,7 +20,7 @@ namespace ChompGame.GameSystem
         public abstract int ScanlineDrawPlanes { get; }
         public abstract Bit ScrollXMask { get; }
         public abstract Bit ScrollYMask { get; }
-
+        public virtual int BytesPerSprite => 4;
         public abstract int MaxSprites { get; }
         public abstract int SpritesPerScanline { get; }
 
@@ -31,6 +31,9 @@ namespace ChompGame.GameSystem
         public abstract int MaxDrawInstructions { get; }
         public abstract int AudioChannels { get; }
         public abstract Color[] SystemColors { get; }
+
+        public virtual int BytesPerPalette { get; } = 2;
+        public virtual int NumPalettes { get; } = 1;
     };
 
     public class PongSpecs : Specs
@@ -139,7 +142,7 @@ namespace ChompGame.GameSystem
         public override Bit ScrollXMask => (Bit)255;
         public override Bit ScrollYMask => (Bit)255;
 
-        public override int MaxSprites => 4;
+        public override int MaxSprites => 8;
         public override int SpritesPerScanline => 3;
 
         public override int TileWidth => 4;
@@ -148,12 +151,15 @@ namespace ChompGame.GameSystem
 
         public override int AudioChannels => 1;
 
+        public override int BytesPerPalette => 2;
+        public override int NumPalettes => 4;
+
         public override Color[] SystemColors => new Color[]
         {
-            Color.Black,        //0
-            Color.Silver,       //1
-            Color.White,        //2
-            Color.DarkBlue,     //3
+            Color.LightCyan,    //0
+            Color.SaddleBrown,  //1
+            Color.ForestGreen,  //2
+            Color.OrangeRed,    //3
             Color.BlueViolet,   //4
             Color.LightBlue,    //5
             Color.DarkRed,      //6
@@ -163,9 +169,9 @@ namespace ChompGame.GameSystem
             Color.GreenYellow,  //10
             Color.LightSeaGreen,//11
             Color.SaddleBrown,  //12
-            Color.SandyBrown,   //13
+            Color.DarkSlateBlue,   //13
             Color.Tan,          //14
-            Color.DarkOrange    //15
+            Color.LightYellow    //15
         };
 
     }

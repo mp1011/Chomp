@@ -9,6 +9,8 @@ namespace ChompGame.Data
         private Specs _specs;
         private NibbleArray _colors;
 
+        public int Address => _colors.Address;
+
         public Palette(Specs specs, NibbleArray colors)
         {
             _specs = specs;

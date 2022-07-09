@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Linq;
 
 namespace ChompGame.Data
@@ -16,6 +17,17 @@ namespace ChompGame.Data
 
     public static class IGridExtensions
     {
+        public static void ForEach<T>(this IGrid<T> grid, Point topLeft, Point bottomRight, Action<int,int,T> action)
+        {
+            for(int y = topLeft.Y; y < bottomRight.Y; y++)
+            {
+                for(int x = topLeft.X; x < bottomRight.X; x++)
+                {
+                    action(x, y, grid[x, y]);
+                }
+            }
+        }
+
         public static void SetFromString<T>(this IGrid<T> grid, string block)
         {
             var lines = block.Split(Environment.NewLine)

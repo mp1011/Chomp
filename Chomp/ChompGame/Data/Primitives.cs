@@ -5,7 +5,7 @@ namespace ChompGame.Data
 {
     public enum Bit : byte
     {
-        None=0,
+        None = 0,
         Bit0 = 1,
         Bit1 = 2,
         Bit2 = 4,
@@ -13,7 +13,19 @@ namespace ChompGame.Data
         Bit4 = 16,
         Bit5 = 32,
         Bit6 = 64,
-        Bit7 = 128
+        Bit7 = 128,
+        Right2 = 3,
+        Right3 = 7,
+        Right4 = 15,
+        Right5 = 31,
+        Right6 = 63,
+        Right7 = 127,
+        Left2 = 192,
+        Left3 = 224,
+        Left4 = 240,
+        Left5 = 248,
+        Left6 = 252,
+        Left7 = 254
     }
 
     class GameBit
@@ -170,6 +182,8 @@ namespace ChompGame.Data
         private int _address;
         private SystemMemory _memory;
 
+        public int Address => _address;
+
         public NibbleArray(int address, SystemMemory memory)
         {
             _memory = memory;
@@ -232,5 +246,4 @@ namespace ChompGame.Data
             _address = address;
         }
     }
-
 }

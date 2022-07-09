@@ -14,9 +14,9 @@ namespace ChompGame.GameSystem
         public ScanlineDrawCommands[] ScanlineDrawCommands { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
 
-        public GameByte CurrentPaletteAddress { get; private set; }
+        public GameByte CurrentPaletteIndex { get; private set; }
 
-        public Palette GetCurrentPalette() => new Palette(Specs, _graphicsMemoryBegin + CurrentPaletteAddress.Value, GameSystem.Memory);
+        public Palette GetCurrentPalette() => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * CurrentPaletteIndex.Value), GameSystem.Memory);
 
         private int _graphicsMemoryBegin;
 
@@ -25,12 +25,18 @@ namespace ChompGame.GameSystem
             _screenData = new Color[gameSystem.Specs.ScreenWidth * gameSystem.Specs.ScreenHeight];
         }
 
+        public Palette SetCurrentPalette(int index)
+        {
+            CurrentPaletteIndex.Value = (byte)index;
+            return GetCurrentPalette();
+        }
+
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             _graphicsMemoryBegin = builder.CurrentAddress;
-            builder.AddBytes(8); //todo, adjust based on color needs
+            builder.AddBytes(Specs.NumPalettes * Specs.BytesPerPalette);
 
-            CurrentPaletteAddress = builder.AddByte();
+            CurrentPaletteIndex = builder.AddByte();
             CurrentColorIndex = builder.AddByte();
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
@@ -58,28 +64,33 @@ namespace ChompGame.GameSystem
         {
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
-            byte colorIndex = 0;
-            byte planeColor = 0;
-
-            var palette = GetCurrentPalette();
+            byte color0=0, color1=0;
 
             for (int i = 0; i < _screenData.Length; i++)
             {
                 //todo, optimize/generalize
                 if (ScanlineDrawCommands.Length == 2)
                 {
-                    colorIndex = ScanlineDrawCommands[1].Update();
-                    planeColor = ScanlineDrawCommands[0].Update();
+                    color1 = ScanlineDrawCommands[1].Update();
+                    color0 = ScanlineDrawCommands[0].Update();
                 }
                 else
                 {
-                    colorIndex = ScanlineDrawCommands[0].Update();
+                    color0 = ScanlineDrawCommands[0].Update();
                 }
 
-                if (colorIndex == 0)
-                    colorIndex = planeColor;
-
-                _screenData[i] = palette[colorIndex];
+                if (color1 != 0)
+                {
+                    CurrentPaletteIndex.Value = ScanlineDrawCommands[1].PaletteIndex.Value;
+                    var palette = GetCurrentPalette();
+                    _screenData[i] = palette[color1];
+                }
+                else
+                {
+                    CurrentPaletteIndex.Value = ScanlineDrawCommands[0].PaletteIndex.Value;
+                    var palette = GetCurrentPalette();
+                    _screenData[i] = palette[color0];
+                }
                
                 if (ScreenPoint.Next())
                     GameSystem.OnHBlank();

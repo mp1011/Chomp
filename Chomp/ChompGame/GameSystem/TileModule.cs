@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Graphics;
 using ChompGame.ROM;
 
 namespace ChompGame.GameSystem
@@ -18,6 +19,16 @@ namespace ChompGame.GameSystem
         {
             _coreGraphicsModule.ScanlineDrawCommands[Layer].BeginAddDrawInstructions();
             PatternTablePoint.Reset();
+
+            var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
+            commands.CurrentPaletteSwitch.Value = 0;
+            var paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 1, GameSystem.Memory);
+            paletteSwitch.Palette = 0;
+            paletteSwitch.CommandCount = 0;
+
+            paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 2, GameSystem.Memory);
+            paletteSwitch.Palette = 0;
+            paletteSwitch.CommandCount = 255;
 
             var nameTablePoint = new ByteGridPoint(Specs.NameTableWidth, Specs.NameTableHeight);
             nameTablePoint.X = (byte)(Scroll.X / Specs.TileHeight);

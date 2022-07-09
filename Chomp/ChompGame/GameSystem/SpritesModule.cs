@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Graphics;
 using System.Linq;
 
 namespace ChompGame.GameSystem
@@ -10,8 +11,11 @@ namespace ChompGame.GameSystem
         }
 
         private int _sprite0Address;
+
         public Sprite[] Sprites { get; private set; }
         public GameByte[] ScanlineSprites { get; private set; }
+
+
 
         public override void OnStartup()
         {
@@ -19,7 +23,7 @@ namespace ChompGame.GameSystem
 
         public Sprite GetSprite(int index)
         {
-            return new Sprite(_sprite0Address + Sprite.Bytes * index, GameSystem.Memory, Specs);
+            return new Sprite(_sprite0Address + GameSystem.Specs.BytesPerSprite * index, GameSystem.Memory, Specs);
         }
 
         public override void BuildMemory(SystemMemoryBuilder builder)
@@ -43,32 +47,55 @@ namespace ChompGame.GameSystem
             var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
 
             int currentRow = 0;
+            int commandCount = 0;
 
-            for (int i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
+            PaletteSwitch paletteSwitch = null;
+
+            int i = 0;
+            for (i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
+                commands.CurrentPaletteSwitch.Value = 0;
+                
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
-                commands.AddDrawCommand(false, (byte)(sprite.X - currentRow));
+
+                paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 1 + i, GameSystem.Memory);
+                paletteSwitch.CommandCount = (byte)commandCount;
+                paletteSwitch.Palette = sprite.Palette;
+
+                commandCount += commands.AddDrawCommand(false, (byte)(sprite.X - currentRow));
 
                 tilePoint.Index = sprite.Tile;
+
+                if (sprite.Orientation == Orientation.Horizontal)
+                    throw new System.NotImplementedException();
+                else
+                {
+                    if (ScreenPoint.Y >= sprite.Y + Specs.TileHeight)
+                        tilePoint.Index += (sprite.Tile2Offset + Specs.PatternTableTilesAcross-1);
+                }
 
                 int row = (ScreenPoint.Y - sprite.Y) % Specs.TileHeight;
 
                 nextPatternTablePoint.X = (byte)(tilePoint.X * Specs.TileWidth);
                 nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
 
-                commands.AddTileMoveCommand(nextPatternTablePoint.Index, PatternTablePoint.Index);
-                commands.AddDrawCommand(true, (byte)Specs.TileWidth);
+                commandCount += commands.AddTileMoveCommand(nextPatternTablePoint.Index, PatternTablePoint.Index);
+                commandCount += commands.AddDrawCommand(true, (byte)Specs.TileWidth);
 
                 currentRow = sprite.X + Specs.TileWidth;
                 nextPatternTablePoint.Advance(Specs.TileWidth);
-                commands.AddTileMoveCommand(0, nextPatternTablePoint.Index);
+                commandCount += commands.AddTileMoveCommand(0, nextPatternTablePoint.Index);
                 PatternTablePoint.Index = 0;
             }
+
+            paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 1 + i, GameSystem.Memory);
+            paletteSwitch.CommandCount = 255;
+            paletteSwitch.Palette = 0;
 
             commands.AddDrawCommand(false, (byte)(Specs.ScreenWidth - currentRow));
 
             if (DrawInstructionAddressOffset.Value == 0)
-                commands.AddDrawCommand(false, (byte)Specs.ScreenWidth);
+                commandCount += commands.AddDrawCommand(false, (byte)Specs.ScreenWidth);
 
             DrawInstructionAddressOffset.Value = 255;
             DrawHoldCounter.Value = 0;

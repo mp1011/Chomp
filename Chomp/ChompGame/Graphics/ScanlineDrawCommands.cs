@@ -16,6 +16,9 @@ namespace ChompGame.Graphics
         private DrawInstructionGroup _currentInstructionGroup;
         private DrawInstruction _currentInstruction;
 
+        public GameByte PaletteIndex { get; private set; }
+        public GameByte CurrentPaletteSwitch { get; private set; }
+
         public int FirstDrawInstructionAddress { get; }
         public GameByte DrawInstructionAddressOffset { get; }
         public GameByte DrawHoldCounter { get; }
@@ -42,6 +45,13 @@ namespace ChompGame.Graphics
 
             DrawInstructionAddressOffset = builder.AddByte();
             DrawHoldCounter = builder.AddByte();
+            CurrentPaletteSwitch = builder.AddByte();
+
+            //todo, configurable
+            builder.AddBytes(4);
+
+            PaletteIndex = builder.AddByte();
+
             FirstDrawInstructionAddress = builder.CurrentAddress;
             builder.AddBytes(specs.MaxDrawInstructions);
 
@@ -54,7 +64,18 @@ namespace ChompGame.Graphics
         public byte Update()
         {
             if (DrawHoldCounter == 0)
+            {
+                var paletteSwitch = new PaletteSwitch(CurrentPaletteSwitch.Address + CurrentPaletteSwitch.Value + 1, _memory);
+                if (paletteSwitch.CommandCount == 0)
+                {
+                    CurrentPaletteSwitch.Value++;
+                    PaletteIndex.Value = paletteSwitch.Palette;
+                }
+                else
+                    paletteSwitch.CommandCount--;
+
                 ProcessNextDrawInstruction();
+            }
 
             DrawHoldCounter.Value--;
 
@@ -118,129 +139,26 @@ namespace ChompGame.Graphics
             }
         }
 
-        //private void ProcessNextDrawInstruction()
-        //{
-        //    IncDrawInstruction();
-        //    var drawInstruction = GetCurrentCommand();
-        //    int totalAdvance = 0;
-
-        //    while(totalAdvance < _specs.PatternTableWidth * _specs.PatternTableHeight 
-        //        && drawInstruction.IsRepositionMarker)
-        //    {
-        //        IncDrawInstruction();
-        //        drawInstruction = GetCurrentCommand();
-        //        while(drawInstruction.PTMove && totalAdvance < _specs.PatternTableWidth*_specs.PatternTableHeight)
-        //        {
-        //            if (drawInstruction.Value == 0)
-        //                break;
-        //            totalAdvance += drawInstruction.Value;
-        //            PatternTablePoint.Advance(drawInstruction.Value);
-        //            IncDrawInstruction();
-        //            drawInstruction = GetCurrentCommand();
-        //        }
-        //        PatternTablePoint.Advance(drawInstruction.Value);
-        //        IncDrawInstruction();
-        //        drawInstruction = GetCurrentCommand();
-        //    }
-           
-        //    DrawHoldCounter.Value = drawInstruction.Value;         
-        //}
-
-        //public string[] Info_GetDrawCommandDescriptions(bool stopAtCurrentIndex)
-        //{
-        //    bool isReposition = false;
-        //    List<string> commands = new List<string>();
-        //    int offset = 0;
-        //    while (true)
-        //    {
-        //        if (stopAtCurrentIndex && offset == DrawInstructionAddressOffset.Value)
-        //            break;
-
-        //        var cmd = new DrawCommand(FirstDrawInstructionAddress + offset, _memory);
-        //        if (cmd.IsEndMarker)
-        //            break;
-                
-        //        if (!isReposition)
-        //            commands.Add(cmd.ToString());
-        //        else
-        //        {
-        //            if (cmd.PTMove)
-        //                commands.Add($"Reposition_Continue {cmd.Value}");
-        //            else
-        //            {
-        //                commands.Add($"Reposition_Stop {cmd.Value}");
-        //                isReposition = false;
-        //            }
-        //        }
-
-        //        if (cmd.IsRepositionMarker)
-        //            isReposition = true;
-
-        //        offset++;
-        //    }
-
-        //    return commands.ToArray();
-        //}
-
-        //public void AddDrawCommand(bool moveIndex, byte amount)
-        //{
-        //    if (amount == 0)
-        //        return;
-
-        //    var cmd = GetCurrentCommand();
-        //    cmd.PTMove = moveIndex;
-        //    cmd.Value = amount;
-        //    DrawInstructionAddressOffset.Value++;
-        //}
-
-        public void AddTileMoveCommand(int destination, int currentIndex)
+        public int AddTileMoveCommand(int destination, int currentIndex)
         {            
             int amount = destination - currentIndex;
             amount = amount.Wrap(_specs.PatternTableWidth * _specs.PatternTableHeight);
             if (amount == 0)
-                return;
+                return 0;
 
             amount = amount / _specs.TileWidth;
             _currentInstruction.OpCode = DrawOpcode.RepositionTile;
             _currentInstruction.Value = (byte)amount;
             NextDrawInstruction();
+            return 1;
         }
 
-        public void AddDrawCommand(bool moveIndex, byte amount)
+        public int AddDrawCommand(bool moveIndex, byte amount)
         {            
             _currentInstruction.OpCode = moveIndex ? DrawOpcode.Advance : DrawOpcode.Hold;
             _currentInstruction.Value = amount;
-            NextDrawInstruction();            
+            NextDrawInstruction();
+            return 1;
         }
-
-        //public void AddMoveCommands(int destination, int currentIndex)
-        //{
-        //    int amount = destination - currentIndex;
-        //    amount = amount.Wrap(_specs.PatternTableWidth * _specs.PatternTableHeight);
-        //    if (amount == 0)
-        //        return;
-
-        //    GetCurrentCommand().IsRepositionMarker = true;
-        //    DrawInstructionAddressOffset.Value++;
-
-        //    DrawCommand cmd;
-        //    while(amount > 127)
-        //    {
-        //        cmd = GetCurrentCommand();
-        //        amount -= 127;
-        //        cmd.PTMove = true;
-        //        cmd.Value = 127;
-        //        DrawInstructionAddressOffset.Value++;
-        //    }
-
-        //    if (amount > 0)
-        //    {
-        //        cmd = GetCurrentCommand();
-        //        cmd.PTMove = false;
-        //        cmd.Value = (byte)amount;
-        //        DrawInstructionAddressOffset.Value++;
-        //    }
-        //}
-
     }
 }
