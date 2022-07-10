@@ -130,7 +130,7 @@ namespace ChompGame.GameSystem
             _throttle.Value = 8;
             SetNextTurnPosition();
 
-            var palette = graphicsModule.GetCurrentPalette();
+            var palette = graphicsModule.GetPalette(0);
             palette.SetColor(0, 13);
             palette.SetColor(1, 7);
             palette.SetColor(2, 8);
@@ -143,7 +143,7 @@ namespace ChompGame.GameSystem
             switch(newState)
             {
                 case GameState.Playing:
-                    var palette = GameSystem.CoreGraphicsModule.GetCurrentPalette();
+                    var palette = GameSystem.CoreGraphicsModule.GetPalette(0);
                     palette.SetColor(0, 13);
                     palette.SetColor(1, 7);
                     palette.SetColor(2, 8);
@@ -196,7 +196,7 @@ namespace ChompGame.GameSystem
             if (_timer.Value == 0)
                 PlayBeep(MusicNote.A, 0, 24);
 
-            var palette = GameSystem.CoreGraphicsModule.GetCurrentPalette();
+            var palette = GameSystem.CoreGraphicsModule.GetPalette(0);
 
             switch (_timer.Value)
             {                

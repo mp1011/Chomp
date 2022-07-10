@@ -19,16 +19,9 @@ namespace ChompGame.GameSystem
         {
             _coreGraphicsModule.ScanlineDrawCommands[Layer].BeginAddDrawInstructions();
             PatternTablePoint.Reset();
-
+            
             var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
-            commands.CurrentPaletteSwitch.Value = 0;
-            var paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 1, GameSystem.Memory);
-            paletteSwitch.Palette = 0;
-            paletteSwitch.CommandCount = 0;
-
-            paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 2, GameSystem.Memory);
-            paletteSwitch.Palette = 0;
-            paletteSwitch.CommandCount = 255;
+            commands.AddAttributeChangeCommand(0, false, false);
 
             var nameTablePoint = new ByteGridPoint(Specs.NameTableWidth, Specs.NameTableHeight);
             nameTablePoint.X = (byte)(Scroll.X / Specs.TileHeight);

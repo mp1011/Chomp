@@ -1,9 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
-using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace ChompGame.Graphics
 {
@@ -15,14 +12,12 @@ namespace ChompGame.Graphics
 
         private DrawInstructionGroup _currentInstructionGroup;
         private DrawInstruction _currentInstruction;
-
-        public GameByte PaletteIndex { get; private set; }
-        public GameByte CurrentPaletteSwitch { get; private set; }
-
+       
         public int FirstDrawInstructionAddress { get; }
         public GameByte DrawInstructionAddressOffset { get; }
         public GameByte DrawHoldCounter { get; }
         public GameByteGridPoint PatternTablePoint { get; private set; }
+        public DrawAttributes CurrentAttributes { get; private set; }
 
         public int CurrentDrawInstructionAddress => FirstDrawInstructionAddress + DrawInstructionAddressOffset.Value;
 
@@ -45,14 +40,9 @@ namespace ChompGame.Graphics
 
             DrawInstructionAddressOffset = builder.AddByte();
             DrawHoldCounter = builder.AddByte();
-            CurrentPaletteSwitch = builder.AddByte();
-
-            //todo, configurable
-            builder.AddBytes(4);
-
-            PaletteIndex = builder.AddByte();
 
             FirstDrawInstructionAddress = builder.CurrentAddress;
+            CurrentAttributes = new DrawAttributes(builder.CurrentAddress, builder.Memory);
             builder.AddBytes(specs.MaxDrawInstructions);
 
             _currentInstructionGroup = new DrawInstructionGroup(builder.AddByte(), builder.Memory);
@@ -64,22 +54,19 @@ namespace ChompGame.Graphics
         public byte Update()
         {
             if (DrawHoldCounter == 0)
-            {
-                var paletteSwitch = new PaletteSwitch(CurrentPaletteSwitch.Address + CurrentPaletteSwitch.Value + 1, _memory);
-                if (paletteSwitch.CommandCount == 0)
-                {
-                    CurrentPaletteSwitch.Value++;
-                    PaletteIndex.Value = paletteSwitch.Palette;
-                }
-                else
-                    paletteSwitch.CommandCount--;
-
                 ProcessNextDrawInstruction();
-            }
 
             DrawHoldCounter.Value--;
 
-            var ptValue = _patternTable[PatternTablePoint.Index];
+            int realX = PatternTablePoint.X;
+            int realY = PatternTablePoint.Y;
+
+            if(CurrentAttributes.FlipX)
+                realX = _specs.TileWidth - 1 - (realX % _specs.TileWidth);
+            if (CurrentAttributes.FlipY)
+                realY = _specs.TileHeight - 1 - (realY % _specs.TileHeight);
+
+            var ptValue = _patternTable[realX, realY];
             if (_currentInstruction.OpCode == DrawOpcode.Advance)
                 PatternTablePoint.Next();
 
@@ -92,10 +79,9 @@ namespace ChompGame.Graphics
 
             switch(_currentInstruction.OpCode)
             {
-                case DrawOpcode.Reposition:
-                    PatternTablePoint.Advance(_currentInstruction.Value);
-                    NextDrawInstruction();
-                    DrawHoldCounter.Value = _currentInstruction.Value;
+                case DrawOpcode.UpdateAttributes:
+                    CurrentAttributes = new DrawAttributes(_currentInstruction.ValueAddress, _memory);
+                    ProcessNextDrawInstruction();
                     break;
                 case DrawOpcode.RepositionTile:
                     PatternTablePoint.Advance(_currentInstruction.Value * _specs.TileWidth);
@@ -157,6 +143,19 @@ namespace ChompGame.Graphics
         {            
             _currentInstruction.OpCode = moveIndex ? DrawOpcode.Advance : DrawOpcode.Hold;
             _currentInstruction.Value = amount;
+            NextDrawInstruction();
+            return 1;
+        }
+
+        public int AddAttributeChangeCommand(byte palette, bool flipX, bool flipY)
+        {
+            _currentInstruction.OpCode = DrawOpcode.UpdateAttributes;
+
+            var attributeChange = new DrawAttributes(_currentInstruction.ValueAddress, _memory);
+            attributeChange.PaletteIndex = palette;
+            attributeChange.FlipX = flipX;
+            attributeChange.FlipY = flipY;
+
             NextDrawInstruction();
             return 1;
         }

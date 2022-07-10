@@ -41,6 +41,19 @@ namespace ChompGame.Data
             _screenY = new GameBit(address + 3, Bit.Bit7, memory);
         }
 
+        public bool FlipX
+        {
+            get => _flipX.Value;
+            set => _flipX.Value = value;
+        }
+
+        public bool FlipY
+        {
+            get => _flipY.Value;
+            set => _flipY.Value = value;
+        }
+
+
         public bool IntersectsScanline(byte scanLine)
         {
             return scanLine >= Y && scanLine < Bottom;

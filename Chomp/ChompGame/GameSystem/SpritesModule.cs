@@ -49,19 +49,15 @@ namespace ChompGame.GameSystem
             int currentRow = 0;
             int commandCount = 0;
 
-            PaletteSwitch paletteSwitch = null;
+            commands.AddAttributeChangeCommand(0, false, false);
 
             int i = 0;
             for (i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
-                commands.CurrentPaletteSwitch.Value = 0;
                 
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
 
-                paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 1 + i, GameSystem.Memory);
-                paletteSwitch.CommandCount = (byte)commandCount;
-                paletteSwitch.Palette = sprite.Palette;
-
+                commandCount += commands.AddAttributeChangeCommand(sprite.Palette, sprite.FlipX, sprite.FlipY);
                 commandCount += commands.AddDrawCommand(false, (byte)(sprite.X - currentRow));
 
                 tilePoint.Index = sprite.Tile;
@@ -87,10 +83,6 @@ namespace ChompGame.GameSystem
                 commandCount += commands.AddTileMoveCommand(0, nextPatternTablePoint.Index);
                 PatternTablePoint.Index = 0;
             }
-
-            paletteSwitch = new PaletteSwitch(commands.CurrentPaletteSwitch.Address + 1 + i, GameSystem.Memory);
-            paletteSwitch.CommandCount = 255;
-            paletteSwitch.Palette = 0;
 
             commands.AddDrawCommand(false, (byte)(Specs.ScreenWidth - currentRow));
 

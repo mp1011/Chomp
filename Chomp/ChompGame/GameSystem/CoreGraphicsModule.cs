@@ -14,9 +14,7 @@ namespace ChompGame.GameSystem
         public ScanlineDrawCommands[] ScanlineDrawCommands { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
 
-        public GameByte CurrentPaletteIndex { get; private set; }
-
-        public Palette GetCurrentPalette() => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * CurrentPaletteIndex.Value), GameSystem.Memory);
+        public Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
 
         private int _graphicsMemoryBegin;
 
@@ -25,18 +23,10 @@ namespace ChompGame.GameSystem
             _screenData = new Color[gameSystem.Specs.ScreenWidth * gameSystem.Specs.ScreenHeight];
         }
 
-        public Palette SetCurrentPalette(int index)
-        {
-            CurrentPaletteIndex.Value = (byte)index;
-            return GetCurrentPalette();
-        }
-
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             _graphicsMemoryBegin = builder.CurrentAddress;
             builder.AddBytes(Specs.NumPalettes * Specs.BytesPerPalette);
-
-            CurrentPaletteIndex = builder.AddByte();
             CurrentColorIndex = builder.AddByte();
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
@@ -52,7 +42,7 @@ namespace ChompGame.GameSystem
 
         public override void OnStartup()
         {
-            var palette = GetCurrentPalette();
+            var palette = GetPalette(0);
             palette.SetColor(0, 0);
             palette.SetColor(1, 1);
             palette.SetColor(2, 2);
@@ -81,14 +71,12 @@ namespace ChompGame.GameSystem
 
                 if (color1 != 0)
                 {
-                    CurrentPaletteIndex.Value = ScanlineDrawCommands[1].PaletteIndex.Value;
-                    var palette = GetCurrentPalette();
+                    var palette = GetPalette(ScanlineDrawCommands[1].CurrentAttributes.PaletteIndex);
                     _screenData[i] = palette[color1];
                 }
                 else
                 {
-                    CurrentPaletteIndex.Value = ScanlineDrawCommands[0].PaletteIndex.Value;
-                    var palette = GetCurrentPalette();
+                    var palette = GetPalette(ScanlineDrawCommands[0].CurrentAttributes.PaletteIndex);
                     _screenData[i] = palette[color0];
                 }
                

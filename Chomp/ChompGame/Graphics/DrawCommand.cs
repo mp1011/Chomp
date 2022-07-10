@@ -7,7 +7,7 @@ namespace ChompGame.Graphics
     {
         Hold=0,
         Advance=1,
-        Reposition=2,
+        UpdateAttributes=2,
         RepositionTile=3
     }
 
@@ -48,6 +48,11 @@ namespace ChompGame.Graphics
             get => _currentGroup.GetValue(OpCodeIndex);
             set => _currentGroup.SetValue(OpCodeIndex,value);
         }        
+
+        public int ValueAddress
+        {
+            get => _currentGroup.Address + 1 + OpCodeIndex;
+        }
     }
 
     /// <summary>

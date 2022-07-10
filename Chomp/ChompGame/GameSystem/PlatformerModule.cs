@@ -48,13 +48,13 @@ namespace ChompGame.GameSystem
 
         public override void OnStartup()
         {
-            var bgPalette = GameSystem.CoreGraphicsModule.SetCurrentPalette(0);
+            var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
             bgPalette.SetColor(0, 0);
             bgPalette.SetColor(1, 1);
             bgPalette.SetColor(2, 2);
             bgPalette.SetColor(3, 3);
 
-            var spritePalette = GameSystem.CoreGraphicsModule.SetCurrentPalette(1);
+            var spritePalette = GameSystem.CoreGraphicsModule.GetPalette(1);
             spritePalette.SetColor(0, 6);
             spritePalette.SetColor(1, 6);
             spritePalette.SetColor(2, 14);
@@ -100,16 +100,22 @@ namespace ChompGame.GameSystem
         private void UpdatePlayerMovement()
         {
             if (_inputModule.Player1.LeftKey.IsDown() && _player.XSpeed > -32)
+            {
                 _player.XSpeed -= 16;
+                _player.GetSprite().FlipX = true;
+            }
             else if (_inputModule.Player1.RightKey.IsDown() && _player.XSpeed < 32)
+            {
                 _player.XSpeed += 16;
+                _player.GetSprite().FlipX = false;
+            }
             else if (_player.XSpeed > 0)
                 _player.XSpeed -= 8;
             else if (_player.XSpeed < 0)
                 _player.XSpeed += 8;
 
             if (_player.YSpeed < 90)
-                _player.YSpeed += 8;
+                _player.YSpeed += 6;
 
             _player.Update();
 

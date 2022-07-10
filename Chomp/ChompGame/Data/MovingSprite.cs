@@ -15,6 +15,8 @@ namespace ChompGame.Data
         private GameByte _subPixelX;
         private GameByte _subPixelY;
 
+        public Sprite GetSprite() => _spritesModule.GetSprite(_spriteIndex);
+
         public Point TopLeft
         {
             get
