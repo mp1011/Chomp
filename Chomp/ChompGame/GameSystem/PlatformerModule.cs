@@ -19,6 +19,7 @@ namespace ChompGame.GameSystem
         private readonly SpritesModule _spritesModule;
         private readonly AudioModule _audioModule;
         private readonly TileModule _tileModule;
+        private GameByte _timer;
 
         private NBitPlane _romPatternTable;
         private NBitPlane _romNameTable;
@@ -39,6 +40,7 @@ namespace ChompGame.GameSystem
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _player = new MovingSprite(_spritesModule, memoryBuilder);
+            _timer = memoryBuilder.AddByte();
 
             memoryBuilder.BeginROM();
             _romPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
@@ -93,8 +95,10 @@ namespace ChompGame.GameSystem
         {
             _audioModule.OnLogicUpdate();
             _inputModule.OnLogicUpdate();
+            _timer.Value++;
 
             UpdatePlayerMovement();
+            UpdatePlayerAnimation();
         }
 
         private void UpdatePlayerMovement()
@@ -123,6 +127,23 @@ namespace ChompGame.GameSystem
             if(collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
             {
                 _player.YSpeed = -128;
+            }
+        }
+
+        private void UpdatePlayerAnimation()
+        {
+            if(_timer % 8 == 0 && _player.XSpeed != 0)
+            {
+                var player = _player.GetSprite();
+                if (player.Tile2Offset == 1)
+                    player.Tile2Offset = 2;
+                else
+                    player.Tile2Offset = 1;
+            }
+
+            if(_player.XSpeed==0)
+            {
+                _player.GetSprite().Tile2Offset = 1;
             }
         }
 

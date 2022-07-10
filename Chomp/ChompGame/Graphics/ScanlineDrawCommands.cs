@@ -61,10 +61,14 @@ namespace ChompGame.Graphics
             int realX = PatternTablePoint.X;
             int realY = PatternTablePoint.Y;
 
-            if(CurrentAttributes.FlipX)
-                realX = _specs.TileWidth - 1 - (realX % _specs.TileWidth);
+            if (CurrentAttributes.FlipX)
+            {
+                var modifiedX = _specs.TileWidth - 1 - (realX % _specs.TileWidth);
+                realX = (realX - (realX % _specs.TileWidth)) + modifiedX;
+            }
+
             if (CurrentAttributes.FlipY)
-                realY = _specs.TileHeight - 1 - (realY % _specs.TileHeight);
+                throw new System.NotImplementedException();
 
             var ptValue = _patternTable[realX, realY];
             if (_currentInstruction.OpCode == DrawOpcode.Advance)
