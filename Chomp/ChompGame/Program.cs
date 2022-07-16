@@ -11,6 +11,10 @@ namespace ChompGame
         [STAThread]
         static void Main()
         {
+            //var test3D = new Test3DDemo();
+            //test3D.Run();
+            //return;
+
             //var gameSystem = RunPong();
             //var gameSystem = RunFullScreenTest();
             // var gameSystem = RunSnake();
