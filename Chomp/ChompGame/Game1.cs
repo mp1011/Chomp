@@ -78,27 +78,22 @@ namespace ChompGame
             basicEffect = new BasicEffect(GraphicsDevice);
             basicEffect.Alpha = 1f;
 
-            // Want to see the colors of the vertices, this needs to be on
-            basicEffect.VertexColorEnabled = true;
-
-            //Lighting requires normal information which VertexPositionColor does not have
-            //If you want to use lighting and VPC you need to create a custom def
-            basicEffect.LightingEnabled = false;
-
-            //Geometry  - a simple triangle about the origin
             triangleVertices = new VertexPositionColorTexture[vertices];
             triangleVertices[0] = new VertexPositionColorTexture(
-                new Vector3(40, 40, 0), 
+                new Vector3(-40, 40, 0),
                 Color.White,
-                new Vector2(0,0));
+                new Vector2(1, 0));
+
             triangleVertices[1] = new VertexPositionColorTexture(
                 new Vector3(40, -40, 0),
                 Color.White,
-                new Vector2(0,1));
+                new Vector2(0, 1));
+
             triangleVertices[2] = new VertexPositionColorTexture(
-                new Vector3(-40, 40, 0),
+                new Vector3(40, 40, 0), 
                 Color.White,
-                new Vector2(1,0));
+                new Vector2(0,0));
+            
 
             triangleVertices[3] = new VertexPositionColorTexture(
                new Vector3(40, -40, 0),
@@ -133,6 +128,8 @@ namespace ChompGame
 
         protected override void Update(GameTime gameTime)
         {
+            _draw3D = !Keyboard.GetState().IsKeyDown(Keys.R);
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -158,7 +155,9 @@ namespace ChompGame
         private Stopwatch _renderTimer = new Stopwatch();
         private long _drawMS;
 
-        bool draw3D = true;
+        bool _draw3D = false;
+        bool _r = false;
+
         protected override void Draw(GameTime gameTime)
         {
             _renderTimer.Restart();
@@ -169,22 +168,30 @@ namespace ChompGame
             _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);
             _spriteBatch.End();
 
-            if (draw3D)
+            if (_draw3D)
             {
                 basicEffect.Projection = projectionMatrix;
                 basicEffect.View = viewMatrix;
                 basicEffect.World = worldMatrix;
                 basicEffect.Texture = _canvas;
                 basicEffect.TextureEnabled = true;
+                basicEffect.EnableDefaultLighting();
+
+                _r = !_r;
+                if (_r)
+                {
+                    basicEffect.AmbientLightColor = new Vector3(0.53f, 0.56f, 0.53f);                    
+                }
+                else
+                {
+                    basicEffect.AmbientLightColor = new Vector3(0.5f, 0.54f, 0.5f);
+                }
 
                 GraphicsDevice.SetRenderTarget(null);
+                GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
                 GraphicsDevice.Clear(Color.Black);
                 GraphicsDevice.SetVertexBuffer(vertexBuffer);
-
-                //Turn off culling so we see both sides of our rendered triangle
-                RasterizerState rasterizerState = new RasterizerState();
-                rasterizerState.CullMode = CullMode.None;
-                GraphicsDevice.RasterizerState = rasterizerState;
 
                 foreach (EffectPass pass in basicEffect.CurrentTechnique.
                         Passes)
