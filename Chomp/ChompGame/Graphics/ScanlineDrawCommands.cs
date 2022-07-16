@@ -43,7 +43,7 @@ namespace ChompGame.Graphics
 
             FirstDrawInstructionAddress = builder.CurrentAddress;
             CurrentAttributes = new DrawAttributes(builder.CurrentAddress, builder.Memory);
-            builder.AddBytes(specs.MaxDrawInstructions);
+            builder.AddBytes(specs.MaxDrawInstructionBytes);
 
             _currentInstructionGroup = new DrawInstructionGroup(builder.AddByte(), builder.Memory);
             _currentInstruction = new DrawInstruction(builder.AddByte(), _currentInstructionGroup);
@@ -79,22 +79,22 @@ namespace ChompGame.Graphics
 
         private void ProcessNextDrawInstruction()
         {
-            NextDrawInstruction();
-
-            switch(_currentInstruction.OpCode)
+            while (true)
             {
-                case DrawOpcode.UpdateAttributes:
-                    CurrentAttributes = new DrawAttributes(_currentInstruction.ValueAddress, _memory);
-                    ProcessNextDrawInstruction();
-                    break;
-                case DrawOpcode.RepositionTile:
-                    PatternTablePoint.Advance(_currentInstruction.Value * _specs.TileWidth);
-                    NextDrawInstruction();
-                    DrawHoldCounter.Value = _currentInstruction.Value;
-                    break;
-                default:
-                    DrawHoldCounter.Value = _currentInstruction.Value;
-                    return;
+                NextDrawInstruction();
+
+                switch (_currentInstruction.OpCode)
+                {
+                    case DrawOpcode.UpdateAttributes:
+                        CurrentAttributes = new DrawAttributes(_currentInstruction.ValueAddress, _memory);
+                        break;
+                    case DrawOpcode.Reposition:
+                        PatternTablePoint.Advance(_currentInstruction.Value);
+                        break;
+                    default:
+                        DrawHoldCounter.Value = _currentInstruction.Value;
+                        return;
+                }
             }
         }
 
@@ -129,18 +129,28 @@ namespace ChompGame.Graphics
             }
         }
 
-        public int AddTileMoveCommand(int destination, int currentIndex)
-        {            
-            int amount = destination - currentIndex;
+        public int AddTileMoveCommand(int pixelDestination, int currentPixelIndex)
+        {
+            int instructions = 0;
+
+            int amount = pixelDestination - currentPixelIndex;
             amount = amount.Wrap(_specs.PatternTableWidth * _specs.PatternTableHeight);
             if (amount == 0)
                 return 0;
 
-            amount = amount / _specs.TileWidth;
-            _currentInstruction.OpCode = DrawOpcode.RepositionTile;
+            while(amount >= 256)
+            {
+                amount -= 255;
+                _currentInstruction.OpCode = DrawOpcode.Reposition;
+                _currentInstruction.Value = 255;
+                NextDrawInstruction();
+                instructions++;
+            }
+
+            _currentInstruction.OpCode = DrawOpcode.Reposition;
             _currentInstruction.Value = (byte)amount;
             NextDrawInstruction();
-            return 1;
+            return instructions + 1;
         }
 
         public int AddDrawCommand(bool moveIndex, byte amount)

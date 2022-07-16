@@ -8,7 +8,7 @@ namespace ChompGame.Graphics
         Hold=0,
         Advance=1,
         UpdateAttributes=2,
-        RepositionTile=3
+        Reposition=3
     }
 
     public class DrawInstruction

@@ -13,7 +13,7 @@ namespace ChompGame.GameSystem
         public GameByte DrawInstructionAddressOffset => _coreGraphicsModule.ScanlineDrawCommands[Layer].DrawInstructionAddressOffset;
         public GameByte DrawHoldCounter => _coreGraphicsModule.ScanlineDrawCommands[Layer].DrawHoldCounter;
         public GameByteGridPoint ScreenPoint => _coreGraphicsModule.ScreenPoint;
-        public NBitPlane NameTable { get; private set; }
+
         public ScanlineGraphicsModule(MainSystem gameSystem) : base(gameSystem)
         {
         }
@@ -25,8 +25,6 @@ namespace ChompGame.GameSystem
                 (byte)(Specs.NameTableHeight * Specs.TileHeight),
                 Specs.ScrollXMask,
                 Specs.ScrollYMask);
-
-            NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
 
         public abstract void OnHBlank();

@@ -68,7 +68,7 @@ namespace ChompGame.Helpers
 
             if (collisionInfo.XCorrection != 0)
             {
-                actor.X += (byte)collisionInfo.XCorrection;
+                actor.X += collisionInfo.XCorrection;
                // collisionInfo += new CollisionInfo(XCorrection: correction.X);
             }
 
@@ -116,7 +116,7 @@ namespace ChompGame.Helpers
 
             if (collisionInfo.YCorrection != 0)
             {
-                actor.Y = (byte)(actor.Y + collisionInfo.YCorrection);
+                actor.Y = actor.Y + collisionInfo.YCorrection;
             }
 
             //if (correction.CarryMotion != null)
@@ -124,6 +124,8 @@ namespace ChompGame.Helpers
             //    actor.WorldPosition.X.Add(correction.CarryMotion.X);
             //    actor.WorldPosition.Y.Add(correction.CarryMotion.Y);
             //}
+            if (actor.Y > 32)
+                actor.Y += 0;
 
             return collisionInfo;
         }

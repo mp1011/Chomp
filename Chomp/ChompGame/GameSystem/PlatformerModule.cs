@@ -99,6 +99,7 @@ namespace ChompGame.GameSystem
 
             UpdatePlayerMovement();
             UpdatePlayerAnimation();
+            HandleScroll();
         }
 
         private void UpdatePlayerMovement()
@@ -119,7 +120,7 @@ namespace ChompGame.GameSystem
                 _player.XSpeed += 8;
 
             if (_player.YSpeed < 90)
-                _player.YSpeed += 6;
+                _player.YSpeed += 5;
 
             _player.Update();
 
@@ -147,32 +148,24 @@ namespace ChompGame.GameSystem
             }
         }
 
+        private void HandleScroll()
+        {
+            var x = _player.X + (Specs.TileWidth / 2);
+            if (x <= Specs.ScreenWidth / 2)
+            {
+                _tileModule.Scroll.X = 0;
+                _spritesModule.Scroll.X = 0;
+            }
+            else
+            {
+                _tileModule.Scroll.X = (byte)(x - (Specs.ScreenWidth / 2));
+                _spritesModule.Scroll.X = _tileModule.Scroll.X;
+            }
+        }
+
         private CollisionInfo CheckPlayerBGCollision()
         {
             return _collisionDetector.DetectCollisions(_player);
-            //var playerSprite = _spritesModule.GetSprite(_player.SpriteIndex);
-            //var topLeftX = playerSprite.X / Specs.TileWidth;
-            //var topLeftY = playerSprite.Y / Specs.TileHeight;
-            
-            //var bottomRightX = (playerSprite.Right / Specs.TileWidth)+1;
-            //var bottomRightY = (playerSprite.Bottom / Specs.TileHeight)+1;
-
-            //for(int y = topLeftY; y < bottomRightY; y++)
-            //{
-            //    for (int x = topLeftX; x < bottomRightX; x++)
-            //    {
-            //        var tile = _tileModule.NameTable[x, y];
-            //        if (tile == 0)
-            //            continue;
-
-            //        var tileTop = y * Specs.TileHeight;
-            //        if (playerSprite.Bottom > tileTop)
-            //        {
-            //            playerSprite.Y = (byte)(tileTop - (Specs.TileHeight * 2));
-            //            _player.YSpeed = 0;
-            //        }
-            //    }
-            //}
         }
 
         public void OnVBlank()

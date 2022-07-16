@@ -59,16 +59,24 @@ namespace ChompGame.Data
             return scanLine >= Y && scanLine < Bottom;
         }
 
-        public byte X
+        public int X
         {
-            get => _position.X;
-            set => _position.X = value;
+            get => _position.X + (_screenX.Value ? 256 : 0);
+            set
+            {
+                _screenX.Value = value > 255;
+                _position.X = (byte)value;
+            }
         }
 
-        public byte Y
+        public int Y
         {
-            get => _position.Y;
-            set => _position.Y = value;
+            get => _position.Y + (_screenY.Value ? 256 : 0);
+            set
+            {
+                _screenY.Value = value > 255;
+                _position.Y = (byte)value;
+            }
         }
 
         public byte Width
@@ -93,24 +101,24 @@ namespace ChompGame.Data
             }
         }
 
-        public byte Right
+        public int Right
         {
             get
             {
                 if (Tile2Offset != 0 && Orientation == Orientation.Horizontal)
-                    return (byte)(X + _specs.TileWidth * 2);
+                    return X + _specs.TileWidth * 2;
                 else
-                    return (byte)(X + _specs.TileWidth);
+                    return X + _specs.TileWidth;
             }
         }
-        public byte Bottom
+        public int Bottom
         {
             get
             {
                 if (Tile2Offset == 0 || Orientation == Orientation.Horizontal)
-                    return (byte)(Y + _specs.TileHeight);
+                    return Y + _specs.TileHeight;
                 else
-                    return (byte)(Y + _specs.TileHeight*2);
+                    return Y + _specs.TileHeight*2;
             }
         }
 

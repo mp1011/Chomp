@@ -1,11 +1,11 @@
 ﻿using ChompGame.Data;
-using ChompGame.Graphics;
-using ChompGame.ROM;
 
 namespace ChompGame.GameSystem
 {
     public class TileModule : ScanlineGraphicsModule
     {
+        public NBitPlane NameTable { get; private set; }
+
         public TileModule(MainSystem gameSystem) : base(gameSystem) 
         { 
         }
@@ -13,6 +13,12 @@ namespace ChompGame.GameSystem
         public override void OnStartup()
         {
            
+        }
+
+        public override void BuildMemory(SystemMemoryBuilder builder)
+        {
+            base.BuildMemory(builder);
+            NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
 
         public override void OnHBlank()
@@ -45,8 +51,8 @@ namespace ChompGame.GameSystem
                 nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
 
                 _coreGraphicsModule.ScanlineDrawCommands[Layer].AddTileMoveCommand(
-                    destination: nextPatternTablePoint.Index,
-                    currentIndex: PatternTablePoint.Index);
+                    pixelDestination: nextPatternTablePoint.Index,
+                    currentPixelIndex: PatternTablePoint.Index);
 
                 PatternTablePoint.Index = nextPatternTablePoint.Index;
                 var hold = Specs.TileWidth - col;

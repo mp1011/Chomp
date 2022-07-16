@@ -32,6 +32,7 @@ namespace ChompGame.Data
             newIndex = newIndex.Wrap(Width * Height);
             Index = newIndex;
         }
+
         public virtual bool Next() 
         {
             if (X == Width - 1)

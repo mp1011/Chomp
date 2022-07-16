@@ -28,6 +28,7 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
+            base.BuildMemory(builder);
             _sprite0Address = builder.CurrentAddress;
             Sprites = builder.AddSprite(Specs.MaxSprites);
             ScanlineSprites = builder.AddBytes(Specs.SpritesPerScanline);
@@ -46,15 +47,13 @@ namespace ChompGame.GameSystem
             var tilePoint = new ByteGridPoint(Specs.PatternTableTilesAcross, Specs.PatternTableTilesDown);
             var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
 
-            int currentRow = 0;
+            int currentRow = Scroll.X;
             int commandCount = 0;
 
             commands.AddAttributeChangeCommand(0, false, false);
 
-            int i = 0;
-            for (i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
+            for (int i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
-                
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
 
                 commandCount += commands.AddAttributeChangeCommand(sprite.Palette, sprite.FlipX, sprite.FlipY);

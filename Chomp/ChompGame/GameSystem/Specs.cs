@@ -28,7 +28,7 @@ namespace ChompGame.GameSystem
         public abstract int TileHeight { get; }
         public int PatternTableTilesAcross => PatternTableWidth / TileWidth;
         public int PatternTableTilesDown => PatternTableHeight / TileHeight;
-        public abstract int MaxDrawInstructions { get; }
+        public abstract int MaxDrawInstructionBytes { get; }
         public abstract int AudioChannels { get; }
         public abstract Color[] SystemColors { get; }
 
@@ -62,7 +62,7 @@ namespace ChompGame.GameSystem
 
         public override int TileWidth => 4;
         public override int TileHeight => 4;
-        public override int MaxDrawInstructions => 64;
+        public override int MaxDrawInstructionBytes => 64;
 
         public override int AudioChannels => 1;
         public override Color[] SystemColors => new Color[] { Color.DarkBlue, Color.BlueViolet, Color.LightBlue, Color.Silver };
@@ -95,7 +95,7 @@ namespace ChompGame.GameSystem
 
         public override int TileWidth => 4;
         public override int TileHeight => 4;
-        public override int MaxDrawInstructions => 64;
+        public override int MaxDrawInstructionBytes => 64;
 
         public override int AudioChannels => 1;
 
@@ -131,7 +131,7 @@ namespace ChompGame.GameSystem
         public override int PatternTableWidth => 32;
         public override int PatternTableHeight => 32;
         public override int PatternTablePlanes => 2;
-        public override Bit PatternTablePointMask => (Bit)15;
+        public override Bit PatternTablePointMask => (Bit)31;
 
         public override int NameTableWidth => 32;
         public override int NameTableHeight => 32;
@@ -147,7 +147,7 @@ namespace ChompGame.GameSystem
 
         public override int TileWidth => 4;
         public override int TileHeight => 4;
-        public override int MaxDrawInstructions => 64;
+        public override int MaxDrawInstructionBytes => 128;
 
         public override int AudioChannels => 1;
 
@@ -204,7 +204,7 @@ namespace ChompGame.GameSystem
 
         public override int TileWidth => 8;
         public override int TileHeight => 8;
-        public override int MaxDrawInstructions => 512;
+        public override int MaxDrawInstructionBytes => 512;
 
         public override int AudioChannels => 1;
         public override Color[] SystemColors => new Color[]

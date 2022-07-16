@@ -44,13 +44,13 @@ namespace ChompGame.Data
             }
         }
 
-        public byte X
+        public int X
         {
             get => _spritesModule.GetSprite(_spriteIndex).X;
             set => _spritesModule.GetSprite(_spriteIndex).X = value;
         }
 
-        public byte Y
+        public int Y
         {
             get => _spritesModule.GetSprite(_spriteIndex).Y;
             set => _spritesModule.GetSprite(_spriteIndex).Y = value;
