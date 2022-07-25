@@ -4,10 +4,12 @@ namespace ChompGame.Data
 {
     public class Sprite
     {
-        public int Address => _position.Address;
+        public int Address { get; }
 
         private readonly Specs _specs;
-        private readonly GameByteGridPoint _position;
+        private readonly ExtendedByte _xPos;
+        private readonly ExtendedByte _yPos;
+
         private readonly MaskedByte _tile;
         private readonly GameBit _flipX;
         private readonly GameBit _flipY;
@@ -16,8 +18,8 @@ namespace ChompGame.Data
         private readonly MaskedByte _palette;
         private readonly GameEnum2<Orientation> _orientation;
         private readonly GameBit _priority;
-        private readonly GameBit _screenX;
-        private readonly GameBit _screenY;
+
+        private readonly GameByteGridPoint _screenScroll;
 
         public Orientation Orientation
         {
@@ -25,10 +27,15 @@ namespace ChompGame.Data
             set => _orientation.Value = value;
         }
 
-        public Sprite(int address, SystemMemory memory, Specs specs)
+        public Sprite(int address, SystemMemory memory, Specs specs, GameByteGridPoint screenScroll)
         {
-            _position = new GameByteGridPoint(address, memory, (byte)specs.ScreenWidth, (byte)specs.ScreenHeight);
+            _screenScroll = screenScroll;
+
+            Address = address;
             _specs = specs;
+
+            var x = new MaskedByte(address, (Bit)(specs.NameTablePixelWidth/2-1), memory);
+            var y = new MaskedByte(address+1, (Bit)(specs.NameTablePixelHeight / 2 - 1), memory);
             _tile = new MaskedByte(address + 2, Bit.Right6, memory);
             _flipX = new GameBit(address + 2, Bit.Bit6, memory);
             _flipY = new GameBit(address + 2, Bit.Bit7, memory);
@@ -37,8 +44,11 @@ namespace ChompGame.Data
             _palette = new MaskedByte(address + 3, (Bit)12, memory);
             _orientation = new GameEnum2<Orientation>(address + 3, Bit.Bit4, memory);
             _priority = new GameBit(address + 3, Bit.Bit5, memory);
-            _screenX = new GameBit(address + 3, Bit.Bit6, memory);
-            _screenY = new GameBit(address + 3, Bit.Bit7, memory);
+            var screenX = new GameBit(address + 3, Bit.Bit6, memory);
+            var screenY = new GameBit(address + 3, Bit.Bit7, memory);
+
+            _xPos = new ExtendedByte(x, screenX, specs.ScreenWidth);
+            _yPos = new ExtendedByte(y, screenY, specs.ScreenHeight);
         }
 
         public bool FlipX
@@ -61,22 +71,25 @@ namespace ChompGame.Data
 
         public int X
         {
-            get => _position.X + (_screenX.Value ? 256 : 0);
-            set
+            get
             {
-                _screenX.Value = value > 255;
-                _position.X = (byte)value;
+                return _xPos.Value;
             }
+            set => _xPos.Value = value;
         }
 
         public int Y
         {
-            get => _position.Y + (_screenY.Value ? 256 : 0);
-            set
+            get
             {
-                _screenY.Value = value > 255;
-                _position.Y = (byte)value;
+                var y = _yPos.Value;
+
+                if (y > _specs.ScreenHeight && _screenScroll.Y < _specs.ScreenHeight)
+                    y -= (_specs.ScreenHeight * 2);
+
+                return y;
             }
+            set => _yPos.Value = value;
         }
 
         public byte Width
@@ -106,9 +119,9 @@ namespace ChompGame.Data
             get
             {
                 if (Tile2Offset != 0 && Orientation == Orientation.Horizontal)
-                    return X + _specs.TileWidth * 2;
+                    return (X + _specs.TileWidth * 2);
                 else
-                    return X + _specs.TileWidth;
+                    return (X + _specs.TileWidth);
             }
         }
         public int Bottom
@@ -116,9 +129,9 @@ namespace ChompGame.Data
             get
             {
                 if (Tile2Offset == 0 || Orientation == Orientation.Horizontal)
-                    return Y + _specs.TileHeight;
+                    return (Y + _specs.TileHeight);
                 else
-                    return Y + _specs.TileHeight*2;
+                    return (Y + _specs.TileHeight*2);
             }
         }
 

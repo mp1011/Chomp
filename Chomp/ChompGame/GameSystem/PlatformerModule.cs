@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.Helpers;
 using ChompGame.ROM;
 using System;
@@ -79,7 +80,7 @@ namespace ChompGame.GameSystem
 
             var playerSprite = _spritesModule.GetSprite(0);
             playerSprite.X = 16;
-            playerSprite.Y = 16;
+            playerSprite.Y = 0;
             playerSprite.Tile = 16;
             playerSprite.Orientation = Orientation.Vertical;
             playerSprite.Tile2Offset = 1;
@@ -150,17 +151,11 @@ namespace ChompGame.GameSystem
 
         private void HandleScroll()
         {
-            var x = _player.X + (Specs.TileWidth / 2);
-            if (x <= Specs.ScreenWidth / 2)
-            {
-                _tileModule.Scroll.X = 0;
-                _spritesModule.Scroll.X = 0;
-            }
-            else
-            {
-                _tileModule.Scroll.X = (byte)(x - (Specs.ScreenWidth / 2));
-                _spritesModule.Scroll.X = _tileModule.Scroll.X;
-            }
+            var x = _player.X + (Specs.TileWidth / 2);          
+            var newScrollX = (x - (Specs.ScreenWidth / 2)).NModByte(Specs.NameTablePixelWidth);
+              
+            _tileModule.Scroll.X = newScrollX;
+            _spritesModule.Scroll.X = _tileModule.Scroll.X;            
         }
 
         private CollisionInfo CheckPlayerBGCollision()

@@ -47,8 +47,13 @@ namespace ChompGame.Helpers
                     _specs.TileWidth, 
                     _specs.TileHeight);
 
-                var tileLeft = _tileModule.NameTable[x - 1, y];
-                var tileRight = _tileModule.NameTable[x + 1, y];
+                var tileLeft = _tileModule.NameTable[
+                    (x - 1).NMod(_tileModule.NameTable.Width), 
+                    y.NMod(_tileModule.NameTable.Height)];
+                
+                var tileRight = _tileModule.NameTable[
+                    (x + 1).NMod(_tileModule.NameTable.Width), 
+                    y.NMod(_tileModule.NameTable.Height)];
 
                 bool checkLeftCollision = actor.XSpeed > 0 && tileLeft == 0;
                 bool checkRightCollision = actor.XSpeed < 0 && tileRight == 0;
@@ -226,7 +231,7 @@ namespace ChompGame.Helpers
 
             if (actor.YSpeed >= 0
                 && correctedBottom == collidingTile.Y
-                && actor.BottomRight.X >= collidingTile.X
+                && actor.BottomRight.X > collidingTile.X
                 && actor.X <= collidingTile.Right)
             {
                 collisionInfo.IsOnGround = true;

@@ -4,6 +4,23 @@ namespace ChompGame.Extensions
 {
     public static class NumberExtensions
     {
+
+        public static int NMod(this int number, int mod)
+        {
+            if (number >= 0)
+                return number % mod;
+
+            while (number < 0)
+                number += mod;
+
+            return number % mod;
+        }
+
+        public static byte NModByte(this int number, int mod)
+        {
+            return (byte)number.NMod(mod);
+        }
+
         public static int Power(this int number, int power)
         {
             int result = 1;

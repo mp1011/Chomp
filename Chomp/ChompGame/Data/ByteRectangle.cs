@@ -37,9 +37,9 @@
 
         public bool Intersects(ByteRectangle other)
         {
-            if (other.Right < X
+            if (other.Right <= X
                 || other.X >= Right
-                || other.Bottom < Y
+                || other.Bottom <= Y
                 || other.Y >= Bottom)
                 return false;
 

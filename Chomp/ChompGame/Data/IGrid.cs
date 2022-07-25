@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChompGame.Extensions;
+using Microsoft.Xna.Framework;
 using System;
 using System.Linq;
 
@@ -23,7 +24,7 @@ namespace ChompGame.Data
             {
                 for(int x = topLeft.X; x < bottomRight.X; x++)
                 {
-                    action(x, y, grid[x, y]);
+                    action(x, y, grid[x.NMod(grid.Width), y.NMod(grid.Height)]);
                 }
             }
         }

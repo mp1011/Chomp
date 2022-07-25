@@ -28,6 +28,10 @@ namespace ChompGame.GameSystem
         public abstract int TileHeight { get; }
         public int PatternTableTilesAcross => PatternTableWidth / TileWidth;
         public int PatternTableTilesDown => PatternTableHeight / TileHeight;
+
+        public int NameTablePixelWidth => NameTableWidth * TileWidth;
+        public int NameTablePixelHeight => NameTableHeight * TileHeight;
+
         public abstract int MaxDrawInstructionBytes { get; }
         public abstract int AudioChannels { get; }
         public abstract Color[] SystemColors { get; }

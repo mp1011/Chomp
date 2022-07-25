@@ -1,4 +1,5 @@
-﻿using ChompGame.GameSystem;
+﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -200,6 +201,24 @@ namespace ChompGame
                     GraphicsDevice.DrawPrimitives(PrimitiveType.
                                                   TriangleList, 0, vertices);
                 }
+
+                _spriteBatch.Begin(SpriteSortMode.Immediate);
+
+                var p = _gameSystem.GetModule<SpritesModule>().GetSprite(0);
+                var playerX = new MaskedByte(p.Address, (Bit)(_gameSystem.Specs.NameTablePixelWidth / 2 - 1), _gameSystem.Memory);
+                _spriteBatch.DrawString(_font, $"X = {playerX.Value}", new Vector2(0, 0), Color.Green);
+
+                var screenX = new GameBit(p.Address + 3, Bit.Bit6, _gameSystem.Memory);
+                var playerXExtended = new ExtendedByte(playerX, screenX, _gameSystem.Specs.ScreenWidth);
+                _spriteBatch.DrawString(_font, $"Xe = {playerXExtended.Value}", new Vector2(0, 16), Color.Green);
+
+
+                _spriteBatch.DrawString(_font, $"ScrollX = {_gameSystem.GetModule<SpritesModule>().Scroll.X}", new Vector2(0, 32), Color.Green);
+                _spriteBatch.DrawString(_font, $"ScrollY = {_gameSystem.GetModule<SpritesModule>().Scroll.Y}", new Vector2(0, 48), Color.Green);
+
+
+                _spriteBatch.End();
+
             }
             else
             {

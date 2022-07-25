@@ -1,10 +1,11 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.Graphics;
 using System.Linq;
 
 namespace ChompGame.GameSystem
 {
-    class SpritesModule : ScanlineGraphicsModule
+    public class SpritesModule : ScanlineGraphicsModule
     {
         public SpritesModule(MainSystem mainSystem) : base(mainSystem)
         {
@@ -23,14 +24,14 @@ namespace ChompGame.GameSystem
 
         public Sprite GetSprite(int index)
         {
-            return new Sprite(_sprite0Address + GameSystem.Specs.BytesPerSprite * index, GameSystem.Memory, Specs);
+            return new Sprite(_sprite0Address + GameSystem.Specs.BytesPerSprite * index, GameSystem.Memory, Specs, Scroll);
         }
 
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);
             _sprite0Address = builder.CurrentAddress;
-            Sprites = builder.AddSprite(Specs.MaxSprites);
+            Sprites = builder.AddSprite(Specs.MaxSprites, this);
             ScanlineSprites = builder.AddBytes(Specs.SpritesPerScanline);
         }
 
@@ -54,10 +55,10 @@ namespace ChompGame.GameSystem
 
             for (int i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
-                var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs);
+                var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
 
                 commandCount += commands.AddAttributeChangeCommand(sprite.Palette, sprite.FlipX, sprite.FlipY);
-                commandCount += commands.AddDrawCommand(false, (byte)(sprite.X - currentRow));
+                commandCount += commands.AddDrawCommand(false, (byte)((sprite.X - currentRow).NMod(Specs.ScreenWidth)));
 
                 tilePoint.Index = sprite.Tile;
 

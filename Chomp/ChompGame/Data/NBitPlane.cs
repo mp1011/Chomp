@@ -71,6 +71,7 @@ namespace ChompGame.Data
             get => this[(y * Width) + x];
             set => this[(y * Width) + x] = value;
         }
+
         public int Width { get; }
 
         public int Height { get; }
