@@ -46,5 +46,13 @@ namespace ChompGame.Extensions
 
             return number;
         }
+
+        public static byte Toggle(this byte b, byte c1, byte c2)
+        {
+            if (b == c1)
+                return c2;
+            else
+                return c1;
+        }
     }
 }
