@@ -8,10 +8,6 @@ namespace ChompGame.GameSystem
         
         public int Layer { get; set; }
         public GameByteGridPoint Scroll { get; private set; }
-        public GameByteGridPoint PatternTablePoint => _coreGraphicsModule.ScanlineDrawCommands[Layer].PatternTablePoint;
-        public int CurrentDrawInstructionAddress => _coreGraphicsModule.ScanlineDrawCommands[Layer].CurrentDrawInstructionAddress;
-        public GameByte DrawInstructionAddressOffset => _coreGraphicsModule.ScanlineDrawCommands[Layer].DrawInstructionAddressOffset;
-        public GameByte DrawHoldCounter => _coreGraphicsModule.ScanlineDrawCommands[Layer].DrawHoldCounter;
         public GameByteGridPoint ScreenPoint => _coreGraphicsModule.ScreenPoint;
 
         public ScanlineGraphicsModule(MainSystem gameSystem) : base(gameSystem)

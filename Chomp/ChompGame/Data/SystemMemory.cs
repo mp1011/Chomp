@@ -150,6 +150,19 @@ namespace ChompGame.Data
             return b;
         }
 
+        public BitArray AddBitArray(int length)
+        {
+            var bitArray = new BitArray(CurrentAddress, _systemMemory);
+            var bytes = (int)(Math.Ceiling((float)length / 8));
+            AddBytes(bytes);
+            return bitArray;
+        }
+
+        public TwoBitArray AddTwoBitArray(int length)
+        {
+            return new TwoBitArray(AddBitArray(length), AddBitArray(length));
+        }
+
         public FullGameByteGridPoint AddFullGridPoint() =>
             new FullGameByteGridPoint(AddByte(), AddByte());
 

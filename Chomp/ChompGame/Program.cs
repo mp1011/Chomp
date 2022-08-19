@@ -15,11 +15,12 @@ namespace ChompGame
             //test3D.Run();
             //return;
 
-            //var gameSystem = RunPong();
-            //var gameSystem = RunFullScreenTest();
-            // var gameSystem = RunSnake();
-            // var gameSystem = RunRando();
-            var game = RunPlatformer();
+          //  var game = RunTest();
+           // var game = RunPong();
+            //var game = RunFullScreenTest();
+            // var game = RunSnake();
+            // var game = RunRando();
+             var game = RunPlatformer();
 
             bool quit = false;
             while (!quit)

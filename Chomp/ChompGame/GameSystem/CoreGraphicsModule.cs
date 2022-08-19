@@ -2,6 +2,7 @@
 using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Linq;
 
 namespace ChompGame.GameSystem
@@ -11,8 +12,8 @@ namespace ChompGame.GameSystem
         private Color[] _screenData;
         public GameByteGridPoint ScreenPoint { get; private set; }
         public GameByte CurrentColorIndex { get; private set; }
-        public ScanlineDrawCommands[] ScanlineDrawCommands { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
+        public ScanlineDrawBuffer ScanlineDrawBuffer { get; private set; }
 
         public Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
 
@@ -35,9 +36,14 @@ namespace ChompGame.GameSystem
             else 
                 ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
 
-            ScanlineDrawCommands = Enumerable.Range(0, Specs.ScanlineDrawPlanes)
-                .Select(p => new ScanlineDrawCommands(builder, PatternTable, Specs))
-                .ToArray();
+            switch(Specs.BitsPerPixel)
+            {
+                case 2:
+                    ScanlineDrawBuffer = new TwoBitPixelScanlineDrawBuffer(builder, Specs);
+                    break;
+                default:
+                    throw new Exception("Unsupported bits per pixel");
+            }
         }
 
         public override void OnStartup()
@@ -54,34 +60,22 @@ namespace ChompGame.GameSystem
         {
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
-            byte color0=0, color1=0;
+
+            var palette = GetPalette(0);
+
+            int scanlineColumn = 0;
 
             for (int i = 0; i < _screenData.Length; i++)
             {
-                //todo, optimize/generalize
-                if (ScanlineDrawCommands.Length == 2)
-                {
-                    color1 = ScanlineDrawCommands[1].Update();
-                    color0 = ScanlineDrawCommands[0].Update();
-                }
-                else
-                {
-                    color0 = ScanlineDrawCommands[0].Update();
-                }
+                var color = palette[ScanlineDrawBuffer[scanlineColumn]];
+                _screenData[i] = color;
+                scanlineColumn++;
 
-                if (color1 != 0)
-                {
-                    var palette = GetPalette(ScanlineDrawCommands[1].CurrentAttributes.PaletteIndex);
-                    _screenData[i] = palette[color1];
-                }
-                else
-                {
-                    var palette = GetPalette(ScanlineDrawCommands[0].CurrentAttributes.PaletteIndex);
-                    _screenData[i] = palette[color0];
-                }
-               
                 if (ScreenPoint.Next())
+                {
+                    scanlineColumn = 0;
                     GameSystem.OnHBlank();
+                }
             }
 
             GameSystem.OnVBlank();

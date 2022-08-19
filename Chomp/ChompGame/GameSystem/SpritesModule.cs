@@ -37,63 +37,50 @@ namespace ChompGame.GameSystem
 
         public override void OnHBlank()
         {
-            var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
-            commands.BeginAddDrawInstructions();
-            DrawInstructionAddressOffset.Value = 0;
             FillScanlineSprites();
 
-            DrawInstructionAddressOffset.Value = 0;
-            PatternTablePoint.Reset();
+            var patternTableTilePoint = new ByteGridPoint(
+                Specs.PatternTableTilesAcross,
+                Specs.PatternTableTilesDown);
 
-            var tilePoint = new ByteGridPoint(Specs.PatternTableTilesAcross, Specs.PatternTableTilesDown);
-            var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
-
-            int currentRow = Scroll.X;
-            int commandCount = 0;
-
-            commands.AddAttributeChangeCommand(0, false, false);
+            var patternTablePoint = new ByteGridPoint(
+                Specs.PatternTableWidth,
+                Specs.PatternTableHeight);
 
             for (int i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
+                byte row = (byte)(ScreenPoint.Y - sprite.Y); //todo, scroll
 
-                commandCount += commands.AddAttributeChangeCommand(sprite.Palette, sprite.FlipX, sprite.FlipY);
-                commandCount += commands.AddDrawCommand(false, (byte)((sprite.X - currentRow).NMod(Specs.ScreenWidth)));
+                patternTableTilePoint.Index = sprite.Tile;
 
-                tilePoint.Index = sprite.Tile;
-
-                if (sprite.Orientation == Orientation.Horizontal)
-                    throw new System.NotImplementedException();
-                else
+                if (row >= Specs.TileHeight)
                 {
-                    if (ScreenPoint.Y >= sprite.Y + Specs.TileHeight)
-                        tilePoint.Index += (sprite.Tile2Offset + Specs.PatternTableTilesAcross-1);
+                    patternTableTilePoint.Y++;
+                    patternTableTilePoint.X += (byte)(sprite.Tile2Offset-1);
+                    row = (byte)(row - Specs.TileHeight);
                 }
 
-                int row = (ScreenPoint.Y - sprite.Y) % Specs.TileHeight;
+                patternTablePoint.X = (byte)(patternTableTilePoint.X * Specs.TileWidth);
+                patternTablePoint.Y = (byte)(patternTableTilePoint.Y * Specs.TileHeight + row);
 
-                nextPatternTablePoint.X = (byte)(tilePoint.X * Specs.TileWidth);
-                nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
+                for (int col = 0; col < Specs.TileWidth; col++)
+                {
+                    var pixel = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
+                    if (pixel != 0)
+                    {
+                        int drawCol; 
+                        if(sprite.FlipX)
+                            drawCol = (sprite.X + sprite.Width - col - 1) - Scroll.X;
+                        else 
+                            drawCol= (sprite.X + col) - Scroll.X;
 
-                commandCount += commands.AddTileMoveCommand(nextPatternTablePoint.Index, PatternTablePoint.Index);
-                commandCount += commands.AddDrawCommand(true, (byte)Specs.TileWidth);
-
-                currentRow = sprite.X + Specs.TileWidth;
-                nextPatternTablePoint.Advance(Specs.TileWidth);
-                commandCount += commands.AddTileMoveCommand(0, nextPatternTablePoint.Index);
-                PatternTablePoint.Index = 0;
+                        if (drawCol >= 0 && drawCol < Specs.ScreenWidth)
+                            _coreGraphicsModule.ScanlineDrawBuffer[drawCol] = pixel;
+                    }
+                    patternTablePoint.X++;
+                }
             }
-
-            commands.AddDrawCommand(false, (byte)(Specs.ScreenWidth - currentRow));
-
-            if (DrawInstructionAddressOffset.Value == 0)
-                commandCount += commands.AddDrawCommand(false, (byte)Specs.ScreenWidth);
-
-            DrawInstructionAddressOffset.Value = 255;
-            DrawHoldCounter.Value = 0;
-            PatternTablePoint.Reset();
-
-            DrawInstructionAddressOffset.Value = 255;
         }
 
 

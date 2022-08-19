@@ -23,62 +23,52 @@ namespace ChompGame.GameSystem
 
         public override void OnHBlank()
         {
-            _coreGraphicsModule.ScanlineDrawCommands[Layer].BeginAddDrawInstructions();
-            PatternTablePoint.Reset();
-            
-            var commands = _coreGraphicsModule.ScanlineDrawCommands[Layer];
-            commands.AddAttributeChangeCommand(0, false, false);
+            var nameTablePoint = new ByteGridPoint(
+                Specs.NameTableWidth, 
+                Specs.NameTableHeight);
 
-            var nameTablePoint = new ByteGridPoint(Specs.NameTableWidth, Specs.NameTableHeight);
-            nameTablePoint.X = (byte)(Scroll.X / Specs.TileHeight);
-            nameTablePoint.Y = (byte)((ScreenPoint.Y + Scroll.Y) / Specs.TileHeight);
+            var patternTableTilePoint = new ByteGridPoint(
+                Specs.PatternTableTilesAcross, 
+                Specs.PatternTableTilesDown);
 
-            int row = (ScreenPoint.Y + Scroll.Y) % Specs.TileHeight;
-            int col = (ScreenPoint.X + Scroll.X) % Specs.TileWidth;
-            var tilePoint = new ByteGridPoint(Specs.PatternTableTilesAcross, Specs.PatternTableTilesDown);
-            var nextPatternTablePoint = new ByteGridPoint(Specs.PatternTableWidth, Specs.PatternTableHeight);
+            var patternTablePoint = new ByteGridPoint(
+                Specs.PatternTableWidth,
+                Specs.PatternTableHeight);
 
-            int colsRemaining = Specs.ScreenWidth / Specs.TileWidth;
-            if (col != 0)
-                colsRemaining++;
+            nameTablePoint.X = (byte)(Scroll.X / Specs.TileWidth);
+            nameTablePoint.Y = (byte)(ScreenPoint.Y / Specs.TileHeight); // todo, scroll
 
-            int screenColumn = 0;
+            patternTableTilePoint.Index = NameTable[nameTablePoint.Index];
+          
+            int col = Scroll.X % Specs.TileWidth;
+            int row = ScreenPoint.Y % Specs.TileHeight; //todo, scroll
+            int remainingTilePixels = Specs.TileWidth - col;
 
-            while (colsRemaining-- > 0)
+            patternTablePoint.X = (byte)(patternTableTilePoint.X * Specs.TileWidth + col);
+            patternTablePoint.Y = (byte)(patternTableTilePoint.Y * Specs.TileHeight + row);
+
+            for (int i =0; i < Specs.ScreenWidth; i++)
             {
-                tilePoint.Index = NameTable[nameTablePoint.Index];
-                nextPatternTablePoint.X = (byte)((tilePoint.X * Specs.TileWidth) + col);
-                nextPatternTablePoint.Y = (byte)((tilePoint.Y * Specs.TileHeight) + row);
+                _coreGraphicsModule.ScanlineDrawBuffer[i] = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
 
-                _coreGraphicsModule.ScanlineDrawCommands[Layer].AddTileMoveCommand(
-                    pixelDestination: nextPatternTablePoint.Index,
-                    currentPixelIndex: PatternTablePoint.Index);
-
-                PatternTablePoint.Index = nextPatternTablePoint.Index;
-                var hold = Specs.TileWidth - col;
-                screenColumn += hold;
-
-                _coreGraphicsModule.ScanlineDrawCommands[0].AddDrawCommand(moveIndex: true, amount: (byte)hold);
-                PatternTablePoint.Advance(hold);
-                col = 0;
-
-                nameTablePoint.NextColumn();
-            }
-
-            PatternTablePoint.X = 0;
-            PatternTablePoint.Y = 0;
-            DrawHoldCounter.Value = 0;
-
-            DrawInstructionAddressOffset.Value = 255;
-            PatternTablePoint.Reset();
+                remainingTilePixels--;
+                if(remainingTilePixels == 0)
+                {
+                    nameTablePoint.X++;
+                    patternTableTilePoint.Index = NameTable[nameTablePoint.Index];
+                    remainingTilePixels = Specs.TileWidth;
+                    patternTablePoint.X = (byte)(patternTableTilePoint.X * Specs.TileWidth);
+                    patternTablePoint.Y = (byte)(patternTableTilePoint.Y * Specs.TileHeight + row);
+                }
+                else
+                {
+                    patternTablePoint.X++;
+                }
+            }          
         }
 
         public override void OnVBlank()
         {
-            PatternTablePoint.X = 0;
-            PatternTablePoint.Y = 0;
-            DrawHoldCounter.Value = 0;
-            DrawInstructionAddressOffset.Value = 0;
         }
     }
 }

@@ -2,7 +2,6 @@
 using ChompGame.Extensions;
 using ChompGame.Helpers;
 using ChompGame.ROM;
-using System;
 
 namespace ChompGame.GameSystem
 {
@@ -54,7 +53,6 @@ namespace ChompGame.GameSystem
             memoryBuilder.BeginROM();
             _romPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             _romNameTable = memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
-
         }
 
         public override void OnStartup()
@@ -114,7 +112,7 @@ namespace ChompGame.GameSystem
             enemySprite.Palette = 2;
 
             _enemy.SpriteIndex = 1;
-            _enemy.XSpeed = -4;
+            _enemy.XSpeed = 0; // -4;
             _enemy.YSpeed = 0;
 
             var bullet = _spritesModule.GetSprite(2);
@@ -196,16 +194,18 @@ namespace ChompGame.GameSystem
                 _bulletTimer.Value = 0;
 
                 if (bullet.FlipX)
-                    _bullet.XSpeed = 16;
+                    _bullet.XSpeed = 32;
                 else
-                    _bullet.XSpeed = -16;
+                    _bullet.XSpeed = -32;
+
+                _bullet.YSpeed = 0;
             }
 
             if(bullet.Tile != 0)
             {
                 _bulletTimer.Value++;
 
-                if (_bulletTimer.Value == 64)
+                if (_bulletTimer.Value == 200)
                 {
                     bullet.Tile = 0;
                     _bulletTimer.Value = 0;
@@ -244,10 +244,12 @@ namespace ChompGame.GameSystem
 
         private void HandleScroll()
         {
-            var x = _player.X + (Specs.TileWidth / 2);          
-            var newScrollX = (x - (Specs.ScreenWidth / 2)).NModByte(Specs.NameTablePixelWidth);
+            var x = _player.X + (Specs.TileWidth / 2);
+            var newScrollX = x - (Specs.ScreenWidth / 2);
+            if (newScrollX < 0)
+                newScrollX = 0;
               
-            _tileModule.Scroll.X = newScrollX;
+            _tileModule.Scroll.X = (byte)newScrollX;
             _spritesModule.Scroll.X = _tileModule.Scroll.X;            
         }
 

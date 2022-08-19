@@ -25,13 +25,13 @@ namespace ChompGame.GameSystem
             _spritesModule.Sprites[0].X = 12;
             _spritesModule.Sprites[0].Y = 0;
 
-            _spritesModule.Sprites[1].Tile = 5;
-            _spritesModule.Sprites[1].X = 20;
-            _spritesModule.Sprites[1].Y = 16;
+            //_spritesModule.Sprites[1].Tile = 5;
+            //_spritesModule.Sprites[1].X = 20;
+            //_spritesModule.Sprites[1].Y = 16;
 
-            _spritesModule.Sprites[2].Tile = 6;
-            _spritesModule.Sprites[2].X = 24;
-            _spritesModule.Sprites[2].Y = 20;
+            //_spritesModule.Sprites[2].Tile = 6;
+            //_spritesModule.Sprites[2].X = 24;
+            //_spritesModule.Sprites[2].Y = 20;
 
 
             var tileModule = GameSystem.GetModule<TileModule>();
@@ -206,12 +206,14 @@ namespace ChompGame.GameSystem
 
         public void OnVBlank()
         {
-            throw new NotImplementedException();
+            _tileModule.OnVBlank();
+            _spritesModule.OnVBlank();
         }
 
         public void OnHBlank()
         {
-            throw new NotImplementedException();
+            _tileModule.OnHBlank();
+            _spritesModule.OnHBlank();
         }
     }
 }
