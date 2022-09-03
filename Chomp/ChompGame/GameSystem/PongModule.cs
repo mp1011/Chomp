@@ -430,5 +430,10 @@ namespace ChompGame.GameSystem
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
         }
+
+        public byte GetPalette(int pixel)
+        {
+            return 0;
+        }
     }
 }

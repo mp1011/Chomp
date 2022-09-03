@@ -61,12 +61,21 @@ namespace ChompGame.GameSystem
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
 
+            byte nextPaletteIndex = 0;
+            byte paletteIndex = 0;
             var palette = GetPalette(0);
 
             int scanlineColumn = 0;
 
             for (int i = 0; i < _screenData.Length; i++)
             {
+                nextPaletteIndex = GameSystem.GetPalette(i);
+                if(nextPaletteIndex != paletteIndex)
+                {
+                    paletteIndex = nextPaletteIndex;
+                    palette = GetPalette(nextPaletteIndex);
+                }
+
                 var color = palette[ScanlineDrawBuffer[scanlineColumn]];
                 _screenData[i] = color;
                 scanlineColumn++;

@@ -27,6 +27,11 @@ namespace ChompGame.GameSystem
             return new Sprite(_sprite0Address + GameSystem.Specs.BytesPerSprite * index, GameSystem.Memory, Specs, Scroll);
         }
 
+        public Sprite GetScanlineSprite(int index)
+        {
+            return new Sprite(_sprite0Address + ScanlineSprites[index], GameSystem.Memory, GameSystem.Specs, Scroll);
+        }
+
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);

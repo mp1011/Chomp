@@ -34,5 +34,10 @@ namespace ChompGame.GameSystem
         {
             memoryBuilder.BeginROM();
         }
+
+        public byte GetPalette(int pixel)
+        {
+            return 0;
+        }
     }
 }

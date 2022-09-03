@@ -9,7 +9,7 @@ namespace ChompGame.GameSystem
     {
         public enum PaletteIndex
         {
-            Background=0,
+            Background = 0,
             Sprites,
             Info
         }
@@ -30,8 +30,8 @@ namespace ChompGame.GameSystem
         private MovingSprite _enemy;
         private MovingSprite _bullet;
 
-        public PlatformerModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule, 
-            SpritesModule spritesModule, TileModule tileModule) 
+        public PlatformerModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule,
+            SpritesModule spritesModule, TileModule tileModule)
             : base(mainSystem)
         {
             _audioModule = audioModule;
@@ -185,7 +185,7 @@ namespace ChompGame.GameSystem
                 _bulletTimer.Value++;
 
             var bullet = _spritesModule.GetSprite(2);
-            if(_bulletTimer.Value == 64 && bullet.Tile==0)
+            if (_bulletTimer.Value == 64 && bullet.Tile == 0)
             {
                 bullet.Tile = 20;
                 bullet.X = _enemy.X;
@@ -201,7 +201,7 @@ namespace ChompGame.GameSystem
                 _bullet.YSpeed = 0;
             }
 
-            if(bullet.Tile != 0)
+            if (bullet.Tile != 0)
             {
                 _bulletTimer.Value++;
 
@@ -212,12 +212,12 @@ namespace ChompGame.GameSystem
                 }
             }
 
-            
+
         }
 
         private void UpdateAnimation()
         {
-            if(_timer % 8 == 0)
+            if (_timer % 8 == 0)
             {
                 if (_player.XSpeed != 0)
                 {
@@ -229,14 +229,14 @@ namespace ChompGame.GameSystem
                 }
             }
 
-            if(_timer % 16 == 0)
+            if (_timer % 16 == 0)
             {
                 var enemy = _spritesModule.GetSprite(1);
                 enemy.Tile = enemy.Tile.Toggle(18, 19);
             }
 
 
-            if(_player.XSpeed==0)
+            if (_player.XSpeed == 0)
             {
                 _player.GetSprite().Tile2Offset = 1;
             }
@@ -248,9 +248,9 @@ namespace ChompGame.GameSystem
             var newScrollX = x - (Specs.ScreenWidth / 2);
             if (newScrollX < 0)
                 newScrollX = 0;
-              
+
             _tileModule.Scroll.X = (byte)newScrollX;
-            _spritesModule.Scroll.X = _tileModule.Scroll.X;            
+            _spritesModule.Scroll.X = _tileModule.Scroll.X;
         }
 
         private void CheckCollisions()
@@ -274,6 +274,34 @@ namespace ChompGame.GameSystem
         {
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
+        }
+
+        //todo, probably can optimize this
+        public byte GetPalette(int pixel)
+        {
+            int screenX = pixel % GameSystem.Specs.ScreenWidth;
+            int screenY = pixel / GameSystem.Specs.ScreenHeight;
+
+            int scrollX = screenX + _tileModule.Scroll.X;
+            int scrollY = screenY + _tileModule.Scroll.Y;
+
+            for (int i = 0; i < _spritesModule.ScanlineSprites.Length && _spritesModule.ScanlineSprites[i] != 255; i++)
+            {
+                var sprite = _spritesModule.GetScanlineSprite(i);
+
+                if (scrollY < sprite.Y || scrollY >= sprite.Bottom)
+                    continue;
+
+                if (scrollX >= sprite.X && scrollX < sprite.Right)
+                {
+                    if (GameSystem.CoreGraphicsModule.ScanlineDrawBuffer[screenX] == 0)
+                        return _tileModule.BackgroundPaletteIndex;
+                    else 
+                        return sprite.Palette;
+                }
+            }
+
+            return _tileModule.BackgroundPaletteIndex;
         }
     }
 }

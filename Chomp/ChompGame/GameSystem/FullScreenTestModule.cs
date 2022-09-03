@@ -14,7 +14,7 @@ namespace ChompGame.GameSystem
 
         public FullScreenTestModule(MainSystem mainSystem) : base(mainSystem)
         {
-            _spritesModule= mainSystem.GetModule<SpritesModule>();
+            _spritesModule = mainSystem.GetModule<SpritesModule>();
             _inputModule = mainSystem.GetModule<InputModule>();
             _tileModule = mainSystem.GetModule<TileModule>();
         }
@@ -32,7 +32,7 @@ namespace ChompGame.GameSystem
         public void OnLogicUpdate()
         {
             _inputModule.OnLogicUpdate();
-            
+
             if (_inputModule.Player1.LeftKey.IsDown() && _tileModule.Scroll.X > 0)
                 _tileModule.Scroll.X--;
             else if (_inputModule.Player1.RightKey.IsDown() && _tileModule.Scroll.X < 255)
@@ -95,6 +95,11 @@ namespace ChompGame.GameSystem
         {
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
+        }
+
+        public byte GetPalette(int pixel)
+        {
+            return 0;
         }
     }
 }
