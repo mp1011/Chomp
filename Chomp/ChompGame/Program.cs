@@ -140,10 +140,12 @@ namespace ChompGame
                 s => new SpritesModule(s),
                 s => new InputModule(s),
                 s => new TileModule(s),
+                s => new StatusBarModule(s, s.GetModule<TileModule>()),
                 s => new PlatformerModule(s, s.GetModule<InputModule>(),
                                        s.GetModule<AudioModule>(),
                                        s.GetModule<SpritesModule>(),
-                                       s.GetModule<TileModule>()));
+                                       s.GetModule<TileModule>(),
+                                       s.GetModule<StatusBarModule>()));
 
             return RunGame(gameSystem);
         }

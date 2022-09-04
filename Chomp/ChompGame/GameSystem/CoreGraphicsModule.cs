@@ -46,6 +46,15 @@ namespace ChompGame.GameSystem
             }
         }
 
+        public void WriteTileToScanlineBuffer(int startIndex, PatternTablePoint patternTablePoint)
+        {
+            for(int i = 0; i < Specs.TileWidth; i++)
+            {
+                ScanlineDrawBuffer[startIndex + i] = PatternTable[patternTablePoint.PixelIndex];
+                patternTablePoint.PixelIndex++;
+            }
+        }
+
         public override void OnStartup()
         {
             var palette = GetPalette(0);

@@ -169,7 +169,7 @@ namespace ChompGame.GameSystem
             Color.GreenYellow,  //10
             Color.LightSeaGreen,//11
             Color.SaddleBrown,  //12
-            Color.DarkSlateBlue,   //13
+            Color.DarkSlateBlue, //13
             Color.Tan,          //14
             Color.LightYellow    //15
         };

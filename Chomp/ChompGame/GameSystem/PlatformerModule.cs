@@ -19,6 +19,7 @@ namespace ChompGame.GameSystem
         private readonly SpritesModule _spritesModule;
         private readonly AudioModule _audioModule;
         private readonly TileModule _tileModule;
+        private readonly StatusBarModule _statusBarModule;
         private GameByte _timer;
 
         private GameByte _bulletTimer;
@@ -31,13 +32,14 @@ namespace ChompGame.GameSystem
         private MovingSprite _bullet;
 
         public PlatformerModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule,
-            SpritesModule spritesModule, TileModule tileModule)
+            SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule)
             : base(mainSystem)
         {
             _audioModule = audioModule;
             _inputModule = inputModule;
             _spritesModule = spritesModule;
             _tileModule = tileModule;
+            _statusBarModule = statusBarModule;
             _collisionDetector = new CollisionDetector(tileModule, Specs);
         }
 
@@ -75,6 +77,11 @@ namespace ChompGame.GameSystem
             enemyPalette.SetColor(2, 11);
             enemyPalette.SetColor(3, 12);
 
+            var statusPalette = GameSystem.CoreGraphicsModule.GetPalette(3);
+            statusPalette.SetColor(0, 15);
+            statusPalette.SetColor(1, 12);
+            statusPalette.SetColor(2, 11);
+            statusPalette.SetColor(3, 15);
 
             _tileModule.Layer = 0;
             _spritesModule.Layer = 1;
@@ -122,6 +129,12 @@ namespace ChompGame.GameSystem
             bullet.Palette = 2;
 
             _bullet.SpriteIndex = 2;
+
+            _statusBarModule.Score = 4123;
+            _statusBarModule.Health = 5;
+            _statusBarModule.MaxHealth = 10;
+
+            _statusBarModule.OnStartup();
         }
 
 
@@ -272,8 +285,15 @@ namespace ChompGame.GameSystem
 
         public void OnHBlank()
         {
-            _tileModule.OnHBlank();
-            _spritesModule.OnHBlank();
+            if (GameSystem.CoreGraphicsModule.ScreenPoint.Y < 6)
+            {
+                _statusBarModule.OnHBlank();
+            }
+            else
+            {
+                _tileModule.OnHBlank();
+                _spritesModule.OnHBlank();
+            }
         }
 
         //todo, probably can optimize this
@@ -281,6 +301,9 @@ namespace ChompGame.GameSystem
         {
             int screenX = pixel % GameSystem.Specs.ScreenWidth;
             int screenY = pixel / GameSystem.Specs.ScreenHeight;
+
+            if (screenY < 6)
+                return 3;
 
             int scrollX = screenX + _tileModule.Scroll.X;
             int scrollY = screenY + _tileModule.Scroll.Y;
