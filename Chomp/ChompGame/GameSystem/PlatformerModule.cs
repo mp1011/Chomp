@@ -14,14 +14,23 @@ namespace ChompGame.GameSystem
             Info
         }
 
+        public enum GameState : byte
+        {
+            Normal=0,
+            LoseLife=1,
+            ResetLevel=2
+        }
+
+
         private CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
         private readonly BankAudioModule _audioModule;
         private readonly TileModule _tileModule;
         private readonly StatusBarModule _statusBarModule;
-        private GameByte _timer;
 
+        private GameByteEnum<GameState> _gameState;
+        private GameByte _timer;
         private GameByte _bulletTimer;
 
         private NBitPlane _romPatternTable;
@@ -47,6 +56,7 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
+            _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
             _player = new MovingSprite(_spritesModule, memoryBuilder);
             _enemy = new MovingSprite(_spritesModule, memoryBuilder);
             _bullet = new MovingSprite(_spritesModule, memoryBuilder);
@@ -145,20 +155,161 @@ namespace ChompGame.GameSystem
             _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayG;
             _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayD;
             _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayASharp;
+
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayG;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayFSharp;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayF;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayE;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayDSharp;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayD;
         }
 
         public void OnLogicUpdate()
         {
-            _audioModule.OnLogicUpdate();
-            _inputModule.OnLogicUpdate();
             _timer.Value++;
 
-            UpdatePlayerMovement();
-            UpdateEnemy();
-            UpdateAnimation();
-            HandleScroll();
+            _audioModule.OnLogicUpdate();
+            _inputModule.OnLogicUpdate();
+            
+            switch(_gameState.Value)
+            {
+                case GameState.Normal:
+                    UpdatePlayerMovement();
+                    UpdateEnemy();
+                    UpdateAnimation();
+                    HandleScroll();
+                    HandlePlayerHitTimer();
+                    break;
 
-            HandlePlayerHitTimer();
+                case GameState.LoseLife:
+
+                    HandleLoseLife();
+                    break;
+
+                case GameState.ResetLevel:
+
+                    _tileModule.Scroll.X = 0;
+                    _spritesModule.Scroll.X = 0;
+
+                    var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
+                    bgPalette.SetColor(0, 0);
+                    bgPalette.SetColor(1, 1);
+                    bgPalette.SetColor(2, 2);
+                    bgPalette.SetColor(3, 3);
+
+                    var playerPalette = GameSystem.CoreGraphicsModule.GetPalette(1);
+                    playerPalette.SetColor(0, 6);
+                    playerPalette.SetColor(1, 6);
+                    playerPalette.SetColor(2, 14);
+                    playerPalette.SetColor(3, 13);
+
+                    var enemyPalette = GameSystem.CoreGraphicsModule.GetPalette(2);
+                    enemyPalette.SetColor(0, 3);
+                    enemyPalette.SetColor(1, 7);
+                    enemyPalette.SetColor(2, 11);
+                    enemyPalette.SetColor(3, 12);
+
+                    var statusPalette = GameSystem.CoreGraphicsModule.GetPalette(3);
+                    statusPalette.SetColor(0, 15);
+                    statusPalette.SetColor(1, 12);
+                    statusPalette.SetColor(2, 11);
+                    statusPalette.SetColor(3, 15);
+
+                    _tileModule.Layer = 0;
+                    _spritesModule.Layer = 1;
+
+                    var playerSprite = _spritesModule.GetSprite(0);
+                    playerSprite.X = 16;
+                    playerSprite.Y = 0;
+                    playerSprite.Tile = 16;
+                    playerSprite.Orientation = Orientation.Vertical;
+                    playerSprite.Tile2Offset = 1;
+                    playerSprite.Palette = 1;
+
+                    _player.SpriteIndex = 0;
+                    _player.XSpeed = 0;
+                    _player.YSpeed = 0;
+
+                    var enemySprite = _spritesModule.GetSprite(1);
+                    enemySprite.X = 30;
+                    enemySprite.Y = 16;
+                    enemySprite.Tile = 18;
+                    enemySprite.Orientation = Orientation.Vertical;
+                    enemySprite.Tile2Offset = 1;
+                    enemySprite.Palette = 2;
+
+                    _enemy.SpriteIndex = 1;
+                    _enemy.XSpeed = 0; // -4;
+                    _enemy.YSpeed = 0;
+
+                    var bullet = _spritesModule.GetSprite(2);
+                    bullet.Tile = 0;
+                    bullet.Orientation = Orientation.Vertical;
+                    bullet.Tile2Offset = 0;
+                    bullet.Palette = 2;
+
+                    _bullet.SpriteIndex = 2;
+
+                    _statusBarModule.Score = 4123;
+                    _statusBarModule.Health = 5;
+                    _statusBarModule.MaxHealth = 10;
+
+                    _gameState.Value = GameState.Normal;
+                    break;
+            }
+        }
+
+        private void HandleLoseLife()
+        {
+            if(_playerHitTimer.Value == 254)
+            {
+                _audioModule.GetChannel(0).Play(5, 32, 6);
+                _bulletTimer.Value = 0;
+            }
+
+            if((_timer.Value % 4) == 0)
+            {
+                var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
+
+                if (_bulletTimer.Value == 0)
+                {
+                    _bulletTimer.Value = 1;
+                    bgPalette.SetColor(0, 0);
+                    bgPalette.SetColor(1, 1);
+                    bgPalette.SetColor(2, 2);
+                    bgPalette.SetColor(3, 3);
+                }
+                else if (_bulletTimer.Value == 1)
+                {
+                    _bulletTimer.Value = 2;
+                    bgPalette.SetColor(0, 1);
+                    bgPalette.SetColor(1, 2);
+                    bgPalette.SetColor(2, 3);
+                    bgPalette.SetColor(3, 0);
+                }
+                else if (_bulletTimer.Value == 2)
+                {
+                    _bulletTimer.Value = 3;
+                    bgPalette.SetColor(0, 2);
+                    bgPalette.SetColor(1, 3);
+                    bgPalette.SetColor(2, 0);
+                    bgPalette.SetColor(3, 1);
+                }
+                else if (_bulletTimer.Value == 3)
+                {
+                    _bulletTimer.Value = 0;
+                    bgPalette.SetColor(0, 3);
+                    bgPalette.SetColor(1, 0);
+                    bgPalette.SetColor(2, 1);
+                    bgPalette.SetColor(3, 2);
+                }
+            }
+
+            _playerHitTimer.Value--;
+            if(_playerHitTimer.Value == 0)
+            {
+                _gameState.Value = GameState.ResetLevel;
+            }
         }
 
         private void HandlePlayerHitTimer()
@@ -251,8 +402,6 @@ namespace ChompGame.GameSystem
                     _bulletTimer.Value = 0;
                 }
             }
-
-
         }
 
         private void UpdateAnimation()
@@ -308,9 +457,18 @@ namespace ChompGame.GameSystem
                 if (_collisionDetector.CheckCollision(_player, _enemy)
                     || _collisionDetector.CheckCollision(_player, _bullet))
                 {
-                    _audioModule.GetChannel(0).Play(0, 4, 5);
-                    _playerHitTimer.Value = 64;
                     _statusBarModule.Health--;
+
+                    if(_statusBarModule.Health > 0)
+                    {
+                        _audioModule.GetChannel(0).Play(0, 4, 5);
+                        _playerHitTimer.Value = 64;
+                    }
+                    else
+                    {
+                        _gameState.Value = GameState.LoseLife;
+                        _playerHitTimer.Value = 255;
+                    }
                 }
             }
         }
