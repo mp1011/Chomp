@@ -10,7 +10,6 @@
         D,
         DSharp,
         E,
-        ESharp,
         F,
         FSharp,
         G,

@@ -29,7 +29,7 @@ namespace ChompGame.GameSystem
 
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
-        private readonly AudioModule _audioModule;
+        private readonly BaseAudioModule _audioModule;
         private readonly TileModule _tileModule;
 
         private NBitPlane _romPatternTable;
@@ -53,7 +53,7 @@ namespace ChompGame.GameSystem
         private GameByte _throttle;
         private GameByte _collected;
 
-        public SnakeModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule, 
+        public SnakeModule(MainSystem mainSystem, InputModule inputModule, BaseAudioModule audioModule, 
             SpritesModule spritesModule, TileModule tileModule) 
             : base(mainSystem)
         {
@@ -94,10 +94,11 @@ namespace ChompGame.GameSystem
 
         public void PlayBeep(MusicNote note, int octave, byte duration=4)
         {
-            _audioModule.Channels[0].Volume = 128;
-            _audioModule.Channels[0].Value = SoundHelper.GetNote(note, octave);
-            _audioModule.Channels[0].Playing = true;
-            _soundTimer.Value = duration;
+            throw new NotImplementedException();
+            //_audioModule.Channels[0].Volume = 128;
+            //_audioModule.Channels[0].Value = SoundExtensions.GetFrequency(note, octave);
+            //_audioModule.Channels[0].Playing = true;
+            //_soundTimer.Value = duration;
         }
 
         public override void OnStartup()
@@ -168,8 +169,9 @@ namespace ChompGame.GameSystem
             if(_soundTimer.Value > 0)
             {
                 _soundTimer.Value--;
-                if (_soundTimer == 0)
-                    _audioModule.Channels[0].Playing = false;
+                throw new NotImplementedException();
+                //if (_soundTimer == 0)
+                //    _audioModule.Channels[0].Playing = false;
             }
 
             switch(_gameState.Value)
@@ -539,7 +541,7 @@ namespace ChompGame.GameSystem
                     case 3:
                     case 5:
                     case 7:
-                        PlayBeep(MusicNote.ESharp, 0, 8);
+                        PlayBeep(MusicNote.E, 0, 8);
                         break;
                     case 6:
                         PlayBeep(MusicNote.DSharp, 0, 8);

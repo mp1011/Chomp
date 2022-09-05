@@ -37,6 +37,8 @@ namespace ChompGame.GameSystem
         public virtual int NumPalettes { get; } = 1;
 
         public virtual int BitsPerPixel => 2;
+
+        public virtual int AudioROMBytes => 64;
     };
 
     public class PongSpecs : Specs
@@ -149,7 +151,7 @@ namespace ChompGame.GameSystem
         public override int TileWidth => 4;
         public override int TileHeight => 4;
 
-        public override int AudioChannels => 1;
+        public override int AudioChannels => 2;
 
         public override int BytesPerPalette => 2;
         public override int NumPalettes => 4;

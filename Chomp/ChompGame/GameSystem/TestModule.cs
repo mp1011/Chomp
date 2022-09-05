@@ -57,12 +57,13 @@ namespace ChompGame.GameSystem
           
             var thisOctave = basis * Math.Pow(2, octave);
             var frequency = thisOctave * Math.Pow(2, (double)semitone / 12.0);
-        
-            var audio = GameSystem.GetModule<AudioModule>();
-            audio.Channels[0].Value = (ushort)(frequency);
-            audio.Channels[0].Volume=200;
-            audio.Channels[0].Playing = true;
-            noteTimer = 10;
+
+            throw new NotImplementedException();
+            //var audio = GameSystem.GetModule<AudioModule>();
+            //audio.Channels[0].Value = (ushort)(frequency);
+            //audio.Channels[0].Volume=200;
+            //audio.Channels[0].Playing = true;
+            //noteTimer = 10;
         }
 
         private int _octave = 1;
@@ -79,9 +80,9 @@ namespace ChompGame.GameSystem
                 noteTimer--;
                 if(noteTimer == 0)
                 {
-                    var audio = GameSystem.GetModule<AudioModule>();
-                    audio.Channels[0].Playing = false;
-
+                    throw new NotImplementedException();
+                    //var audio = GameSystem.GetModule<BaseAudioModule>();
+                    //audio.Channels[0].Playing = false;
                 }
             }
 

@@ -17,7 +17,7 @@ namespace ChompGame.GameSystem
         private CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
-        private readonly AudioModule _audioModule;
+        private readonly BankAudioModule _audioModule;
         private readonly TileModule _tileModule;
         private readonly StatusBarModule _statusBarModule;
         private GameByte _timer;
@@ -31,7 +31,9 @@ namespace ChompGame.GameSystem
         private MovingSprite _enemy;
         private MovingSprite _bullet;
 
-        public PlatformerModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule,
+        private GameByte _playerHitTimer;
+
+        public PlatformerModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
             SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule)
             : base(mainSystem)
         {
@@ -51,6 +53,7 @@ namespace ChompGame.GameSystem
 
             _timer = memoryBuilder.AddByte();
             _bulletTimer = memoryBuilder.AddByte();
+            _playerHitTimer = memoryBuilder.AddByte();
 
             memoryBuilder.BeginROM();
             _romPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
@@ -135,8 +138,14 @@ namespace ChompGame.GameSystem
             _statusBarModule.MaxHealth = 10;
 
             _statusBarModule.OnStartup();
-        }
 
+            byte index = 0;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.OctaveUp;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.OctaveUp;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayG;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayD;
+            _audioModule.NoteSequence[index++] = Audio.AudioAction.PlayASharp;
+        }
 
         public void OnLogicUpdate()
         {
@@ -148,6 +157,24 @@ namespace ChompGame.GameSystem
             UpdateEnemy();
             UpdateAnimation();
             HandleScroll();
+
+            HandlePlayerHitTimer();
+        }
+
+        private void HandlePlayerHitTimer()
+        {
+            if (_playerHitTimer.Value == 0)
+                return;
+
+            _playerHitTimer.Value--;
+            if ((_playerHitTimer.Value % 2) == 0)
+            {
+                _player.GetSprite().Palette = 1;
+            }
+            else
+            {
+                _player.GetSprite().Palette = 2;
+            }
         }
 
         private void UpdatePlayerMovement()
@@ -275,6 +302,17 @@ namespace ChompGame.GameSystem
             }
 
             _collisionDetector.DetectCollisions(_enemy);
+
+            if (_playerHitTimer.Value == 0)
+            {
+                if (_collisionDetector.CheckCollision(_player, _enemy)
+                    || _collisionDetector.CheckCollision(_player, _bullet))
+                {
+                    _audioModule.GetChannel(0).Play(0, 4, 5);
+                    _playerHitTimer.Value = 64;
+                    _statusBarModule.Health--;
+                }
+            }
         }
 
         public void OnVBlank()

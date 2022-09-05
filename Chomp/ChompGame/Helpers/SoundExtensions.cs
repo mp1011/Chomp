@@ -3,9 +3,9 @@ using System;
 
 namespace ChompGame.Helpers
 {
-    static class SoundHelper
+    static class SoundExtensions
     {
-        public static ushort GetNote(MusicNote note, int octave)
+        public static ushort GetFrequency(this MusicNote note, int octave)
         {
             int semitone = (int)note;
             var thisOctave = 110 * Math.Pow(2, octave);

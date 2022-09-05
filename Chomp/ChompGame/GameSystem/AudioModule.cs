@@ -1,43 +1,15 @@
-﻿using ChompGame.Data;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Audio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ChompGame.GameSystem
 {
-    class AudioModule : Module, ILogicUpdateModule
+    abstract class BaseAudioModule : Module, ILogicUpdateModule
     {
-        public AudioChannel[] Channels { get; private set; }
-
-        public AudioModule(MainSystem mainSystem) : base(mainSystem)
+        public BaseAudioModule(MainSystem mainSystem) : base(mainSystem)
         {
         }
 
-        public override void OnStartup()
-        {
-        }
-
-        public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
-        {
-            Channels = new AudioChannel[GameSystem.Specs.AudioChannels];
-
-            var playing = memoryBuilder.AddByte();
-
-            if (Channels.Length > 1)
-                throw new Exception("fix me");
-
-            for (int i = 0; i < Channels.Length; i++)
-            {
-                Channels[i] = new AudioChannel(
-                    audio: this,
-                    value: memoryBuilder.AddShort(),
-                    volume: memoryBuilder.AddByte(),
-                    playing: new GameBit(playing.Address, Bit.Bit0, memoryBuilder.Memory));
-            }
-        }
+        public abstract void OnLogicUpdate();
 
         public SoundEffect GenerateWave(ushort frequency, byte volume, double seconds, int overtones, Func<double,double> function)
         {
@@ -88,10 +60,5 @@ namespace ChompGame.GameSystem
             return new SoundEffect(buffer, 44100, AudioChannels.Mono);
         }
 
-        public void OnLogicUpdate()
-        {
-            foreach (var channel in Channels)
-                channel.Update();
-        }       
     }
 }

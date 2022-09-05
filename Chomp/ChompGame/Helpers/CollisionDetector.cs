@@ -23,6 +23,11 @@ namespace ChompGame.Helpers
             _tileModule = tileModule;
         }
 
+        public bool CheckCollision(MovingSprite s1, MovingSprite s2)
+        {
+            return s1.Bounds.Intersects(s2.Bounds);
+        }
+
         public CollisionInfo DetectCollisions(MovingSprite actor)
         {
             var collisionInfo = new CollisionInfo();

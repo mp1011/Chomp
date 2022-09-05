@@ -19,7 +19,7 @@ namespace ChompGame.GameSystem
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
         private readonly TileModule _tileModule;
-        private readonly AudioModule _audioModule;
+        private readonly BaseAudioModule _audioModule;
 
         private NBitPlane _romPatternTable;
         private NBitPlane _romNameTable;
@@ -32,7 +32,7 @@ namespace ChompGame.GameSystem
 
         private GameByteEnum<GameState> _gameState;
         private GameByte _var;
-        public PongModule(MainSystem mainSystem, InputModule inputModule, AudioModule audioModule, SpritesModule spritesModule,
+        public PongModule(MainSystem mainSystem, InputModule inputModule, BaseAudioModule audioModule, SpritesModule spritesModule,
             TileModule tileModule) 
             : base(mainSystem)
         {
@@ -59,10 +59,11 @@ namespace ChompGame.GameSystem
 
         public void PlayBeep(MusicNote note, int octave, byte duration=4)
         {
-            _audioModule.Channels[0].Volume = 128;
-            _audioModule.Channels[0].Value = SoundHelper.GetNote(note, octave);
-            _audioModule.Channels[0].Playing = true;
-            _soundTimer.Value = duration;
+            throw new NotImplementedException();
+            //_audioModule.Channels[0].Volume = 128;
+            //_audioModule.Channels[0].Value = SoundExtensions.GetFrequency(note, octave);
+            //_audioModule.Channels[0].Playing = true;
+            //_soundTimer.Value = duration;
         }
 
         public override void OnStartup()
@@ -102,8 +103,9 @@ namespace ChompGame.GameSystem
             if(_soundTimer.Value > 0)
             {
                 _soundTimer.Value--;
-                if (_soundTimer == 0)
-                    _audioModule.Channels[0].Playing = false;
+                throw new NotImplementedException();
+                //if (_soundTimer == 0)
+                //    _audioModule.Channels[0].Playing = false;
             }
 
             switch(_gameState.Value)
@@ -261,7 +263,7 @@ namespace ChompGame.GameSystem
                 if (_var.Value == 3)
                     PlayBeep(MusicNote.F, 2, 8);
                 else if (_var.Value == 4)
-                    PlayBeep(MusicNote.ESharp, 2, 8);
+                    PlayBeep(MusicNote.E, 2, 8);
                 else if (_var.Value == 5)
                     PlayBeep(MusicNote.E, 2, 8);
                 else if (_var.Value == 6)

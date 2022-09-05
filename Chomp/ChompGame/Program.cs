@@ -61,7 +61,7 @@ namespace ChompGame
             Func<GraphicsDevice,MainSystem> gameSystem = 
                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                    s => new TileModule(s),
-                   s => new AudioModule(s),
+                   s => new BankAudioModule(s),
                    s => new SpritesModule(s),
                    s => new TestModule(s));
 
@@ -100,12 +100,12 @@ namespace ChompGame
 
             Func<GraphicsDevice, MainSystem> gameSystem =
                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
-                s => new AudioModule(s),
+                s => new BankAudioModule(s),
                 s => new TileModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
                 s => new PongModule(s, s.GetModule<InputModule>(),
-                                       s.GetModule<AudioModule>(),
+                                       s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>()));
 
@@ -118,12 +118,12 @@ namespace ChompGame
 
             Func<GraphicsDevice, MainSystem> gameSystem =
                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
-                s => new AudioModule(s),
+                s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
                 s => new TileModule(s),
                 s => new SnakeModule(s, s.GetModule<InputModule>(),
-                                       s.GetModule<AudioModule>(),
+                                       s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>()));
 
@@ -136,13 +136,13 @@ namespace ChompGame
 
             Func<GraphicsDevice, MainSystem> gameSystem =
                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
-                s => new AudioModule(s),
+                s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
                 s => new TileModule(s),
                 s => new StatusBarModule(s, s.GetModule<TileModule>()),
                 s => new PlatformerModule(s, s.GetModule<InputModule>(),
-                                       s.GetModule<AudioModule>(),
+                                       s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>(),
                                        s.GetModule<StatusBarModule>()));
@@ -156,7 +156,7 @@ namespace ChompGame
 
             Func<GraphicsDevice, MainSystem> gameSystem =
                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
-                s => new AudioModule(s),
+                s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
                 s => new TileModule(s),
