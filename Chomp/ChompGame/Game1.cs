@@ -197,8 +197,8 @@ namespace ChompGame
                 GraphicsDevice.SetVertexBuffer(vertexBuffer);
 
                 basicEffect.DirectionalLight0.Enabled = true;
-                basicEffect.DiffuseColor = new Vector3(1, 0, 0);
-                basicEffect.SpecularColor = new Vector3(0, 0, 0);
+                basicEffect.DiffuseColor = new Vector3(0.9f, 0.95f, 1);
+                basicEffect.SpecularColor = new Vector3(0, 1, 0);
 
 
 

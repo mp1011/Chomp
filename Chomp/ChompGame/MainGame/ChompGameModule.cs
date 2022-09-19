@@ -124,8 +124,8 @@ namespace ChompGame.MainGame
 
             testScene.DefineRegion(
                 index: 3,
-                region: new InMemoryByteRectangle(6, 7, 2, 1),
-                destination: new Point(6, 1),
+                region: new InMemoryByteRectangle(5, 7, 3, 1),
+                destination: new Point(5, 1),
                 systemMemory: GameSystem.Memory);
 
             _tileModule.BackgroundPaletteIndex.Value = 0;
@@ -205,10 +205,10 @@ namespace ChompGame.MainGame
             else if (GameSystem.CoreGraphicsModule.ScreenPoint.Y == 48)
             {
                 var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
-                bgPalette.SetColor(0, ChompGameSpecs.Blue4);
+                bgPalette.SetColor(0, ChompGameSpecs.Green3);
                 bgPalette.SetColor(1, ChompGameSpecs.Blue1);
-                bgPalette.SetColor(2, ChompGameSpecs.Blue2);
-                bgPalette.SetColor(3, ChompGameSpecs.Blue3);
+                bgPalette.SetColor(2, ChompGameSpecs.Green1);
+                bgPalette.SetColor(3, ChompGameSpecs.Green2);
                   
             }
             _tileModule.OnHBlank();

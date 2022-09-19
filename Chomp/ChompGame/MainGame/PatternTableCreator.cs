@@ -44,7 +44,7 @@ namespace ChompGame.MainGame
             CopyPatternTableRegion(
               masterPatternTableImage,
               masterPatternTable,
-              new Rectangle(6, 7, 2, 1),
+              new Rectangle(5, 7, 3, 1),
                specs);
 
             ExportToDisk(
