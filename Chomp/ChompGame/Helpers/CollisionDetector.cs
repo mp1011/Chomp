@@ -46,7 +46,7 @@ namespace ChompGame.Helpers
                 if (t == 0)
                     return;
 
-                var tileBounds = new ByteRectangle(
+                var tileBounds = new InMemoryByteRectangle(
                     x * _specs.TileWidth, 
                     y * _specs.TileHeight, 
                     _specs.TileWidth, 
@@ -92,7 +92,7 @@ namespace ChompGame.Helpers
                 var tileLeft = _tileModule.NameTable[x - 1, y];
                 var tileRight = _tileModule.NameTable[x + 1, y];
 
-                var tileBounds = new ByteRectangle(
+                var tileBounds = new InMemoryByteRectangle(
                     x * _specs.TileWidth,
                     y * _specs.TileHeight,
                     _specs.TileWidth,

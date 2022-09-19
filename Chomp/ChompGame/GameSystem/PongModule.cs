@@ -173,15 +173,18 @@ namespace ChompGame.GameSystem
                 _romNameTable.CopyTo(_tileModule.NameTable, GameSystem.Memory);
                 _var.Value++;
 
-                _spritesModule.Sprites[0].X = 1;
-                _spritesModule.Sprites[0].Y = 12;
-                _spritesModule.Sprites[0].Tile = 1;
+                var sprite0 = _spritesModule.GetSprite(0);
+                sprite0.X = 1;
+                sprite0.Y = 12;
+                sprite0.Tile = 1;
 
-                _spritesModule.Sprites[1].X = 27;
-                _spritesModule.Sprites[1].Y = 12;
-                _spritesModule.Sprites[1].Tile = 2;
+                var sprite1 = _spritesModule.GetSprite(0);
+                sprite1.X = 27;
+                sprite1.Y = 12;
+                sprite1.Tile = 2;
 
-                _spritesModule.Sprites[2].Tile = 3;
+                var sprite2 = _spritesModule.GetSprite(0);
+                sprite2.Tile = 3;
 
                 CenterBall();
             }

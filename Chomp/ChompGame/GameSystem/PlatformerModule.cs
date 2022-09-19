@@ -504,7 +504,7 @@ namespace ChompGame.GameSystem
             int scrollX = screenX + _tileModule.Scroll.X;
             int scrollY = screenY + _tileModule.Scroll.Y;
 
-            for (int i = 0; i < _spritesModule.ScanlineSprites.Length && _spritesModule.ScanlineSprites[i] != 255; i++)
+            for (int i = 0; _spritesModule.ScanlineSprites[i] != 255; i++)
             {
                 var sprite = _spritesModule.GetScanlineSprite(i);
 

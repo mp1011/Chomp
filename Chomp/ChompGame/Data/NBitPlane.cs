@@ -1,4 +1,6 @@
 ﻿using ChompGame.Extensions;
+using ChompGame.GameSystem;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -88,6 +90,21 @@ namespace ChompGame.Data
         {
             var totalLength = _planes[0].Bytes * _planes.Length;
             memory.BlockCopy(sourceStart: Address, destinationStart: destination.Address, length: totalLength);
+        }
+
+        public void CopyTilesTo(
+            NBitPlane destination, 
+            ByteRectangle source, 
+            Point destinationPoint, 
+            Specs specs,
+            SystemMemory memory)
+        {
+            int planeIndex = 0;
+            foreach(var bitPlane in _planes)
+            {
+                bitPlane.CopyTilesTo(destination._planes[planeIndex], source, destinationPoint, specs, memory);
+                planeIndex++;
+            }
         }
     }
 

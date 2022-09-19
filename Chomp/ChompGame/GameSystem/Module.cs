@@ -12,7 +12,6 @@ namespace ChompGame.GameSystem
 
     public interface IMasterModule : IModule, ILogicUpdateModule, IVBlankHandler, IHBlankHandler
     {
-        byte GetPalette(int pixel);
     }
 
     public abstract class Module : IModule

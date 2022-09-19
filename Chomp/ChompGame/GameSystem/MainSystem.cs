@@ -66,10 +66,5 @@ namespace ChompGame.GameSystem
         {
             _masterModule.OnVBlank();
         }
-
-        public byte GetPalette(int pixel)
-        {
-            return _masterModule.GetPalette(pixel);
-        }
     }
 }

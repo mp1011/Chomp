@@ -1,6 +1,4 @@
 ﻿using ChompGame.Data;
-using ChompGame.Extensions;
-using ChompGame.Graphics;
 using System.Linq;
 
 namespace ChompGame.GameSystem
@@ -13,10 +11,7 @@ namespace ChompGame.GameSystem
 
         private int _sprite0Address;
 
-        public Sprite[] Sprites { get; private set; }
-        public GameByte[] ScanlineSprites { get; private set; }
-
-
+        public GameByteArray ScanlineSprites { get; private set; }
 
         public override void OnStartup()
         {
@@ -36,8 +31,10 @@ namespace ChompGame.GameSystem
         {
             base.BuildMemory(builder);
             _sprite0Address = builder.CurrentAddress;
-            Sprites = builder.AddSprite(Specs.MaxSprites, this);
-            ScanlineSprites = builder.AddBytes(Specs.SpritesPerScanline);
+            builder.AddSprite(Specs.MaxSprites, this);
+            ScanlineSprites = new GameByteArray(builder.CurrentAddress, builder.Memory);
+            builder.AddBytes(Specs.SpritesPerScanline);
+            builder.AddByte(255);
         }
 
         public override void OnHBlank()
@@ -52,7 +49,7 @@ namespace ChompGame.GameSystem
                 Specs.PatternTableWidth,
                 Specs.PatternTableHeight);
 
-            for (int i = 0; i < ScanlineSprites.Length && ScanlineSprites[i] != 255; i++)
+            for (int i = 0; ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
                 byte row = (byte)(ScreenPoint.Y - sprite.Y); //todo, scroll
@@ -95,19 +92,31 @@ namespace ChompGame.GameSystem
 
         private void FillScanlineSprites()
         {
-            var scanlineSprites = Sprites.Where(p => p.Tile > 0 && p.IntersectsScanline(ScreenPoint.Y))
-                .OrderBy(p => p.X)
-                .Take(Specs.SpritesPerScanline)
-                .ToArray();
+            int scanlineSpriteIndex = 0;
 
-            int sprite0Address = Sprites[0].Address;
-
-            for (int i = 0; i < Specs.SpritesPerScanline; i++)
+            for(byte spriteIndex = 0; spriteIndex < Specs.MaxSprites; spriteIndex++)
             {
-                if (i < scanlineSprites.Length)
-                    ScanlineSprites[i].Value = (byte)(scanlineSprites[i].Address - sprite0Address);
-                else
-                    ScanlineSprites[i].Value = 255;
+                var sprite = GetSprite(spriteIndex);
+                if(sprite.Tile == 0 
+                    || !sprite.IntersectsScanline(ScreenPoint.Y))
+                {
+                    continue;
+                }
+
+                ScanlineSprites[scanlineSpriteIndex] = (byte)(sprite.Address - _sprite0Address);
+                scanlineSpriteIndex++;
+                if (scanlineSpriteIndex == Specs.SpritesPerScanline)
+                    break;
+            }
+
+            if(scanlineSpriteIndex > 1)
+            {
+                throw new System.NotImplementedException("need to sort by X");
+            }
+
+            if(scanlineSpriteIndex < Specs.SpritesPerScanline)
+            {
+                ScanlineSprites[scanlineSpriteIndex] = 255;
             }
         }
     }

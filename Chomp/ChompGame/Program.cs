@@ -1,5 +1,6 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using ChompGame.MainGame;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Threading.Tasks;
@@ -15,12 +16,13 @@ namespace ChompGame
             //test3D.Run();
             //return;
 
-          //  var game = RunTest();
-           // var game = RunPong();
+            //  var game = RunTest();
+            // var game = RunPong();
             //var game = RunFullScreenTest();
             // var game = RunSnake();
             // var game = RunRando();
-             var game = RunPlatformer();
+            //  var game = RunPlatformer();
+            var game = RunChompGame();
 
             bool quit = false;
             while (!quit)
@@ -149,6 +151,27 @@ namespace ChompGame
 
             return RunGame(gameSystem);
         }
+
+        private static Game1 RunChompGame()
+        {
+            var specs = new ChompGameSpecs();
+
+            Func<GraphicsDevice, MainSystem> gameSystem =
+                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+                s => new BankAudioModule(s),
+                s => new SpritesModule(s),
+                s => new InputModule(s),
+                s => new TileModule(s),
+                s => new StatusBarModule(s, s.GetModule<TileModule>()),
+                s => new ChompGameModule(s, s.GetModule<InputModule>(),
+                                       s.GetModule<BankAudioModule>(),
+                                       s.GetModule<SpritesModule>(),
+                                       s.GetModule<TileModule>(),
+                                       s.GetModule<StatusBarModule>()));
+
+            return RunGame(gameSystem);
+        }
+
 
         private static Game1 RunRando()
         {

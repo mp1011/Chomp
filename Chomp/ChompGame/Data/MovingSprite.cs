@@ -40,7 +40,7 @@ namespace ChompGame.Data
             get
             {
                 var sprite = _spritesModule.GetSprite(_spriteIndex);
-                return new ByteRectangle(sprite.X, sprite.Y, sprite.Width, sprite.Height);
+                return new InMemoryByteRectangle(sprite.X, sprite.Y, sprite.Width, sprite.Height);
             }
         }
 

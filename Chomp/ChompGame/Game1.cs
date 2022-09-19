@@ -155,6 +155,8 @@ namespace ChompGame
 
         private Stopwatch _renderTimer = new Stopwatch();
         private long _drawMS;
+        private long _totalDrawMS;
+        private long _totalDrawFrames;
 
         bool _draw3D = false;
         bool _r = false;
@@ -181,7 +183,7 @@ namespace ChompGame
                 _r = !_r;
                 if (_r)
                 {
-                    basicEffect.AmbientLightColor = new Vector3(0.53f, 0.56f, 0.53f);                    
+                    basicEffect.AmbientLightColor = new Vector3(0.53f, 0.56f, 0.53f);  
                 }
                 else
                 {
@@ -193,6 +195,16 @@ namespace ChompGame
 
                 GraphicsDevice.Clear(Color.Black);
                 GraphicsDevice.SetVertexBuffer(vertexBuffer);
+
+                basicEffect.DirectionalLight0.Enabled = true;
+                basicEffect.DiffuseColor = new Vector3(1, 0, 0);
+                basicEffect.SpecularColor = new Vector3(0, 0, 0);
+
+
+
+                basicEffect.DirectionalLight1.Enabled = false;
+                basicEffect.DirectionalLight2.Enabled = false;
+
 
                 foreach (EffectPass pass in basicEffect.CurrentTechnique.
                         Passes)
@@ -216,6 +228,9 @@ namespace ChompGame
                 _spriteBatch.DrawString(_font, $"ScrollX = {_gameSystem.GetModule<SpritesModule>().Scroll.X}", new Vector2(0, 32), Color.Green);
                 _spriteBatch.DrawString(_font, $"ScrollY = {_gameSystem.GetModule<SpritesModule>().Scroll.Y}", new Vector2(0, 48), Color.Green);
 
+                _spriteBatch.DrawString(_font, $"DrawMs = {_drawMS}", new Vector2(0, 64), Color.White);
+                if(_totalDrawFrames > 0)
+                    _spriteBatch.DrawString(_font, $"Avg DrawMs = {_totalDrawMS / _totalDrawFrames}", new Vector2(0, 80), Color.White);
 
                 _spriteBatch.End();
 
@@ -251,6 +266,9 @@ namespace ChompGame
 
             _renderTimer.Stop();
             _drawMS = _renderTimer.ElapsedMilliseconds;
+            _totalDrawMS += _drawMS;
+            _totalDrawFrames++;
+
             base.Draw(gameTime);
         }
     }

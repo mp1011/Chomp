@@ -21,9 +21,10 @@ namespace ChompGame.GameSystem
             _tileModule = GameSystem.GetModule<TileModule>();
             _spritesModule = GameSystem.GetModule<SpritesModule>();
 
-            _spritesModule.Sprites[0].Tile = 4;
-            _spritesModule.Sprites[0].X = 12;
-            _spritesModule.Sprites[0].Y = 0;
+            var sprite0 = _spritesModule.GetSprite(0);
+            sprite0.Tile = 4;
+            sprite0.X = 12;
+            sprite0.Y = 0;
 
             //_spritesModule.Sprites[1].Tile = 5;
             //_spritesModule.Sprites[1].X = 20;
@@ -148,39 +149,45 @@ namespace ChompGame.GameSystem
 
             if (state.IsKeyDown(Keys.S))
             {
+                var sprite0 = _spritesModule.GetSprite(0);
+
                 if (leftKey)
-                    _spritesModule.Sprites[0].X--;
+                    sprite0.X--;
                 else if (righKey)
-                    _spritesModule.Sprites[0].X++;
+                    sprite0.X++;
 
                 if (upKey)
-                    _spritesModule.Sprites[0].Y--;
+                    sprite0.Y--;
                 else if (downKey)
-                    _spritesModule.Sprites[0].Y++;
+                    sprite0.Y++;
             }
             else if (state.IsKeyDown(Keys.D))
             {
+                var sprite1 = _spritesModule.GetSprite(0);
+
                 if (leftKey)
-                    _spritesModule.Sprites[1].X--;
+                    sprite1.X--;
                 else if (righKey)
-                    _spritesModule.Sprites[1].X++;
+                    sprite1.X++;
 
                 if (upKey)
-                    _spritesModule.Sprites[1].Y--;
+                    sprite1.Y--;
                 else if (downKey)
-                    _spritesModule.Sprites[1].Y++;
+                    sprite1.Y++;
             }
             else if (state.IsKeyDown(Keys.F))
             {
+                var sprite2 = _spritesModule.GetSprite(0);
+
                 if (leftKey)
-                    _spritesModule.Sprites[2].X--;
+                    sprite2.X--;
                 else if (righKey)
-                    _spritesModule.Sprites[2].X++;
+                    sprite2.X++;
 
                 if (upKey)
-                    _spritesModule.Sprites[2].Y--;
+                    sprite2.Y--;
                 else if (downKey)
-                    _spritesModule.Sprites[2].Y++;
+                    sprite2.Y++;
             }
 
             else if (state.IsKeyDown(Keys.LeftShift))

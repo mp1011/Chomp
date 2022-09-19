@@ -1,6 +1,5 @@
 ﻿using ChompGame.GameSystem;
 using Microsoft.Xna.Framework;
-using System;
 
 namespace ChompGame.Data
 {
@@ -31,6 +30,8 @@ namespace ChompGame.Data
                 return _specs.SystemColors[c];
             }
         }
+
+        public byte GetColorIndex(byte index) => _colors[index];
 
         public void SetColor(int paletteIndex, byte systemColorIndex)
         {

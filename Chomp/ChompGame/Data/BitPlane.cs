@@ -1,4 +1,6 @@
 ﻿using ChompGame.Extensions;
+using ChompGame.GameSystem;
+using Microsoft.Xna.Framework;
 using System;
 using System.Linq;
 
@@ -52,6 +54,32 @@ namespace ChompGame.Data
         public bool ValueFromChar(char s)
         {
             return s == '1';
+        }
+
+        public void CopyTilesTo(
+            BitPlane destination,
+            ByteRectangle source,
+            Point destinationPoint,
+            Specs specs,
+            SystemMemory memory)
+        {
+            var destinationPixelPoint = new Point(
+                destinationPoint.X * specs.TileWidth,
+                destinationPoint.Y * specs.TileHeight);
+
+            var sourcePixelPoint = new Point(
+                source.X * specs.TileWidth,
+                source.Y * specs.TileHeight);
+
+            //todo, probably could be made more efficient
+            for (int y = 0; y < source.Height * specs.TileHeight; y++)
+            {
+                for(int x = 0; x < source.Width * specs.TileWidth; x++)
+                {
+                    destination[destinationPixelPoint.X + x, destinationPixelPoint.Y + y] =
+                        this[sourcePixelPoint.X + x, sourcePixelPoint.Y + y];
+                }
+            }
         }
     }
 }

@@ -3,12 +3,15 @@ using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Linq;
 
 namespace ChompGame.GameSystem
 {
     public class CoreGraphicsModule : Module
     {
+
+        private SpritesModule _spritesModule;
+        private TileModule _tileModule;
+
         private Color[] _screenData;
         public GameByteGridPoint ScreenPoint { get; private set; }
         public GameByte CurrentColorIndex { get; private set; }
@@ -63,6 +66,8 @@ namespace ChompGame.GameSystem
             palette.SetColor(2, 2);
             palette.SetColor(3, 3);
 
+            _spritesModule = GameSystem.GetModule<SpritesModule>();
+            _tileModule = GameSystem.GetModule<TileModule>();
         }
 
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
@@ -76,10 +81,25 @@ namespace ChompGame.GameSystem
 
             int scanlineColumn = 0;
 
+            int scanlineSpriteIndex = 0;
+
+            Sprite nextSprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
+
             for (int i = 0; i < _screenData.Length; i++)
             {
-                nextPaletteIndex = GameSystem.GetPalette(i);
-                if(nextPaletteIndex != paletteIndex)
+                if(_spritesModule.ScanlineSprites[scanlineSpriteIndex] != 255)
+                {
+                    if(ScreenPoint.X == nextSprite.X)
+                        nextPaletteIndex = nextSprite.Palette;
+                    else if(ScreenPoint.X == nextSprite.Right)
+                    {
+                        nextPaletteIndex = _tileModule.BackgroundPaletteIndex;
+                        scanlineSpriteIndex++;
+                        nextSprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
+                    }
+                }
+
+                if (nextPaletteIndex != paletteIndex)
                 {
                     paletteIndex = nextPaletteIndex;
                     palette = GetPalette(nextPaletteIndex);

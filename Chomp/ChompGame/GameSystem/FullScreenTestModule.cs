@@ -80,9 +80,10 @@ namespace ChompGame.GameSystem
             _romNameTable.CopyTo(tileModule.NameTable, GameSystem.Memory);
             _romPatternTable.CopyTo(graphicsModule.PatternTable, GameSystem.Memory);
 
-            _spritesModule.Sprites[0].X = 40;
-            _spritesModule.Sprites[0].Y = 16;
-            _spritesModule.Sprites[0].Tile = 2;
+            var sprite0 = _spritesModule.GetSprite(0);
+            sprite0.X = 40;
+            sprite0.Y = 16;
+            sprite0.Tile = 2;
         }
 
         public void OnVBlank()
