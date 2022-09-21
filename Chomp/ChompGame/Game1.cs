@@ -2,8 +2,10 @@
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -14,7 +16,7 @@ namespace ChompGame
     {
         private Specs _specs;
 
-        private Func<GraphicsDevice, MainSystem> _createSystem;
+        private Func<GraphicsDevice, ContentManager, MainSystem> _createSystem;
         private MainSystem _gameSystem;
 
         private GraphicsDeviceManager _graphics;
@@ -45,7 +47,7 @@ namespace ChompGame
 
         public MainSystem GameSystem => _gameSystem;
 
-        public Game1(Func<GraphicsDevice, MainSystem> createSystem)
+        public Game1(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)
         {
             _createSystem = createSystem;
             _graphics = new GraphicsDeviceManager(this);
@@ -59,7 +61,7 @@ namespace ChompGame
 
         protected override void Initialize()
         {
-            _gameSystem = _createSystem(GraphicsDevice);
+            _gameSystem = _createSystem(GraphicsDevice, Content);
             _specs = _gameSystem.Specs;
 
             #region 3D stuff
@@ -115,6 +117,7 @@ namespace ChompGame
                            WriteOnly);
             vertexBuffer.SetData(triangleVertices);
             #endregion
+
 
             base.Initialize();
         }

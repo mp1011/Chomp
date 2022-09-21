@@ -20,3 +20,9 @@
 /processorParam:TextureFormat=Compressed
 /build:Font.spritefont
 
+#begin Music/Sea Dreams.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Sea Dreams.ogg;Music/SeaDreams.ogg
+

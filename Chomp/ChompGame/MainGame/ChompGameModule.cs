@@ -27,6 +27,7 @@ namespace ChompGame.MainGame
         private readonly BankAudioModule _audioModule;
         private readonly TileModule _tileModule;
         private readonly StatusBarModule _statusBarModule;
+        private readonly MusicModule _musicModule;
 
         private RomAddresses _romAddresses = new RomAddresses();
         private NBitPlane _masterPatternTable;
@@ -36,7 +37,7 @@ namespace ChompGame.MainGame
         private MaskedByte _paletteCycleIndex;
 
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
-           SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule)
+           SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
            : base(mainSystem)
         {
             _audioModule = audioModule;
@@ -44,6 +45,7 @@ namespace ChompGame.MainGame
             _spritesModule = spritesModule;
             _tileModule = tileModule;
             _statusBarModule = statusBarModule;
+            _musicModule = musicModule;
             _collisionDetector = new CollisionDetector(tileModule, Specs);
         }
 
@@ -83,6 +85,8 @@ namespace ChompGame.MainGame
             InitializePatternTable(testScene);
 
             _gameState.Value = GameState.Test;
+
+            _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
 
         private void InitializePatternTable(SceneInfo testScene)
@@ -135,6 +139,8 @@ namespace ChompGame.MainGame
 
         public void OnLogicUpdate()
         {
+            _musicModule.Update();
+
             _timer.Value++;
             if ((_timer.Value % 4) == 0)
             {

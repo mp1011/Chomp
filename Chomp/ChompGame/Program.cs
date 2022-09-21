@@ -1,6 +1,7 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.MainGame;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Threading.Tasks;
@@ -60,8 +61,8 @@ namespace ChompGame
         private static Game1 RunTest()
         {
             var specs = new PongSpecs();
-            Func<GraphicsDevice,MainSystem> gameSystem = 
-                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem = 
+                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                    s => new TileModule(s),
                    s => new BankAudioModule(s),
                    s => new SpritesModule(s),
@@ -73,17 +74,18 @@ namespace ChompGame
         private static Game1 RunFullScreenTest()
         {
             var specs = new FullScreenTestSpecs();
-            Func<GraphicsDevice, MainSystem> gameSystem =
-                 (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
-               s => new TileModule(s),
-               s => new SpritesModule(s),
-               s => new InputModule(s),
-               s => new FullScreenTestModule(s));
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+                 (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, 
+                    s => new CoreGraphicsModule(s),
+                   s => new TileModule(s),
+                   s => new SpritesModule(s),
+                   s => new InputModule(s),
+                   s => new FullScreenTestModule(s));
 
             return RunGame(gameSystem);
         }
 
-        private static Game1 RunGame(Func<GraphicsDevice, MainSystem> createSystem)
+        private static Game1 RunGame(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)
         {
             var game = new Game1(createSystem);
             var mainSystem = game.GameSystem;
@@ -100,8 +102,8 @@ namespace ChompGame
         {
             var specs = new PongSpecs();
 
-            Func<GraphicsDevice, MainSystem> gameSystem =
-                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new BankAudioModule(s),
                 s => new TileModule(s),
                 s => new SpritesModule(s),
@@ -118,8 +120,8 @@ namespace ChompGame
         {
             var specs = new SnakeSpecs();
 
-            Func<GraphicsDevice, MainSystem> gameSystem =
-                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
@@ -136,8 +138,8 @@ namespace ChompGame
         {
             var specs = new PlatformerSpecs();
 
-            Func<GraphicsDevice, MainSystem> gameSystem =
-                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
@@ -156,18 +158,20 @@ namespace ChompGame
         {
             var specs = new ChompGameSpecs();
 
-            Func<GraphicsDevice, MainSystem> gameSystem =
-                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
                 s => new TileModule(s),
                 s => new StatusBarModule(s, s.GetModule<TileModule>()),
+                s => new MusicModule(s, cm),
                 s => new ChompGameModule(s, s.GetModule<InputModule>(),
                                        s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>(),
-                                       s.GetModule<StatusBarModule>()));
+                                       s.GetModule<StatusBarModule>(),
+                                       s.GetModule<MusicModule>()));
 
             return RunGame(gameSystem);
         }
@@ -177,8 +181,8 @@ namespace ChompGame
         {
             var specs = new FullScreenTestSpecs();
 
-            Func<GraphicsDevice, MainSystem> gameSystem =
-                (GraphicsDevice gd) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
                 s => new BankAudioModule(s),
                 s => new SpritesModule(s),
                 s => new InputModule(s),
