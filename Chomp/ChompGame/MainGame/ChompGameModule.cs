@@ -36,6 +36,8 @@ namespace ChompGame.MainGame
         private GameByte _timer;
         private MaskedByte _paletteCycleIndex;
 
+        private PlayerController _playerController;
+
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
            SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
            : base(mainSystem)
@@ -55,6 +57,8 @@ namespace ChompGame.MainGame
             _timer = memoryBuilder.AddByte();
             _paletteCycleIndex = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)3, memoryBuilder.Memory);
             memoryBuilder.AddByte();
+
+            _playerController = new PlayerController(_spritesModule, memoryBuilder);
 
             memoryBuilder.BeginROM();
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
@@ -84,9 +88,9 @@ namespace ChompGame.MainGame
             var testScene = SetupTestScene();
             InitializePatternTable(testScene);
 
-            _gameState.Value = GameState.Test;
+            _gameState.Value = GameState.LoadScene;
 
-            _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
+            //_musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
 
         private void InitializePatternTable(SceneInfo testScene)
@@ -103,6 +107,8 @@ namespace ChompGame.MainGame
                     Specs,
                     GameSystem.Memory);
             }
+
+            PatternTableExporter.ExportPatternTable(GameSystem.GraphicsDevice, patternTable);
         }
 
         private SceneInfo SetupTestScene()
@@ -150,14 +156,39 @@ namespace ChompGame.MainGame
             switch (_gameState.Value)
             {
                 case GameState.LoadScene:
-
+                    LoadScene();
                     break;
                 case GameState.PlayScene:
+                    PlayScene();
                     break;
-
                 case GameState.Test:
                     break;
             }
+        }
+
+        public void LoadScene()
+        {
+            var playerPalette = GameSystem.CoreGraphicsModule.GetPalette(1);
+            playerPalette.SetColor(0, ChompGameSpecs.Black);
+            playerPalette.SetColor(1, ChompGameSpecs.Orange); //hair
+            playerPalette.SetColor(2, ChompGameSpecs.LightTan); //face
+            playerPalette.SetColor(3, ChompGameSpecs.Blue1); //legs
+
+
+            var playerSprite = _spritesModule.GetSprite(0);
+            playerSprite.X = 16;
+            playerSprite.Y = 16;
+            playerSprite.Tile = 1;
+            playerSprite.Orientation = Orientation.Vertical;
+            playerSprite.Tile2Offset = 1;
+            playerSprite.Palette = 1;
+
+            _gameState.Value = GameState.PlayScene;
+        }
+
+        public void PlayScene()
+        {
+
         }
 
         public void OnVBlank()

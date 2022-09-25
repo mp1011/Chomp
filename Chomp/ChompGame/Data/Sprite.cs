@@ -27,6 +27,8 @@ namespace ChompGame.Data
             set => _orientation.Value = value;
         }
 
+        public bool Visible => Tile != 0;
+
         public Sprite(int address, SystemMemory memory, Specs specs, GameByteGridPoint screenScroll)
         {
             _screenScroll = screenScroll;

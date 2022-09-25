@@ -1,5 +1,5 @@
 ﻿using ChompGame.Data;
-using System.Linq;
+using ChompGame.Graphics;
 
 namespace ChompGame.GameSystem
 {
@@ -12,6 +12,8 @@ namespace ChompGame.GameSystem
         private int _sprite0Address;
 
         public GameByteArray ScanlineSprites { get; private set; }
+
+        public ScanlineSpritePixelPriority ScanlineSpritePixelPriority { get; private set; }
 
         public override void OnStartup()
         {
@@ -30,6 +32,9 @@ namespace ChompGame.GameSystem
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);
+
+            ScanlineSpritePixelPriority = new ScanlineSpritePixelPriority(builder, Specs);
+
             _sprite0Address = builder.CurrentAddress;
             builder.AddSprite(Specs.MaxSprites, this);
             ScanlineSprites = new GameByteArray(builder.CurrentAddress, builder.Memory);
@@ -54,7 +59,8 @@ namespace ChompGame.GameSystem
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
                 byte row = (byte)(ScreenPoint.Y - sprite.Y); //todo, scroll
 
-                patternTableTilePoint.Index = sprite.Tile;
+                //todo, avoid hard coding sprite start
+                patternTableTilePoint.Index = 15 + sprite.Tile;
 
                 if (row >= Specs.TileHeight)
                 {
@@ -71,6 +77,8 @@ namespace ChompGame.GameSystem
                     var pixel = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
                     if (pixel != 0)
                     {
+                        ScanlineSpritePixelPriority.Set(i, col, true);
+
                         int drawCol; 
                         if(sprite.FlipX)
                             drawCol = (sprite.X + sprite.Width - col - 1) - Scroll.X;
@@ -80,6 +88,11 @@ namespace ChompGame.GameSystem
                         if (drawCol >= 0 && drawCol < Specs.ScreenWidth)
                             _coreGraphicsModule.ScanlineDrawBuffer[drawCol] = pixel;
                     }
+                    else
+                    {
+                        ScanlineSpritePixelPriority.Set(i, col, false);
+                    }
+
                     patternTablePoint.X++;
                 }
             }
@@ -97,7 +110,7 @@ namespace ChompGame.GameSystem
             for(byte spriteIndex = 0; spriteIndex < Specs.MaxSprites; spriteIndex++)
             {
                 var sprite = GetSprite(spriteIndex);
-                if(sprite.Tile == 0 
+                if(!sprite.Visible
                     || !sprite.IntersectsScanline(ScreenPoint.Y))
                 {
                     continue;

@@ -225,10 +225,13 @@ namespace ChompGame.GameSystem
 
             SystemColors[LightBlue] = new Color(183, 255, 255);
             SystemColors[LightYellow] = new Color(255, 255, 129);
+            SystemColors[LightTan] = new Color(247, 193, 155);
 
             SystemColors[Green1] = new Color(0, 120, 0);
             SystemColors[Green2] = new Color(120, 220, 0);
             SystemColors[Green3] = new Color(183, 240, 144);
+
+            SystemColors[Orange] = new Color(255, 108, 15);
         }
 
         public const int Black = 0;
@@ -241,10 +244,13 @@ namespace ChompGame.GameSystem
 
         public const int LightBlue = 6;
         public const int LightYellow = 7;
+        public const int LightTan = 8;
 
-        public const int Green1 = 8;
-        public const int Green2 = 9;
-        public const int Green3 = 10;
+        public const int Green1 = 9;
+        public const int Green2 = 10;
+        public const int Green3 = 11;
+
+        public const int Orange = 12;
 
 
     }

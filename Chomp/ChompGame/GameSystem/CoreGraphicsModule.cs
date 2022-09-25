@@ -75,12 +75,14 @@ namespace ChompGame.GameSystem
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
 
-            byte nextPaletteIndex = 0;
-            byte paletteIndex = 0;
-            var palette = GetPalette(0);
+            bool drawingSprite = false;
+            byte nextPaletteIndex = _tileModule.BackgroundPaletteIndex;
+            byte paletteIndex = nextPaletteIndex;
+            var palette = GetPalette(nextPaletteIndex);
 
             int scanlineColumn = 0;
 
+            byte spriteColumn = 0;
             int scanlineSpriteIndex = 0;
 
             Sprite nextSprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
@@ -89,14 +91,28 @@ namespace ChompGame.GameSystem
             {
                 if(_spritesModule.ScanlineSprites[scanlineSpriteIndex] != 255)
                 {
-                    if(ScreenPoint.X == nextSprite.X)
+                    if (ScreenPoint.X == nextSprite.X)
+                    {
                         nextPaletteIndex = nextSprite.Palette;
-                    else if(ScreenPoint.X == nextSprite.Right)
+                        drawingSprite = true;
+                        spriteColumn = 0;
+                    }
+                    else if (ScreenPoint.X == nextSprite.Right)
                     {
                         nextPaletteIndex = _tileModule.BackgroundPaletteIndex;
                         scanlineSpriteIndex++;
                         nextSprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
+                        drawingSprite = false;
                     }
+                }
+
+                if(drawingSprite)
+                {
+                    bool pixelPriority = _spritesModule.ScanlineSpritePixelPriority.Get(scanlineSpriteIndex, spriteColumn);
+                    if(pixelPriority)
+                        nextPaletteIndex = nextSprite.Palette;
+                    else
+                        nextPaletteIndex = _tileModule.BackgroundPaletteIndex;
                 }
 
                 if (nextPaletteIndex != paletteIndex)
@@ -109,10 +125,16 @@ namespace ChompGame.GameSystem
                 _screenData[i] = color;
                 scanlineColumn++;
 
+                if (drawingSprite)
+                    spriteColumn++;
+
                 if (ScreenPoint.Next())
                 {
                     scanlineColumn = 0;
                     GameSystem.OnHBlank();
+
+                    scanlineSpriteIndex = 0;
+                    nextSprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
                 }
             }
 
