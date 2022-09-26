@@ -4,61 +4,90 @@ namespace ChompGame.MainGame
 {
     class AcceleratedMotion
     {
-        private byte _motionScale = 4;
-        private ByteVector _motion;
-        private GameByte _subPixelX;
-        private GameByte _subPixelY;
-        
+        private GameByte _timer;
+        private ByteVector _targetMotion;
+        private PrecisionMotion _currentMotion;
+        private NibblePoint _acceleration;
+        public PrecisionMotion CurrentMotion => _currentMotion;
+
+        public int TargetXSpeed
+        {
+            get => _targetMotion.X;
+            set => _targetMotion.X = value;
+        }
+
+        public int TargetYSpeed
+        {
+            get => _targetMotion.Y;
+            set => _targetMotion.Y = value;
+        }
+
         public int XSpeed
         {
-            get => _motion.X;
-            set => _motion.X = value;
+            get => _currentMotion.XSpeed;
+            set => _currentMotion.XSpeed = value;
         }
 
         public int YSpeed
         {
-            get => _motion.Y;
-            set => _motion.Y = value;
+            get => _currentMotion.YSpeed;
+            set => _currentMotion.YSpeed = value;
         }
 
-        public AcceleratedMotion(SystemMemoryBuilder memoryBuilder)
+        public byte XAcceleration
         {
-            _motion = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
-            _subPixelX = memoryBuilder.AddByte();
-            _subPixelY = memoryBuilder.AddByte();
+            get => _acceleration.X;
+            set => _acceleration.X = value;
+        }
+
+        public byte YAcceleration
+        {
+            get => _acceleration.Y;
+            set => _acceleration.Y = value;
+        }
+
+
+        public AcceleratedMotion(GameByte timer, SystemMemoryBuilder memoryBuilder)
+        {
+            _timer = timer;
+            _targetMotion = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
+            _currentMotion = new PrecisionMotion(memoryBuilder);
+            _acceleration = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
         }
 
         public void Apply(Sprite sprite)
         {
-            int sx = _subPixelX.Value;
-            sx += _motion.X * _motionScale;
-
-            var pixelX = 0;
-            if (sx >= 256)
-                pixelX = 1;
-            else if (sx < 0)
-                pixelX = -1;
-
-            _subPixelX.Value = (byte)(sx % 256);
-            if (pixelX != 0)
+            if ((_timer.Value % 4) == 0)
             {
-                sprite.X = (byte)(sprite.X + pixelX);
+                _currentMotion.XSpeed = UpdateSpeed(_currentMotion.XSpeed, _targetMotion.X, _acceleration.X);
+                _currentMotion.YSpeed = UpdateSpeed(_currentMotion.YSpeed, _targetMotion.Y, _acceleration.Y);
             }
 
-            int sy = _subPixelY.Value;
-            sy += _motion.Y * _motionScale;
+            _currentMotion.Apply(sprite);
+        }
 
-            var pixelY = 0;
-            if (sy >= 256)
-                pixelY = 1;
-            else if (sy < 0)
-                pixelY = -1;
+        private int UpdateSpeed(int current, int target, byte acceleration)
+        {
+            if (current == target)
+                return current;
 
-            _subPixelY.Value = (byte)(sy % 256);
-            if (pixelY != 0)
+            int newSpeed = current;
+
+            if(current < target)
             {
-                sprite.Y = (byte)(sprite.Y + pixelY);
+                newSpeed = current + acceleration;
+                if (newSpeed > target)
+                    newSpeed = target;
             }
+            else if(current > target)
+            {
+                newSpeed = current - acceleration;
+                if (newSpeed < target)
+                    newSpeed = target;
+            }
+
+            return newSpeed;
         }
     }
 

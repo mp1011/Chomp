@@ -1,6 +1,6 @@
 ﻿namespace ChompGame.Data
 {
-    class NibblePoint
+    public class NibblePoint
     {
         private readonly NibbleArray _bounds;
 

@@ -444,33 +444,33 @@ namespace ChompGame.GameSystem
 
         private void CheckCollisions()
         {
-            var playerCollision = _collisionDetector.DetectCollisions(_player);
-            if (playerCollision.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
-            {
-                _player.YSpeed = -128;
-            }
+            //var playerCollision = _collisionDetector.DetectCollisions(_player);
+            //if (playerCollision.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
+            //{
+            //    _player.YSpeed = -128;
+            //}
 
-            _collisionDetector.DetectCollisions(_enemy);
+            //_collisionDetector.DetectCollisions(_enemy);
 
-            if (_playerHitTimer.Value == 0)
-            {
-                if (_collisionDetector.CheckCollision(_player, _enemy)
-                    || _collisionDetector.CheckCollision(_player, _bullet))
-                {
-                    _statusBarModule.Health--;
+            //if (_playerHitTimer.Value == 0)
+            //{
+            //    if (_collisionDetector.CheckCollision(_player, _enemy)
+            //        || _collisionDetector.CheckCollision(_player, _bullet))
+            //    {
+            //        _statusBarModule.Health--;
 
-                    if(_statusBarModule.Health > 0)
-                    {
-                        _audioModule.GetChannel(0).Play(0, 4, 5);
-                        _playerHitTimer.Value = 64;
-                    }
-                    else
-                    {
-                        _gameState.Value = GameState.LoseLife;
-                        _playerHitTimer.Value = 255;
-                    }
-                }
-            }
+            //        if(_statusBarModule.Health > 0)
+            //        {
+            //            _audioModule.GetChannel(0).Play(0, 4, 5);
+            //            _playerHitTimer.Value = 64;
+            //        }
+            //        else
+            //        {
+            //            _gameState.Value = GameState.LoseLife;
+            //            _playerHitTimer.Value = 255;
+            //        }
+            //    }
+            //}
         }
 
         public void OnVBlank()

@@ -58,7 +58,7 @@ namespace ChompGame.MainGame
             _paletteCycleIndex = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)3, memoryBuilder.Memory);
             memoryBuilder.AddByte();
 
-            _playerController = new PlayerController(_spritesModule, memoryBuilder);
+            _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
 
             memoryBuilder.BeginROM();
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
@@ -172,7 +172,7 @@ namespace ChompGame.MainGame
             playerPalette.SetColor(0, ChompGameSpecs.Black);
             playerPalette.SetColor(1, ChompGameSpecs.Orange); //hair
             playerPalette.SetColor(2, ChompGameSpecs.LightTan); //face
-            playerPalette.SetColor(3, ChompGameSpecs.Blue1); //legs
+            playerPalette.SetColor(3, ChompGameSpecs.DarkBrown); //legs
 
 
             var playerSprite = _spritesModule.GetSprite(0);
@@ -184,11 +184,14 @@ namespace ChompGame.MainGame
             playerSprite.Palette = 1;
 
             _gameState.Value = GameState.PlayScene;
+
+            _playerController.Motion.XSpeed = 0;
+            _playerController.Motion.YSpeed = 0;
         }
 
         public void PlayScene()
         {
-
+            _playerController.Update();
         }
 
         public void OnVBlank()

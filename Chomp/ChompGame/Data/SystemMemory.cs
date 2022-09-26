@@ -131,6 +131,13 @@ namespace ChompGame.Data
             return b;
         }
 
+        public NibblePoint AddNibblePoint()
+        {
+            var n = new NibblePoint(CurrentAddress, Memory);
+            AddByte();
+            return n;
+        }
+
         public GameShort AddShort()
         {
             var s = new GameShort(CurrentAddress, _systemMemory);

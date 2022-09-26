@@ -1,6 +1,8 @@
 ﻿using ChompGame.Data;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace ChompGame.Helpers
@@ -28,7 +30,7 @@ namespace ChompGame.Helpers
             return s1.Bounds.Intersects(s2.Bounds);
         }
 
-        public CollisionInfo DetectCollisions(MovingSprite actor)
+        public CollisionInfo DetectCollisions(WorldSprite actor, int solidTileBeginIndex)
         {
             var collisionInfo = new CollisionInfo();
 
@@ -43,10 +45,10 @@ namespace ChompGame.Helpers
 
             _tileModule.NameTable.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
-                if (t == 0)
+                if (t < solidTileBeginIndex)
                     return;
 
-                var tileBounds = new InMemoryByteRectangle(
+                var tileBounds = new Rectangle(
                     x * _specs.TileWidth, 
                     y * _specs.TileHeight, 
                     _specs.TileWidth, 
@@ -60,8 +62,8 @@ namespace ChompGame.Helpers
                     (x + 1).NMod(_tileModule.NameTable.Width), 
                     y.NMod(_tileModule.NameTable.Height)];
 
-                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft == 0;
-                bool checkRightCollision = actor.XSpeed < 0 && tileRight == 0;
+                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < solidTileBeginIndex;
+                bool checkRightCollision = actor.XSpeed < 0 && tileRight < solidTileBeginIndex;
 
                 CheckCollisionCorrectionX(actor, collisionInfo, tileBounds, checkLeftCollision, checkRightCollision);
             });
@@ -84,7 +86,7 @@ namespace ChompGame.Helpers
 
             _tileModule.NameTable.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
-                if (t == 0)
+                if (t < solidTileBeginIndex)
                     return;
 
                 var tileAbove = _tileModule.NameTable[x, y - 1];
@@ -92,14 +94,14 @@ namespace ChompGame.Helpers
                 var tileLeft = _tileModule.NameTable[x - 1, y];
                 var tileRight = _tileModule.NameTable[x + 1, y];
 
-                var tileBounds = new InMemoryByteRectangle(
+                var tileBounds = new Rectangle(
                     x * _specs.TileWidth,
                     y * _specs.TileHeight,
                     _specs.TileWidth,
                     _specs.TileHeight);
 
-                bool checkAbove = actor.YSpeed >= 0 && tileAbove == 0;
-                bool checkBelow = actor.YSpeed < 0 && tileBelow == 0;
+                bool checkAbove = actor.YSpeed >= 0 && tileAbove < solidTileBeginIndex;
+                bool checkBelow = actor.YSpeed < 0 && tileBelow < solidTileBeginIndex;
 
                 CheckCollisionCorrectionY(actor, collisionInfo, collisionInfo, tileBounds,
                     tileLeft != 0, tileRight != 0, checkAbove, checkBelow);
@@ -140,10 +142,9 @@ namespace ChompGame.Helpers
             return collisionInfo;
         }
 
-        private void CheckCollisionCorrectionX(MovingSprite actor, CollisionInfo correction,
-            ByteRectangle bounds, bool checkLeftCollision, bool checkRightCollision)
+        private void CheckCollisionCorrectionX(WorldSprite actor, CollisionInfo correction,
+            Rectangle bounds, bool checkLeftCollision, bool checkRightCollision)
         {
-
             var xTemp = 0;
             if (bounds.Intersects(actor.Bounds))
             {
@@ -169,8 +170,8 @@ namespace ChompGame.Helpers
             }
         }
 
-        private void CheckCollisionCorrectionY(MovingSprite actor, CollisionInfo correction, CollisionInfo collisionInfo,
-            ByteRectangle bounds, bool leftSolid, bool rightSolid, bool checkAbove, bool checkBelow)
+        private void CheckCollisionCorrectionY(WorldSprite actor, CollisionInfo correction, CollisionInfo collisionInfo,
+            Rectangle bounds, bool leftSolid, bool rightSolid, bool checkAbove, bool checkBelow)
         {
 
             var yTemp = 0;
@@ -230,7 +231,7 @@ namespace ChompGame.Helpers
         //        return new CollisionInfo();
         //}
 
-        private void CheckTouchingGround(MovingSprite actor, ByteRectangle collidingTile, CollisionInfo collisionInfo)
+        private void CheckTouchingGround(WorldSprite actor, Rectangle collidingTile, CollisionInfo collisionInfo)
         {
             var correctedBottom = actor.BottomRight.Y + collisionInfo.YCorrection;
 
