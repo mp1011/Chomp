@@ -207,7 +207,7 @@ namespace ChompGame.GameSystem
 
         public override int AudioChannels => 2;
 
-        public override int BytesPerPalette => 2;
+        public override int BytesPerPalette => 3;
         public override int NumPalettes => 4;
 
         public override Color[] SystemColors { get; } = new Color[64];
@@ -222,7 +222,6 @@ namespace ChompGame.GameSystem
             SystemColors[Blue3] = new Color(0, 198, 243);
             SystemColors[Blue4] = new Color(72, 219, 255);
 
-
             SystemColors[LightBlue] = new Color(183, 255, 255);
             SystemColors[LightYellow] = new Color(255, 255, 129);
             SystemColors[LightTan] = new Color(247, 193, 155);
@@ -233,6 +232,10 @@ namespace ChompGame.GameSystem
 
             SystemColors[Orange] = new Color(255, 108, 15);
             SystemColors[DarkBrown] = new Color(117, 29, 15);
+
+            SystemColors[Red1] = new Color(99, 0, 0);
+            SystemColors[Red2] = new Color(207, 57, 57);
+            SystemColors[Red3] = new Color(255, 57, 57);
         }
 
         public const int Black = 0;
@@ -253,6 +256,11 @@ namespace ChompGame.GameSystem
 
         public const int Orange = 12;
         public const int DarkBrown = 13;
+
+        public const int Red1 = 14;
+        public const int Red2 = 15;
+        public const int Red3 = 16;
+
 
 
     }

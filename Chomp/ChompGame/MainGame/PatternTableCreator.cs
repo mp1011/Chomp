@@ -23,11 +23,33 @@ namespace ChompGame.MainGame
                 graphicsDevice,
                 specs);
 
+            //player
             CopyPatternTableRegion(
                 masterPatternTableImage,
                 masterPatternTable,
                 new Rectangle(0, 0, 2, 2),
                 specs);
+
+            //lizard enemy
+            CopyPatternTableRegion(
+              masterPatternTableImage,
+              masterPatternTable,
+              new Rectangle(2, 0, 2, 2),
+              specs);
+
+            //fireball
+            CopyPatternTableRegion(
+              masterPatternTableImage,
+              masterPatternTable,
+              new Rectangle(4, 0, 1, 1),
+              specs);
+
+            //coin
+            CopyPatternTableRegion(
+              masterPatternTableImage,
+              masterPatternTable,
+              new Rectangle(5, 0, 1, 1),
+              specs);
 
             CopyPatternTableRegion(
                masterPatternTableImage,

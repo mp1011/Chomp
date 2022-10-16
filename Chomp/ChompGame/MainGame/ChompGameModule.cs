@@ -34,10 +34,13 @@ namespace ChompGame.MainGame
        
         private GameByteEnum<GameState> _gameState;
         private GameByte _timer;
-        private MaskedByte _paletteCycleIndex;
+        private GameByte _currentLevel;
+
 
         private PlayerController _playerController;
         private WorldScroller _worldScroller;
+        private RasterInterrupts _rasterInterrupts;
+
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
            SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
            : base(mainSystem)
@@ -55,8 +58,17 @@ namespace ChompGame.MainGame
         {
             _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
             _timer = memoryBuilder.AddByte();
-            _paletteCycleIndex = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)3, memoryBuilder.Memory);
-            memoryBuilder.AddByte();
+            _currentLevel = memoryBuilder.AddByte();
+
+            _rasterInterrupts = new RasterInterrupts(Specs,
+                GameSystem.CoreGraphicsModule,
+                _tileModule,
+                _timer,
+                _currentLevel);
+
+            _rasterInterrupts.BuildMemory(memoryBuilder);
+
+              memoryBuilder.AddByte();
 
             _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
 
@@ -117,10 +129,10 @@ namespace ChompGame.MainGame
         {
             SceneInfo testScene = new SceneInfo(_romAddresses.SceneDefinitions, GameSystem.Memory);
             testScene.DefineRegion(
-             index: 0,
-             region: new InMemoryByteRectangle(0, 0, 2, 2),
-             destination: new Point(0, 2),
-             systemMemory: GameSystem.Memory);
+                index: 0,
+                region: new InMemoryByteRectangle(0, 0, 6, 2),
+                destination: new Point(0, 2),
+                systemMemory: GameSystem.Memory);
 
             testScene.DefineRegion(
                index: 1,
@@ -148,13 +160,8 @@ namespace ChompGame.MainGame
         public void OnLogicUpdate()
         {
             _musicModule.Update();
-
             _timer.Value++;
-            if ((_timer.Value % 4) == 0)
-            {
-                _paletteCycleIndex.Value++;
-            }
-
+          
             switch (_gameState.Value)
             {
                 case GameState.LoadScene:
@@ -176,6 +183,11 @@ namespace ChompGame.MainGame
             playerPalette.SetColor(2, ChompGameSpecs.LightTan); //face
             playerPalette.SetColor(3, ChompGameSpecs.DarkBrown); //legs
 
+            var enemyPallete = GameSystem.CoreGraphicsModule.GetPalette(2);
+            enemyPallete.SetColor(0, ChompGameSpecs.Black);
+            enemyPallete.SetColor(1, ChompGameSpecs.Green1); 
+            enemyPallete.SetColor(2, ChompGameSpecs.Red3); 
+            enemyPallete.SetColor(3, ChompGameSpecs.Green2); 
 
             var playerSprite = _spritesModule.GetSprite(0);
             playerSprite.X = 16;
@@ -184,6 +196,14 @@ namespace ChompGame.MainGame
             playerSprite.Orientation = Orientation.Vertical;
             playerSprite.Tile2Offset = 1;
             playerSprite.Palette = 1;
+
+            var enemySprite = _spritesModule.GetSprite(1);
+            enemySprite.X = 40;
+            enemySprite.Y = 48;
+            enemySprite.Tile = 3;
+            enemySprite.Orientation = Orientation.Vertical;
+            enemySprite.Tile2Offset = 1;
+            enemySprite.Palette = 2;
 
             _gameState.Value = GameState.PlayScene;
 
@@ -207,6 +227,7 @@ namespace ChompGame.MainGame
         {
             _playerController.Update();
             _worldScroller.Update();
+            _rasterInterrupts.Update();
         }
 
         public void OnVBlank()
@@ -217,57 +238,9 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
-            if(GameSystem.CoreGraphicsModule.ScreenPoint.Y == 0)
-            {
-                var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
-                bgPalette.SetColor(0, ChompGameSpecs.Black);
-                bgPalette.SetColor(1, ChompGameSpecs.LightBlue);
-                bgPalette.SetColor(2, ChompGameSpecs.LightYellow);
-                bgPalette.SetColor(3, ChompGameSpecs.White);
-            }
-            else if (GameSystem.CoreGraphicsModule.ScreenPoint.Y == 40)
-            {
-                var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
-               
-                switch (_paletteCycleIndex.Value)
-                {
-                    case 0:
-                        bgPalette.SetColor(0, ChompGameSpecs.Blue4);
-                        bgPalette.SetColor(1, ChompGameSpecs.Blue1);
-                        bgPalette.SetColor(2, ChompGameSpecs.Blue2);
-                        bgPalette.SetColor(3, ChompGameSpecs.Blue3);
-                        break;
-                    case 1:
-                        bgPalette.SetColor(0, ChompGameSpecs.Blue1);
-                        bgPalette.SetColor(1, ChompGameSpecs.Blue2);
-                        bgPalette.SetColor(2, ChompGameSpecs.Blue3);
-                        bgPalette.SetColor(3, ChompGameSpecs.Blue4);
-                        break;
-                    case 2:
-                        bgPalette.SetColor(0, ChompGameSpecs.Blue2);
-                        bgPalette.SetColor(1, ChompGameSpecs.Blue3);
-                        bgPalette.SetColor(2, ChompGameSpecs.Blue4);
-                        bgPalette.SetColor(3, ChompGameSpecs.Blue1);
-                        break;
-                    case 3:
-                        bgPalette.SetColor(0, ChompGameSpecs.Blue3);
-                        bgPalette.SetColor(1, ChompGameSpecs.Blue4);
-                        bgPalette.SetColor(2, ChompGameSpecs.Blue1);
-                        bgPalette.SetColor(3, ChompGameSpecs.Blue2);
-                        break;
-                }
-            }
-            else if (GameSystem.CoreGraphicsModule.ScreenPoint.Y == 48)
-            {
-                var bgPalette = GameSystem.CoreGraphicsModule.GetPalette(0);
-                bgPalette.SetColor(0, ChompGameSpecs.Green3);
-                bgPalette.SetColor(1, ChompGameSpecs.Blue1);
-                bgPalette.SetColor(2, ChompGameSpecs.Green1);
-                bgPalette.SetColor(3, ChompGameSpecs.Green2);
-                  
-            }
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
+            _rasterInterrupts.OnHBlank();
         }
     }
 }

@@ -89,10 +89,21 @@ namespace ChompGame.Helpers
                 if (t < solidTileBeginIndex)
                     return;
 
-                var tileAbove = _tileModule.NameTable[x, y - 1];
-                var tileBelow = _tileModule.NameTable[x, y + 1];
-                var tileLeft = _tileModule.NameTable[x - 1, y];
-                var tileRight = _tileModule.NameTable[x + 1, y];
+                var tileAbove = _tileModule.NameTable[
+                    x.NMod(_tileModule.NameTable.Width), 
+                    (y - 1).NMod(_tileModule.NameTable.Height)];
+
+                var tileBelow = _tileModule.NameTable[
+                    x.NMod(_tileModule.NameTable.Width), 
+                    (y + 1).NMod(_tileModule.NameTable.Height)];
+
+                var tileLeft = _tileModule.NameTable[
+                    (x - 1).NMod(_tileModule.NameTable.Width), 
+                    y.NMod(_tileModule.NameTable.Height)];
+
+                var tileRight = _tileModule.NameTable[
+                    (x + 1).NMod(_tileModule.NameTable.Width), 
+                    y.NMod(_tileModule.NameTable.Height)];
 
                 var tileBounds = new Rectangle(
                     x * _specs.TileWidth,

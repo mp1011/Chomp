@@ -127,7 +127,7 @@ namespace ChompGame.GameSystem
 
             if(scanlineSpriteIndex > 1)
             {
-                throw new System.NotImplementedException("need to sort by X");
+                //throw new System.NotImplementedException("need to sort by X");
             }
 
             if(scanlineSpriteIndex < Specs.SpritesPerScanline)
