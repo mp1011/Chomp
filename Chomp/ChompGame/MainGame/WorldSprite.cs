@@ -23,10 +23,9 @@ namespace ChompGame.MainGame
             set
             {
                 var sprite = GetSprite();
-                if (WorldBlock.X != 0)
-                    throw new System.NotImplementedException();
 
-                sprite.X = value;
+                WorldBlock.X = (byte)(value / _specs.NameTablePixelWidth);
+                sprite.X = value % _specs.NameTablePixelWidth;
             }
         }
         public int Y
@@ -39,10 +38,9 @@ namespace ChompGame.MainGame
             set
             {
                 var sprite = GetSprite();
-                if(WorldBlock.Y != 0)
-                    throw new System.NotImplementedException();
 
-                sprite.Y = value;
+                WorldBlock.Y = (byte)(value / _specs.NameTablePixelHeight);
+                sprite.Y = value % _specs.NameTablePixelHeight;
             }
         }
 

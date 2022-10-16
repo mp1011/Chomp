@@ -2,7 +2,7 @@
 
 namespace ChompGame.MainGame
 {
-    class PrecisionMotion
+    class PrecisionMotion : IMotion
     {
         private byte _motionScale = 4;
         private ByteVector _motion;
@@ -28,7 +28,7 @@ namespace ChompGame.MainGame
             _subPixelY = memoryBuilder.AddByte();
         }
 
-        public void Apply(Sprite sprite)
+        public void Apply(WorldSprite sprite)
         {
             int sx = _subPixelX.Value;
             sx += _motion.X * _motionScale;
@@ -42,7 +42,7 @@ namespace ChompGame.MainGame
             _subPixelX.Value = (byte)(sx % 256);
             if (pixelX != 0)
             {
-                sprite.X = (byte)(sprite.X + pixelX);
+                sprite.X = sprite.X + pixelX;
             }
 
             int sy = _subPixelY.Value;
@@ -57,7 +57,7 @@ namespace ChompGame.MainGame
             _subPixelY.Value = (byte)(sy % 256);
             if (pixelY != 0)
             {
-                sprite.Y = (byte)(sprite.Y + pixelY);
+                sprite.Y = sprite.Y + pixelY;
             }
         }
     }

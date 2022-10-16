@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -218,22 +219,20 @@ namespace ChompGame
                 }
 
                 _spriteBatch.Begin(SpriteSortMode.Immediate);
+                int y = 0;
+                foreach(var watch in GameDebug.Watches)
+                {
+                    _spriteBatch.DrawString(_font, 
+                        $"{watch.Name} = {watch.GetValue()}", 
+                        new Vector2(0, y), 
+                        Color.Green);
 
-                var p = _gameSystem.GetModule<SpritesModule>().GetSprite(0);
-                var playerX = new MaskedByte(p.Address, (Bit)(_gameSystem.Specs.NameTablePixelWidth / 2 - 1), _gameSystem.Memory);
-                _spriteBatch.DrawString(_font, $"X = {playerX.Value}", new Vector2(0, 0), Color.Green);
+                    y += 16;
+                }
 
-                var screenX = new GameBit(p.Address + 3, Bit.Bit6, _gameSystem.Memory);
-                var playerXExtended = new ExtendedByte(playerX, screenX, _gameSystem.Specs.ScreenWidth);
-                _spriteBatch.DrawString(_font, $"Xe = {playerXExtended.Value}", new Vector2(0, 16), Color.Green);
-
-
-                _spriteBatch.DrawString(_font, $"ScrollX = {_gameSystem.GetModule<SpritesModule>().Scroll.X}", new Vector2(0, 32), Color.Green);
-                _spriteBatch.DrawString(_font, $"ScrollY = {_gameSystem.GetModule<SpritesModule>().Scroll.Y}", new Vector2(0, 48), Color.Green);
-
-                _spriteBatch.DrawString(_font, $"DrawMs = {_drawMS}", new Vector2(0, 64), Color.White);
-                if(_totalDrawFrames > 0)
-                    _spriteBatch.DrawString(_font, $"Avg DrawMs = {_totalDrawMS / _totalDrawFrames}", new Vector2(0, 80), Color.White);
+                _spriteBatch.DrawString(_font, $"DrawMs = {_drawMS}", new Vector2(0, y), Color.White);
+                if (_totalDrawFrames > 0)
+                    _spriteBatch.DrawString(_font, $"Avg DrawMs = {_totalDrawMS / _totalDrawFrames}", new Vector2(0, y+16), Color.White);
 
                 _spriteBatch.End();
 

@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 
@@ -10,9 +11,11 @@ namespace ChompGame.MainGame
         private const int WalkAccel = 5;
         private const int BrakeAccel = 10;
 
+        public const int JumpSpeed = 80;
         private const int FallSpeed = 64;
-        private const int GravityAccel = 5;
+        private const int GravityAccel = 10;
 
+        private readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
         private readonly InputModule _inputModule;
         private readonly CollisionDetector _collisionDetector;
@@ -30,6 +33,7 @@ namespace ChompGame.MainGame
             _spritesModule = spritesModule;
             _inputModule = inputModule;
             _collisionDetector = collisionDetector;
+            _levelTimer = levelTimer;
 
             Motion = new AcceleratedMotion(levelTimer, memoryBuilder);
 
@@ -63,10 +67,38 @@ namespace ChompGame.MainGame
             Motion.TargetYSpeed = FallSpeed;
             Motion.YAcceleration = GravityAccel;
 
-            Motion.Apply(WorldSprite.GetSprite());
+            var sprite = WorldSprite.GetSprite();
+            Motion.Apply(WorldSprite);
 
             //todo, this value should come from level data
-            _collisionDetector.DetectCollisions(WorldSprite, 14);
+            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, 14);
+
+            if(collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
+            {
+                Motion.YSpeed = -JumpSpeed;
+            }
+
+            //split this out somehow
+            if(Motion.XSpeed == 0)
+            {
+                sprite.Tile2Offset = 1;
+            }
+            else
+            {
+                if((_levelTimer.Value % 16) == 0)
+                {
+                    sprite.Tile2Offset = sprite.Tile2Offset.Toggle(1, 2);
+                }
+            }
+
+            if(Motion.TargetXSpeed < 0 && !sprite.FlipX)
+            {
+                sprite.FlipX = true;
+            }
+            else if (Motion.TargetXSpeed > 0 && sprite.FlipX)
+            {
+                sprite.FlipX = false;
+            }
         }
     }
 }

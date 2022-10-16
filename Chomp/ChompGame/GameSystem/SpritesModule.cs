@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.Graphics;
 
 namespace ChompGame.GameSystem
@@ -83,7 +84,9 @@ namespace ChompGame.GameSystem
                         if(sprite.FlipX)
                             drawCol = (sprite.X + sprite.Width - col - 1) - Scroll.X;
                         else 
-                            drawCol= (sprite.X + col) - Scroll.X;
+                            drawCol = (sprite.X + col) - Scroll.X;
+
+                        drawCol = drawCol.NMod(Specs.NameTablePixelWidth);
 
                         if (drawCol >= 0 && drawCol < Specs.ScreenWidth)
                             _coreGraphicsModule.ScanlineDrawBuffer[drawCol] = pixel;

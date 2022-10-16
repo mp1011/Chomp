@@ -2,7 +2,7 @@
 
 namespace ChompGame.MainGame
 {
-    class AcceleratedMotion
+    class AcceleratedMotion : IMotion
     {
         private GameByte _timer;
         private ByteVector _targetMotion;
@@ -56,7 +56,7 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
         }
 
-        public void Apply(Sprite sprite)
+        public void Apply(WorldSprite sprite)
         {
             if ((_timer.Value % 4) == 0)
             {

@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -91,13 +92,13 @@ namespace ChompGame.GameSystem
             {
                 if(_spritesModule.ScanlineSprites[scanlineSpriteIndex] != 255)
                 {
-                    if (ScreenPoint.X == nextSprite.X)
+                    if ((ScreenPoint.X + _spritesModule.Scroll.X).NMod(Specs.NameTablePixelWidth) == nextSprite.X.NMod(Specs.NameTablePixelWidth))
                     {
                         nextPaletteIndex = nextSprite.Palette;
                         drawingSprite = true;
                         spriteColumn = 0;
                     }
-                    else if (ScreenPoint.X == nextSprite.Right)
+                    else if ((ScreenPoint.X + _spritesModule.Scroll.X).NMod(Specs.NameTablePixelWidth) == nextSprite.Right.NMod(Specs.NameTablePixelWidth))
                     {
                         nextPaletteIndex = _tileModule.BackgroundPaletteIndex;
                         scanlineSpriteIndex++;
@@ -123,6 +124,7 @@ namespace ChompGame.GameSystem
 
                 var color = palette[ScanlineDrawBuffer[scanlineColumn]];
                 _screenData[i] = color;
+
                 scanlineColumn++;
 
                 if (drawingSprite)

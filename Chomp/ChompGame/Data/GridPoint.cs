@@ -78,8 +78,20 @@ namespace ChompGame.Data
         {
         }
 
-        public override byte X { get; set; }
-        public override byte Y { get; set; }
+        private byte _x;
+        private byte _y;
+
+        public override byte X
+        {
+            get => _x;
+            set => _x = (byte)(value % Width);
+        }
+
+        public override byte Y 
+        {
+            get => _y;
+            set => _y = (byte)(value % Height);
+        }
 
         public ByteGridPoint(GridPoint copyFrom) : this(copyFrom.Width, copyFrom.Height)
         {

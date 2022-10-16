@@ -37,7 +37,7 @@ namespace ChompGame.MainGame
         private MaskedByte _paletteCycleIndex;
 
         private PlayerController _playerController;
-
+        private WorldScroller _worldScroller;
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
            SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
            : base(mainSystem)
@@ -59,6 +59,8 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
 
             _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
+
+            _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
 
             memoryBuilder.BeginROM();
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
@@ -187,11 +189,24 @@ namespace ChompGame.MainGame
 
             _playerController.Motion.XSpeed = 0;
             _playerController.Motion.YSpeed = 0;
+
+            GameDebug.Watch1 = new DebugWatch(
+                "Player X",
+                () =>_playerController.WorldSprite.X);
+
+            GameDebug.Watch2 = new DebugWatch(
+                name: "Player Sprite X",
+                () => playerSprite.X);
+
+            GameDebug.Watch3 = new DebugWatch(
+               name: "Player Sprite Y",
+               () => playerSprite.Y);
         }
 
         public void PlayScene()
         {
             _playerController.Update();
+            _worldScroller.Update();
         }
 
         public void OnVBlank()
