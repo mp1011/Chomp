@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SpriteControllers;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 
@@ -38,6 +39,7 @@ namespace ChompGame.MainGame
 
 
         private PlayerController _playerController;
+        private SpriteControllerPool<LizardEnemyController> _lizardEnemyControllers;
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
 
@@ -68,9 +70,20 @@ namespace ChompGame.MainGame
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
-              memoryBuilder.AddByte();
+            memoryBuilder.AddByte();
 
             _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
+            _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
+                2,
+                _spritesModule,
+                () => new LizardEnemyController(_spritesModule, _collisionDetector, _timer, memoryBuilder),
+                s => 
+                {
+                    s.Tile = 3;
+                    s.Orientation = Orientation.Vertical;
+                    s.Tile2Offset = 1;
+                    s.Palette = 2;
+                });
 
             _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
 
@@ -186,8 +199,8 @@ namespace ChompGame.MainGame
             var enemyPallete = GameSystem.CoreGraphicsModule.GetPalette(2);
             enemyPallete.SetColor(0, ChompGameSpecs.Black);
             enemyPallete.SetColor(1, ChompGameSpecs.Green1); 
-            enemyPallete.SetColor(2, ChompGameSpecs.Red3); 
-            enemyPallete.SetColor(3, ChompGameSpecs.Green2); 
+            enemyPallete.SetColor(2, ChompGameSpecs.Green2); 
+            enemyPallete.SetColor(3, ChompGameSpecs.Red3); 
 
             var playerSprite = _spritesModule.GetSprite(0);
             playerSprite.X = 16;
@@ -197,18 +210,30 @@ namespace ChompGame.MainGame
             playerSprite.Tile2Offset = 1;
             playerSprite.Palette = 1;
 
-            var enemySprite = _spritesModule.GetSprite(1);
-            enemySprite.X = 40;
-            enemySprite.Y = 48;
-            enemySprite.Tile = 3;
-            enemySprite.Orientation = Orientation.Vertical;
-            enemySprite.Tile2Offset = 1;
-            enemySprite.Palette = 2;
+            var lizard1 = _lizardEnemyControllers
+                .TryAddNew()
+                .GetSprite();
+
+            var lizard2 = _lizardEnemyControllers
+                .TryAddNew()
+                .GetSprite();
+
+            lizard1.X = 32;
+            lizard1.Y = 40;
+
+            lizard2.X = 64;
+            lizard2.Y = 40;
 
             _gameState.Value = GameState.PlayScene;
 
             _playerController.Motion.XSpeed = 0;
             _playerController.Motion.YSpeed = 0;
+
+            _lizardEnemyControllers.Execute(c =>
+            {
+                c.Motion.XSpeed = 0;
+                c.Motion.YSpeed = 0;
+            });
 
             GameDebug.Watch1 = new DebugWatch(
                 "Player X",
@@ -226,6 +251,7 @@ namespace ChompGame.MainGame
         public void PlayScene()
         {
             _playerController.Update();
+            _lizardEnemyControllers.Execute(c => c.Update());
             _worldScroller.Update();
             _rasterInterrupts.Update();
         }

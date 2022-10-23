@@ -1,6 +1,8 @@
 ﻿using ChompGame.Data;
 using ChompGame.Extensions;
 using ChompGame.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ChompGame.GameSystem
 {
@@ -23,6 +25,17 @@ namespace ChompGame.GameSystem
         public Sprite GetSprite(int index)
         {
             return new Sprite(_sprite0Address + GameSystem.Specs.BytesPerSprite * index, GameSystem.Memory, Specs, Scroll);
+        }
+
+        public byte GetFreeSpriteIndex()
+        {
+            for(byte b = 0; b < Specs.MaxSprites; b++)
+            {
+                if (!GetSprite(b).Visible)
+                    return b;
+            }
+
+            return 255;
         }
 
         public Sprite GetScanlineSprite(int index)
@@ -75,17 +88,14 @@ namespace ChompGame.GameSystem
 
                 for (int col = 0; col < Specs.TileWidth; col++)
                 {
+                    int adjCol = sprite.FlipX ? Specs.TileWidth - (col + 1) : col;
+
                     var pixel = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
                     if (pixel != 0)
                     {
-                        ScanlineSpritePixelPriority.Set(i, col, true);
+                        ScanlineSpritePixelPriority.Set(i, adjCol, true);
 
-                        int drawCol; 
-                        if(sprite.FlipX)
-                            drawCol = (sprite.X + sprite.Width - col - 1) - Scroll.X;
-                        else 
-                            drawCol = (sprite.X + col) - Scroll.X;
-
+                        int drawCol = (sprite.X + adjCol) - Scroll.X;                          
                         drawCol = drawCol.NMod(Specs.NameTablePixelWidth);
 
                         if (drawCol >= 0 && drawCol < Specs.ScreenWidth)
@@ -93,11 +103,11 @@ namespace ChompGame.GameSystem
                     }
                     else
                     {
-                        ScanlineSpritePixelPriority.Set(i, col, false);
+                        ScanlineSpritePixelPriority.Set(i, adjCol, false);
                     }
 
                     patternTablePoint.X++;
-                }
+                }      
             }
         }
 
@@ -110,26 +120,29 @@ namespace ChompGame.GameSystem
         {
             int scanlineSpriteIndex = 0;
 
-            for(byte spriteIndex = 0; spriteIndex < Specs.MaxSprites; spriteIndex++)
+            List<Sprite> scanlineSprites = new List<Sprite>();
+
+            for (byte spriteIndex = 0; spriteIndex < Specs.MaxSprites; spriteIndex++)
             {
                 var sprite = GetSprite(spriteIndex);
-                if(!sprite.Visible
+                if (!sprite.Visible
                     || !sprite.IntersectsScanline(ScreenPoint.Y))
                 {
                     continue;
                 }
 
-                ScanlineSprites[scanlineSpriteIndex] = (byte)(sprite.Address - _sprite0Address);
+                scanlineSprites.Add(sprite);
+            }
+
+            foreach(var orderedSprite in scanlineSprites
+                .OrderBy(p=>p.X))
+            {
+                ScanlineSprites[scanlineSpriteIndex] = (byte)(orderedSprite.Address - _sprite0Address);
                 scanlineSpriteIndex++;
                 if (scanlineSpriteIndex == Specs.SpritesPerScanline)
                     break;
             }
-
-            if(scanlineSpriteIndex > 1)
-            {
-                //throw new System.NotImplementedException("need to sort by X");
-            }
-
+                
             if(scanlineSpriteIndex < Specs.SpritesPerScanline)
             {
                 ScanlineSprites[scanlineSpriteIndex] = 255;

@@ -29,32 +29,32 @@ namespace ChompGame
             while (!quit)
             {
                 var gs = game.GameSystem;
-                if (gs == null)
+                if (gs == null || !game.IsActive)
                     continue;
 
-                Console.Write(">");
-                var command = Console.ReadLine();
-                var parts = command.Split(' ');
-                switch(parts[0])
-                {
-                    case "q":
-                    case "quit":
-                        quit = true;
-                        break;
-                    case "peek":
-                        int address = int.Parse(parts[1]);
-                        Console.WriteLine(gs.Memory[address]);
-                        break;
-                    case "poke":
-                        address = int.Parse(parts[1]);
-                        var newValue = byte.Parse(parts[2]);
-                        Console.WriteLine(gs.Memory[address] = newValue);
-                        break;
-                    case "clear":
-                    case "cls":
-                        Console.Clear();
-                        break; 
-                }
+                //Console.Write(">");
+                //var command = Console.ReadLine();
+                //var parts = command.Split(' ');
+                //switch(parts[0])
+                //{
+                //    case "q":
+                //    case "quit":
+                //        quit = true;
+                //        break;
+                //    case "peek":
+                //        int address = int.Parse(parts[1]);
+                //        Console.WriteLine(gs.Memory[address]);
+                //        break;
+                //    case "poke":
+                //        address = int.Parse(parts[1]);
+                //        var newValue = byte.Parse(parts[2]);
+                //        Console.WriteLine(gs.Memory[address] = newValue);
+                //        break;
+                //    case "clear":
+                //    case "cls":
+                //        Console.Clear();
+                //        break; 
+                //}
             }
         }
 

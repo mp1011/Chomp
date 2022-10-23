@@ -25,27 +25,6 @@ namespace ChompGame
         private RenderTarget2D _renderTarget;
         private Texture2D _canvas;
         private SpriteFont _font;
-        private string _memoryString="";
-
-        #region 3DStuff
-
-        int vertices = 6;
-
-        //Camera
-        Vector3 camTarget;
-        Vector3 camPosition;
-        Matrix projectionMatrix;
-        Matrix viewMatrix;
-        Matrix worldMatrix;
-
-        //BasicEffect for rendering
-        BasicEffect basicEffect;
-
-        //Geometric info
-        VertexPositionColorTexture[] triangleVertices;
-        VertexBuffer vertexBuffer;
-        #endregion
-
         public MainSystem GameSystem => _gameSystem;
 
         public Game1(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)
@@ -64,62 +43,6 @@ namespace ChompGame
         {
             _gameSystem = _createSystem(GraphicsDevice, Content);
             _specs = _gameSystem.Specs;
-
-            #region 3D stuff
-            //Setup Camera
-            camTarget = new Vector3(0f, 0f, 0f);
-            camPosition = new Vector3(0f, 0f, -100f);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
-                               MathHelper.ToRadians(45f),
-                               GraphicsDevice.DisplayMode.AspectRatio,
-                1f, 1000f);
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget,
-                         new Vector3(0f, 1f, 0f));// Y up
-            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.
-                          Forward, Vector3.Up);
-
-            //BasicEffect
-            basicEffect = new BasicEffect(GraphicsDevice);
-            basicEffect.Alpha = 1f;
-
-            triangleVertices = new VertexPositionColorTexture[vertices];
-            triangleVertices[0] = new VertexPositionColorTexture(
-                new Vector3(-40, 40, 0),
-                Color.White,
-                new Vector2(1, 0));
-
-            triangleVertices[1] = new VertexPositionColorTexture(
-                new Vector3(40, -40, 0),
-                Color.White,
-                new Vector2(0, 1));
-
-            triangleVertices[2] = new VertexPositionColorTexture(
-                new Vector3(40, 40, 0), 
-                Color.White,
-                new Vector2(0,0));
-            
-
-            triangleVertices[3] = new VertexPositionColorTexture(
-               new Vector3(40, -40, 0),
-               Color.White,
-               new Vector2(0, 1));
-            triangleVertices[4] = new VertexPositionColorTexture(
-                new Vector3(-40, 40, 0),
-                Color.White,
-                new Vector2(1, 0));
-            triangleVertices[5] = new VertexPositionColorTexture(
-               new Vector3(-40, -40, 0),
-               Color.White,
-               new Vector2(1, 1));
-
-            //Vert buffer
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(
-                           VertexPositionColorTexture), vertices, BufferUsage.
-                           WriteOnly);
-            vertexBuffer.SetData(triangleVertices);
-            #endregion
-
-
             base.Initialize();
         }
 
@@ -133,27 +56,7 @@ namespace ChompGame
 
         protected override void Update(GameTime gameTime)
         {
-            _draw3D = !Keyboard.GetState().IsKeyDown(Keys.R);
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             _gameSystem.OnLogicUpdate();
-
-            var sb = new StringBuilder();
-            int w = 0;
-            for(int i =0; i < _gameSystem.Memory.RAMSize; i++)
-            {
-                sb.Append(_gameSystem.Memory[i].ToString("X2"));
-                w++;
-                if(w==20)
-                {
-                    w = 0;
-                    sb.AppendLine();
-                }
-            }
-            _memoryString = sb.ToString();
-
             base.Update(gameTime);
         }
 
@@ -161,10 +64,6 @@ namespace ChompGame
         private long _drawMS;
         private long _totalDrawMS;
         private long _totalDrawFrames;
-
-        bool _draw3D = false;
-        bool _r = false;
-
         protected override void Draw(GameTime gameTime)
         {
             _renderTimer.Restart();
@@ -175,103 +74,63 @@ namespace ChompGame
             _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);
             _spriteBatch.End();
 
-            if (_draw3D)
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.Black);
+
+            DrawDebugText();
+
+            var aspectRatio = (double)_renderTarget.Height / _renderTarget.Width;
+
+            int renderWidth = Window.ClientBounds.Width;
+            int renderHeight = (int)(renderWidth * aspectRatio);
+
+            if (renderHeight > Window.ClientBounds.Height)
             {
-                basicEffect.Projection = projectionMatrix;
-                basicEffect.View = viewMatrix;
-                basicEffect.World = worldMatrix;
-                basicEffect.Texture = _canvas;
-                basicEffect.TextureEnabled = true;
-                basicEffect.EnableDefaultLighting();
-
-                _r = !_r;
-                if (_r)
-                {
-                    basicEffect.AmbientLightColor = new Vector3(0.53f, 0.56f, 0.53f);  
-                }
-                else
-                {
-                    basicEffect.AmbientLightColor = new Vector3(0.5f, 0.54f, 0.5f);
-                }
-
-                GraphicsDevice.SetRenderTarget(null);
-                GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-
-                GraphicsDevice.Clear(Color.Black);
-                GraphicsDevice.SetVertexBuffer(vertexBuffer);
-
-                basicEffect.DirectionalLight0.Enabled = true;
-                basicEffect.DiffuseColor = new Vector3(0.9f, 0.95f, 1);
-                basicEffect.SpecularColor = new Vector3(0, 1, 0);
-
-
-
-                basicEffect.DirectionalLight1.Enabled = false;
-                basicEffect.DirectionalLight2.Enabled = false;
-
-
-                foreach (EffectPass pass in basicEffect.CurrentTechnique.
-                        Passes)
-                {
-                    pass.Apply();
-                    GraphicsDevice.DrawPrimitives(PrimitiveType.
-                                                  TriangleList, 0, vertices);
-                }
-
-                _spriteBatch.Begin(SpriteSortMode.Immediate);
-                int y = 0;
-                foreach(var watch in GameDebug.Watches)
-                {
-                    _spriteBatch.DrawString(_font, 
-                        $"{watch.Name} = {watch.GetValue()}", 
-                        new Vector2(0, y), 
-                        Color.Green);
-
-                    y += 16;
-                }
-
-                _spriteBatch.DrawString(_font, $"DrawMs = {_drawMS}", new Vector2(0, y), Color.White);
-                if (_totalDrawFrames > 0)
-                    _spriteBatch.DrawString(_font, $"Avg DrawMs = {_totalDrawMS / _totalDrawFrames}", new Vector2(0, y+16), Color.White);
-
-                _spriteBatch.End();
-
+                renderHeight = Window.ClientBounds.Height;
+                renderWidth = (int)(renderHeight / aspectRatio);
             }
-            else
-            {
-                GraphicsDevice.SetRenderTarget(null);
-                GraphicsDevice.Clear(Color.Black);
+ 
+            int renderColumn = 16 + (Window.ClientBounds.Width - renderWidth) / 2;
+            int renderRow = (Window.ClientBounds.Height - renderHeight) / 2;
 
-                _spriteBatch.Begin(SpriteSortMode.Immediate);
-                _spriteBatch.DrawString(_font, _drawMS.ToString(), new Vector2(0, 0), Color.Green);
-                _spriteBatch.DrawString(_font, _memoryString, new Vector2(0, 16), Color.White);
-                _spriteBatch.End();
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-                var aspectRatio = (double)_renderTarget.Height / _renderTarget.Width;
+            _spriteBatch.Draw(_renderTarget, new Rectangle(
+                               x: renderColumn,
+                               y: renderRow,
+                               width: renderWidth,
+                               height: renderHeight), Color.White);
 
-                int renderWidth = Window.ClientBounds.Width;
-                int renderHeight = (int)(renderWidth * aspectRatio);
+            _spriteBatch.End();
 
-                if (renderHeight > Window.ClientBounds.Height)
-                {
-                    renderHeight = Window.ClientBounds.Height;
-                    renderWidth = (int)(renderHeight / aspectRatio);
-                }
-                _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-                _spriteBatch.Draw(_renderTarget, new Rectangle(
-                    x: (Window.ClientBounds.Width - renderWidth) / 2,
-                    y: (Window.ClientBounds.Height - renderHeight) / 2,
-                    width: renderWidth,
-                    height: renderHeight), Color.White);
-                _spriteBatch.End();
-            }
-
+         
             _renderTimer.Stop();
             _drawMS = _renderTimer.ElapsedMilliseconds;
             _totalDrawMS += _drawMS;
             _totalDrawFrames++;
 
             base.Draw(gameTime);
+        }
+
+        private void DrawDebugText()
+        {
+            _spriteBatch.Begin(SpriteSortMode.Immediate);
+            int y = 0;
+            foreach (var watch in GameDebug.Watches)
+            {
+                _spriteBatch.DrawString(_font,
+                    $"{watch.Name} = {watch.GetValue()}",
+                    new Vector2(0, y),
+                    Color.Green);
+
+                y += 16;
+            }
+
+            _spriteBatch.DrawString(_font, $"DrawMs = {_drawMS}", new Vector2(0, y), Color.White);
+            if (_totalDrawFrames > 0)
+                _spriteBatch.DrawString(_font, $"Avg DrawMs = {_totalDrawMS / _totalDrawFrames}", new Vector2(0, y + 16), Color.White);
+
+            _spriteBatch.End();
         }
     }
 }
