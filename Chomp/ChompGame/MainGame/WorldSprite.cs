@@ -13,6 +13,12 @@ namespace ChompGame.MainGame
         public NibblePoint WorldBlock { get; }
         public PrecisionMotion Motion { get; }
 
+        public bool FlipX
+        {
+            get => GetSprite().FlipX;
+            set => GetSprite().FlipX = value;
+        }
+
         public int X
         {
             get

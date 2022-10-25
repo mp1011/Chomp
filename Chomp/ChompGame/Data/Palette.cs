@@ -29,11 +29,15 @@ namespace ChompGame.Data
         {
             get
             {
-                var low = _colorsLow[index];
-                var hi = _colorsHi[index] << 4;
-
-                return _specs.SystemColors[low + hi];
+                return _specs.SystemColors[GetColorIndex(index)];
             }
+        }
+
+        public int GetColorIndex(int index)
+        {
+            var low = _colorsLow[index];
+            var hi = _colorsHi[index] << 4;
+            return low + hi;
         }
 
         public void SetColor(int paletteIndex, byte systemColorIndex)

@@ -40,6 +40,8 @@ namespace ChompGame.MainGame
 
         private PlayerController _playerController;
         private SpriteControllerPool<LizardEnemyController> _lizardEnemyControllers;
+        private SpriteControllerPool<BulletController> _lizardBulletControllers;
+
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
 
@@ -73,10 +75,22 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
 
             _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
+            
+            _lizardBulletControllers = new SpriteControllerPool<BulletController>(
+               2,
+               _spritesModule,
+               () => new BulletController(_spritesModule, _collisionDetector, _timer, memoryBuilder),
+               s =>
+               {
+                   s.Tile = 5;
+                   s.Tile2Offset = 0;
+                   s.Palette = 3;
+               });
+
             _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
                 2,
                 _spritesModule,
-                () => new LizardEnemyController(_spritesModule, _collisionDetector, _timer, memoryBuilder),
+                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder),
                 s => 
                 {
                     s.Tile = 3;
@@ -202,6 +216,12 @@ namespace ChompGame.MainGame
             enemyPallete.SetColor(2, ChompGameSpecs.Green2); 
             enemyPallete.SetColor(3, ChompGameSpecs.Red3); 
 
+            var bulletPallete = GameSystem.CoreGraphicsModule.GetPalette(3);
+            bulletPallete.SetColor(0, ChompGameSpecs.Black);
+            bulletPallete.SetColor(1, ChompGameSpecs.Red2);
+            bulletPallete.SetColor(2, ChompGameSpecs.Red3);
+            bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
+
             var playerSprite = _spritesModule.GetSprite(0);
             playerSprite.X = 16;
             playerSprite.Y = 16;
@@ -213,13 +233,12 @@ namespace ChompGame.MainGame
             var lizard1 = _lizardEnemyControllers
                 .TryAddNew()
                 .GetSprite();
+            lizard1.X = 32;
+            lizard1.Y = 40;
 
             var lizard2 = _lizardEnemyControllers
                 .TryAddNew()
                 .GetSprite();
-
-            lizard1.X = 32;
-            lizard1.Y = 40;
 
             lizard2.X = 64;
             lizard2.Y = 40;
@@ -252,8 +271,26 @@ namespace ChompGame.MainGame
         {
             _playerController.Update();
             _lizardEnemyControllers.Execute(c => c.Update());
+            _lizardBulletControllers.Execute(c => c.Update());
             _worldScroller.Update();
             _rasterInterrupts.Update();
+
+            if (_timer.Value % 8 == 0)
+            {
+                var bulletPallete = GameSystem.CoreGraphicsModule.GetPalette(3);
+                if (bulletPallete.GetColorIndex(1) == ChompGameSpecs.Red2)
+                {
+                    bulletPallete.SetColor(1, ChompGameSpecs.Red3);
+                    bulletPallete.SetColor(2, ChompGameSpecs.Orange);
+                    bulletPallete.SetColor(3, ChompGameSpecs.White);
+                }
+                else
+                {
+                    bulletPallete.SetColor(1, ChompGameSpecs.Red2);
+                    bulletPallete.SetColor(2, ChompGameSpecs.Red3);
+                    bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
+                }
+            }
         }
 
         public void OnVBlank()

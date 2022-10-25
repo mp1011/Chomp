@@ -199,8 +199,8 @@ namespace ChompGame.GameSystem
         public override Bit ScrollXMask => (Bit)255;
         public override Bit ScrollYMask => (Bit)255;
 
-        public override int MaxSprites => 8;
-        public override int SpritesPerScanline => 3;
+        public override int MaxSprites => 32;
+        public override int SpritesPerScanline => 8;
 
         public override int TileWidth => 4;
         public override int TileHeight => 4;

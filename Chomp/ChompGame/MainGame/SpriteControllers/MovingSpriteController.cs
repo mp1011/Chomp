@@ -5,7 +5,7 @@ using ChompGame.Helpers;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class WalkingSpriteController : ISpriteController
+    class MovingSpriteController : ISpriteController
     {
         public byte WalkSpeed { get; }
         public byte WalkAccel { get; }
@@ -16,7 +16,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
-        private readonly CollisionDetector _collisionDetector;
 
         public byte LevelTimer => _levelTimer.Value;
 
@@ -30,7 +29,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex);
 
-        public WalkingSpriteController(
+        public MovingSpriteController(
             SpritesModule spritesModule,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
@@ -44,7 +43,6 @@ namespace ChompGame.MainGame.SpriteControllers
             byte gravityAccel)
         {
             _spritesModule = spritesModule;
-            _collisionDetector = collisionDetector;
             _levelTimer = levelTimer;
 
             Motion = new AcceleratedMotion(levelTimer, memoryBuilder);
@@ -64,7 +62,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 motion: Motion.CurrentMotion);
         }
 
-        public CollisionInfo Update()
+        public void Update()
         {
             Motion.TargetYSpeed = FallSpeed;
             Motion.YAcceleration = GravityAccel;
@@ -93,7 +91,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 sprite.FlipX = false;
             }
 
-            return _collisionDetector.DetectCollisions(WorldSprite, 14); //todo, hard-coding
         }
     }
 }
