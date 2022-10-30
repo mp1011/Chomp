@@ -66,5 +66,17 @@ namespace ChompGame.MainGame.SpriteControllers
                 motion.YSpeed = -_walkingSpriteController.JumpSpeed;
             }
         }
+
+        public void CheckCollisions<T>(SpriteControllerPool<T> sprites)
+            where T : class, ISpriteController, ICollidesWithPlayer
+        {
+            sprites.Execute(p =>
+            {
+                if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
+                {
+                    p.HandleCollision(WorldSprite);
+                }
+            });
+        }
     }
 }

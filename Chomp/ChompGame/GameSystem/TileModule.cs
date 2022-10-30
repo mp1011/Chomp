@@ -4,7 +4,22 @@ namespace ChompGame.GameSystem
 {
     public class TileModule : ScanlineGraphicsModule
     {
+        private NibblePoint _tileStartIndex;
+
+        public byte TileStartX
+        {
+            get => _tileStartIndex.X;
+            set => _tileStartIndex.X = value;
+        }
+
+        public byte TileStartY
+        {
+            get => _tileStartIndex.Y;
+            set => _tileStartIndex.Y = value;
+        }
+
         public NBitPlane NameTable { get; private set; }
+
 
         public TileModule(MainSystem gameSystem) : base(gameSystem) 
         { 
@@ -20,6 +35,7 @@ namespace ChompGame.GameSystem
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);
+            _tileStartIndex = builder.AddNibblePoint();
             BackgroundPaletteIndex = builder.AddByte();
             NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
@@ -38,10 +54,12 @@ namespace ChompGame.GameSystem
                 Specs.PatternTableWidth,
                 Specs.PatternTableHeight);
 
+            int offset = (_tileStartIndex.Y * Specs.PatternTableTilesAcross) + _tileStartIndex.X;
+
             nameTablePoint.X = (byte)(Scroll.X / Specs.TileWidth);
             nameTablePoint.Y = (byte)(ScreenPoint.Y / Specs.TileHeight); // todo, scroll
 
-            patternTableTilePoint.Index = NameTable[nameTablePoint.Index];
+            patternTableTilePoint.Index = NameTable[nameTablePoint.Index] + offset;
           
             int col = Scroll.X % Specs.TileWidth;
             int row = ScreenPoint.Y % Specs.TileHeight; //todo, scroll
@@ -58,7 +76,7 @@ namespace ChompGame.GameSystem
                 if(remainingTilePixels == 0)
                 {
                     nameTablePoint.X++;
-                    patternTableTilePoint.Index = NameTable[nameTablePoint.Index];
+                    patternTableTilePoint.Index = NameTable[nameTablePoint.Index] + offset;
                     remainingTilePixels = Specs.TileWidth;
                     patternTablePoint.X = (byte)(patternTableTilePoint.X * Specs.TileWidth);
                     patternTablePoint.Y = (byte)(patternTableTilePoint.Y * Specs.TileHeight + row);

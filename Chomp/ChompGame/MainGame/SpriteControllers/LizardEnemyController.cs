@@ -4,12 +4,14 @@ using ChompGame.Helpers;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class LizardEnemyController : ISpriteController
+    class LizardEnemyController : ISpriteController, ICollidesWithPlayer
     {
         private readonly CollisionDetector _collisionDetector;
         private readonly SpriteControllerPool<BulletController> _lizardBulletControllers;
         private readonly MovingSpriteController _walkingSpriteController;
         private GameByte _bulletTimer;
+
+        public WorldSprite WorldSprite => _walkingSpriteController.WorldSprite;
 
         public AcceleratedMotion Motion => _walkingSpriteController.Motion;
         public Sprite GetSprite() => _walkingSpriteController.GetSprite();
@@ -80,6 +82,10 @@ namespace ChompGame.MainGame.SpriteControllers
                     fireball.WorldSprite.FlipX = thisSprite.FlipX;
                 }
             }
+        }
+
+        public void HandleCollision(WorldSprite player)
+        {
         }
     }
 

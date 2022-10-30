@@ -4,7 +4,7 @@ using ChompGame.Helpers;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class BulletController : ISpriteController
+    class BulletController : ISpriteController, ICollidesWithPlayer
     {
         private readonly CoreGraphicsModule _coreGraphicsModule;
         private readonly MovingSpriteController _movingSpriteController;
@@ -74,6 +74,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 GetSprite().Tile = 0;
                 SpriteIndex = 255;
             }
+        }
+
+        public void HandleCollision(WorldSprite player)
+        {
+            GetSprite().Tile = 0;
+            SpriteIndex = 255;
         }
     }
 }

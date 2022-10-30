@@ -29,6 +29,8 @@ namespace ChompGame.MainGame
         private readonly TileModule _tileModule;
         private readonly StatusBarModule _statusBarModule;
         private readonly MusicModule _musicModule;
+        private readonly StatusBar _statusBar;
+
 
         private RomAddresses _romAddresses = new RomAddresses();
         private NBitPlane _masterPatternTable;
@@ -56,6 +58,7 @@ namespace ChompGame.MainGame
             _statusBarModule = statusBarModule;
             _musicModule = musicModule;
             _collisionDetector = new CollisionDetector(tileModule, Specs);
+            _statusBar = new StatusBar(_tileModule);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -108,7 +111,7 @@ namespace ChompGame.MainGame
             memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
 
             _romAddresses.SceneDefinitions = memoryBuilder.CurrentAddress;
-            new SceneInfo(0, 4, memoryBuilder);            
+            new SceneInfo(0, 7, memoryBuilder); //todo           
         }
 
         public override void OnStartup()
@@ -155,29 +158,55 @@ namespace ChompGame.MainGame
         private SceneInfo SetupTestScene()
         {
             SceneInfo testScene = new SceneInfo(_romAddresses.SceneDefinitions, GameSystem.Memory);
+
+            //sprites
             testScene.DefineRegion(
                 index: 0,
                 region: new InMemoryByteRectangle(0, 0, 6, 2),
                 destination: new Point(0, 2),
                 systemMemory: GameSystem.Memory);
 
+            //sky
             testScene.DefineRegion(
                index: 1,
                region: new InMemoryByteRectangle(0, 6, 8, 1),
                destination: new Point(0, 0),
                systemMemory: GameSystem.Memory);
 
+            //bg1
             testScene.DefineRegion(
                 index: 2,
                 region: new InMemoryByteRectangle(0, 7, 6, 1),
                 destination: new Point(0, 1),
                 systemMemory: GameSystem.Memory);
 
+            //bg2
             testScene.DefineRegion(
                 index: 3,
                 region: new InMemoryByteRectangle(5, 7, 3, 1),
                 destination: new Point(5, 1),
                 systemMemory: GameSystem.Memory);
+
+            //text
+            testScene.DefineRegion(
+               index: 4,
+               region: new InMemoryByteRectangle(4, 3, 8, 2),
+               destination: new Point(0, 4),
+               systemMemory: GameSystem.Memory);
+
+            //text2
+            testScene.DefineRegion(
+               index: 5,
+               region: new InMemoryByteRectangle(12, 4, 2, 1),
+               destination: new Point(6, 6),
+               systemMemory: GameSystem.Memory);
+
+            //health guage
+            testScene.DefineRegion(
+             index: 6,
+             region: new InMemoryByteRectangle(0, 4, 4, 1),
+             destination: new Point(0, 6),
+             systemMemory: GameSystem.Memory);
 
             _tileModule.BackgroundPaletteIndex.Value = 0;
 
@@ -275,6 +304,9 @@ namespace ChompGame.MainGame
             _worldScroller.Update();
             _rasterInterrupts.Update();
 
+            _playerController.CheckCollisions(_lizardBulletControllers);
+            _playerController.CheckCollisions(_lizardEnemyControllers);
+            
             if (_timer.Value % 8 == 0)
             {
                 var bulletPallete = GameSystem.CoreGraphicsModule.GetPalette(3);
@@ -301,9 +333,10 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
+            _statusBar.OnHBlank();
+            _rasterInterrupts.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
-            _rasterInterrupts.OnHBlank();
         }
     }
 }

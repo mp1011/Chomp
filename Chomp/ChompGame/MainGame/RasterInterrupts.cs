@@ -95,8 +95,11 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.X = _realScroll.Value;
             }
 
-            if (_tileModule.ScreenPoint.Y == 0)
+            if (_tileModule.ScreenPoint.Y == 8)
             {
+                _tileModule.TileStartX = 0;
+                _tileModule.TileStartY = 0;
+
                 var bgPalette = _coreGraphicsModule.GetPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
                 bgPalette.SetColor(1, ChompGameSpecs.LightBlue);

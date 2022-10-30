@@ -51,6 +51,20 @@ namespace ChompGame.MainGame
               new Rectangle(5, 0, 1, 1),
               specs);
 
+            //text
+            CopyPatternTableRegion(
+               masterPatternTableImage,
+               masterPatternTable,
+               new Rectangle(4, 3, 10, 2),
+                specs);
+
+            //health guage
+            CopyPatternTableRegion(
+             masterPatternTableImage,
+             masterPatternTable,
+             new Rectangle(0, 4, 4, 1),
+              specs);
+
             CopyPatternTableRegion(
                masterPatternTableImage,
                masterPatternTable,
