@@ -7,8 +7,14 @@ namespace ChompGame.MainGame
     {
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
+        private GameInteger _score;
+        private LowNibble _lives;
+        private HighNibble _health;
 
-        private GameShort _score;
+        private readonly byte _tileEmpty = 9;
+        private readonly byte _tileHalf = 10;
+        private readonly byte _tileFull = 11;
+
 
         public StatusBar(TileModule tileModule)
         {
@@ -16,14 +22,12 @@ namespace ChompGame.MainGame
             _coreGraphicsModule = _tileModule.GameSystem.CoreGraphicsModule;
         }
 
-        public ushort Score
-        {
-            get => _score.Value;
-            set => _score.Value = value;
-        }
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
-            _score = memoryBuilder.AddShort();
+            _score = memoryBuilder.AddInteger();
+            _lives = new LowNibble(memoryBuilder);
+            _health = new HighNibble(memoryBuilder);
+            memoryBuilder.AddByte();
         }
 
         public void OnHBlank()
@@ -35,8 +39,8 @@ namespace ChompGame.MainGame
 
                 var bgPalette = _coreGraphicsModule.GetPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
-                bgPalette.SetColor(1, ChompGameSpecs.White);
-                bgPalette.SetColor(2, ChompGameSpecs.Blue4);
+                bgPalette.SetColor(1, ChompGameSpecs.Blue1);
+                bgPalette.SetColor(2, ChompGameSpecs.White);
                 bgPalette.SetColor(3, ChompGameSpecs.Green2);
             }
 
@@ -49,7 +53,61 @@ namespace ChompGame.MainGame
 
         public void OnStartup()
         {
+        }
 
+        public void SetLives(byte value)
+        {
+            _lives.Value = value;
+            _tileModule.NameTable[0, 1] = GetDigitTile((char)('0' + value));
+        }
+
+        public void SetHealth(byte value)
+        {
+            _health.Value = value;
+
+            int full = value / 2;
+            bool hasHalf = (value % 2) != 0;
+
+            for(int i = 0; i < 4; i++)
+            {
+                if (full > 0)
+                {
+                    _tileModule.NameTable[2 + i, 1] = _tileFull;
+                    full--;
+                }
+                else if(hasHalf)
+                {
+                    _tileModule.NameTable[2 + i, 1] = _tileHalf;
+                    hasHalf = false;
+                }
+                else
+                    _tileModule.NameTable[2 + i, 1] = _tileEmpty;
+            }
+
+            _tileModule.NameTable[6, 1] = 8;
+        }
+
+        public void AddToScore(uint value)
+        {
+            _score.Value += value;
+
+            string scoreText = _score.Value.ToString("00000000");
+            int digitStart = 8;
+
+            for (int digit = 0; digit < scoreText.Length; digit++)
+            {
+                _tileModule.NameTable[digitStart+digit, 1] = GetDigitTile(scoreText[digit]);
+            }
+        }
+
+        private byte GetDigitTile(char c)
+        {
+            if (c <= '7')
+                return (byte)(c -'0');
+            else if (c == '8')
+                return 14;
+            else
+                return 15;
         }
     }
 }

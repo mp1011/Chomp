@@ -77,6 +77,7 @@ namespace ChompGame.MainGame
 
             memoryBuilder.AddByte();
 
+            _statusBar.BuildMemory(memoryBuilder);
             _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
             
             _lizardBulletControllers = new SpriteControllerPool<BulletController>(
@@ -294,6 +295,11 @@ namespace ChompGame.MainGame
             GameDebug.Watch3 = new DebugWatch(
                name: "Player Sprite Y",
                () => playerSprite.Y);
+
+
+            _statusBar.AddToScore(123456789);
+            _statusBar.SetLives(3);
+            _statusBar.SetHealth(5);
         }
 
         public void PlayScene()

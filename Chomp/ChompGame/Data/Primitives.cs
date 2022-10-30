@@ -205,4 +205,88 @@ namespace ChompGame.Data
             _address = address;
         }
     }
+
+    public class GameInteger
+    {
+        private int _address;
+        private SystemMemory _memory;
+
+        public uint Value
+        {
+            get
+            {
+                var a = (uint)_memory[_address];
+                var b = (uint)_memory[_address + 1];
+                var c = (uint)_memory[_address + 2];
+                var d = (uint)_memory[_address + 3];
+
+                var unsigned = (d << 24) + (c << 16) + (b << 8) + a;
+                return unsigned;
+            }
+            set
+            {
+                _memory[_address] = (byte)value;
+                _memory[_address + 1] = (byte)(value >> 8);
+                _memory[_address + 2] = (byte)(value >> 16);
+                _memory[_address + 3] = (byte)(value >> 24);
+            }
+        }
+
+        public GameInteger(int address, SystemMemory memory)
+        {
+            _memory = memory;
+            _address = address;
+        }
+    }
+
+    public class LowNibble
+    {
+        private int _address;
+        private SystemMemory _memory;
+
+        public LowNibble(SystemMemoryBuilder memoryBuilder)
+        {
+            _address = memoryBuilder.CurrentAddress;
+            _memory = memoryBuilder.Memory;
+        }
+
+        public byte Value
+        {
+            get
+            {
+                return (byte)(_memory[_address] & 15);
+            }
+            set
+            {               
+                _memory[_address] = (byte)(_memory[_address] & 240);
+                _memory[_address] = (byte)(_memory[_address] | value);              
+            }
+        }
+    }
+
+    public class HighNibble
+    {
+        private int _address;
+        private SystemMemory _memory;
+
+        public HighNibble(SystemMemoryBuilder memoryBuilder)
+        {
+            _address = memoryBuilder.CurrentAddress;
+            _memory = memoryBuilder.Memory;
+        }
+
+
+        public byte Value
+        {
+            get
+            {
+                return (byte)((_memory[_address] & 240) >> 4);
+            }
+            set
+            {
+                _memory[_address] = (byte)(_memory[_address] & 15);
+                _memory[_address] = (byte)(_memory[_address] | (value << 4));                
+            }
+        }
+    }
 }
