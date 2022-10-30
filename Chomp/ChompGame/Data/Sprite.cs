@@ -116,26 +116,8 @@ namespace ChompGame.Data
             }
         }
 
-        public int Right
-        {
-            get
-            {
-                if (Tile2Offset != 0 && Orientation == Orientation.Horizontal)
-                    return (X + _specs.TileWidth * 2);
-                else
-                    return (X + _specs.TileWidth);
-            }
-        }
-        public int Bottom
-        {
-            get
-            {
-                if (Tile2Offset == 0 || Orientation == Orientation.Horizontal)
-                    return (Y + _specs.TileHeight);
-                else
-                    return (Y + _specs.TileHeight*2);
-            }
-        }
+        public int Right => X + Width;
+        public int Bottom => Y + Height;
 
         public byte Tile
         {

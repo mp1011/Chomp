@@ -41,14 +41,14 @@ namespace ChompGame.MainGame
             CopyPatternTableRegion(
               masterPatternTableImage,
               masterPatternTable,
-              new Rectangle(4, 0, 1, 1),
+              new Rectangle(4, 0, 4, 1),
               specs);
 
             //coin
             CopyPatternTableRegion(
               masterPatternTableImage,
               masterPatternTable,
-              new Rectangle(5, 0, 1, 1),
+              new Rectangle(4, 1, 1, 1),
               specs);
 
             //text and health guage

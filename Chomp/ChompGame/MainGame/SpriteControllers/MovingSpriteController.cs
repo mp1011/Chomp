@@ -70,18 +70,6 @@ namespace ChompGame.MainGame.SpriteControllers
             var sprite = WorldSprite.GetSprite();
             Motion.Apply(WorldSprite);
 
-            if (Motion.XSpeed == 0)
-            {
-                sprite.Tile2Offset = 1;
-            }
-            else
-            {
-                if ((_levelTimer.Value % 16) == 0)
-                {
-                    sprite.Tile2Offset = sprite.Tile2Offset.Toggle(1, 2);
-                }
-            }
-
             if (Motion.TargetXSpeed < 0 && !sprite.FlipX)
             {
                 sprite.FlipX = true;

@@ -15,6 +15,14 @@ namespace ChompGame.MainGame
         private readonly byte _tileHalf = 10;
         private readonly byte _tileFull = 11;
 
+        public byte Health
+        {
+            get => _health.Value;
+            set
+            {
+                SetHealth(value);
+            }
+        }
 
         public StatusBar(TileModule tileModule)
         {
@@ -61,7 +69,7 @@ namespace ChompGame.MainGame
             _tileModule.NameTable[0, 1] = GetDigitTile((char)('0' + value));
         }
 
-        public void SetHealth(byte value)
+        private void SetHealth(byte value)
         {
             _health.Value = value;
 

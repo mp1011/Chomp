@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 
@@ -10,6 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly SpriteControllerPool<BulletController> _lizardBulletControllers;
         private readonly MovingSpriteController _walkingSpriteController;
         private GameByte _bulletTimer;
+        private GameByte _levelTimer;
 
         public WorldSprite WorldSprite => _walkingSpriteController.WorldSprite;
 
@@ -33,7 +35,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _bulletTimer = memoryBuilder.AddByte();
             _lizardBulletControllers = lizardBulletControllers;
             _collisionDetector = collisionDetector;
-
+            _levelTimer = levelTimer;
             _walkingSpriteController = new MovingSpriteController(
                 spritesModule, 
                 collisionDetector, 
@@ -80,6 +82,21 @@ namespace ChompGame.MainGame.SpriteControllers
                     fireball.WorldSprite.X = thisSprite.X;
                     fireball.WorldSprite.Y = thisSprite.Y;
                     fireball.WorldSprite.FlipX = thisSprite.FlipX;
+                }
+            }
+
+            var sprite = GetSprite();
+
+            //todo, try to make this more general
+            if (Motion.XSpeed == 0)
+            {
+                sprite.Tile = 3;
+            }
+            else
+            {
+                if ((_levelTimer.Value % 16) == 0)
+                {
+                    sprite.Tile = sprite.Tile.Toggle(3, 4);
                 }
             }
         }

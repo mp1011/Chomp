@@ -83,7 +83,7 @@ namespace ChompGame.MainGame
             _lizardBulletControllers = new SpriteControllerPool<BulletController>(
                2,
                _spritesModule,
-               () => new BulletController(_spritesModule, _collisionDetector, _timer, memoryBuilder),
+               () => new BulletController(_spritesModule, _collisionDetector, _timer, _statusBar, memoryBuilder),
                s =>
                {
                    s.Tile = 5;
@@ -163,7 +163,7 @@ namespace ChompGame.MainGame
             //sprites
             testScene.DefineRegion(
                 index: 0,
-                region: new InMemoryByteRectangle(0, 0, 6, 2),
+                region: new InMemoryByteRectangle(0, 0, 8, 2),
                 destination: new Point(0, 2),
                 systemMemory: GameSystem.Memory);
 
@@ -299,7 +299,7 @@ namespace ChompGame.MainGame
 
             _statusBar.AddToScore(123456789);
             _statusBar.SetLives(3);
-            _statusBar.SetHealth(5);
+            _statusBar.Health = 8;
         }
 
         public void PlayScene()
