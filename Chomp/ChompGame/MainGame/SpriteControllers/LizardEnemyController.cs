@@ -36,18 +36,17 @@ namespace ChompGame.MainGame.SpriteControllers
             _lizardBulletControllers = lizardBulletControllers;
             _collisionDetector = collisionDetector;
             _levelTimer = levelTimer;
+
             _walkingSpriteController = new MovingSpriteController(
-                spritesModule, 
-                collisionDetector, 
-                levelTimer, 
+                spritesModule,
+                levelTimer,
                 memoryBuilder,
-                255,
-                10,
-                0,
-                0,
-                0,
-                64,
-                10);            
+                spriteIndex: 255,
+                gravityStrength: GravityStrength.High,
+                movementSpeed: MovementSpeed.Slow,
+                animationStyle: AnimationStyle.AnimateWhenMoving,
+                collidesWithBackground: true,
+                flipXWhenMovingLeft: true);          
         }
 
         public void Update()
@@ -72,7 +71,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             _bulletTimer.Value++;
-            if(_bulletTimer.Value == 200 + SpriteIndex)
+            if(false && _bulletTimer.Value == 200 + SpriteIndex)
             {
                 _bulletTimer.Value = 0;
                 var fireball = _lizardBulletControllers.TryAddNew();

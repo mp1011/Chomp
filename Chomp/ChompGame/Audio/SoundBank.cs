@@ -4,13 +4,18 @@ using System.Linq;
 
 namespace ChompGame.Audio
 {
-    class ToneBank
+    class SoundBank
     {
         private readonly SoundEffect[] _bank;
 
-        public ToneBank(IEnumerable<SoundEffect> bank)
+        public SoundBank(IEnumerable<SoundEffect> bank)
         {
             _bank = bank.ToArray();
+        }
+
+        public SoundEffectInstance GetSound(int index)
+        {
+            return _bank[index].CreateInstance();
         }
         
         public SoundEffectInstance CreateInstance(int index)

@@ -84,17 +84,17 @@ namespace ChompGame.Data
         }
 
         public T Value
-        { 
-            get=> _bit.Value? _trueValue : _falseValue;
-            set =>_bit.Value = value.Equals(_trueValue);            
-        }                    
+        {
+            get => _bit.Value ? _trueValue : _falseValue;
+            set => _bit.Value = value.Equals(_trueValue);
+        }
     }
 
     class GameByteEnum<T>
     {
         private GameByte _value;
-        
-            
+
+
         public GameByteEnum(GameByte value)
         {
             _value = value;
@@ -111,7 +111,7 @@ namespace ChompGame.Data
             {
                 var byteValue = (byte)(object)value;
                 _value.Value = byteValue;
-            }            
+            }
         }
     }
 
@@ -131,8 +131,8 @@ namespace ChompGame.Data
         {
             _memory = memory;
             Address = address;
-        }     
-        
+        }
+
         public bool GetBit(Bit b)
         {
             return (_memory[Address] & (byte)b) != 0;
@@ -145,7 +145,7 @@ namespace ChompGame.Data
             else
                 _memory[Address] = (byte)(_memory[Address] & (byte)~b);
         }
-        
+
         public static implicit operator byte(GameByte g) => g.Value;
 
         public override string ToString() => $"{Value} {Value.ToString("X2")}";
@@ -156,13 +156,13 @@ namespace ChompGame.Data
     public class MaskedByte : GameByte
     {
         private byte _mask;
-        public MaskedByte(int address, Bit mask, SystemMemory memory) : base(address,memory)
+        public MaskedByte(int address, Bit mask, SystemMemory memory) : base(address, memory)
         {
             _mask = (byte)mask;
         }
 
-        public override byte Value 
-        { 
+        public override byte Value
+        {
             get
             {
                 byte b = base.Value;
@@ -195,7 +195,7 @@ namespace ChompGame.Data
             set
             {
                 _memory[_address] = (byte)value;
-                _memory[_address+1] = (byte)(value >> 8);
+                _memory[_address + 1] = (byte)(value >> 8);
             }
         }
 
@@ -257,9 +257,9 @@ namespace ChompGame.Data
                 return (byte)(_memory[_address] & 15);
             }
             set
-            {               
+            {
                 _memory[_address] = (byte)(_memory[_address] & 240);
-                _memory[_address] = (byte)(_memory[_address] | value);              
+                _memory[_address] = (byte)(_memory[_address] | value);
             }
         }
     }
@@ -285,8 +285,68 @@ namespace ChompGame.Data
             set
             {
                 _memory[_address] = (byte)(_memory[_address] & 15);
-                _memory[_address] = (byte)(_memory[_address] | (value << 4));                
+                _memory[_address] = (byte)(_memory[_address] | (value << 4));
             }
         }
     }
+
+
+    public class TwoBit
+    {
+        private readonly SystemMemory _memory;
+        private readonly int _address;
+        private readonly byte _shift;
+        private readonly byte _mask;
+            
+        public TwoBit(SystemMemory memory, int address, int shift)
+        {
+            _memory = memory;
+            _shift = (byte)shift;
+            _address = address;
+            _mask = (byte)(2.Power(shift) + 2.Power(shift + 1));
+        }
+
+        public byte Value
+        {
+            get
+            {
+                byte masked = (byte)(_memory[_address] & _mask);
+                return (byte)(masked >> _shift);
+            }
+            set
+            {
+                value = (byte)(value << _shift);
+                value = (byte)(value & _mask);
+
+                _memory[_address] = (byte)(_memory[_address] & ~_mask);
+                _memory[_address] = (byte)(_memory[_address] | value);
+            }
+        }
+    }
+
+    public class TwoBitEnum<T> 
+        where T : Enum
+    {
+        private TwoBit _value;
+
+        public TwoBitEnum(SystemMemory memory, int address, int shift)  
+        {
+            _value = new TwoBit(memory, address, shift);
+        }
+
+        public T Value
+        {
+            get
+            {
+                object currentValue = _value.Value;
+                return (T)currentValue;
+            }
+            set
+            {
+                var byteValue = (byte)(object)value;
+                _value.Value = byteValue;
+            }
+        }
+    }
+
 }

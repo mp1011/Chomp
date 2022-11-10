@@ -19,7 +19,7 @@ namespace ChompGame.GameSystem
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
         private readonly TileModule _tileModule;
-        private readonly BaseAudioModule _audioModule;
+        private readonly BankAudioModule _audioModule;
 
         private NBitPlane _romPatternTable;
         private NBitPlane _romNameTable;
@@ -32,7 +32,7 @@ namespace ChompGame.GameSystem
 
         private GameByteEnum<GameState> _gameState;
         private GameByte _var;
-        public PongModule(MainSystem mainSystem, InputModule inputModule, BaseAudioModule audioModule, SpritesModule spritesModule,
+        public PongModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule, SpritesModule spritesModule,
             TileModule tileModule) 
             : base(mainSystem)
         {

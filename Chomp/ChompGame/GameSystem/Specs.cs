@@ -39,6 +39,8 @@ namespace ChompGame.GameSystem
         public virtual int BitsPerPixel => 2;
 
         public virtual int AudioROMBytes => 64;
+
+        public virtual int NumSounds => 8;
     };
 
     public class PongSpecs : Specs

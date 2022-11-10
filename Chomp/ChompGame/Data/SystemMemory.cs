@@ -1,48 +1,40 @@
-﻿using ChompGame.Extensions;
-using ChompGame.GameSystem;
+﻿using ChompGame.GameSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ChompGame.Data
 {
-    public class SystemMemory
+    public abstract class MemoryBlock
+    {
+        public abstract byte this[int index] { get; set; }
+        public abstract void BlockCopy(int sourceStart, int destinationStart, int length);
+    }
+
+    public class FixedMemoryBlock : MemoryBlock
     {
         private byte[] _memory;
-        private byte[] _corruptionMask;
 
-        private int _romStartAddress;
-        private bool _enableSetRom = true;
-
-        public void CorruptBit(int bit)
+        public FixedMemoryBlock(byte[] memory)
         {
-            var index = bit / 8;
-            var b = 2.Power(bit % 8);
-            b = ~b;
-
-            _corruptionMask[index] = (byte)(_corruptionMask[index] & b);
+            _memory = memory;
         }
 
-        public int RAMSize => _romStartAddress;
-
-        public byte this[int index] 
+        public override byte this[int index]
         {
             get
             {
-                // return (byte)(_memory[index] & _corruptionMask[index]);
                 if (index >= _memory.Length)
                     index = _memory.Length - 1;
                 return _memory[index];
             }
             set
             {
-                //if (!_enableSetRom && _romStartAddress != -1 && index >= _romStartAddress)
-                //    throw new Exception("Memory Violation");
                 _memory[index] = value;
             }
         }
 
-        public void BlockCopy(int sourceStart, int destinationStart, int length)
+        public override void BlockCopy(int sourceStart, int destinationStart, int length)
         {
             Array.Copy(sourceArray: _memory,
                 sourceIndex: sourceStart,
@@ -50,31 +42,81 @@ namespace ChompGame.Data
                 destinationIndex: destinationStart,
                 length: length);
         }
+    }
+
+    public class DynamicMemoryBlock : MemoryBlock
+    {
+        private List<byte> _memory = new List<byte>();
+
+        public DynamicMemoryBlock()
+        {
+        }
+
+        public int Count => _memory.Count;
+
+        public override byte this[int index]
+        {
+            get => _memory[index];
+            set => _memory[index] = value;
+        }
+
+        public override void BlockCopy(int sourceStart, int destinationStart, int length)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Add(byte value)
+        {
+            _memory.Add(value);
+        }
+
+        public FixedMemoryBlock ToFixed() => new FixedMemoryBlock(_memory.ToArray());
+    }
+
+    public class SystemMemory
+    {
+        public SystemMemoryBuilder CurrentBuilder { get; set; }
+        private MemoryBlock _memory;
+        private int _romStartAddress;
+
+        public int RAMSize => _romStartAddress;
+
+        public byte this[int index] 
+        {
+            get => _memory[index];
+            set => _memory[index] = value;
+        }
+
+        public void BlockCopy(int sourceStart, int destinationStart, int length)
+        {
+            _memory.BlockCopy(sourceStart, destinationStart, length);
+        }
 
         public SystemMemory(Action<SystemMemoryBuilder> configureMemory, Specs specs)
         {
             var memoryBuilder = new SystemMemoryBuilder(this, specs);
+
+            _memory = memoryBuilder.Bytes;
             configureMemory(memoryBuilder);
             _memory = memoryBuilder.Build();
-            _corruptionMask = Enumerable.Repeat((byte)255, _memory.Length).ToArray();
 
             _romStartAddress = memoryBuilder.ROMStartAddress;
         }
 
         public void Ready()
         {
-            _enableSetRom = false;
         }
     }
 
     public class SystemMemoryBuilder
     {
-        private List<byte> _bytes = new List<byte>();
+        public DynamicMemoryBlock Bytes { get; } = new DynamicMemoryBlock();
+
         private SystemMemory _systemMemory;
         private Specs _specs;
 
         public int ROMStartAddress { get; private set; } = -1;
-        public int CurrentAddress => _bytes.Count;
+        public int CurrentAddress => Bytes.Count;
 
         public SystemMemory Memory => _systemMemory;
 
@@ -92,9 +134,9 @@ namespace ChompGame.Data
             ROMStartAddress = CurrentAddress;
         }
 
-        public byte[] Build()
+        public FixedMemoryBlock Build()
         {
-            return _bytes.ToArray();
+            return Bytes.ToFixed();
         }
 
         public GameByte[] AddBytes(int count)
@@ -127,7 +169,7 @@ namespace ChompGame.Data
         public GameByte AddByte(byte value=0)
         {
             var b = new GameByte(CurrentAddress, _systemMemory);
-            _bytes.Add(value);
+            Bytes.Add(value);
             return b;
         }
 
@@ -141,18 +183,18 @@ namespace ChompGame.Data
         public GameShort AddShort()
         {
             var s = new GameShort(CurrentAddress, _systemMemory);
-            _bytes.Add(0);
-            _bytes.Add(0);
+            Bytes.Add(0);
+            Bytes.Add(0);
             return s;
         }
 
         public GameInteger AddInteger()
         {
             var s = new GameInteger(CurrentAddress, _systemMemory);
-            _bytes.Add(0);
-            _bytes.Add(0);
-            _bytes.Add(0);
-            _bytes.Add(0);
+            Bytes.Add(0);
+            Bytes.Add(0);
+            Bytes.Add(0);
+            Bytes.Add(0);
             return s;
         }
 

@@ -25,7 +25,7 @@ namespace ChompGame.MainGame
         private readonly CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
-        private readonly BankAudioModule _audioModule;
+        private readonly ChompAudioService _audioService;
         private readonly TileModule _tileModule;
         private readonly StatusBarModule _statusBarModule;
         private readonly MusicModule _musicModule;
@@ -51,7 +51,7 @@ namespace ChompGame.MainGame
            SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
            : base(mainSystem)
         {
-            _audioModule = audioModule;
+            _audioService = new ChompAudioService(audioModule);
             _inputModule = inputModule;
             _spritesModule = spritesModule;
             _tileModule = tileModule;
@@ -78,12 +78,12 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
 
             _statusBar.BuildMemory(memoryBuilder);
-            _playerController = new PlayerController(_spritesModule, _inputModule, _collisionDetector, _timer, memoryBuilder);
+            _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
             
             _lizardBulletControllers = new SpriteControllerPool<BulletController>(
                2,
                _spritesModule,
-               () => new BulletController(_spritesModule, _collisionDetector, _timer, _statusBar, memoryBuilder),
+               () => new BulletController(_spritesModule, _collisionDetector, _timer, memoryBuilder),
                s =>
                {
                    s.Tile = 5;
@@ -134,7 +134,7 @@ namespace ChompGame.MainGame
             InitializePatternTable(testScene);
 
             _gameState.Value = GameState.LoadScene;
-
+            _audioService.OnStartup();
             //_musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
 
@@ -217,6 +217,7 @@ namespace ChompGame.MainGame
         public void OnLogicUpdate()
         {
             _musicModule.Update();
+            _audioService.Update();
             _timer.Value++;
           
             switch (_gameState.Value)
@@ -310,8 +311,8 @@ namespace ChompGame.MainGame
             _worldScroller.Update();
             _rasterInterrupts.Update();
 
-            _playerController.CheckCollisions(_lizardBulletControllers);
-            _playerController.CheckCollisions(_lizardEnemyControllers);
+            _playerController.CheckEnemyOrBulletCollisions(_lizardBulletControllers);
+            _playerController.CheckEnemyOrBulletCollisions(_lizardEnemyControllers);
             
             if (_timer.Value % 8 == 0)
             {

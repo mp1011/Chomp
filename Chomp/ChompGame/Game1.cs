@@ -1,15 +1,10 @@
-﻿using ChompGame.Data;
-using ChompGame.GameSystem;
-using ChompGame.Graphics;
+﻿using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using System;
 using System.Diagnostics;
-using System.Text;
 
 namespace ChompGame
 {
@@ -24,6 +19,8 @@ namespace ChompGame
         private SpriteBatch _spriteBatch;
         private RenderTarget2D _renderTarget;
         private Texture2D _canvas;
+        private Texture2D _filter;
+
         private SpriteFont _font;
         public MainSystem GameSystem => _gameSystem;
 
@@ -51,6 +48,9 @@ namespace ChompGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _renderTarget = new RenderTarget2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
             _canvas = new Texture2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
+            _filter = new Texture2D(GraphicsDevice, _specs.ScreenWidth*3, _specs.ScreenHeight * 3);
+            _filterPixels = new Color[_filter.Width * _filter.Height];
+
             _font = Content.Load<SpriteFont>("Font");
         }
 
@@ -64,11 +64,32 @@ namespace ChompGame
         private long _drawMS;
         private long _totalDrawMS;
         private long _totalDrawFrames;
+
+        private Color[] _filterPixels;
+
+        Random _rng = new Random();
+        private void GenerateFilter()
+        {
+            byte[] rgb = new byte[3];
+            for(int i =0; i< _filterPixels.Length; i++)
+            {
+                _filterPixels[i] = new Color(
+                    (byte)_rng.Next(0, 15),
+                    (byte)_rng.Next(0, 15),
+                    (byte)_rng.Next(0, 15),
+                    (byte)5);
+            }
+
+            _filter.SetData(_filterPixels);
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             _renderTimer.Restart();
             GraphicsDevice.SetRenderTarget(_renderTarget);
             GraphicsDevice.Clear(Color.White);
+
+            GenerateFilter();
 
             _spriteBatch.Begin();
             _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);
@@ -101,6 +122,12 @@ namespace ChompGame
                                width: renderWidth,
                                height: renderHeight), Color.White);
 
+            _spriteBatch.Draw(_filter, new Rectangle(
+                             x: renderColumn,
+                             y: renderRow,
+                             width: renderWidth,
+                             height: renderHeight), Color.White);
+         
             _spriteBatch.End();
 
          

@@ -6,38 +6,51 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController
     {
-        private  readonly CollisionDetector _collisionDetector;
+        private readonly StatusBar _statusBar;
+        private readonly ChompAudioService _audioService;
+        private readonly CollisionDetector _collisionDetector;
         private readonly MovingSpriteController _walkingSpriteController;
         private readonly InputModule _inputModule;
+        private readonly GameByte _hitTimer;
+
         public WorldSprite WorldSprite => _walkingSpriteController.WorldSprite;
         public AcceleratedMotion Motion => _walkingSpriteController.Motion;
 
         public PlayerController(
             SpritesModule spritesModule, 
             InputModule inputModule, 
+            StatusBar statusBar,
+            ChompAudioService audioService,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder)
         {
+            _statusBar = statusBar;
+            _audioService = audioService;
+
             _walkingSpriteController = new MovingSpriteController(
-                spritesModule,
-                collisionDetector,
-                levelTimer,
-                memoryBuilder,
-                0,
-                40,
-                5,
-                10,
-                80,
-                64,
-                10);
-        
+               spritesModule,
+               levelTimer,
+               memoryBuilder,
+               spriteIndex: 0,
+               gravityStrength: GravityStrength.Medium,
+               movementSpeed: MovementSpeed.Fast,
+               animationStyle: AnimationStyle.AnimateLowerTileOnly,
+               collidesWithBackground: true,
+               flipXWhenMovingLeft: true);
+
             _inputModule = inputModule;
             _collisionDetector = collisionDetector;
+            _hitTimer = memoryBuilder.AddByte();
         }
 
         public void Update()
         {
+            if(_hitTimer.Value > 0)
+            {
+                _hitTimer.Value--;
+            }
+
             var motion = _walkingSpriteController.Motion;
 
             _walkingSpriteController.Update();
@@ -61,20 +74,33 @@ namespace ChompGame.MainGame.SpriteControllers
                 motion.XAcceleration = _walkingSpriteController.BrakeAccel;
             }
 
-            if(collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
+            if(_inputModule.Player1.BKey == GameKeyState.Pressed)
             {
+                _audioService.PlaySound(ChompAudioService.Sound.Test);
+            }
+
+            if (collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
+            {
+                _audioService.PlaySound(ChompAudioService.Sound.Jump);
                 motion.YSpeed = -_walkingSpriteController.JumpSpeed;
             }
         }
 
-        public void CheckCollisions<T>(SpriteControllerPool<T> sprites)
+        public void CheckEnemyOrBulletCollisions<T>(SpriteControllerPool<T> sprites)
             where T : class, ISpriteController, ICollidesWithPlayer
         {
+            if (_hitTimer.Value > 0)
+                return;
+
             sprites.Execute(p =>
             {
                 if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
+                    _hitTimer.Value = 100;
                     p.HandleCollision(WorldSprite);
+
+                    _audioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                    _statusBar.Health--;
                 }
             });
         }

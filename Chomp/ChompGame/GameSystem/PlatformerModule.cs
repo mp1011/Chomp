@@ -263,7 +263,7 @@ namespace ChompGame.GameSystem
         {
             if(_playerHitTimer.Value == 254)
             {
-                _audioModule.GetChannel(0).Play(5, 32, 6);
+              //  _audioModule.GetChannel(0).Play(5, 32, 6);
                 _bulletTimer.Value = 0;
             }
 

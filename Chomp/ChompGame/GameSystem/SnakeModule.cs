@@ -29,7 +29,7 @@ namespace ChompGame.GameSystem
 
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
-        private readonly BaseAudioModule _audioModule;
+        private readonly BankAudioModule _audioModule;
         private readonly TileModule _tileModule;
 
         private NBitPlane _romPatternTable;
@@ -53,7 +53,7 @@ namespace ChompGame.GameSystem
         private GameByte _throttle;
         private GameByte _collected;
 
-        public SnakeModule(MainSystem mainSystem, InputModule inputModule, BaseAudioModule audioModule, 
+        public SnakeModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule, 
             SpritesModule spritesModule, TileModule tileModule) 
             : base(mainSystem)
         {

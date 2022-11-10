@@ -7,7 +7,6 @@ namespace ChompGame.MainGame.SpriteControllers
     class BulletController : ISpriteController, ICollidesWithPlayer
     {
         private readonly CoreGraphicsModule _coreGraphicsModule;
-        private readonly StatusBar _statusBar;
         private readonly MovingSpriteController _movingSpriteController;
         private GameByte _bulletTimer;
         public AcceleratedMotion Motion => _movingSpriteController.Motion;
@@ -28,25 +27,21 @@ namespace ChompGame.MainGame.SpriteControllers
             SpritesModule spritesModule,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
-            StatusBar statusBar,
             SystemMemoryBuilder memoryBuilder)
         {
-            _statusBar = statusBar;
             _bulletTimer = memoryBuilder.AddByte();
             _coreGraphicsModule = spritesModule.GameSystem.CoreGraphicsModule;
 
             _movingSpriteController = new MovingSpriteController(
                 spritesModule,
-                collisionDetector,
                 levelTimer,
                 memoryBuilder,
-                255,
-                20,
-                0,
-                0,
-                0,
-                0,
-                0);
+                spriteIndex: 255,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.VeryFast,
+                animationStyle: AnimationStyle.AlwaysAnimate,
+                collidesWithBackground: false,
+                flipXWhenMovingLeft: true);
         }
 
         public void Update()
@@ -89,8 +84,6 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if (_bulletTimer.Value > 100)
                 return;
-
-            _statusBar.Health--;
 
             _bulletTimer.Value = 101;
             _movingSpriteController.Motion.XSpeed = 0;
