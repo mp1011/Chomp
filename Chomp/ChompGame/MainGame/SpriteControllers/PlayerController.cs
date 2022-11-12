@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteModels;
@@ -7,12 +8,15 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController
     {
+        private const byte _recoilSpeed = 30;
         private readonly StatusBar _statusBar;
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
         private readonly MovingSpriteController _walkingSpriteController;
         private readonly InputModule _inputModule;
         private readonly GameByte _hitTimer;
+        private readonly GameByte _levelTimer;
+        private readonly SpriteDefinition _spriteDefinition;
 
         public WorldSprite WorldSprite => _walkingSpriteController.WorldSprite;
         public AcceleratedMotion Motion => _walkingSpriteController.Motion;
@@ -28,13 +32,15 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _statusBar = statusBar;
             _audioService = audioService;
+            _levelTimer = levelTimer;
+            _spriteDefinition = new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory);
 
             _walkingSpriteController = new MovingSpriteController(
                spritesModule,
                levelTimer,
                memoryBuilder,
                spriteIndex: 0,
-               spriteDefinition: new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory));
+               spriteDefinition: _spriteDefinition);
 
             _inputModule = inputModule;
             _collisionDetector = collisionDetector;
@@ -46,6 +52,18 @@ namespace ChompGame.MainGame.SpriteControllers
             if(_hitTimer.Value > 0)
             {
                 _hitTimer.Value--;
+
+                var sprite = WorldSprite.GetSprite();
+                if (_hitTimer.Value == 0)
+                {
+                    sprite.Palette = _spriteDefinition.Palette;
+                }
+                else if((_levelTimer.Value % 4) == 0)
+                {
+                    sprite.Palette = sprite
+                        .Palette
+                        .Toggle(3, _spriteDefinition.Palette);
+                }
             }
 
             var motion = _walkingSpriteController.Motion;
@@ -96,6 +114,12 @@ namespace ChompGame.MainGame.SpriteControllers
                     _hitTimer.Value = 100;
                     p.HandleCollision(WorldSprite);
 
+                    if(WorldSprite.FlipX)
+                        Motion.XSpeed = _recoilSpeed;
+                    else
+                        Motion.XSpeed = -_recoilSpeed;
+
+                    Motion.YSpeed = -_recoilSpeed;
                     _audioService.PlaySound(ChompAudioService.Sound.PlayerHit);
                     _statusBar.Health--;
                 }
