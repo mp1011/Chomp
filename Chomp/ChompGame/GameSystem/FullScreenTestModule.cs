@@ -21,8 +21,6 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
-            memoryBuilder.BeginROM();
-
             _romPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             _romNameTable = memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }

@@ -1,4 +1,5 @@
 ﻿using ChompGame.GameSystem;
+using ChompGame.MainGame;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,9 +78,9 @@ namespace ChompGame.Data
     {
         public SystemMemoryBuilder CurrentBuilder { get; set; }
         private MemoryBlock _memory;
-        private int _romStartAddress;
 
-        public int RAMSize => _romStartAddress;
+        private Dictionary<AddressLabels, int> _addressLabels = new Dictionary<AddressLabels, int>();
+
 
         public byte this[int index] 
         {
@@ -99,13 +100,15 @@ namespace ChompGame.Data
             _memory = memoryBuilder.Bytes;
             configureMemory(memoryBuilder);
             _memory = memoryBuilder.Build();
-
-            _romStartAddress = memoryBuilder.ROMStartAddress;
         }
 
-        public void Ready()
+
+        public void AddLabel(AddressLabels label, int address)
         {
+            _addressLabels.Add(label, address);
         }
+
+        public int GetAddress(AddressLabels label) => _addressLabels[label];
     }
 
     public class SystemMemoryBuilder
@@ -115,7 +118,6 @@ namespace ChompGame.Data
         private SystemMemory _systemMemory;
         private Specs _specs;
 
-        public int ROMStartAddress { get; private set; } = -1;
         public int CurrentAddress => Bytes.Count;
 
         public SystemMemory Memory => _systemMemory;
@@ -126,12 +128,9 @@ namespace ChompGame.Data
             _systemMemory = systemMemory;
         }
 
-        public void BeginROM()
+        public void AddLabel(AddressLabels label)
         {
-            if (ROMStartAddress != -1)
-                throw new Exception("ROM already started");
-
-            ROMStartAddress = CurrentAddress;
+            _systemMemory.AddLabel(label, CurrentAddress);
         }
 
         public FixedMemoryBlock Build()
@@ -171,6 +170,13 @@ namespace ChompGame.Data
             var b = new GameByte(CurrentAddress, _systemMemory);
             Bytes.Add(value);
             return b;
+        }
+
+        public MaskedByte AddMaskedByte(Bit mask)
+        {
+            var m = new MaskedByte(CurrentAddress, mask, _systemMemory);
+            AddByte();
+            return m;
         }
 
         public NibblePoint AddNibblePoint()

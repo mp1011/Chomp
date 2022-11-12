@@ -15,7 +15,6 @@ namespace ChompGame.GameSystem
 
         private Color[] _screenData;
         public GameByteGridPoint ScreenPoint { get; private set; }
-        public GameByte CurrentColorIndex { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
         public ScanlineDrawBuffer ScanlineDrawBuffer { get; private set; }
 
@@ -32,7 +31,6 @@ namespace ChompGame.GameSystem
         {
             _graphicsMemoryBegin = builder.CurrentAddress;
             builder.AddBytes(Specs.NumPalettes * Specs.BytesPerPalette);
-            CurrentColorIndex = builder.AddByte();
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
             if(Specs.ScreenWidth==256 && Specs.ScreenHeight==256)

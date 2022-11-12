@@ -2,11 +2,19 @@
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers;
+using ChompGame.MainGame.SpriteModels;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
 {
+    public enum AddressLabels
+    {
+        NameTables,
+        SceneDefinitions,
+        SpriteDefinitions
+    }
+
     class ChompGameModule : Module, IMasterModule
     {
         enum GameState : byte
@@ -16,11 +24,7 @@ namespace ChompGame.MainGame
             Test
         }
 
-        class RomAddresses
-        {
-            public int NameTables { get; set; }
-            public int SceneDefinitions { get; set; }
-        }
+       
 
         private readonly CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
@@ -30,9 +34,6 @@ namespace ChompGame.MainGame
         private readonly StatusBarModule _statusBarModule;
         private readonly MusicModule _musicModule;
         private readonly StatusBar _statusBar;
-
-
-        private RomAddresses _romAddresses = new RomAddresses();
         private NBitPlane _masterPatternTable;
        
         private GameByteEnum<GameState> _gameState;
@@ -75,7 +76,43 @@ namespace ChompGame.MainGame
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
-            memoryBuilder.AddByte();
+            memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
+
+            new SpriteDefinition(memoryBuilder,
+                spriteType: SpriteType.Player,
+                tile: 1,
+                secondTileOffset: 1,
+                palette: 1,
+                orientation: Orientation.Vertical,
+                gravityStrength: GravityStrength.Medium,
+                movementSpeed: MovementSpeed.Fast,
+                animationStyle: AnimationStyle.AnimateLowerTileOnly,
+                collidesWithBackground: true,
+                flipXWhenMovingLeft: true);
+
+            new SpriteDefinition(memoryBuilder,
+                spriteType: SpriteType.Lizard,
+                tile: 3,
+                secondTileOffset: 1,
+                palette: 2,
+                orientation: Orientation.Vertical,
+                gravityStrength: GravityStrength.High,
+                movementSpeed: MovementSpeed.Slow,
+                animationStyle: AnimationStyle.AnimateWhenMoving,
+                collidesWithBackground: true,
+                flipXWhenMovingLeft: true);
+
+            new SpriteDefinition(memoryBuilder,
+                spriteType: SpriteType.LizardBullet,
+                tile: 5,
+                secondTileOffset: 0,
+                palette: 3,
+                orientation: Orientation.Vertical,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.Fast,
+                animationStyle: AnimationStyle.NoAnimation,
+                collidesWithBackground: false,
+                flipXWhenMovingLeft: true);
 
             _statusBar.BuildMemory(memoryBuilder);
             _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
@@ -83,7 +120,7 @@ namespace ChompGame.MainGame
             _lizardBulletControllers = new SpriteControllerPool<BulletController>(
                2,
                _spritesModule,
-               () => new BulletController(_spritesModule, _collisionDetector, _timer, memoryBuilder),
+               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet),
                s =>
                {
                    s.Tile = 5;
@@ -105,14 +142,13 @@ namespace ChompGame.MainGame
 
             _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
 
-            memoryBuilder.BeginROM();
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
 
-            _romAddresses.NameTables = memoryBuilder.CurrentAddress;                  
+            memoryBuilder.AddLabel(AddressLabels.NameTables);
             memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
 
-            _romAddresses.SceneDefinitions = memoryBuilder.CurrentAddress;
-            new SceneInfo(0, 7, memoryBuilder); //todo           
+            memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
+            new SceneInfo(0, 7, memoryBuilder); //todo                      
         }
 
         public override void OnStartup()
@@ -158,7 +194,7 @@ namespace ChompGame.MainGame
 
         private SceneInfo SetupTestScene()
         {
-            SceneInfo testScene = new SceneInfo(_romAddresses.SceneDefinitions, GameSystem.Memory);
+            SceneInfo testScene = new SceneInfo(GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
 
             //sprites
             testScene.DefineRegion(

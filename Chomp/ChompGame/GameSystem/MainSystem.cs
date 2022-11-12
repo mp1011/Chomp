@@ -43,8 +43,6 @@ namespace ChompGame.GameSystem
             CoreGraphicsModule.OnStartup();
             foreach (var module in _modules)
                 module.OnStartup();
-
-            Memory.Ready();
         }
 
         public T GetModule<T>() where T:IModule

@@ -1,7 +1,7 @@
 ﻿using ChompGame.Data;
-using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -42,11 +42,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 levelTimer,
                 memoryBuilder,
                 spriteIndex: 255,
-                gravityStrength: GravityStrength.High,
-                movementSpeed: MovementSpeed.Slow,
-                animationStyle: AnimationStyle.AnimateWhenMoving,
-                collidesWithBackground: true,
-                flipXWhenMovingLeft: true);          
+                spriteDefinition: new SpriteDefinition(SpriteType.Lizard, memoryBuilder.Memory));   
         }
 
         public void Update()
@@ -71,7 +67,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             _bulletTimer.Value++;
-            if(false && _bulletTimer.Value == 200 + SpriteIndex)
+            if(_bulletTimer.Value == 200 + SpriteIndex)
             {
                 _bulletTimer.Value = 0;
                 var fireball = _lizardBulletControllers.TryAddNew();
@@ -84,20 +80,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
 
-            var sprite = GetSprite();
-
-            //todo, try to make this more general
-            if (Motion.XSpeed == 0)
-            {
-                sprite.Tile = 3;
-            }
-            else
-            {
-                if ((_levelTimer.Value % 16) == 0)
-                {
-                    sprite.Tile = sprite.Tile.Toggle(3, 4);
-                }
-            }
+          
         }
 
         public void HandleCollision(WorldSprite player)

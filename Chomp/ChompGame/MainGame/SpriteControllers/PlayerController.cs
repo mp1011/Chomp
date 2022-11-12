@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -33,11 +34,7 @@ namespace ChompGame.MainGame.SpriteControllers
                levelTimer,
                memoryBuilder,
                spriteIndex: 0,
-               gravityStrength: GravityStrength.Medium,
-               movementSpeed: MovementSpeed.Fast,
-               animationStyle: AnimationStyle.AnimateLowerTileOnly,
-               collidesWithBackground: true,
-               flipXWhenMovingLeft: true);
+               spriteDefinition: new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory));
 
             _inputModule = inputModule;
             _collisionDetector = collisionDetector;

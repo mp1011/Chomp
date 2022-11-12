@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -25,9 +26,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public BulletController(
             SpritesModule spritesModule,
-            CollisionDetector collisionDetector,
             GameByte levelTimer,
-            SystemMemoryBuilder memoryBuilder)
+            SystemMemoryBuilder memoryBuilder, 
+            SpriteType spriteType)
         {
             _bulletTimer = memoryBuilder.AddByte();
             _coreGraphicsModule = spritesModule.GameSystem.CoreGraphicsModule;
@@ -37,11 +38,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 levelTimer,
                 memoryBuilder,
                 spriteIndex: 255,
-                gravityStrength: GravityStrength.None,
-                movementSpeed: MovementSpeed.VeryFast,
-                animationStyle: AnimationStyle.AlwaysAnimate,
-                collidesWithBackground: false,
-                flipXWhenMovingLeft: true);
+                new SpriteDefinition(spriteType, memoryBuilder.Memory));
         }
 
         public void Update()

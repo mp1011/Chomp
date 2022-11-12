@@ -11,11 +11,7 @@ namespace ChompGame.GameSystem
 
         public override void OnStartup()
         {
-            var rng = new Random();
-            for (int i = 0; i < GameSystem.Memory.RAMSize-1; i++)
-            {
-                GameSystem.Memory[i] = (byte)(~i); // (byte)rng.Next(0, 256);
-            }
+            
         }
 
         public void OnHBlank()
@@ -32,7 +28,6 @@ namespace ChompGame.GameSystem
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
-            memoryBuilder.BeginROM();
         }
 
         public byte GetPalette(int pixel)

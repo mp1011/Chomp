@@ -1,114 +1,68 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    public enum GravityStrength : byte
-    {
-        None,
-        Low,
-        Medium,
-        High
-    }
-
-    public enum MovementSpeed : byte
-    {
-        VerySlow,
-        Slow,
-        Fast,
-        VeryFast
-    }
-
-    public enum AnimationStyle : byte
-    {
-        NoAnimatin,
-        AnimateWhenMoving,
-        AnimateLowerTileOnly,
-        AlwaysAnimate
-    }
-
     class MovingSpriteController : ISpriteController
     {
-        private GameByte _settings;
+        public SpriteDefinition _spriteDefinition;
 
-        private TwoBitEnum<GravityStrength> _gravityStrength;
-        private TwoBitEnum<AnimationStyle> _animationStyle;
-        private TwoBitEnum<MovementSpeed> _movementSpeed;
-        private GameBit _collidesWithBackground;
-        private GameBit _flipXWhenMovingLeft;
-        
-
-        public MovementSpeed MovementSpeed
-        {
-            get => _movementSpeed.Value;
-            set
+        public byte WalkSpeed =>
+            _spriteDefinition.MovementSpeed switch 
             {
-                _movementSpeed.Value = value;
+                MovementSpeed.VerySlow => 1,
+                MovementSpeed.Slow => 10,
+                MovementSpeed.Fast => 40,
+                MovementSpeed.VeryFast => 60,
+                _ => 0
+            };
 
-                switch (_movementSpeed.Value)
-                {
-                    case MovementSpeed.VerySlow:
-                        WalkSpeed = 1;
-                        WalkAccel = 1;
-                        BrakeAccel = 1;
-                        break;
-                    case MovementSpeed.Slow:
-                        WalkSpeed = 10;
-                        WalkAccel = 5;
-                        BrakeAccel = 5;
-                        break;
-                    case MovementSpeed.Fast:
-                        WalkSpeed = 40;
-                        WalkAccel = 5;
-                        BrakeAccel = 10;
-                        break;
-                    case MovementSpeed.VeryFast:
-                        WalkSpeed = 60;
-                        WalkAccel = 10;
-                        BrakeAccel = 10;
-                        break;
-                }
-            }
-        }
+        public byte WalkAccel =>
+            _spriteDefinition.MovementSpeed switch {
+                MovementSpeed.VerySlow => 1,
+                MovementSpeed.Slow => 5,
+                MovementSpeed.Fast => 5,
+                MovementSpeed.VeryFast => 10,
+                _ => 0
+            };
 
-        public GravityStrength GravityStrength
-        {
-            get => _gravityStrength.Value;
-            set
-            {
-                _gravityStrength.Value = value;
-                switch (_gravityStrength.Value)
-                {
-                    case GravityStrength.None:
-                        FallSpeed = 0;
-                        GravityAccel = 0;
-                        JumpSpeed = 0;
-                        break;
-                    case GravityStrength.Low:
-                        FallSpeed = 20;
-                        GravityAccel = 5;
-                        JumpSpeed = 80;
-                        break;
-                    case GravityStrength.Medium:
-                        FallSpeed = 64;
-                        GravityAccel = 10;
-                        JumpSpeed = 80;
-                        break;
-                    case GravityStrength.High:
-                        FallSpeed = 127;
-                        GravityAccel = 10;
-                        JumpSpeed = 30;
-                        break;
-                }
-            }
-        }
+        public byte BrakeAccel =>
+            _spriteDefinition.MovementSpeed switch {
+                MovementSpeed.VerySlow => 1,
+                MovementSpeed.Slow => 5,
+                MovementSpeed.Fast => 10,
+                MovementSpeed.VeryFast => 10,
+                _ => 0
+            };
 
-        public byte WalkSpeed { get; private set; }
-        public byte WalkAccel { get; private set; }
-        public byte BrakeAccel { get; private set; }
-        public byte JumpSpeed { get; private set; }
-        public byte FallSpeed { get; private set; }
-        public byte GravityAccel { get; private set; }
+        public byte JumpSpeed =>
+            _spriteDefinition.GravityStrength switch {
+                GravityStrength.None => 0,
+                GravityStrength.Low => 80,
+                GravityStrength.Medium => 80,
+                GravityStrength.High => 30,
+                _ => 0
+            };
+
+        public byte FallSpeed =>
+            _spriteDefinition.GravityStrength switch {
+                GravityStrength.None => 0,
+                GravityStrength.Low => 20,
+                GravityStrength.Medium => 64,
+                GravityStrength.High => 127,
+                _ => 0
+            };
+
+        public byte GravityAccel =>
+            _spriteDefinition.GravityStrength switch {
+                GravityStrength.None => 0,
+                GravityStrength.Low => 5,
+                GravityStrength.Medium => 10,
+                GravityStrength.High => 10,
+                _ => 0
+            };
 
         private readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
@@ -130,30 +84,13 @@ namespace ChompGame.MainGame.SpriteControllers
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder,
             byte spriteIndex,
-            GravityStrength gravityStrength,
-            MovementSpeed movementSpeed,
-            AnimationStyle animationStyle,
-            bool collidesWithBackground,
-            bool flipXWhenMovingLeft)
+            SpriteDefinition spriteDefinition)
         {
+            _spriteDefinition = spriteDefinition;
             _spritesModule = spritesModule;
             _levelTimer = levelTimer;
 
             Motion = new AcceleratedMotion(levelTimer, memoryBuilder);
-
-            _settings = memoryBuilder.AddByte();
-            _gravityStrength = new TwoBitEnum<GravityStrength>(memoryBuilder.Memory, _settings.Address, 0);
-            _movementSpeed = new TwoBitEnum<MovementSpeed>(memoryBuilder.Memory, _settings.Address, 2);
-            _animationStyle = new TwoBitEnum<AnimationStyle>(memoryBuilder.Memory, _settings.Address, 4);
-            _collidesWithBackground = new GameBit(_settings.Address, Bit.Bit6, memoryBuilder.Memory);
-            _flipXWhenMovingLeft = new GameBit(_settings.Address, Bit.Bit7, memoryBuilder.Memory);
-
-            GravityStrength = gravityStrength;
-            MovementSpeed = movementSpeed;
-
-            _animationStyle.Value = animationStyle;
-            _collidesWithBackground.Value = collidesWithBackground;
-            _flipXWhenMovingLeft.Value = flipXWhenMovingLeft;
 
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
@@ -171,15 +108,36 @@ namespace ChompGame.MainGame.SpriteControllers
             var sprite = WorldSprite.GetSprite();
             Motion.Apply(WorldSprite);
 
-            if (Motion.TargetXSpeed < 0 && !sprite.FlipX)
+            if (_spriteDefinition.FlipXWhenMovingLeft)
             {
-                sprite.FlipX = true;
-            }
-            else if (Motion.TargetXSpeed > 0 && sprite.FlipX)
-            {
-                sprite.FlipX = false;
+                if (Motion.TargetXSpeed < 0 && !sprite.FlipX)
+                {
+                    sprite.FlipX = true;
+                }
+                else if (Motion.TargetXSpeed > 0 && sprite.FlipX)
+                {
+                    sprite.FlipX = false;
+                }
             }
 
+            bool shouldAnimate = _spriteDefinition.AnimationStyle switch {
+                AnimationStyle.AlwaysAnimate => true,
+                AnimationStyle.AnimateWhenMoving => Motion.XSpeed != 0,
+                AnimationStyle.AnimateLowerTileOnly => Motion.XSpeed != 0,
+                _ => false
+            };
+
+            if(!shouldAnimate)
+            {
+                sprite.Tile = _spriteDefinition.Tile;
+            }
+            else if ((_levelTimer.Value % 16) == 0)
+            {
+                if(_spriteDefinition.AnimationStyle == AnimationStyle.AnimateLowerTileOnly)
+                    sprite.Tile2Offset = sprite.Tile2Offset.Toggle(1,2);
+                else
+                    sprite.Tile = sprite.Tile.Toggle(_spriteDefinition.Tile, (byte)(_spriteDefinition.Tile + 1));
+            }
         }
     }
 }

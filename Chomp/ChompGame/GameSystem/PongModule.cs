@@ -51,7 +51,6 @@ namespace ChompGame.GameSystem
             _soundTimer = memoryBuilder.AddByte();
             _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
             _var = memoryBuilder.AddByte();
-            memoryBuilder.BeginROM();
 
             _romPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             _romNameTable = memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
