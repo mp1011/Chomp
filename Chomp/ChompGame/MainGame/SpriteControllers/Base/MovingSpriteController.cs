@@ -3,7 +3,7 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteModels;
 
-namespace ChompGame.MainGame.SpriteControllers
+namespace ChompGame.MainGame.SpriteControllers.Base
 {
     class MovingSpriteController : ISpriteController
     {
@@ -66,8 +66,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
-
-        public byte LevelTimer => _levelTimer.Value;
 
         public AcceleratedMotion Motion { get; }
         public WorldSprite WorldSprite { get; }

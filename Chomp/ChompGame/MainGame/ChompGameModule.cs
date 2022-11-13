@@ -167,7 +167,7 @@ namespace ChompGame.MainGame
             _birdEnemyControllers = new SpriteControllerPool<BirdEnemyController>(
                1,
                _spritesModule,
-               () => new BirdEnemyController(_lizardBulletControllers, _playerController.WorldSprite, _spritesModule, _timer, memoryBuilder));
+               () => new BirdEnemyController(_playerController.WorldSprite, _spritesModule, _timer, memoryBuilder));
         }
 
         public override void OnStartup()
@@ -248,7 +248,7 @@ namespace ChompGame.MainGame
             var playerSprite = _spritesModule.GetSprite(0);
             playerSprite.X = 16;
             playerSprite.Y = 16;
-            playerSprite.Palette = 1;
+            _playerController.Palette = 1;
             _playerController.ConfigureSprite(playerSprite);
             
            
@@ -257,18 +257,24 @@ namespace ChompGame.MainGame
                 .GetSprite();
             lizard1.X = 32;
             lizard1.Y = 40;
+            lizard1.Palette = 2;
 
             var lizard2 = _lizardEnemyControllers
                 .TryAddNew()
                 .GetSprite();
             lizard2.X = 64;
             lizard2.Y = 40;
+            lizard2.Palette = 1;
 
             var bird = _birdEnemyControllers
                 .TryAddNew()
                 .GetSprite();
             bird.X = 32;
             bird.Y = 32;
+            bird.Palette = 2;
+
+            _lizardBulletControllers.Execute(b => b.Palette = 3, 
+                skipIfInactive:false);
 
             _gameState.Value = GameState.PlayScene;
 

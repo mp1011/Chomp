@@ -1,27 +1,18 @@
 ﻿using ChompGame.Data;
-using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class PlayerController : ISpriteController
+    class PlayerController : ActorController
     {
         private const byte _recoilSpeed = 30;
         private readonly StatusBar _statusBar;
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
-        private readonly MovingSpriteController _walkingSpriteController;
         private readonly InputModule _inputModule;
-        private readonly GameByte _hitTimer;
-        private readonly GameByte _levelTimer;
-        private readonly SpriteDefinition _spriteDefinition;
-
-        public WorldSprite WorldSprite => _walkingSpriteController.WorldSprite;
-        public AcceleratedMotion Motion => _walkingSpriteController.Motion;
-
-        public byte SpriteIndex { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public PlayerController(
             SpritesModule spritesModule, 
@@ -30,63 +21,55 @@ namespace ChompGame.MainGame.SpriteControllers
             ChompAudioService audioService,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
-            SystemMemoryBuilder memoryBuilder)
+            SystemMemoryBuilder memoryBuilder) 
+            : base(SpriteType.Player, spritesModule, memoryBuilder, levelTimer)
         {
             _statusBar = statusBar;
             _audioService = audioService;
-            _levelTimer = levelTimer;
-            _spriteDefinition = new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory);
-
-            _walkingSpriteController = new MovingSpriteController(
-               spritesModule,
-               levelTimer,
-               memoryBuilder,
-               spriteIndex: 0,
-               spriteDefinition: _spriteDefinition);
 
             _inputModule = inputModule;
             _collisionDetector = collisionDetector;
-            _hitTimer = memoryBuilder.AddByte();
+
+            SpriteIndex = 0;
         }
 
         public void Update()
         {
-            if(_hitTimer.Value > 0)
+            if(_state.Value > 0)
             {
-                _hitTimer.Value--;
+                var sprite = WorldSprite.GetSprite();               
+                
+                if((_levelTimer.Value % 4) == 0)
+                {
+                    sprite.Visible = !sprite.Visible;
+                    _state.Value--;
+                }
 
-                var sprite = WorldSprite.GetSprite();
-                if (_hitTimer.Value == 0)
+                if (_state.Value == 0)
                 {
                     sprite.Visible = true;
                 }
-                else if((_levelTimer.Value % 4) == 0)
-                {
-                    sprite.Visible = !sprite.Visible;
-                }
             }
 
-            var motion = _walkingSpriteController.Motion;
-
-            _walkingSpriteController.Update();
+            _movingSpriteController.Update();
             _inputModule.OnLogicUpdate();
 
             var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, 14); //todo, hard-coding
 
             if (_inputModule.Player1.RightKey.IsDown())
             {
-                motion.TargetXSpeed = _walkingSpriteController.WalkSpeed;
-                motion.XAcceleration = _walkingSpriteController.WalkAccel;
+                Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
+                Motion.XAcceleration = _movingSpriteController.WalkAccel;
             }
             else if (_inputModule.Player1.LeftKey.IsDown())
             {
-                motion.TargetXSpeed = -_walkingSpriteController.WalkSpeed;
-                motion.XAcceleration = _walkingSpriteController.WalkAccel;
+                Motion.TargetXSpeed = -_movingSpriteController.WalkSpeed;
+                Motion.XAcceleration = _movingSpriteController.WalkAccel;
             }
             else
             {
-                motion.TargetXSpeed = 0;
-                motion.XAcceleration = _walkingSpriteController.BrakeAccel;
+                Motion.TargetXSpeed = 0;
+                Motion.XAcceleration = _movingSpriteController.BrakeAccel;
             }
 
             if(_inputModule.Player1.BKey == GameKeyState.Pressed)
@@ -97,21 +80,21 @@ namespace ChompGame.MainGame.SpriteControllers
             if (collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
-                motion.YSpeed = -_walkingSpriteController.JumpSpeed;
+                Motion.YSpeed = -_movingSpriteController.JumpSpeed;
             }
         }
 
         public void CheckEnemyOrBulletCollisions<T>(SpriteControllerPool<T> sprites)
             where T : class, ISpriteController, ICollidesWithPlayer
         {
-            if (_hitTimer.Value > 0)
+            if (_state.Value > 0)
                 return;
 
             sprites.Execute(p =>
             {
                 if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
-                    _hitTimer.Value = 100;
+                    _state.Value = 60;
                     p.HandleCollision(WorldSprite);
 
                     if(WorldSprite.FlipX)
@@ -125,13 +108,5 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             });
         }
-
-        public Sprite GetSprite() => throw new System.NotImplementedException();
-        public void ConfigureSprite(Sprite sprite)
-        {
-            _walkingSpriteController.ConfigureSprite(sprite);
-            sprite.Palette = 1;
-        }
-
     }
 }

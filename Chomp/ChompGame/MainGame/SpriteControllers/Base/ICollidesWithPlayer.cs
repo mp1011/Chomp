@@ -1,4 +1,4 @@
-﻿namespace ChompGame.MainGame.SpriteControllers
+﻿namespace ChompGame.MainGame.SpriteControllers.Base
 {
     interface ICollidesWithPlayer
     {

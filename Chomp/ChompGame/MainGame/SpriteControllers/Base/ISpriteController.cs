@@ -1,6 +1,6 @@
-﻿using ChompGame.MainGame;
+﻿using ChompGame.Data;
 
-namespace ChompGame.Data
+namespace ChompGame.MainGame.SpriteControllers.Base
 {
     interface ISpriteController
     {

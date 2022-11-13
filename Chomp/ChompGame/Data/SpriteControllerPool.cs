@@ -1,4 +1,5 @@
 ﻿using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteControllers.Base;
 using System;
 using System.Linq;
 
@@ -40,11 +41,11 @@ namespace ChompGame.Data
             return null;
         }
 
-        public void Execute(Action<T> action)
+        public void Execute(Action<T> action, bool skipIfInactive=true)
         {
             foreach(var item in _items)
             {
-                if (item.SpriteIndex != 255)
+                if (!skipIfInactive || item.SpriteIndex != 255)
                 {
                     action(item);
                 }
