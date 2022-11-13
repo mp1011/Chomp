@@ -45,7 +45,7 @@ namespace ChompGame.MainGame
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = 5;
 
-                var bgPalette = _coreGraphicsModule.GetPalette(0);
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
                 bgPalette.SetColor(1, ChompGameSpecs.Blue1);
                 bgPalette.SetColor(2, ChompGameSpecs.White);

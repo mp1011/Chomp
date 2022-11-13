@@ -100,7 +100,7 @@ namespace ChompGame.MainGame
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = 0;
 
-                var bgPalette = _coreGraphicsModule.GetPalette(0);
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
                 bgPalette.SetColor(1, ChompGameSpecs.LightBlue);
                 bgPalette.SetColor(2, ChompGameSpecs.LightYellow);
@@ -108,7 +108,7 @@ namespace ChompGame.MainGame
             }
             else if (_tileModule.ScreenPoint.Y == 40)
             {
-                var bgPalette = _coreGraphicsModule.GetPalette(0);
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
 
                 switch (_paletteCycleIndex.Value)
                 {
@@ -140,7 +140,7 @@ namespace ChompGame.MainGame
             }
             else if (_tileModule.ScreenPoint.Y == 48)
             {
-                var bgPalette = _coreGraphicsModule.GetPalette(0);
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
                 bgPalette.SetColor(0, ChompGameSpecs.Green3);
                 bgPalette.SetColor(1, ChompGameSpecs.Blue1);
                 bgPalette.SetColor(2, ChompGameSpecs.Green1);

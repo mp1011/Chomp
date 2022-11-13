@@ -209,7 +209,7 @@ namespace ChompGame.GameSystem
         public override int AudioChannels => 2;
 
         public override int BytesPerPalette => 3;
-        public override int NumPalettes => 4;
+        public override int NumPalettes => 5;
 
         public override Color[] SystemColors { get; } = new Color[64];
 

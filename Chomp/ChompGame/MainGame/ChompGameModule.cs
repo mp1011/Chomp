@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using ChompGame.ROM;
@@ -83,22 +84,8 @@ namespace ChompGame.MainGame
             AddSpriteDefinitions(memoryBuilder);
 
             _statusBar.BuildMemory(memoryBuilder);
-            _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
-            
-            _lizardBulletControllers = new SpriteControllerPool<BulletController>(
-               2,
-               _spritesModule,
-               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet));
 
-            _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
-                2,
-                _spritesModule,
-                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder));
-
-            _birdEnemyControllers = new SpriteControllerPool<BirdEnemyController>(
-               1,
-               _spritesModule,
-               () => new BirdEnemyController(_lizardBulletControllers, _playerController.WorldSprite, _spritesModule, _timer, memoryBuilder));
+            AddSpriteControllers(memoryBuilder);
 
             _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
 
@@ -108,7 +95,8 @@ namespace ChompGame.MainGame
             memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
 
             memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
-            new SceneInfo(0, 8, memoryBuilder); //todo                      
+
+            SceneBuilder.SetupTestScene(memoryBuilder);
         }
 
         private void AddSpriteDefinitions(SystemMemoryBuilder memoryBuilder)
@@ -162,6 +150,26 @@ namespace ChompGame.MainGame
                 flipXWhenMovingLeft: true);
         }
 
+        private void AddSpriteControllers(SystemMemoryBuilder memoryBuilder)
+        {
+            _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
+
+            _lizardBulletControllers = new SpriteControllerPool<BulletController>(
+               2,
+               _spritesModule,
+               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet));
+
+            _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
+                2,
+                _spritesModule,
+                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder));
+
+            _birdEnemyControllers = new SpriteControllerPool<BirdEnemyController>(
+               1,
+               _spritesModule,
+               () => new BirdEnemyController(_lizardBulletControllers, _playerController.WorldSprite, _spritesModule, _timer, memoryBuilder));
+        }
+
         public override void OnStartup()
         {
             PatternTableCreator.SetupMasterPatternTable(
@@ -176,99 +184,12 @@ namespace ChompGame.MainGame
             new DiskNBitPlaneLoader()
                 .Load(new DiskFile(ContentFolder.NameTables, "testScene.nt"),
                     _tileModule.NameTable);
-
-            var testScene = SetupTestScene();
-            InitializePatternTable(testScene);
-
+           
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
             //_musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
-
-        private void InitializePatternTable(SceneInfo testScene)
-        {
-            var patternTable = GameSystem.CoreGraphicsModule.PatternTable;
-
-            for(int regionIndex = 0; regionIndex < testScene.RegionCount; regionIndex++)
-            {
-                var region = testScene.GetRegion(regionIndex);
-                _masterPatternTable.CopyTilesTo(
-                    patternTable, 
-                    region.TileRegion, 
-                    region.TileDestination, 
-                    Specs,
-                    GameSystem.Memory);
-            }
-
-            PatternTableExporter.ExportPatternTable(GameSystem.GraphicsDevice, patternTable);
-        }
-
-        private SceneInfo SetupTestScene()
-        {
-            SceneInfo testScene = new SceneInfo(GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
-
-            //sprites
-            testScene.DefineRegion(
-                index: 0,
-                region: new InMemoryByteRectangle(0, 0, 8, 2),
-                destination: new Point(0, 2),
-                systemMemory: GameSystem.Memory);
-
-            //sky
-            testScene.DefineRegion(
-               index: 1,
-               region: new InMemoryByteRectangle(0, 6, 8, 1),
-               destination: new Point(0, 0),
-               systemMemory: GameSystem.Memory);
-
-            //bg1
-            testScene.DefineRegion(
-                index: 2,
-                region: new InMemoryByteRectangle(0, 7, 6, 1),
-                destination: new Point(0, 1),
-                systemMemory: GameSystem.Memory);
-
-            //bg2
-            testScene.DefineRegion(
-                index: 3,
-                region: new InMemoryByteRectangle(5, 7, 3, 1),
-                destination: new Point(5, 1),
-                systemMemory: GameSystem.Memory);
-
-            //text
-            testScene.DefineRegion(
-               index: 4,
-               region: new InMemoryByteRectangle(4, 3, 8, 2),
-               destination: new Point(0, 5),
-               systemMemory: GameSystem.Memory);
-
-            //text2
-            testScene.DefineRegion(
-               index: 5,
-               region: new InMemoryByteRectangle(12, 4, 2, 1),
-               destination: new Point(6, 7),
-               systemMemory: GameSystem.Memory);
-
-            //health guage
-            testScene.DefineRegion(
-             index: 6,
-             region: new InMemoryByteRectangle(0, 4, 4, 1),
-             destination: new Point(0, 7),
-             systemMemory: GameSystem.Memory);
-
-            //bat
-            testScene.DefineRegion(
-                index: 7,
-                region: new InMemoryByteRectangle(8, 0, 4, 1),
-                destination: new Point(0, 4),
-                systemMemory: GameSystem.Memory);
-
-     
-            _tileModule.BackgroundPaletteIndex.Value = 0;
-
-            return testScene;
-        }
-
+    
         public void OnLogicUpdate()
         {
             _musicModule.Update();
@@ -290,19 +211,34 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
-            var playerPalette = GameSystem.CoreGraphicsModule.GetPalette(1);
+            //todo, ability to load scene by key 
+            SceneDefinition testScene = new SceneDefinition(
+               GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
+
+            PatternTableCreator.CreateVRAMPatternTable(
+                testScene,
+                _masterPatternTable,
+                GameSystem.CoreGraphicsModule.PatternTable,
+                GameSystem.Memory,
+                Specs);
+
+            PatternTableExporter.ExportPatternTable(
+                GameSystem.GraphicsDevice, 
+                GameSystem.CoreGraphicsModule.PatternTable);
+
+            var playerPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(1);
             playerPalette.SetColor(0, ChompGameSpecs.Black);
             playerPalette.SetColor(1, ChompGameSpecs.Orange); //hair
             playerPalette.SetColor(2, ChompGameSpecs.LightTan); //face
             playerPalette.SetColor(3, ChompGameSpecs.DarkBrown); //legs
 
-            var enemyPallete = GameSystem.CoreGraphicsModule.GetPalette(2);
+            var enemyPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(2);
             enemyPallete.SetColor(0, ChompGameSpecs.Black);
             enemyPallete.SetColor(1, ChompGameSpecs.Green1); 
             enemyPallete.SetColor(2, ChompGameSpecs.Green2); 
             enemyPallete.SetColor(3, ChompGameSpecs.Red3); 
 
-            var bulletPallete = GameSystem.CoreGraphicsModule.GetPalette(3);
+            var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(3);
             bulletPallete.SetColor(0, ChompGameSpecs.Black);
             bulletPallete.SetColor(1, ChompGameSpecs.Red2);
             bulletPallete.SetColor(2, ChompGameSpecs.Red3);
@@ -379,7 +315,7 @@ namespace ChompGame.MainGame
 
             if (_timer.Value % 8 == 0)
             {
-                var bulletPallete = GameSystem.CoreGraphicsModule.GetPalette(3);
+                var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(3);
                 if (bulletPallete.GetColorIndex(1) == ChompGameSpecs.Red2)
                 {
                     bulletPallete.SetColor(1, ChompGameSpecs.Red3);

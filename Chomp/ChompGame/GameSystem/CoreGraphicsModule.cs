@@ -17,8 +17,10 @@ namespace ChompGame.GameSystem
         public GameByteGridPoint ScreenPoint { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
         public ScanlineDrawBuffer ScanlineDrawBuffer { get; private set; }
+        public Palette GetBackgroundPalette() => GetPalette(0);
+        public Palette GetSpritePalette(byte index) => GetPalette((byte)(1 + index));
 
-        public Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
+        private Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
 
         private int _graphicsMemoryBegin;
 
@@ -74,7 +76,7 @@ namespace ChompGame.GameSystem
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
 
-            var palette = GetPalette(_tileModule.BackgroundPaletteIndex);
+            var palette = GetBackgroundPalette();
             int scanlineColumn = 0;
            
             for (int i = 0; i < _screenData.Length; i++)
@@ -102,7 +104,7 @@ namespace ChompGame.GameSystem
             while(_spritesModule.ScanlineSprites[scanlineSpriteIndex] != 255)
             {
                 Sprite sprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
-                var palette = GetPalette(sprite.Palette);
+                var palette = GetSpritePalette(sprite.Palette);
 
                 for(int x = 0; x < sprite.Width; x++)
                 {

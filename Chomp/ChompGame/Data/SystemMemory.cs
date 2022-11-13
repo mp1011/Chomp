@@ -76,7 +76,6 @@ namespace ChompGame.Data
 
     public class SystemMemory
     {
-        public SystemMemoryBuilder CurrentBuilder { get; set; }
         private MemoryBlock _memory;
 
         private Dictionary<AddressLabels, int> _addressLabels = new Dictionary<AddressLabels, int>();

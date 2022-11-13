@@ -8,6 +8,11 @@ namespace ChompGame.MainGame
 {
     static class PatternTableExporter
     {
+        /// <summary>
+        /// Exports pattern table to an image in the bin folder
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="patternTable"></param>
         public static void ExportPatternTable(GraphicsDevice device, NBitPlane patternTable)
         {
             var bmp = new Texture2D(device, patternTable.Width, patternTable.Height);

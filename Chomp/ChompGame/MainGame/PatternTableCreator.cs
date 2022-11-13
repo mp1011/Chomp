@@ -2,12 +2,12 @@
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace ChompGame.MainGame
 {
@@ -57,6 +57,13 @@ namespace ChompGame.MainGame
               masterPatternTable,
               new Rectangle(4, 1, 1, 1),
               specs);
+
+            //bomb 
+            CopyPatternTableRegion(
+                masterPatternTableImage,
+                masterPatternTable,
+                new Rectangle(5, 1, 1, 1),
+                specs);
 
             //text and health guage
             CopyPatternTableRegion(
@@ -163,5 +170,25 @@ namespace ChompGame.MainGame
             }
         }
 
+
+        public static void CreateVRAMPatternTable(
+            SceneDefinition sceneDefinition, 
+            NBitPlane masterPatternTable,
+            NBitPlane vramPatternTable,
+            SystemMemory memory,
+            Specs specs)
+        {
+            
+            for (var regionIndex = 0; regionIndex < sceneDefinition.RegionCount; regionIndex++)
+            {
+                var region = sceneDefinition.GetRegion(regionIndex);
+                masterPatternTable.CopyTilesTo(
+                    vramPatternTable,
+                    region.TileRegion,
+                    region.TileDestination,
+                    specs,
+                    memory);
+            }
+        }
     }
 }

@@ -25,8 +25,6 @@ namespace ChompGame.GameSystem
         { 
         }
 
-        public GameByte BackgroundPaletteIndex { get; private set; }
-
         public override void OnStartup()
         {
            
@@ -36,7 +34,6 @@ namespace ChompGame.GameSystem
         {
             base.BuildMemory(builder);
             _tileStartIndex = builder.AddNibblePoint();
-            BackgroundPaletteIndex = builder.AddByte();
             NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
         }
 
