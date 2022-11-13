@@ -14,5 +14,17 @@ namespace ChompGame.Extensions
         {
             return new Point(p.X + x, p.Y + y);
         }
+
+        public static Point GetVectorTo(this Point start, Point target, int speed)
+        {
+            Vector2 vector = new Vector2(target.X - start.X, target.Y - start.Y);
+            vector.Normalize();
+
+            var p = new Point(
+                (int)(vector.X * (speed / 1.0)),
+                (int)(vector.Y * (speed / 1.0)));
+
+            return p;            
+        }
     }
 }

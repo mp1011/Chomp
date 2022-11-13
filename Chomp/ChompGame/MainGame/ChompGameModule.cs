@@ -42,8 +42,10 @@ namespace ChompGame.MainGame
 
 
         private PlayerController _playerController;
+
         private SpriteControllerPool<LizardEnemyController> _lizardEnemyControllers;
         private SpriteControllerPool<BulletController> _lizardBulletControllers;
+        private SpriteControllerPool<BirdEnemyController> _birdEnemyControllers;
 
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
@@ -78,6 +80,39 @@ namespace ChompGame.MainGame
 
             memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
 
+            AddSpriteDefinitions(memoryBuilder);
+
+            _statusBar.BuildMemory(memoryBuilder);
+            _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
+            
+            _lizardBulletControllers = new SpriteControllerPool<BulletController>(
+               2,
+               _spritesModule,
+               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet));
+
+            _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
+                2,
+                _spritesModule,
+                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder));
+
+            _birdEnemyControllers = new SpriteControllerPool<BirdEnemyController>(
+               1,
+               _spritesModule,
+               () => new BirdEnemyController(_lizardBulletControllers, _playerController.WorldSprite, _spritesModule, _timer, memoryBuilder));
+
+            _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
+
+            _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
+
+            memoryBuilder.AddLabel(AddressLabels.NameTables);
+            memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
+
+            memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
+            new SceneInfo(0, 8, memoryBuilder); //todo                      
+        }
+
+        private void AddSpriteDefinitions(SystemMemoryBuilder memoryBuilder)
+        {
             //player
             new SpriteDefinition(memoryBuilder,
                 tile: 1,
@@ -94,8 +129,8 @@ namespace ChompGame.MainGame
             new SpriteDefinition(memoryBuilder,
                 tile: 3,
                 secondTileOffset: 1,
-                sizeX:1,
-                sizeY:2,
+                sizeX: 1,
+                sizeY: 2,
                 gravityStrength: GravityStrength.High,
                 movementSpeed: MovementSpeed.Slow,
                 animationStyle: AnimationStyle.AnimateWhenMoving,
@@ -106,36 +141,25 @@ namespace ChompGame.MainGame
             new SpriteDefinition(memoryBuilder,
                 tile: 5,
                 secondTileOffset: 0,
-                sizeX:1,
-                sizeY:1,
+                sizeX: 1,
+                sizeY: 1,
                 gravityStrength: GravityStrength.None,
                 movementSpeed: MovementSpeed.Fast,
                 animationStyle: AnimationStyle.NoAnimation,
                 collidesWithBackground: false,
                 flipXWhenMovingLeft: true);
 
-            _statusBar.BuildMemory(memoryBuilder);
-            _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
-            
-            _lizardBulletControllers = new SpriteControllerPool<BulletController>(
-               2,
-               _spritesModule,
-               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet));
-
-            _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
-                2,
-                _spritesModule,
-                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder));
-
-            _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
-
-            _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
-
-            memoryBuilder.AddLabel(AddressLabels.NameTables);
-            memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
-
-            memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
-            new SceneInfo(0, 7, memoryBuilder); //todo                      
+            //bird
+            new SpriteDefinition(memoryBuilder,
+                tile: 17,
+                secondTileOffset: 0,
+                sizeX: 2,
+                sizeY: 1,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.Fast,
+                animationStyle: AnimationStyle.AlwaysAnimate,
+                collidesWithBackground: false,
+                flipXWhenMovingLeft: true);
         }
 
         public override void OnStartup()
@@ -215,23 +239,31 @@ namespace ChompGame.MainGame
             testScene.DefineRegion(
                index: 4,
                region: new InMemoryByteRectangle(4, 3, 8, 2),
-               destination: new Point(0, 4),
+               destination: new Point(0, 5),
                systemMemory: GameSystem.Memory);
 
             //text2
             testScene.DefineRegion(
                index: 5,
                region: new InMemoryByteRectangle(12, 4, 2, 1),
-               destination: new Point(6, 6),
+               destination: new Point(6, 7),
                systemMemory: GameSystem.Memory);
 
             //health guage
             testScene.DefineRegion(
              index: 6,
              region: new InMemoryByteRectangle(0, 4, 4, 1),
-             destination: new Point(0, 6),
+             destination: new Point(0, 7),
              systemMemory: GameSystem.Memory);
 
+            //bat
+            testScene.DefineRegion(
+                index: 7,
+                region: new InMemoryByteRectangle(8, 0, 4, 1),
+                destination: new Point(0, 4),
+                systemMemory: GameSystem.Memory);
+
+     
             _tileModule.BackgroundPaletteIndex.Value = 0;
 
             return testScene;
@@ -293,9 +325,14 @@ namespace ChompGame.MainGame
             var lizard2 = _lizardEnemyControllers
                 .TryAddNew()
                 .GetSprite();
-
             lizard2.X = 64;
             lizard2.Y = 40;
+
+            var bird = _birdEnemyControllers
+                .TryAddNew()
+                .GetSprite();
+            bird.X = 32;
+            bird.Y = 32;
 
             _gameState.Value = GameState.PlayScene;
 
@@ -331,12 +368,15 @@ namespace ChompGame.MainGame
             _playerController.Update();
             _lizardEnemyControllers.Execute(c => c.Update());
             _lizardBulletControllers.Execute(c => c.Update());
+            _birdEnemyControllers.Execute(c => c.Update());
+
             _worldScroller.Update();
             _rasterInterrupts.Update();
 
             _playerController.CheckEnemyOrBulletCollisions(_lizardBulletControllers);
             _playerController.CheckEnemyOrBulletCollisions(_lizardEnemyControllers);
-            
+            _playerController.CheckEnemyOrBulletCollisions(_birdEnemyControllers);
+
             if (_timer.Value % 8 == 0)
             {
                 var bulletPallete = GameSystem.CoreGraphicsModule.GetPalette(3);

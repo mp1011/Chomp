@@ -86,9 +86,9 @@ namespace ChompGame.GameSystem
                 patternTablePoint.X = (byte)(patternTableTilePoint.X * Specs.TileWidth);
                 patternTablePoint.Y = (byte)(patternTableTilePoint.Y * Specs.TileHeight + row);
 
-                for (int col = 0; col < Specs.TileWidth; col++)
+                for (int col = 0; col < sprite.Width; col++)
                 {
-                    int adjCol = sprite.FlipX ? Specs.TileWidth - (col + 1) : col;
+                    int adjCol = sprite.FlipX ? sprite.Width - (col + 1) : col;
 
                     var pixel = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
                     if (pixel != 0)

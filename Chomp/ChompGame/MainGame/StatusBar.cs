@@ -43,7 +43,7 @@ namespace ChompGame.MainGame
             if (_tileModule.ScreenPoint.Y == 0)
             {
                 _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = 4;
+                _tileModule.TileStartY = 5;
 
                 var bgPalette = _coreGraphicsModule.GetPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
@@ -55,7 +55,7 @@ namespace ChompGame.MainGame
             if (_tileModule.ScreenPoint.Y == 4)
             {
                 _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = 5;
+                _tileModule.TileStartY = 6;
             }
         }
 

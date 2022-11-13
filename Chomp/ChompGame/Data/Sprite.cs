@@ -27,7 +27,7 @@ namespace ChompGame.Data
 
         public bool Visible
         {
-            get => _visible.Value;
+            get => Tile != 0 && _visible.Value;
             set => _visible.Value = value;
         }
 

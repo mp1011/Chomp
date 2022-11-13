@@ -104,7 +104,7 @@ namespace ChompGame.GameSystem
                 Sprite sprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
                 var palette = GetPalette(sprite.Palette);
 
-                for(int x = 0; x < Specs.TileWidth; x++)
+                for(int x = 0; x < sprite.Width; x++)
                 {
                     int scanlineColumn = ((sprite.X - _spritesModule.Scroll.X) + x).NMod(Specs.NameTablePixelWidth);
 

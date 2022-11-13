@@ -1,4 +1,6 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
 {
@@ -88,6 +90,21 @@ namespace ChompGame.MainGame
             }
 
             return newSpeed;
+        }
+
+        /// <summary>
+        /// Adjust target x and y speed such that object will move toward target
+        /// </summary>
+        /// <param name="destination"></param>
+        public void TargetTowards(WorldSprite source, WorldSprite destination, int speed)
+        {
+            var src = source.Bounds.Center;
+            var dest = destination.Bounds.Center;
+
+            Point targetAngle = src.GetVectorTo(dest, speed);
+
+            TargetXSpeed = targetAngle.X;
+            TargetYSpeed = targetAngle.Y;
         }
     }
 

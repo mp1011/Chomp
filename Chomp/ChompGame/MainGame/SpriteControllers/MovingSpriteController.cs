@@ -102,8 +102,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
-            Motion.TargetYSpeed = FallSpeed;
-            Motion.YAcceleration = GravityAccel;
+            if (FallSpeed != 0)
+            {
+                Motion.TargetYSpeed = FallSpeed;
+                Motion.YAcceleration = GravityAccel;
+            }
 
             var sprite = WorldSprite.GetSprite();
             Motion.Apply(WorldSprite);
@@ -136,7 +139,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 if(_spriteDefinition.AnimationStyle == AnimationStyle.AnimateLowerTileOnly)
                     sprite.Tile2Offset = sprite.Tile2Offset.Toggle(1,2);
                 else
-                    sprite.Tile = sprite.Tile.Toggle(_spriteDefinition.Tile, (byte)(_spriteDefinition.Tile + 1));
+                    sprite.Tile = sprite.Tile.Toggle(_spriteDefinition.Tile, (byte)(_spriteDefinition.Tile + sprite.SizeX));
             }
         }
 

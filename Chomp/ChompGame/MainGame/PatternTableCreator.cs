@@ -44,6 +44,13 @@ namespace ChompGame.MainGame
               new Rectangle(4, 0, 4, 1),
               specs);
 
+            //bird enemy
+            CopyPatternTableRegion(
+                masterPatternTableImage,
+                masterPatternTable,
+                new Rectangle(8, 0, 4, 1),
+                specs);
+
             //coin
             CopyPatternTableRegion(
               masterPatternTableImage,
