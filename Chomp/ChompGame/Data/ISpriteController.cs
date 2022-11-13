@@ -9,5 +9,7 @@ namespace ChompGame.Data
         Sprite GetSprite();
 
         WorldSprite WorldSprite { get; }
+
+        void ConfigureSprite(Sprite sprite);
     }
 }

@@ -35,7 +35,7 @@ namespace ChompGame.MainGame
         {
             _realScroll = memoryBuilder.AddByte();
             _autoScroll = memoryBuilder.AddByte();
-            _paletteCycleIndex = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)3, memoryBuilder.Memory);
+            _paletteCycleIndex = memoryBuilder.AddMaskedByte(Bit.Right2);
         }
 
         public void Update()

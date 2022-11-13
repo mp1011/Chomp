@@ -20,7 +20,6 @@ namespace ChompGame.GameSystem
         public abstract int ScanlineDrawPlanes { get; }
         public abstract Bit ScrollXMask { get; }
         public abstract Bit ScrollYMask { get; }
-        public virtual int BytesPerSprite => 4;
         public abstract int MaxSprites { get; }
         public abstract int SpritesPerScanline { get; }
 

@@ -86,6 +86,12 @@ namespace ChompGame.MainGame.SpriteControllers
         public void HandleCollision(WorldSprite player)
         {
         }
+
+        public void ConfigureSprite(Sprite sprite)
+        {
+            _walkingSpriteController.ConfigureSprite(sprite);
+            sprite.Palette = 2;
+        }
     }
 
 }

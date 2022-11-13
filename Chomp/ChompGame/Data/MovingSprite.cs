@@ -44,21 +44,6 @@ namespace ChompGame.Data
             }
         }
 
-        public int X
-        {
-            get => _spritesModule.GetSprite(_spriteIndex).X;
-            set => _spritesModule.GetSprite(_spriteIndex).X = value;
-        }
-
-        public int Y
-        {
-            get => _spritesModule.GetSprite(_spriteIndex).Y;
-            set => _spritesModule.GetSprite(_spriteIndex).Y = value;
-        }
-
-      
-
-
         public byte SpriteIndex
         {
             get => _spriteIndex.Value;

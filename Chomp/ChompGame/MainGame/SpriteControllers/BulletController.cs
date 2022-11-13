@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
-using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
@@ -87,6 +86,12 @@ namespace ChompGame.MainGame.SpriteControllers
             _movingSpriteController.Motion.YSpeed = 0;
             _movingSpriteController.Motion.TargetXSpeed = 0;
             _movingSpriteController.Motion.TargetYSpeed = 0;
+        }
+
+        public void ConfigureSprite(Sprite sprite)
+        {
+            _movingSpriteController.ConfigureSprite(sprite);
+            sprite.Palette = 3;
         }
     }
 }

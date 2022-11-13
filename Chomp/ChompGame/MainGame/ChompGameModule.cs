@@ -78,36 +78,36 @@ namespace ChompGame.MainGame
 
             memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
 
+            //player
             new SpriteDefinition(memoryBuilder,
-                spriteType: SpriteType.Player,
                 tile: 1,
                 secondTileOffset: 1,
-                palette: 1,
-                orientation: Orientation.Vertical,
+                sizeX: 1,
+                sizeY: 2,
                 gravityStrength: GravityStrength.Medium,
                 movementSpeed: MovementSpeed.Fast,
                 animationStyle: AnimationStyle.AnimateLowerTileOnly,
                 collidesWithBackground: true,
                 flipXWhenMovingLeft: true);
 
+            //lizard
             new SpriteDefinition(memoryBuilder,
-                spriteType: SpriteType.Lizard,
                 tile: 3,
                 secondTileOffset: 1,
-                palette: 2,
-                orientation: Orientation.Vertical,
+                sizeX:1,
+                sizeY:2,
                 gravityStrength: GravityStrength.High,
                 movementSpeed: MovementSpeed.Slow,
                 animationStyle: AnimationStyle.AnimateWhenMoving,
                 collidesWithBackground: true,
                 flipXWhenMovingLeft: true);
 
+            //lizard fireball
             new SpriteDefinition(memoryBuilder,
-                spriteType: SpriteType.LizardBullet,
                 tile: 5,
                 secondTileOffset: 0,
-                palette: 3,
-                orientation: Orientation.Vertical,
+                sizeX:1,
+                sizeY:1,
                 gravityStrength: GravityStrength.None,
                 movementSpeed: MovementSpeed.Fast,
                 animationStyle: AnimationStyle.NoAnimation,
@@ -120,25 +120,12 @@ namespace ChompGame.MainGame
             _lizardBulletControllers = new SpriteControllerPool<BulletController>(
                2,
                _spritesModule,
-               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet),
-               s =>
-               {
-                   s.Tile = 5;
-                   s.Tile2Offset = 0;
-                   s.Palette = 3;
-               });
+               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet));
 
             _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
                 2,
                 _spritesModule,
-                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder),
-                s => 
-                {
-                    s.Tile = 3;
-                    s.Orientation = Orientation.Vertical;
-                    s.Tile2Offset = 1;
-                    s.Palette = 2;
-                });
+                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder));
 
             _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
 
@@ -289,14 +276,14 @@ namespace ChompGame.MainGame
             bulletPallete.SetColor(2, ChompGameSpecs.Red3);
             bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
 
+            var playerSpriteDefinition = new SpriteDefinition(SpriteType.Player, GameSystem.Memory);
             var playerSprite = _spritesModule.GetSprite(0);
             playerSprite.X = 16;
             playerSprite.Y = 16;
-            playerSprite.Tile = 1;
-            playerSprite.Orientation = Orientation.Vertical;
-            playerSprite.Tile2Offset = 1;
             playerSprite.Palette = 1;
-
+            _playerController.ConfigureSprite(playerSprite);
+            
+           
             var lizard1 = _lizardEnemyControllers
                 .TryAddNew()
                 .GetSprite();

@@ -134,25 +134,25 @@ namespace ChompGame
             return RunGame(gameSystem);
         }
 
-        private static Game1 RunPlatformer()
-        {
-            var specs = new PlatformerSpecs();
+        //private static Game1 RunPlatformer()
+        //{
+        //    var specs = new PlatformerSpecs();
 
-            Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
-                (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
-                s => new BankAudioModule(s),
-                s => new SpritesModule(s),
-                s => new InputModule(s),
-                s => new TileModule(s),
-                s => new StatusBarModule(s, s.GetModule<TileModule>()),
-                s => new PlatformerModule(s, s.GetModule<InputModule>(),
-                                       s.GetModule<BankAudioModule>(),
-                                       s.GetModule<SpritesModule>(),
-                                       s.GetModule<TileModule>(),
-                                       s.GetModule<StatusBarModule>()));
+        //    Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
+        //        (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+        //        s => new BankAudioModule(s),
+        //        s => new SpritesModule(s),
+        //        s => new InputModule(s),
+        //        s => new TileModule(s),
+        //        s => new StatusBarModule(s, s.GetModule<TileModule>()),
+        //        s => new PlatformerModule(s, s.GetModule<InputModule>(),
+        //                               s.GetModule<BankAudioModule>(),
+        //                               s.GetModule<SpritesModule>(),
+        //                               s.GetModule<TileModule>(),
+        //                               s.GetModule<StatusBarModule>()));
 
-            return RunGame(gameSystem);
-        }
+        //    return RunGame(gameSystem);
+        //}
 
         private static Game1 RunChompGame()
         {

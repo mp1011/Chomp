@@ -250,9 +250,7 @@ namespace ChompGame.Data
             return Enumerable.Range(0, count)
                 .Select(p =>
                 {
-                    var addr = CurrentAddress;
-                    AddBytes(_specs.BytesPerSprite);
-                    return new Sprite(addr, Memory, _specs, spritesModule.Scroll);
+                    return new Sprite(this, _specs, spritesModule.Scroll);
                 })
                 .ToArray();
         }

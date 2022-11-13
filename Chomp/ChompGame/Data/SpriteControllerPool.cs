@@ -9,16 +9,13 @@ namespace ChompGame.Data
     {
         private readonly SpritesModule _spritesModule;
         private readonly T[] _items;
-        private readonly Action<Sprite> _configureSprite;
          
         public SpriteControllerPool(
             int size, 
             SpritesModule spritesModule,
-            Func<T> generateController,
-            Action<Sprite> configureSprite)
+            Func<T> generateController)
         {
             _spritesModule = spritesModule;
-            _configureSprite = configureSprite;
             _items = Enumerable.Range(0, size)
                 .Select(p => generateController())
                 .ToArray();
@@ -36,7 +33,7 @@ namespace ChompGame.Data
                     continue;
 
                 _items[i].SpriteIndex = freeSpriteIndex;
-                _configureSprite(_spritesModule.GetSprite(freeSpriteIndex));
+                _items[i].ConfigureSprite(_spritesModule.GetSprite(freeSpriteIndex));
                 return _items[i];
             }
 

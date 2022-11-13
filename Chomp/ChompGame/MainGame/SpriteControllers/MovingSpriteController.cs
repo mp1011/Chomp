@@ -139,5 +139,13 @@ namespace ChompGame.MainGame.SpriteControllers
                     sprite.Tile = sprite.Tile.Toggle(_spriteDefinition.Tile, (byte)(_spriteDefinition.Tile + 1));
             }
         }
+
+        public void ConfigureSprite(Sprite sprite)
+        {
+            sprite.Tile = _spriteDefinition.Tile;
+            sprite.Tile2Offset = _spriteDefinition.SecondTileOffset;
+            sprite.SizeX = _spriteDefinition.SizeX;
+            sprite.SizeY = _spriteDefinition.SizeY;
+        }
     }
 }

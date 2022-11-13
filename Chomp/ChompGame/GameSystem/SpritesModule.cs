@@ -24,14 +24,14 @@ namespace ChompGame.GameSystem
 
         public Sprite GetSprite(int index)
         {
-            return new Sprite(_sprite0Address + GameSystem.Specs.BytesPerSprite * index, GameSystem.Memory, Specs, Scroll);
+            return new Sprite(_sprite0Address + Sprite.ByteLength * index, GameSystem.Memory, Specs, Scroll);
         }
 
         public byte GetFreeSpriteIndex()
         {
             for(byte b = 0; b < Specs.MaxSprites; b++)
             {
-                if (!GetSprite(b).Visible)
+                if (GetSprite(b).Tile == 0)
                     return b;
             }
 

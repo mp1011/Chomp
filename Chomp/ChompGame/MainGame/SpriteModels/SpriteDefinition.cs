@@ -38,12 +38,12 @@ namespace ChompGame.MainGame.SpriteModels
     {
         public const int ByteLength = 3;
 
-        private GameEnum2<Orientation> _orientation;
-        private TwoBit _palette;
+        private GameBit _sizeX;
+        private GameBit _sizeY;
+
         private TwoBit _secondTileOffset;
 
         private MaskedByte _tile;
-        private GameByteEnum<SpriteType> _spriteType;
 
         private TwoBitEnum<GravityStrength> _gravityStrength;
         private TwoBitEnum<AnimationStyle> _animationStyle;
@@ -51,16 +51,8 @@ namespace ChompGame.MainGame.SpriteModels
         private GameBit _collidesWithBackground;
         private GameBit _flipXWhenMovingLeft;
 
-        public Orientation Orientation
-        {
-            get => _orientation.Value;
-            set => _orientation.Value = value;
-        }
-
-        public byte Palette
-        {
-            get => _palette.Value;
-        }
+        public int SizeX => _sizeX.Value ? 2 : 1;
+        public int SizeY => _sizeY.Value ? 2 : 1;
 
         public byte Tile
         {
@@ -72,11 +64,6 @@ namespace ChompGame.MainGame.SpriteModels
             get => _secondTileOffset.Value;
         }
 
-        public SpriteType SpriteType
-        {
-            get => _spriteType.Value;
-        }
-
         public bool FlipXWhenMovingLeft => _flipXWhenMovingLeft.Value;
 
         public bool CollidesWithBackground => _collidesWithBackground.Value;
@@ -86,23 +73,16 @@ namespace ChompGame.MainGame.SpriteModels
         public AnimationStyle AnimationStyle => _animationStyle.Value;
 
         public SpriteDefinition(SystemMemoryBuilder memoryBuilder,
-            SpriteType spriteType,
             byte tile,
             byte secondTileOffset,
-            byte palette,
-            Orientation orientation,
+            int sizeX,
+            int sizeY,
             GravityStrength gravityStrength,
             MovementSpeed movementSpeed,
             AnimationStyle animationStyle,
             bool collidesWithBackground,
             bool flipXWhenMovingLeft)
-        {
-            _spriteType = new GameByteEnum<SpriteType>(
-                memoryBuilder.AddMaskedByte(Bit.Right5));
-
-            _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress - 1, 5);
-            _orientation = new GameEnum2<Orientation>(memoryBuilder.CurrentAddress - 1, Bit.Bit7, memoryBuilder.Memory);
-
+        {   
             _tile = memoryBuilder.AddMaskedByte(Bit.Right6);
             _secondTileOffset = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress - 1, 6);
 
@@ -111,14 +91,19 @@ namespace ChompGame.MainGame.SpriteModels
             _animationStyle = new TwoBitEnum<AnimationStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
             _collidesWithBackground = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit6, memoryBuilder.Memory);
             _flipXWhenMovingLeft = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
-
             memoryBuilder.AddByte();
 
-            _spriteType.Value = spriteType;
+            _sizeX = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
+            _sizeY = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit1, memoryBuilder.Memory);
+            //6 bits left 
+            memoryBuilder.AddByte();
+
             _tile.Value = tile;
             _secondTileOffset.Value = secondTileOffset;
-            _palette.Value = palette;
-            _orientation.Value = orientation;
+
+            _sizeX.Value = (sizeX == 2);
+            _sizeY.Value = (sizeY == 2);
+
             _animationStyle.Value = animationStyle;
             _collidesWithBackground.Value = collidesWithBackground;
             _flipXWhenMovingLeft.Value = flipXWhenMovingLeft;
@@ -128,19 +113,17 @@ namespace ChompGame.MainGame.SpriteModels
 
         public SpriteDefinition(SystemMemory memory, int address)
         {
-            _spriteType = new GameByteEnum<SpriteType>(new MaskedByte(address, Bit.Right5, memory));
+            _tile = new MaskedByte(address, Bit.Right6, memory);
+            _secondTileOffset = new TwoBit(memory, address, 6);
 
-            _palette = new TwoBit(memory, address, 5);
-            _orientation = new GameEnum2<Orientation>(address, Bit.Bit7, memory);
+            _gravityStrength = new TwoBitEnum<GravityStrength>(memory, address + 1, 0);
+            _movementSpeed = new TwoBitEnum<MovementSpeed>(memory, address + 1, 2);
+            _animationStyle = new TwoBitEnum<AnimationStyle>(memory, address + 1, 4);
+            _collidesWithBackground = new GameBit(address + 1, Bit.Bit6, memory);
+            _flipXWhenMovingLeft = new GameBit(address + 1, Bit.Bit7, memory);
 
-            _tile = new MaskedByte(address + 1, Bit.Right6, memory);
-            _secondTileOffset = new TwoBit(memory, address + 1, 6);
-
-            _gravityStrength = new TwoBitEnum<GravityStrength>(memory, address + 2, 0);
-            _movementSpeed = new TwoBitEnum<MovementSpeed>(memory, address + 2, 2);
-            _animationStyle = new TwoBitEnum<AnimationStyle>(memory, address + 2, 4);
-            _collidesWithBackground = new GameBit(address + 2, Bit.Bit6, memory);
-            _flipXWhenMovingLeft = new GameBit(address + 2, Bit.Bit7, memory);
+            _sizeX = new GameBit(address + 2, Bit.Bit0, memory);
+            _sizeY = new GameBit(address + 2, Bit.Bit1, memory);
         }
 
         public SpriteDefinition(SpriteType spriteType, SystemMemory memory) :

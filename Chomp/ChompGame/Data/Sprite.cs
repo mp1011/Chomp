@@ -4,53 +4,89 @@ namespace ChompGame.Data
 {
     public class Sprite
     {
+        public const int ByteLength = 4;
         public int Address { get; }
 
         private readonly Specs _specs;
-        private readonly ExtendedByte _xPos;
-        private readonly ExtendedByte _yPos;
-
-        private readonly MaskedByte _tile;
+        private readonly MaskedByte _xPos;
         private readonly GameBit _flipX;
+
+        private readonly MaskedByte _yPos;
         private readonly GameBit _flipY;
 
-        private readonly MaskedByte _secondTileOffset;
+        private readonly MaskedByte _tile;
+        private readonly TwoBit _secondTileOffset;
+
         private readonly MaskedByte _palette;
-        private readonly GameEnum2<Orientation> _orientation;
+        private readonly GameBit _sizeX;
+        private readonly GameBit _sizeY;
         private readonly GameBit _priority;
+        private readonly GameBit _visible;
 
         private readonly GameByteGridPoint _screenScroll;
 
-        public Orientation Orientation
+        public bool Visible
         {
-            get => _orientation.Value;
-            set => _orientation.Value = value;
+            get => _visible.Value;
+            set => _visible.Value = value;
         }
 
-        public bool Visible => Tile != 0;
+        public Sprite(SystemMemoryBuilder memoryBuilder, Specs specs, GameByteGridPoint screenScroll)
+        {
+            Address = memoryBuilder.CurrentAddress;
+            _screenScroll = screenScroll;
+            _specs = specs;
+
+            _xPos = memoryBuilder.AddMaskedByte(Bit.Right7);
+            _flipX = new GameBit(_xPos.Address, Bit.Bit7, memoryBuilder.Memory);
+
+            _yPos = memoryBuilder.AddMaskedByte(Bit.Right7);            
+            _flipY = new GameBit(_yPos.Address, Bit.Bit7, memoryBuilder.Memory);
+
+            _tile = memoryBuilder.AddMaskedByte(Bit.Right6);
+            _secondTileOffset = _secondTileOffset = new TwoBit(memoryBuilder.Memory, _tile.Address, 6);
+
+            _palette = memoryBuilder.AddMaskedByte(Bit.Right2);
+            _sizeX = new GameBit(_palette.Address, Bit.Bit2, memoryBuilder.Memory);
+            _sizeY = new GameBit(_palette.Address, Bit.Bit3, memoryBuilder.Memory);
+            _priority = new GameBit(_palette.Address, Bit.Bit4, memoryBuilder.Memory);
+            _visible = new GameBit(_palette.Address, Bit.Bit5, memoryBuilder.Memory);
+
+            _visible.Value = true;
+        }
 
         public Sprite(int address, SystemMemory memory, Specs specs, GameByteGridPoint screenScroll)
         {
-            _screenScroll = screenScroll;
-
             Address = address;
+            _screenScroll = screenScroll;
             _specs = specs;
 
-            var x = new MaskedByte(address, (Bit)(specs.NameTablePixelWidth/2-1), memory);
-            var y = new MaskedByte(address+1, (Bit)(specs.NameTablePixelHeight / 2 - 1), memory);
+            _xPos = new MaskedByte(address, Bit.Right7, memory);
+            _flipX = new GameBit(_xPos.Address, Bit.Bit7, memory);
+
+            _yPos = new MaskedByte(address + 1, Bit.Right7, memory);
+            _flipY = new GameBit(_yPos.Address, Bit.Bit7, memory);
+
             _tile = new MaskedByte(address + 2, Bit.Right6, memory);
-            _flipX = new GameBit(address + 2, Bit.Bit6, memory);
-            _flipY = new GameBit(address + 2, Bit.Bit7, memory);
+            _secondTileOffset = new TwoBit(memory, _tile.Address, 6);
 
-            _secondTileOffset = new MaskedByte(address + 3, Bit.Right2, memory);
-            _palette = new MaskedByte(address + 3, (Bit)12, memory);
-            _orientation = new GameEnum2<Orientation>(address + 3, Bit.Bit4, memory);
-            _priority = new GameBit(address + 3, Bit.Bit5, memory);
-            var screenX = new GameBit(address + 3, Bit.Bit6, memory);
-            var screenY = new GameBit(address + 3, Bit.Bit7, memory);
+            _palette = new MaskedByte(address + 3, Bit.Right2, memory);
+            _sizeX = new GameBit(_palette.Address, Bit.Bit2, memory);
+            _sizeY = new GameBit(_palette.Address, Bit.Bit3, memory);
+            _priority = new GameBit(_palette.Address, Bit.Bit4, memory);
+            _visible = new GameBit(_palette.Address, Bit.Bit5, memory);
+        }
 
-            _xPos = new ExtendedByte(x, screenX, specs.ScreenWidth);
-            _yPos = new ExtendedByte(y, screenY, specs.ScreenHeight);
+        public int SizeX
+        {
+            get => _sizeX.Value ? 2 : 1;
+            set => _sizeX.Value = (value == 2);
+        }
+
+        public int SizeY
+        {
+            get => _sizeY.Value ? 2 : 1;
+            set => _sizeY.Value = (value == 2);
         }
 
         public bool FlipX
@@ -71,50 +107,21 @@ namespace ChompGame.Data
             return scanLine >= Y && scanLine < Bottom;
         }
 
-        public int X
+        public byte X
         {
-            get
-            {
-                return _xPos.Value;
-            }
+            get => _xPos.Value;
             set => _xPos.Value = value;
         }
 
-        public int Y
+        public byte Y
         {
-            get
-            {
-                var y = _yPos.Value;
-
-                if (y > _specs.ScreenHeight && _screenScroll.Y < _specs.ScreenHeight)
-                    y -= (_specs.ScreenHeight * 2);
-
-                return y;
-            }
+            get => _yPos.Value;
             set => _yPos.Value = value;
         }
 
-        public byte Width
-        {
-            get
-            {
-                if (Tile2Offset != 0 && Orientation == Orientation.Horizontal)
-                    return (byte)(_specs.TileWidth * 2);
-                else
-                    return (byte)(_specs.TileWidth);
-            }
-        }
+        public byte Width => (byte)(SizeX * _specs.TileWidth);
 
-        public byte Height
-        {
-            get
-            {
-                if (Tile2Offset != 0 && Orientation == Orientation.Vertical)
-                    return (byte)(_specs.TileHeight * 2);
-                else
-                    return (byte)(_specs.TileHeight);
-            }
-        }
+        public byte Height => (byte)(SizeY * _specs.TileHeight);
 
         public int Right => X + Width;
         public int Bottom => Y + Height;
@@ -133,8 +140,8 @@ namespace ChompGame.Data
 
         public byte Palette
         {
-            get => (byte)(_palette.Value >> 2);
-            set => _palette.Value = (byte)(value << 2);
+            get => _palette.Value;
+            set => _palette.Value = value;
         }
 
     }

@@ -31,7 +31,7 @@ namespace ChompGame.MainGame
                 var sprite = GetSprite();
 
                 WorldBlock.X = (byte)(value / _specs.NameTablePixelWidth);
-                sprite.X = value % _specs.NameTablePixelWidth;
+                sprite.X = (byte)(value % _specs.NameTablePixelWidth);
             }
         }
         public int Y
@@ -46,7 +46,7 @@ namespace ChompGame.MainGame
                 var sprite = GetSprite();
 
                 WorldBlock.Y = (byte)(value / _specs.NameTablePixelHeight);
-                sprite.Y = value % _specs.NameTablePixelHeight;
+                sprite.Y = (byte)(value % _specs.NameTablePixelHeight);
             }
         }
 

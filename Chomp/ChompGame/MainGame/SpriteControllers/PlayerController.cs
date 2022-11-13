@@ -6,7 +6,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class PlayerController
+    class PlayerController : ISpriteController
     {
         private const byte _recoilSpeed = 30;
         private readonly StatusBar _statusBar;
@@ -20,6 +20,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public WorldSprite WorldSprite => _walkingSpriteController.WorldSprite;
         public AcceleratedMotion Motion => _walkingSpriteController.Motion;
+
+        public byte SpriteIndex { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public PlayerController(
             SpritesModule spritesModule, 
@@ -56,13 +58,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 var sprite = WorldSprite.GetSprite();
                 if (_hitTimer.Value == 0)
                 {
-                    sprite.Palette = _spriteDefinition.Palette;
+                    sprite.Visible = true;
                 }
                 else if((_levelTimer.Value % 4) == 0)
                 {
-                    sprite.Palette = sprite
-                        .Palette
-                        .Toggle(3, _spriteDefinition.Palette);
+                    sprite.Visible = !sprite.Visible;
                 }
             }
 
@@ -125,5 +125,13 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             });
         }
+
+        public Sprite GetSprite() => throw new System.NotImplementedException();
+        public void ConfigureSprite(Sprite sprite)
+        {
+            _walkingSpriteController.ConfigureSprite(sprite);
+            sprite.Palette = 1;
+        }
+
     }
 }

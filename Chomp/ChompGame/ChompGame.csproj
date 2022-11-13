@@ -11,6 +11,9 @@
     <StartupObject>ChompGame.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="GameSystem\PlatformerModule.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
