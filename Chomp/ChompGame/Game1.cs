@@ -157,6 +157,24 @@ namespace ChompGame
             if (_totalDrawFrames > 0)
                 _spriteBatch.DrawString(_font, $"Avg DrawMs = {_totalDrawMS / _totalDrawFrames}", new Vector2(0, y + 16), Color.White);
 
+
+            var memString = _gameSystem.Memory.ToString();
+
+            y += 24;
+
+            int index = 0;
+            int lineSize = Window.ClientBounds.Width > 1900 ? 50 : 21;
+            while (index < memString.Length)
+            {
+                string line = index + lineSize < memString.Length
+                    ? memString.Substring(index, lineSize)
+                    : memString.Substring(index);
+
+                _spriteBatch.DrawString(_font, line, new Vector2(0, y), Color.Green);
+                y += 8;
+                index += line.Length;
+            }
+            
             _spriteBatch.End();
         }
     }

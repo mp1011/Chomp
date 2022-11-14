@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
@@ -13,6 +14,11 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
+
+        private GameBit _bombPickup;
+        private MaskedByte _hurtTimer;
+
+        public bool IsHoldingBomb => _bombPickup.Value;
 
         public PlayerController(
             SpritesModule spritesModule, 
@@ -30,22 +36,29 @@ namespace ChompGame.MainGame.SpriteControllers
             _inputModule = inputModule;
             _collisionDetector = collisionDetector;
 
+            _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
+            _hurtTimer = new MaskedByte(_state.Address, Bit.Right4, memoryBuilder.Memory);
+
             SpriteIndex = 0;
         }
 
         public void Update()
         {
-            if(_state.Value > 0)
+            if(_hurtTimer.Value > 0)
             {
                 var sprite = WorldSprite.GetSprite();               
                 
-                if((_levelTimer.Value % 4) == 0)
+                if(_levelTimer.IsMod(4))
                 {
                     sprite.Visible = !sprite.Visible;
-                    _state.Value--;
                 }
 
-                if (_state.Value == 0)
+                if (_levelTimer.IsMod(8))
+                {
+                    _hurtTimer.Value--;
+                }
+
+                if (_hurtTimer.Value == 0)
                 {
                     sprite.Visible = true;
                 }
@@ -72,16 +85,38 @@ namespace ChompGame.MainGame.SpriteControllers
                 Motion.XAcceleration = _movingSpriteController.BrakeAccel;
             }
 
-            if(_inputModule.Player1.BKey == GameKeyState.Pressed)
-            {
-                _audioService.PlaySound(ChompAudioService.Sound.Test);
-            }
-
             if (collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
                 Motion.YSpeed = -_movingSpriteController.JumpSpeed;
             }
+        }
+
+        public void CheckBombPickup(SpriteControllerPool<BombController> bombs)
+        {
+            if (IsHoldingBomb)
+                return;
+
+            if (_inputModule.Player1.BKey != GameKeyState.Pressed)
+                return;
+
+            bombs.Execute(p =>
+            {
+                if (p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
+                {
+                    _bombPickup.Value = true;
+                    p.SetPickup();
+                }
+            });
+        }
+
+        public void CheckBombThrow(BombController bombController)
+        {
+            if (_inputModule.Player1.BKey != GameKeyState.Pressed)
+                return;
+
+            _bombPickup.Value = false;
+            bombController.DoThrow();
         }
 
         public void CheckEnemyOrBulletCollisions<T>(SpriteControllerPool<T> sprites)
@@ -94,7 +129,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
-                    _state.Value = 60;
+                    _hurtTimer.Value = 15;
                     p.HandleCollision(WorldSprite);
 
                     if(WorldSprite.FlipX)

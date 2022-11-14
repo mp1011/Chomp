@@ -237,6 +237,11 @@ namespace ChompGame.GameSystem
             SystemColors[Red1] = new Color(99, 0, 0);
             SystemColors[Red2] = new Color(207, 57, 57);
             SystemColors[Red3] = new Color(255, 57, 57);
+
+            SystemColors[Gray1] = new Color(57, 66, 99);
+            SystemColors[Gray2] = new Color(132, 141, 150);
+            SystemColors[Gray3] = new Color(150, 180, 180);
+
         }
 
         public const int Black = 0;
@@ -261,6 +266,10 @@ namespace ChompGame.GameSystem
         public const int Red1 = 14;
         public const int Red2 = 15;
         public const int Red3 = 16;
+
+        public const int Gray1 = 17;
+        public const int Gray2 = 18;
+        public const int Gray3 = 19;
 
 
 

@@ -43,6 +43,12 @@ namespace ChompGame.Data
                 destinationIndex: destinationStart,
                 length: length);
         }
+
+        public override string ToString()
+        {
+            return string.Join("",
+                _memory.Select(i => i.ToString("X2")).ToArray());
+        }
     }
 
     public class DynamicMemoryBlock : MemoryBlock
@@ -108,6 +114,8 @@ namespace ChompGame.Data
         }
 
         public int GetAddress(AddressLabels label) => _addressLabels[label];
+
+        public override string ToString() => _memory.ToString();
     }
 
     public class SystemMemoryBuilder
