@@ -106,6 +106,14 @@ namespace ChompGame.MainGame
             TargetXSpeed = targetAngle.X;
             TargetYSpeed = targetAngle.Y;
         }
+
+        public void Stop()
+        {
+            XSpeed = 0;
+            YSpeed = 0;
+            TargetXSpeed = 0;
+            TargetYSpeed = 0;
+        }
     }
 
 }

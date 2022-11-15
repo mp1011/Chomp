@@ -16,7 +16,6 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly InputModule _inputModule;
 
         private GameBit _bombPickup;
-        private MaskedByte _hurtTimer;
 
         public bool IsHoldingBomb => _bombPickup.Value;
 
@@ -28,7 +27,7 @@ namespace ChompGame.MainGame.SpriteControllers
             CollisionDetector collisionDetector,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Player, spritesModule, memoryBuilder, levelTimer)
+            : base(SpriteType.Player, spritesModule, memoryBuilder, levelTimer, Bit.Right4)
         {
             _statusBar = statusBar;
             _audioService = audioService;
@@ -37,14 +36,13 @@ namespace ChompGame.MainGame.SpriteControllers
             _collisionDetector = collisionDetector;
 
             _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
-            _hurtTimer = new MaskedByte(_state.Address, Bit.Right4, memoryBuilder.Memory);
 
             SpriteIndex = 0;
         }
 
         public void Update()
         {
-            if(_hurtTimer.Value > 0)
+            if(_state.Value > 0)
             {
                 var sprite = WorldSprite.GetSprite();               
                 
@@ -55,10 +53,10 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if (_levelTimer.IsMod(8))
                 {
-                    _hurtTimer.Value--;
+                    _state.Value--;
                 }
 
-                if (_hurtTimer.Value == 0)
+                if (_state.Value == 0)
                 {
                     sprite.Visible = true;
                 }
@@ -129,8 +127,8 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
-                    _hurtTimer.Value = 15;
-                    p.HandleCollision(WorldSprite);
+                    _state.Value = 15;
+                    p.HandlePlayerCollision(WorldSprite);
 
                     if(WorldSprite.FlipX)
                         Motion.XSpeed = _recoilSpeed;

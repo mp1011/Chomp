@@ -9,7 +9,8 @@ namespace ChompGame.MainGame
             PlayerDie=1,
             PlayerHit=2,
             Jump=3,
-            Test=4
+            Test=4,
+            Noise=5
         }
 
         private readonly BankAudioModule _audioModule;
@@ -54,6 +55,16 @@ namespace ChompGame.MainGame
             _audioModule.NoteSequence[26] = Audio.AudioAction.PlayD;
             _audioModule.NoteSequence[27] = Audio.AudioAction.PlayD;
 
+            _audioModule.NoteSequence[28] = Audio.AudioAction.AddNoise;
+            _audioModule.NoteSequence[29] = Audio.AudioAction.OctaveUp;
+            _audioModule.NoteSequence[30] = Audio.AudioAction.PlayGSharp;
+            _audioModule.NoteSequence[31] = Audio.AudioAction.PlayG;
+            _audioModule.NoteSequence[32] = Audio.AudioAction.PlayFSharp;
+            _audioModule.NoteSequence[33] = Audio.AudioAction.PlayG;
+            _audioModule.NoteSequence[34] = Audio.AudioAction.PlayFSharp;
+            _audioModule.NoteSequence[35] = Audio.AudioAction.PlayF;
+
+
             _audioModule
                 .GetSound(0)
                 .Set(5, 32, 6);
@@ -71,8 +82,13 @@ namespace ChompGame.MainGame
                .GetSound(3)
                .Set(18, 64, 1);
 
+            //noise
             _audioModule
                 .GetSound(4)
+                .Set(28, 4, 8);
+
+            _audioModule
+                .GetSound(5)
                 .Set(0, 0, 0);
 
             _audioModule.PrepareSounds();
@@ -98,6 +114,9 @@ namespace ChompGame.MainGame
                     break;
                 case Sound.Test:
                      _audioModule.GetChannel(0).Play(3);
+                    break;
+                case Sound.Noise:
+                    _audioModule.GetChannel(0).Play(4);
                     break;
             }
         }

@@ -53,7 +53,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        public void HandleCollision(WorldSprite player)
+        public void HandlePlayerCollision(WorldSprite player)
         {
             if (_state.Value >= 40)
                 return;

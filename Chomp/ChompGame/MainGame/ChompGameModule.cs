@@ -175,12 +175,12 @@ namespace ChompGame.MainGame
             _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
                 2,
                 _spritesModule,
-                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _collisionDetector, _timer, memoryBuilder));
+                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _audioService, _collisionDetector, _timer, memoryBuilder));
 
             _birdEnemyControllers = new SpriteControllerPool<BirdEnemyController>(
                1,
                _spritesModule,
-               () => new BirdEnemyController(_playerController.WorldSprite, _spritesModule, _timer, memoryBuilder));
+               () => new BirdEnemyController(_playerController.WorldSprite, _spritesModule, _audioService, _timer, memoryBuilder));
 
             _bombControllers = new SpriteControllerPool<BombController>(
                 size: 2,
@@ -281,28 +281,33 @@ namespace ChompGame.MainGame
             lizard1.Y = 40;
             lizard1.Palette = 2;
 
-            //var lizard2 = _lizardEnemyControllers
-            //    .TryAddNew()
-            //    .GetSprite();
-            //lizard2.X = 64;
-            //lizard2.Y = 40;
-            //lizard2.Palette = 1;
+            var lizard2 = _lizardEnemyControllers
+                .TryAddNew()
+                .GetSprite();
+            lizard2.X = 64;
+            lizard2.Y = 40;
+            lizard2.Palette = 1;
 
-            //var bird = _birdEnemyControllers
-            //    .TryAddNew()
-            //    .GetSprite();
-            //bird.X = 32;
-            //bird.Y = 32;
-            //bird.Palette = 2;
+            var bird = _birdEnemyControllers
+                .TryAddNew()
+                .GetSprite();
+            bird.X = 32;
+            bird.Y = 32;
+            bird.Palette = 2;
 
             var bomb = _bombControllers
                 .TryAddNew()
                 .GetSprite();
-
             bomb.X = 32;
             bomb.Y = 16;
             bomb.Palette = 0;
 
+            var bomb2 = _bombControllers
+              .TryAddNew()
+              .GetSprite();
+            bomb2.X = 50;
+            bomb2.Y = 16;
+            bomb2.Palette = 0;
 
             _lizardBulletControllers.Execute(b => b.Palette = 3, 
                 skipIfInactive:false);
@@ -351,6 +356,12 @@ namespace ChompGame.MainGame
             _playerController.CheckEnemyOrBulletCollisions(_lizardEnemyControllers);
             _playerController.CheckEnemyOrBulletCollisions(_birdEnemyControllers);
             _playerController.CheckBombPickup(_bombControllers);
+
+            _bombControllers.Execute(b =>
+            {
+                b.CheckEnemyCollisions(_lizardEnemyControllers);
+                b.CheckEnemyCollisions(_birdEnemyControllers);
+            });
 
             if (_timer.Value % 8 == 0)
             {

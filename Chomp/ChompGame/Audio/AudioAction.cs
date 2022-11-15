@@ -16,7 +16,7 @@
         PlayGSharp = 11,
         OctaveUp = 12,
         OctaveDown = 13,
-        Unused = 14, //maybe switch between square and saw?
+        AddNoise = 14, 
         Rest= 15
     }
 }

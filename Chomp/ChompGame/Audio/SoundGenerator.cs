@@ -10,6 +10,7 @@ namespace ChompGame.Audio
     static class SoundGenerator
     {
         private const int SampleRate = 44100;
+        private static Random _rng = new Random();
 
         public static SoundEffect Generate(Func<int, short> generator, double seconds)
         {
@@ -41,6 +42,7 @@ namespace ChompGame.Audio
         public static SoundEffect Generate(SoundHeader soundHeader, NoteSequence noteSequence)
         {
             byte octave = 0;
+            double noise = 0.0;
             byte sequenceIndex = soundHeader.SequenceStart;
 
             List<short> soundData = new List<short>();
@@ -60,11 +62,12 @@ namespace ChompGame.Audio
                     case AudioAction.Rest:
                         AddRest(soundData, soundHeader.NoteDuration);
                         break;
-                    case AudioAction.Unused:
+                    case AudioAction.AddNoise:
+                        noise += 0.25;
                         break;
                     default:
                         MusicNote note = (MusicNote)audioAction;
-                        AddNote(soundData, note, octave, soundHeader.NoteDuration);
+                        AddNote(soundData, note, octave, soundHeader.NoteDuration, noise);
                         break;
                 }
 
@@ -83,8 +86,20 @@ namespace ChompGame.Audio
                 soundData.Add(0);
             }
         }
+        private static void AddNoise(List<short> soundData, byte duration)
+        {
+            double seconds = duration * 0.01;
+            double volume = 30000;
 
-        private static void AddNote(List<short> soundData, MusicNote note, byte octave, byte duration)
+            Random r = new Random();
+
+            for (int i = 0; i < seconds * SampleRate; i++)
+            {
+                soundData.Add((short)(volume * r.NextDouble()));
+            }
+        }
+
+        private static void AddNote(List<short> soundData, MusicNote note, byte octave, byte duration, double noise)
         {
             double seconds = duration * 0.01;
 
@@ -93,7 +108,11 @@ namespace ChompGame.Audio
 
             for(int i = 0; i < seconds * SampleRate; i++)
             {
-                soundData.Add((short)(volume * Math.Sin(i * theta)));
+                double value = Math.Sin(i * theta);
+                if(noise > 0)
+                    value += _rng.NextDouble() * noise;
+
+                soundData.Add((short)(volume * value));
             }
 
             int ix = (int)(seconds * SampleRate) - 1;

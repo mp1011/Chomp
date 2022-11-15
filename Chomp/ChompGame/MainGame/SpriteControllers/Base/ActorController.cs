@@ -21,9 +21,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             SpriteType spriteType,
             SpritesModule spritesModule,
             SystemMemoryBuilder memoryBuilder,
-            GameByte levelTimer)
+            GameByte levelTimer,
+            Bit stateMask = Bit.Right6)
         {
-            _state = memoryBuilder.AddMaskedByte(Bit.Right6);
+            _state = memoryBuilder.AddMaskedByte(stateMask);
             _palette = new TwoBit(memoryBuilder.Memory, _state.Address, 6);
 
             _movingSpriteController = new MovingSpriteController(
@@ -56,6 +57,12 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected virtual void OnSpriteCreated(Sprite sprite)
         {
 
+        }
+
+        public void Destroy()
+        {
+            GetSprite().Tile = 0;
+            SpriteIndex = 255;
         }
 
         public Sprite GetSprite() => _movingSpriteController.GetSprite();

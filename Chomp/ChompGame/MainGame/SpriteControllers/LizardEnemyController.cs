@@ -7,31 +7,32 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class LizardEnemyController : ActorController, ICollidesWithPlayer
+    class LizardEnemyController : EnemyController
     {
         private readonly CollisionDetector _collisionDetector;
         private readonly SpriteControllerPool<BulletController> _lizardBulletControllers;
-    
+
         public LizardEnemyController(
             SpriteControllerPool<BulletController> lizardBulletControllers,
             SpritesModule spritesModule,
+            ChompAudioService audioService,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder)
-            : base(SpriteType.Lizard, spritesModule, memoryBuilder, levelTimer)
+            : base(SpriteType.Lizard, spritesModule, audioService, memoryBuilder, levelTimer)
         {
             _lizardBulletControllers = lizardBulletControllers;
-            _collisionDetector = collisionDetector; 
+            _collisionDetector = collisionDetector;
         }
 
-        public void Update()
+        protected override void UpdateBehavior()
         {
             _movingSpriteController.Update();
             _collisionDetector.DetectCollisions(_movingSpriteController.WorldSprite, 14); //todo, hard-coding
 
             if ((_levelTimer % 128) == SpriteIndex)
             {
-                if(Motion.TargetXSpeed < 0)
+                if (Motion.TargetXSpeed < 0)
                 {
                     Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
                     Motion.XSpeed = _movingSpriteController.WalkSpeed;
@@ -46,11 +47,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_levelTimer.IsMod(16))
                 _state.Value++;
 
-            if(_state.Value == 16 + SpriteIndex)
+            if (_state.Value == 16 + SpriteIndex)
             {
                 _state.Value = 0;
                 var fireball = _lizardBulletControllers.TryAddNew();
-                if(fireball != null)
+                if (fireball != null)
                 {
                     var thisSprite = _movingSpriteController.WorldSprite;
                     fireball.WorldSprite.X = thisSprite.X;
@@ -59,12 +60,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
 
-          
+
         }
 
-        public void HandleCollision(WorldSprite player)
-        {
-        }
+      
     }
-
 }

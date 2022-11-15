@@ -5,7 +5,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class BirdEnemyController : ActorController, ICollidesWithPlayer
+    class BirdEnemyController : EnemyController
     {
         private const int _hoverSpeed = 20;
         private readonly WorldSprite _player;
@@ -13,19 +13,21 @@ namespace ChompGame.MainGame.SpriteControllers
         public BirdEnemyController(
             WorldSprite player,
             SpritesModule spritesModule,
+            ChompAudioService chompAudioService,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Bird,
                    spritesModule,
+                   chompAudioService,
                    memoryBuilder, 
                    levelTimer)
         {
             _player = player;
         }
 
-        public void Update()
-        {
-            _movingSpriteController.Update();
+        protected override void UpdateBehavior() 
+        { 
+           _movingSpriteController.Update();
 
             if((_levelTimer % 32) == 0)
             {
@@ -56,10 +58,6 @@ namespace ChompGame.MainGame.SpriteControllers
                     }
                 }
             }
-        }
-
-        public void HandleCollision(WorldSprite player)
-        {
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
