@@ -22,6 +22,8 @@ namespace ChompGame.Data
                     return new TwoBitPlane(address, memory, width, height);
                 case 4:
                     return new FourBitPlane(address, memory, width, height);
+                case 8:
+                    return new BytePlane(address, memory, width, height);
                 default:
                     throw new Exception("Invalid plane count");
             }
@@ -94,7 +96,7 @@ namespace ChompGame.Data
 
         public void CopyTilesTo(
             NBitPlane destination, 
-            ByteRectangle source, 
+            ByteRectangleBase source, 
             Point destinationPoint, 
             Specs specs,
             SystemMemory memory)
@@ -159,4 +161,11 @@ namespace ChompGame.Data
         }
     }
 
+    public class BytePlane : NBitPlane
+    {
+        public BytePlane(int address, SystemMemory memory, int width, int height) 
+            : base(address, memory, 8, width, height)
+        {
+        }
+    }
 }

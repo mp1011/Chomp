@@ -18,6 +18,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
+            if (DestroyIfOutOfBounds())
+                return;
+
             var sprite = GetSprite();
 
             if (_state.Value == 0)

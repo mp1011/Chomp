@@ -26,6 +26,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void Update()
         {
+            if (DestroyIfOutOfBounds())
+                return;
+
             if (_state.Value >= (int)State.Dying)
             {
                  _state.Value++;

@@ -35,7 +35,7 @@ namespace ChompGame.Data
             }
         }
 
-        public ByteRectangle Bounds
+        public ByteRectangleBase Bounds
         {
             get
             {

@@ -65,7 +65,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _movingSpriteController.Update();
             _inputModule.OnLogicUpdate();
 
-            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, 14); //todo, hard-coding
+            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
 
             if (_inputModule.Player1.RightKey.IsDown())
             {

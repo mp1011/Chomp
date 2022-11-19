@@ -28,7 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void UpdateBehavior()
         {
             _movingSpriteController.Update();
-            _collisionDetector.DetectCollisions(_movingSpriteController.WorldSprite, 14); //todo, hard-coding
+            _collisionDetector.DetectCollisions(_movingSpriteController.WorldSprite); 
 
             if ((_levelTimer % 128) == SpriteIndex)
             {

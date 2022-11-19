@@ -111,9 +111,9 @@ namespace ChompGame.GameSystem
                     int scanlineColumn = ((sprite.X - _spritesModule.Scroll.X) + x).NMod(Specs.NameTablePixelWidth);
 
                     if (_spritesModule.ScanlineSpritePixelPriority.Get(scanlineSpriteIndex, x))
-                    {
+                    {                        
                         var color = palette[ScanlineDrawBuffer[scanlineColumn]];
-                        _screenData[columnStart + scanlineColumn] = color;
+                        _screenData[columnStart + scanlineColumn] = color;                        
                     }
                 }
                 

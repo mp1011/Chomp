@@ -42,7 +42,7 @@ namespace ChompGame.MainGame
         {
             switch(_currentLevel.Value)
             {
-                case 0:
+                case 1:
 
                     if ((_levelTimer.Value % 16) == 0)
                     {
@@ -71,7 +71,39 @@ namespace ChompGame.MainGame
             }
         }
 
+        //todo, need more standard way to handle interupts for status bar
+
         private void OnHBlank_Stage0()
+        {
+            if (_tileModule.ScreenPoint.Y == 0)
+            {
+                _realScroll.Value = _tileModule.Scroll.X;
+            }
+
+            if (_tileModule.ScreenPoint.Y < 8)
+            {
+                _tileModule.Scroll.X = 0;
+            }
+            else if(_tileModule.ScreenPoint.Y == 8)
+            { 
+                _tileModule.Scroll.X = _realScroll.Value;
+            }
+
+            if (_tileModule.ScreenPoint.Y == 8)
+            {
+                _tileModule.TileStartX = 0;
+                _tileModule.TileStartY = 0;
+
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
+                bgPalette.SetColor(1, ChompGameSpecs.Gray3);
+                bgPalette.SetColor(2, ChompGameSpecs.Gray2);
+                bgPalette.SetColor(3, ChompGameSpecs.Gray1);
+            }       
+        }
+
+
+        private void OnHBlank_Stage1()
         {
             if (_tileModule.ScreenPoint.Y == 0)
             {

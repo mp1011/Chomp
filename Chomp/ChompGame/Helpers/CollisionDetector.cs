@@ -30,8 +30,9 @@ namespace ChompGame.Helpers
             return s1.Bounds.Intersects(s2.Bounds);
         }
 
-        public CollisionInfo DetectCollisions(WorldSprite actor, int solidTileBeginIndex)
+        public CollisionInfo DetectCollisions(WorldSprite actor)
         {
+            int solidTileBeginIndex = 8;
             var collisionInfo = new CollisionInfo();
 
             var topLeftTile = actor.TopLeft

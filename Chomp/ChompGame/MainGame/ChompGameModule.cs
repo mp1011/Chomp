@@ -36,6 +36,7 @@ namespace ChompGame.MainGame
         private readonly MusicModule _musicModule;
         private readonly StatusBar _statusBar;
         private NBitPlane _masterPatternTable;
+        private LevelNameTableBuilder _levelNameTableBuilder;
        
         private GameByteEnum<GameState> _gameState;
         private GameByte _timer;
@@ -199,10 +200,6 @@ namespace ChompGame.MainGame
                 .Load(new DiskFile(ContentFolder.PatternTables, "master.pt"),
                     _masterPatternTable);
 
-            new DiskNBitPlaneLoader()
-                .Load(new DiskFile(ContentFolder.NameTables, "testScene.nt"),
-                    _tileModule.NameTable);
-           
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
@@ -233,6 +230,8 @@ namespace ChompGame.MainGame
             SceneDefinition testScene = new SceneDefinition(
                GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
 
+            _levelNameTableBuilder = new LevelNameTableBuilder(_tileModule.NameTable, testScene);
+
             PatternTableCreator.CreateVRAMPatternTable(
                 testScene,
                 _masterPatternTable,
@@ -243,6 +242,14 @@ namespace ChompGame.MainGame
             PatternTableExporter.ExportPatternTable(
                 GameSystem.GraphicsDevice, 
                 GameSystem.CoreGraphicsModule.PatternTable);
+
+            //todo, define level palettes elsewhere
+
+            var bgPalette = GameSystem.CoreGraphicsModule.GetBackgroundPalette();
+            bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
+            bgPalette.SetColor(1, ChompGameSpecs.Gray1);
+            bgPalette.SetColor(2, ChompGameSpecs.Gray2);
+            bgPalette.SetColor(3, ChompGameSpecs.Gray3);
 
             var bombPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(0);
             bombPalette.SetColor(1, ChompGameSpecs.Black); 
@@ -281,12 +288,12 @@ namespace ChompGame.MainGame
             lizard1.Y = 40;
             lizard1.Palette = 2;
 
-            var lizard2 = _lizardEnemyControllers
-                .TryAddNew()
-                .GetSprite();
-            lizard2.X = 64;
-            lizard2.Y = 40;
-            lizard2.Palette = 1;
+            //var lizard2 = _lizardEnemyControllers
+            //    .TryAddNew()
+            //    .GetSprite();
+            //lizard2.X = 64;
+            //lizard2.Y = 40;
+            //lizard2.Palette = 1;
 
             var bird = _birdEnemyControllers
                 .TryAddNew()
@@ -339,6 +346,8 @@ namespace ChompGame.MainGame
             _statusBar.AddToScore(123456789);
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
+
+            _levelNameTableBuilder.BuildNameTable();
         }
 
         public void PlayScene()

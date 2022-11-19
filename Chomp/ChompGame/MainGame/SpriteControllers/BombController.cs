@@ -36,6 +36,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
+            if (DestroyIfOutOfBounds())
+                return;
+
             if(_state.Value >= (int)BombState.Explode)
             {
                 Motion.Stop();
@@ -57,7 +60,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _movingSpriteController.Update();
 
                 int ySpeed = Motion.YSpeed;
-                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, 14); //todo, hard-coding
+                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
                 if (_state.Value < 2 && collisionInfo.YCorrection < 0)
                 {
                     _isThrown.Value = false;

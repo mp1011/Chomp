@@ -87,5 +87,13 @@ namespace ChompGame.MainGame
         }
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
+
+        public bool IsInBounds()
+        {
+            return X >= _spritesModule.Scroll.X
+                && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth
+                && Y >= _spritesModule.Scroll.Y
+                && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight;
+        }
     }
 }

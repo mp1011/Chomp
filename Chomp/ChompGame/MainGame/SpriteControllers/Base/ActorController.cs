@@ -59,6 +59,17 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         }
 
+        public bool DestroyIfOutOfBounds()
+        {
+            if (!WorldSprite.IsInBounds())
+            {
+                Destroy();
+                return true;
+            }
+
+            return false;
+        }
+
         public void Destroy()
         {
             GetSprite().Tile = 0;

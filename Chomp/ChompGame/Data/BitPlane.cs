@@ -58,7 +58,7 @@ namespace ChompGame.Data
 
         public void CopyTilesTo(
             BitPlane destination,
-            ByteRectangle source,
+            ByteRectangleBase source,
             Point destinationPoint,
             Specs specs,
             SystemMemory memory)

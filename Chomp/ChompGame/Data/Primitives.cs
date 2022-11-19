@@ -249,6 +249,11 @@ namespace ChompGame.Data
             _address = memoryBuilder.CurrentAddress;
             _memory = memoryBuilder.Memory;
         }
+        public LowNibble(int address, SystemMemory memory)
+        {
+            _address = address;
+            _memory = memory;
+        }
 
         public byte Value
         {
@@ -275,6 +280,11 @@ namespace ChompGame.Data
             _memory = memoryBuilder.Memory;
         }
 
+        public HighNibble(int address, SystemMemory memory)
+        {
+            _address = address;
+            _memory = memory;
+        }
 
         public byte Value
         {

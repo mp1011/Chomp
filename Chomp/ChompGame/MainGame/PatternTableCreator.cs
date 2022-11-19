@@ -72,24 +72,26 @@ namespace ChompGame.MainGame
                new Rectangle(0, 3, 14, 2),
                 specs);
 
-
+            //mountains
             CopyPatternTableRegion(
                masterPatternTableImage,
                masterPatternTable,
-               new Rectangle(0, 6, 8, 1),
+               new Rectangle(0, 8, 5, 1),
                 specs);
 
+            //clouds
             CopyPatternTableRegion(
                masterPatternTableImage,
                masterPatternTable,
-               new Rectangle(0, 7, 6, 1),
+               new Rectangle(5, 8, 3, 1),
                 specs);
 
+            //grass
             CopyPatternTableRegion(
-              masterPatternTableImage,
-              masterPatternTable,
-              new Rectangle(5, 7, 3, 1),
-               specs);
+               masterPatternTableImage,
+               masterPatternTable,
+               new Rectangle(8, 8, 6, 1),
+                specs);
 
             ExportToDisk(
                 masterPatternTable,
@@ -178,7 +180,7 @@ namespace ChompGame.MainGame
             SystemMemory memory,
             Specs specs)
         {
-            
+
             for (var regionIndex = 0; regionIndex < sceneDefinition.RegionCount; regionIndex++)
             {
                 var region = sceneDefinition.GetRegion(regionIndex);

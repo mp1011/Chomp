@@ -15,7 +15,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public Point TileDestination => new Point(_destination.X, _destination.Y);
 
-        public ByteRectangle TileRegion => _region;
+        public ByteRectangleBase TileRegion => _region;
 
         public PatternTableRegionMap(int address, SystemMemory systemMemory)
         {
