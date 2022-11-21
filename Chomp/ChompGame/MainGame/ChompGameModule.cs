@@ -230,7 +230,7 @@ namespace ChompGame.MainGame
             SceneDefinition testScene = new SceneDefinition(
                GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
 
-            _levelNameTableBuilder = new LevelNameTableBuilder(_tileModule.NameTable, testScene);
+            _levelNameTableBuilder = new LevelNameTableBuilder(_tileModule.NameTable, testScene, Specs);
 
             PatternTableCreator.CreateVRAMPatternTable(
                 testScene,
@@ -281,12 +281,12 @@ namespace ChompGame.MainGame
             _playerController.ConfigureSprite(playerSprite);
 
 
-            var lizard1 = _lizardEnemyControllers
-                .TryAddNew()
-                .GetSprite();
-            lizard1.X = 32;
-            lizard1.Y = 40;
-            lizard1.Palette = 2;
+            //var lizard1 = _lizardEnemyControllers
+            //    .TryAddNew()
+            //    .GetSprite();
+            //lizard1.X = 32;
+            //lizard1.Y = 40;
+            //lizard1.Palette = 2;
 
             //var lizard2 = _lizardEnemyControllers
             //    .TryAddNew()
@@ -295,12 +295,12 @@ namespace ChompGame.MainGame
             //lizard2.Y = 40;
             //lizard2.Palette = 1;
 
-            var bird = _birdEnemyControllers
-                .TryAddNew()
-                .GetSprite();
-            bird.X = 32;
-            bird.Y = 32;
-            bird.Palette = 2;
+            //var bird = _birdEnemyControllers
+            //    .TryAddNew()
+            //    .GetSprite();
+            //bird.X = 32;
+            //bird.Y = 32;
+           // bird.Palette = 2;
 
             var bomb = _bombControllers
                 .TryAddNew()

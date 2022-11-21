@@ -7,21 +7,38 @@ namespace ChompGame.MainGame.SceneModels
     class SceneDefinition
     {
         private readonly SystemMemory _systemMemory;
+        
+        private readonly LowNibble _regionMapCount;
+        private readonly HighNibble _mapSize;
+
         private readonly LowNibble _tileRow;
-        private readonly HighNibble _tileRegionCount;
-        private readonly GameByte _regionMapCount;
-        public  TileMasterNameTable TileMaster { get; }
+        private readonly HighNibble _groundVariation;
+
+        private readonly LowNibble _groundLowTile;
+        private readonly HighNibble _groundHighTile;
+
+        private readonly TwoBit _groundFillTiles;
+        private readonly TwoBit _groundTopTiles;
+        private readonly GameBit _sideTiles;
+        //note: three bits remaining
 
         public int Address => _regionMapCount.Address;
 
-        public int RegionStartAddress => Address + 2 + TileMaster.Bytes;
+        public int RegionStartAddress => Address + 4;
 
         public int TileRegionStartAddress => RegionStartAddress +
             (RegionCount * PatternTableRegionMap.ByteLength);
 
         public byte RegionCount => _regionMapCount.Value;
 
-        public byte TileRegionCount => _tileRegionCount.Value;
+        public byte MapSize => _mapSize.Value;
+
+        public byte GroundHigh => _groundHighTile.Value;
+        
+        public byte GroundLow => _groundLowTile.Value;
+
+        public byte GroundVariation => _groundVariation.Value;
+
 
         public byte TileRow
         {
@@ -30,26 +47,50 @@ namespace ChompGame.MainGame.SceneModels
 
         public SceneDefinition(SystemMemoryBuilder memoryBuilder, 
             byte tileRow,
-            Func<SystemMemoryBuilder, TileMasterNameTable> createTileMaster)
+            byte mapSize,
+            byte groundLowTile,
+            byte groundHighTile,
+            byte groundVariation,
+            byte groundFillTiles,
+            byte groundTopTiles,
+            byte sideTiles)
         {
-            _regionMapCount = memoryBuilder.AddByte();
-            _tileRow = new LowNibble(memoryBuilder);
-            _tileRegionCount = new HighNibble(memoryBuilder);
 
-            memoryBuilder.AddByte();
             _systemMemory = memoryBuilder.Memory;
 
-            TileMaster = createTileMaster(memoryBuilder);
+            memoryBuilder.AddNibbles(ref _regionMapCount, ref _mapSize);
+            memoryBuilder.AddNibbles(ref _tileRow, ref _groundVariation);
+            memoryBuilder.AddNibbles(ref _groundLowTile, ref _groundHighTile);
 
+            _groundFillTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
+            _groundTopTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
+            _sideTiles = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
+
+            _mapSize.Value = mapSize;
+            _groundHighTile.Value = groundHighTile;
+            _groundLowTile.Value = groundLowTile;
+            _groundVariation.Value = groundVariation;
+            _groundFillTiles.Value = groundFillTiles;
+            _groundTopTiles.Value = groundTopTiles;
+            _sideTiles.Value = sideTiles == 2;
             _tileRow.Value = tileRow;
         }
 
         public SceneDefinition(int address, SystemMemory systemMemory)
         {
-            _regionMapCount = new GameByte(address, systemMemory);
+            _regionMapCount = new LowNibble(address, systemMemory);
+            _mapSize = new HighNibble(address, systemMemory);
+
             _tileRow = new LowNibble(address + 1, systemMemory);
-            _tileRegionCount = new HighNibble(address + 1, systemMemory);
-            TileMaster = new TileMasterNameTable(address + 2, systemMemory);
+            _groundVariation = new HighNibble(address + 1, systemMemory);
+
+            _groundLowTile = new LowNibble(address + 2, systemMemory);
+            _groundHighTile = new HighNibble(address + 2, systemMemory);
+
+            _groundFillTiles = new TwoBit(systemMemory, address + 3, 0);
+            _groundTopTiles = new TwoBit(systemMemory, address + 3, 2);
+            _sideTiles = new GameBit(address + 3, Bit.Bit4, systemMemory);
 
             _systemMemory = systemMemory;
         }
@@ -58,12 +99,6 @@ namespace ChompGame.MainGame.SceneModels
         {
             return new PatternTableRegionMap(
                 RegionStartAddress + (index * PatternTableRegionMap.ByteLength),
-                _systemMemory);
-        }
-
-        public TileRegionMap GetTileRegion(int index)
-        {
-            return new TileRegionMap(TileRegionStartAddress + (index * TileRegionMap.ByteLength),
                 _systemMemory);
         }
 
@@ -83,12 +118,6 @@ namespace ChompGame.MainGame.SceneModels
             var pt = new NibblePoint(address + 2, memoryBuilder.Memory);
             pt.X = (byte)destination.X;
             pt.Y = (byte)destination.Y;
-        }
-
-        public TileRegionMap AddTileRegion(SystemMemoryBuilder memoryBuilder)
-        {
-            _tileRegionCount.Value++;
-            return new TileRegionMap(memoryBuilder);
         }
     }
 

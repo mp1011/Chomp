@@ -86,7 +86,7 @@ namespace ChompGame.MainGame
             }
             else if(_tileModule.ScreenPoint.Y == 8)
             { 
-                _tileModule.Scroll.X = _realScroll.Value;
+                _tileModule.Scroll.X = (byte)(_realScroll.Value / 2);
             }
 
             if (_tileModule.ScreenPoint.Y == 8)
@@ -96,10 +96,31 @@ namespace ChompGame.MainGame
 
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
+                bgPalette.SetColor(1, ChompGameSpecs.Green1);
+                bgPalette.SetColor(2, ChompGameSpecs.Green2);
+                bgPalette.SetColor(3, ChompGameSpecs.Green3);
+            }
+
+            if (_tileModule.ScreenPoint.Y == 36)
+            {
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
                 bgPalette.SetColor(1, ChompGameSpecs.Gray3);
-                bgPalette.SetColor(2, ChompGameSpecs.Gray2);
-                bgPalette.SetColor(3, ChompGameSpecs.Gray1);
-            }       
+                bgPalette.SetColor(2, ChompGameSpecs.Green2);
+                bgPalette.SetColor(3, ChompGameSpecs.Green3);
+            }
+            if (_tileModule.ScreenPoint.Y == 40)
+            {
+                _tileModule.Scroll.X = _realScroll.Value;
+
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                bgPalette.SetColor(0, ChompGameSpecs.Gray3);
+                bgPalette.SetColor(1, ChompGameSpecs.Green1);
+                bgPalette.SetColor(2, ChompGameSpecs.Green2);
+                bgPalette.SetColor(3, ChompGameSpecs.Green3);
+            }
+
+
         }
 
 

@@ -186,6 +186,13 @@ namespace ChompGame.Data
             return m;
         }
 
+        public void AddNibbles(ref LowNibble low, ref HighNibble high)
+        {
+            low = new LowNibble(this);
+            high = new HighNibble(this);
+            AddByte();
+        }
+
         public NibblePoint AddNibblePoint()
         {
             var n = new NibblePoint(CurrentAddress, Memory);

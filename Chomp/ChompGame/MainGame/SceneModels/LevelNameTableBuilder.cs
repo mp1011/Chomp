@@ -1,38 +1,82 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
+using System;
 
 namespace ChompGame.MainGame.SceneModels
 {
     class LevelNameTableBuilder
     {
+        private Specs _specs;
         private NBitPlane _nameTable;
         private SceneDefinition _sceneDefinition;
 
-        public LevelNameTableBuilder(NBitPlane nameTable, SceneDefinition sceneDefinition)
+        public LevelNameTableBuilder(NBitPlane nameTable, SceneDefinition sceneDefinition, Specs specs)
         {
             _nameTable = nameTable;
             _sceneDefinition = sceneDefinition;
+            _specs = specs;
         }
 
         public void BuildNameTable()
         {
-            for(int i = 0; i < _sceneDefinition.TileRegionCount; i++)
+            var rnd = new Random(_sceneDefinition.Address);
+            int tiles = (_sceneDefinition.MapSize + 1) * _specs.NameTableWidth;
+
+            //todo, work with scrolling
+            tiles = _specs.NameTableWidth;
+
+            int groundPosition = rnd.Next(_sceneDefinition.GroundLow, _sceneDefinition.GroundHigh + 1);
+            int tilesUntilNextChange = GetTilesUntilNextChange(rnd);
+
+            for (int col = 0; col < tiles; col++)
             {
-                TileRegionMap map = _sceneDefinition.GetTileRegion(i);
-                Apply(map);
+                if (tilesUntilNextChange == 0)
+                {
+                    var change = rnd.Next(1, 4);
+                    if (rnd.NextDouble() < 0.5)
+                        groundPosition -= change;
+                    else
+                        groundPosition += change;
+
+
+                    if (groundPosition > _sceneDefinition.GroundHigh)
+                    {
+                        int extra = groundPosition - _sceneDefinition.GroundHigh;
+                        groundPosition = _sceneDefinition.GroundHigh - extra;
+                        if (groundPosition < _sceneDefinition.GroundLow)
+                            groundPosition = _sceneDefinition.GroundLow;
+                    }
+                    else if (groundPosition < _sceneDefinition.GroundLow)
+                    {
+                        int extra = _sceneDefinition.GroundLow - groundPosition;
+                        groundPosition = _sceneDefinition.GroundLow + extra;
+
+                        groundPosition = _sceneDefinition.GroundHigh - extra;
+                        if (groundPosition > _sceneDefinition.GroundHigh)
+                            groundPosition = _sceneDefinition.GroundHigh;
+                    }
+
+                    tilesUntilNextChange = GetTilesUntilNextChange(rnd);
+                }
+
+                for (int row = groundPosition; row < _specs.NameTableHeight; row++)
+                {
+                    _nameTable[col, row] = 8;
+                }
+
+                tilesUntilNextChange--;
             }
+
         }
 
-        private void Apply(TileRegionMap map)
+        private int GetTilesUntilNextChange(Random rng)
         {
-            for(int destY = map.Destination.Y; destY < map.Destination.Bottom; destY++)
+            switch (_sceneDefinition.GroundVariation)
             {
-                for(int destX = map.Destination.X; destX < map.Destination.Right; destX++)
-                {
-                    int sourceX = (destX - map.Destination.X) % map.Source.Width;
-                    int sourceY = (destY - map.Destination.Y) % map.Source.Height;
-
-                    _nameTable[destX, destY] = _sceneDefinition.TileMaster[sourceX, sourceY];
-                }
+                case 0: return rng.Next(6, 12);
+                case 1: return rng.Next(3, 8);
+                case 2: return rng.Next(3, 6);
+                default: return rng.Next(1, 2);
             }
         }
     }

@@ -22,6 +22,8 @@ namespace ChompGame.MainGame
         public static DebugWatch Watch3 { get; set; }
         public static DebugWatch Watch4 { get; set; }
 
+        public static void NoOp() { }
+
         public static IEnumerable<DebugWatch> Watches
         {
             get

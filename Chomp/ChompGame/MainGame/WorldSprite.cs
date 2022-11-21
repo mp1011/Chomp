@@ -90,10 +90,13 @@ namespace ChompGame.MainGame
 
         public bool IsInBounds()
         {
-            return X >= _spritesModule.Scroll.X
-                && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth
-                && Y >= _spritesModule.Scroll.Y
-                && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight;
+            //todo need to fix this
+            return true;
+
+            //return X >= _spritesModule.Scroll.X
+            //    && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth
+            //    && Y >= _spritesModule.Scroll.Y
+            //    && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight;
         }
     }
 }

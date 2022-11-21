@@ -244,6 +244,8 @@ namespace ChompGame.Data
         private int _address;
         private SystemMemory _memory;
 
+        public int Address => _address;
+
         public LowNibble(SystemMemoryBuilder memoryBuilder)
         {
             _address = memoryBuilder.CurrentAddress;
