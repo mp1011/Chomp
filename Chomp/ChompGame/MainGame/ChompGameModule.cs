@@ -12,7 +12,8 @@ namespace ChompGame.MainGame
     {
         NameTables,
         SceneDefinitions,
-        SpriteDefinitions
+        SpriteDefinitions,
+        FreeRAM
     }
 
     class ChompGameModule : Module, IMasterModule
@@ -41,6 +42,8 @@ namespace ChompGame.MainGame
         private GameByte _timer;
         private GameByte _currentLevel;
 
+        private GameByte _worldScrollX;
+        private GameByte _worldScrollY;
 
         private PlayerController _playerController;
 
@@ -80,6 +83,12 @@ namespace ChompGame.MainGame
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
+            _worldScrollX = memoryBuilder.AddByte();
+            _worldScrollY = memoryBuilder.AddByte();
+
+            memoryBuilder.AddLabel(AddressLabels.FreeRAM);
+            memoryBuilder.AddBytes(1024);
+
             memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
 
             AddSpriteDefinitions(memoryBuilder);
@@ -87,8 +96,6 @@ namespace ChompGame.MainGame
             _statusBar.BuildMemory(memoryBuilder);
 
             AddSpriteControllers(memoryBuilder);
-
-            _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite);
 
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
 
@@ -229,7 +236,7 @@ namespace ChompGame.MainGame
             SceneDefinition testScene = new SceneDefinition(
                GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
 
-            _levelNameTableBuilder = new LevelNameTableBuilder(_tileModule.NameTable, testScene, Specs);
+            _levelNameTableBuilder = new LevelNameTableBuilder(testScene, _tileModule, Specs);
 
             PatternTableCreator.CreateVRAMPatternTable(
                 testScene,
@@ -346,7 +353,12 @@ namespace ChompGame.MainGame
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
 
-            _levelNameTableBuilder.BuildNameTable(0);
+            _levelNameTableBuilder.BuildBackgroundNametable();
+
+            var levelMap =_levelNameTableBuilder.BuildNameTable(GameSystem.Memory);
+            _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite, 
+                levelMap, _worldScrollX, _worldScrollY, testScene);
+            _worldScroller.UpdateVram();
         }
 
         public void PlayScene()

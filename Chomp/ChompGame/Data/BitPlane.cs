@@ -56,12 +56,27 @@ namespace ChompGame.Data
             return s == '1';
         }
 
+        public void CopyTo(
+            BitPlane destination,
+            ByteRectangleBase source,
+            Point destinationPoint,
+            Specs specs)
+        {           
+            for (int y = 0; y < source.Height * specs.TileHeight; y++)
+            {
+                for (int x = 0; x < source.Width * specs.TileWidth; x++)
+                {
+                    destination[destinationPoint.X + x, destinationPoint.Y + y] =
+                        this[source.X + x, source.Y + y];
+                }
+            }
+        }
+
         public void CopyTilesTo(
             BitPlane destination,
             ByteRectangleBase source,
             Point destinationPoint,
-            Specs specs,
-            SystemMemory memory)
+            Specs specs)
         {
             var destinationPixelPoint = new Point(
                 destinationPoint.X * specs.TileWidth,

@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
-using ChompGame.Helpers;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
@@ -8,67 +7,73 @@ namespace ChompGame.MainGame.SceneModels
     class LevelNameTableBuilder
     {
         private Specs _specs;
-        private NBitPlane _nameTable;
         private SceneDefinition _sceneDefinition;
+        private TileModule _tileModule;
 
-        public LevelNameTableBuilder(NBitPlane nameTable, SceneDefinition sceneDefinition, Specs specs)
+        public LevelNameTableBuilder(SceneDefinition sceneDefinition, TileModule tileModule, Specs specs)
         {
-            _nameTable = nameTable;
             _sceneDefinition = sceneDefinition;
             _specs = specs;
+            _tileModule = tileModule;
         }
 
         private void FillStatusBarTopLine()
         {
-            //fill status bar
-            for (int x = 0; x < _specs.NameTableWidth; x++)
-            {
-                _nameTable[x, 0] = 7;
-            }
-
-            _nameTable[0, 0] = 0;
-            _nameTable[1, 0] = 1;
-            _nameTable[2, 0] = 2;
-
-            _nameTable[7, 0] = 3;
-            _nameTable[8, 0] = 4;
-
-            _nameTable[9, 0] = 5;
-
-            _nameTable[10, 0] = 6;
-            _nameTable[11, 0] = 2;
+            _tileModule.NameTable
+                .SetFromString(@"01277734562777777");            
         }
 
-        public void BuildNameTable(int startColumn)
+        private int GetForegroundWidth()
         {
+            switch(_sceneDefinition.Shape)
+            {
+                case LevelShape.Horizontal:
+                    return (_sceneDefinition.MapSize + 1) * _specs.NameTableWidth;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
+        private int GetForegroundHeight()
+        {
+            switch (_sceneDefinition.Shape)
+            {
+                case LevelShape.Horizontal:
+                    return (_sceneDefinition.GroundHigh - _sceneDefinition.GroundLow) + 1;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public void BuildBackgroundNametable()
+        {
             FillStatusBarTopLine();
 
-            //32
-            _nameTable.SetFromString(0, 7,
-                @"00000500001200000050000120000000
-                        12341623416621234162341662123434");
+            //mountain layer 1
+            _tileModule.NameTable.SetFromString(0, 7,
+                @"00000500000005000000050000000500
+                        34121625341216253412162534121625");
 
-            _nameTable.SetFromString(0, 9,
+            //mountain layer 2
+            _tileModule.NameTable.SetFromString(0, 9,
               @"00000500001200000050000120000000
-                        12341623416621234162341662123434");
+                      12341623416621234162341662123434");
+        }
 
+        public NBitPlane BuildNameTable(SystemMemory memory)
+        {
+            NBitPlane nameTable = NBitPlane.Create(memory.GetAddress(AddressLabels.FreeRAM), memory, _specs.NameTableBitPlanes,
+                GetForegroundWidth(), GetForegroundHeight());
 
-            var rnd = new Random(_sceneDefinition.Address + startColumn);
-            int tiles = (_sceneDefinition.MapSize + 1) * _specs.NameTableWidth;
-
-            //todo, work with scrolling
-            tiles = _specs.NameTableWidth;
-
-            int groundPosition = rnd.Next(_sceneDefinition.GroundLow, _sceneDefinition.GroundHigh + 1);
+            var rnd = new Random(_sceneDefinition.Address);
+                    
+            int groundPosition = rnd.Next(nameTable.Height);
             int tilesUntilNextChange = GetTilesUntilNextChange(rnd);
 
             bool groundStart = true;
 
-            for (int col = startColumn; col < startColumn + tiles; col++)
-            {
-                rnd = new Random(_sceneDefinition.Address + startColumn);
-
+            for (int col = 0; col < nameTable.Width; col++)
+            {                
                 if (tilesUntilNextChange == 0)
                 {
                     int lastGroundPosition = groundPosition;
@@ -79,19 +84,19 @@ namespace ChompGame.MainGame.SceneModels
                     else
                         groundPosition += change;
 
-                    if (groundPosition > _sceneDefinition.GroundHigh)
+                    if (groundPosition >= nameTable.Height)
                     {
-                        int extra = groundPosition - _sceneDefinition.GroundHigh;
+                        int extra = groundPosition - nameTable.Height;
 
-                        groundPosition = _sceneDefinition.GroundHigh;
+                        groundPosition = nameTable.Height-1;
                         
                         if(groundPosition == lastGroundPosition)
-                            groundPosition = _sceneDefinition.GroundHigh - extra;
+                            groundPosition = nameTable.Height - extra;
 
-                        if (groundPosition < _sceneDefinition.GroundLow)
-                            groundPosition = _sceneDefinition.GroundLow;
+                        if (groundPosition < 0)
+                            groundPosition = 0;
                     }
-                    else if (groundPosition < _sceneDefinition.GroundLow)
+                    else if (groundPosition < 0)
                     {
                         int extra = _sceneDefinition.GroundLow - groundPosition;
 
@@ -100,15 +105,15 @@ namespace ChompGame.MainGame.SceneModels
                         if(groundPosition == lastGroundPosition)
                             groundPosition = _sceneDefinition.GroundLow + extra;
 
-                        if (groundPosition > _sceneDefinition.GroundHigh)
-                            groundPosition = _sceneDefinition.GroundHigh;
+                        if (groundPosition >= nameTable.Height)
+                            groundPosition = nameTable.Height - 1;
                     }
 
                     tilesUntilNextChange = GetTilesUntilNextChange(rnd);
                     groundStart = true;
                 }
 
-                for (int row = groundPosition; row < _specs.NameTableHeight; row++)
+                for (int row = groundPosition; row < nameTable.Height; row++)
                 {
                     int tile = _sceneDefinition.BlockTile;
 
@@ -146,7 +151,7 @@ namespace ChompGame.MainGame.SceneModels
                         }
                     }
 
-                    _nameTable[col, row] = (byte)tile;
+                    nameTable[col, row] = (byte)tile;
                 }
 
                 groundStart = false;
@@ -154,6 +159,7 @@ namespace ChompGame.MainGame.SceneModels
                 tilesUntilNextChange--;
             }
 
+            return nameTable;
         }
 
         private int GetTilesUntilNextChange(Random rng)

@@ -4,6 +4,13 @@ using System;
 
 namespace ChompGame.MainGame.SceneModels
 {
+    public enum LevelShape : byte
+    {
+        Horizontal=0,
+        Vertical=1,
+        Square=2
+    }
+
     class SceneDefinition
     {
         private readonly SystemMemory _systemMemory;
@@ -20,7 +27,10 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBit _groundFillTiles;
         private readonly TwoBit _groundTopTiles;
         private readonly GameBit _sideTiles;
-        //note: three bits remaining
+
+        private readonly TwoBitEnum<LevelShape> _shape;
+
+        //one bit remaining 
 
         public int Address => _regionMapCount.Address;
 
@@ -63,6 +73,8 @@ namespace ChompGame.MainGame.SceneModels
 
         public int RightTileEnd => RightTileBegin + (_sideTiles.Value ? 1 : 0);
 
+        public LevelShape Shape => _shape.Value;
+
         public byte TileRow
         {
             get => _tileRow.Value;
@@ -71,6 +83,7 @@ namespace ChompGame.MainGame.SceneModels
         public SceneDefinition(SystemMemoryBuilder memoryBuilder, 
             byte tileRow,
             byte mapSize,
+            LevelShape shape,
             byte groundLowTile,
             byte groundHighTile,
             byte groundVariation,
@@ -88,6 +101,8 @@ namespace ChompGame.MainGame.SceneModels
             _groundFillTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
             _groundTopTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
             _sideTiles = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+            _shape = new TwoBitEnum<LevelShape>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 5);
+
             memoryBuilder.AddByte();
 
             _mapSize.Value = mapSize;
@@ -98,6 +113,7 @@ namespace ChompGame.MainGame.SceneModels
             _groundTopTiles.Value = (byte)(groundTopTiles -1);
             _sideTiles.Value = sideTiles == 2;
             _tileRow.Value = tileRow;
+            _shape.Value = shape;
         }
 
         public SceneDefinition(int address, SystemMemory systemMemory)
@@ -114,6 +130,8 @@ namespace ChompGame.MainGame.SceneModels
             _groundFillTiles = new TwoBit(systemMemory, address + 3, 0);
             _groundTopTiles = new TwoBit(systemMemory, address + 3, 2);
             _sideTiles = new GameBit(address + 3, Bit.Bit4, systemMemory);
+
+            _shape = new TwoBitEnum<LevelShape>(systemMemory, address + 3, shift: 5);
 
             _systemMemory = systemMemory;
         }

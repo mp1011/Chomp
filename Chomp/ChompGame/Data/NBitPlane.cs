@@ -94,6 +94,21 @@ namespace ChompGame.Data
             memory.BlockCopy(sourceStart: Address, destinationStart: destination.Address, length: totalLength);
         }
 
+        public void CopyTo(
+           NBitPlane destination,
+           ByteRectangleBase source,
+           Point destinationPoint,
+           Specs specs,
+           SystemMemory memory)
+        {
+            int planeIndex = 0;
+            foreach (var bitPlane in _planes)
+            {
+                bitPlane.CopyTo(destination._planes[planeIndex], source, destinationPoint, specs);
+                planeIndex++;
+            }
+        }
+
         public void CopyTilesTo(
             NBitPlane destination, 
             ByteRectangleBase source, 
@@ -104,7 +119,7 @@ namespace ChompGame.Data
             int planeIndex = 0;
             foreach(var bitPlane in _planes)
             {
-                bitPlane.CopyTilesTo(destination._planes[planeIndex], source, destinationPoint, specs, memory);
+                bitPlane.CopyTilesTo(destination._planes[planeIndex], source, destinationPoint, specs);
                 planeIndex++;
             }
         }

@@ -11,6 +11,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 tileRow: 8,
                 mapSize: 3,
+                shape: LevelShape.Horizontal,
                 groundLowTile: 12,
                 groundHighTile: 15,
                 groundVariation: 2,
