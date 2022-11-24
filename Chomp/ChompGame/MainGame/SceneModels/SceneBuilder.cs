@@ -15,7 +15,7 @@ namespace ChompGame.MainGame.SceneModels
                 groundHighTile: 15,
                 groundVariation: 2,
                 groundFillTiles: 2,
-                groundTopTiles: 0,
+                groundTopTiles: 1,
                 sideTiles: 1);
 
             //tiles 

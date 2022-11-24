@@ -76,21 +76,15 @@ namespace ChompGame.MainGame
             CopyPatternTableRegion(
                masterPatternTableImage,
                masterPatternTable,
-               new Rectangle(0, 8, 5, 1),
+               new Rectangle(0, 8, 8, 1),
                 specs);
 
-            //clouds
-            CopyPatternTableRegion(
-               masterPatternTableImage,
-               masterPatternTable,
-               new Rectangle(5, 8, 3, 1),
-                specs);
-
+    
             //grass
             CopyPatternTableRegion(
                masterPatternTableImage,
                masterPatternTable,
-               new Rectangle(8, 8, 6, 1),
+               new Rectangle(8, 8, 8, 1),
                 specs);
 
             ExportToDisk(

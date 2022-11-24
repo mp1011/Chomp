@@ -39,6 +39,29 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte GroundVariation => _groundVariation.Value;
 
+        public int BlockTile => 8;
+
+        public int GroundFillStart => BlockTile + 1;
+
+        public int GroundFillEnd => GroundFillStart + _groundFillTiles.Value;
+
+        public int GroundFillTileCount => _groundFillTiles.Value + 1;
+
+        public int GroundLeftCorner => GroundFillEnd + 1;
+
+        public int GroundTopBegin => GroundLeftCorner + 1;
+
+        public int GroundTopEnd => GroundTopBegin + _groundTopTiles.Value;
+
+        public int GroundRightCorner => GroundTopEnd + 1;
+
+        public int LeftTileBegin => GroundRightCorner + 1;
+
+        public int LeftTileEnd => LeftTileBegin + (_sideTiles.Value ? 1 : 0);
+
+        public int RightTileBegin => LeftTileEnd + 1;
+
+        public int RightTileEnd => RightTileBegin + (_sideTiles.Value ? 1 : 0);
 
         public byte TileRow
         {
@@ -71,8 +94,8 @@ namespace ChompGame.MainGame.SceneModels
             _groundHighTile.Value = groundHighTile;
             _groundLowTile.Value = groundLowTile;
             _groundVariation.Value = groundVariation;
-            _groundFillTiles.Value = groundFillTiles;
-            _groundTopTiles.Value = groundTopTiles;
+            _groundFillTiles.Value = (byte)(groundFillTiles-1);
+            _groundTopTiles.Value = (byte)(groundTopTiles -1);
             _sideTiles.Value = sideTiles == 2;
             _tileRow.Value = tileRow;
         }
@@ -119,7 +142,35 @@ namespace ChompGame.MainGame.SceneModels
             pt.X = (byte)destination.X;
             pt.Y = (byte)destination.Y;
         }
+
+        public int GetLeftSideTile(int row) => _sideTiles.Value
+            ? LeftTileBegin + (row % 2)
+            : LeftTileBegin;
+
+        public int GetRightSideTile(int row) => _sideTiles.Value
+         ? RightTileBegin + (row % 2)
+         : RightTileBegin;
+
+        public int GetGroundFillTile(int row, int col)
+        {
+            int groundTileCount = _groundFillTiles.Value + 1;
+
+            int index = row % groundTileCount;
+            if (col % 2 == 0)
+                index = (index + 1) % groundTileCount;
+
+            return GroundFillStart + index;            
+        }
+
+        public int GetGroundTopTile(int col)
+        {
+            int groundTileCount = _groundTopTiles.Value + 1;
+
+            int index = col % groundTileCount;
+            return GroundTopBegin + index;
+        }
+
     }
 
-   
+
 }

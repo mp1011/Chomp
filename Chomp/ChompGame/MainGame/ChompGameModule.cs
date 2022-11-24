@@ -5,7 +5,6 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using ChompGame.ROM;
-using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
 {
@@ -347,7 +346,7 @@ namespace ChompGame.MainGame
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
 
-            _levelNameTableBuilder.BuildNameTable();
+            _levelNameTableBuilder.BuildNameTable(0);
         }
 
         public void PlayScene()
