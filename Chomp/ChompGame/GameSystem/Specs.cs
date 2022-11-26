@@ -18,6 +18,8 @@ namespace ChompGame.GameSystem
         public abstract int NameTableHeight { get; }
         public abstract int NameTableBitPlanes { get; }
         public abstract int ScanlineDrawPlanes { get; }
+        public virtual int AttributeTableBlockSize { get; } = 2;
+        public virtual int AttributeTableBitsPerBlock => 1;
         public abstract Bit ScrollXMask { get; }
         public abstract Bit ScrollYMask { get; }
         public abstract int MaxSprites { get; }
@@ -209,7 +211,7 @@ namespace ChompGame.GameSystem
         public override int AudioChannels => 2;
 
         public override int BytesPerPalette => 3;
-        public override int NumPalettes => 5;
+        public override int NumPalettes => 6;
 
         public override Color[] SystemColors { get; } = new Color[64];
 

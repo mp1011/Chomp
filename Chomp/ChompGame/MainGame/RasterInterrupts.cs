@@ -97,7 +97,7 @@ namespace ChompGame.MainGame
                 _tileModule.TileStartY = 0;
 
                 //clouds
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
                 bgPalette.SetColor(1, ChompGameSpecs.White);
                 bgPalette.SetColor(2, ChompGameSpecs.Green2);
@@ -109,7 +109,7 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
 
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
                 bgPalette.SetColor(1, ChompGameSpecs.BlueGray2);
                 bgPalette.SetColor(2, ChompGameSpecs.BlueGray1);
@@ -121,7 +121,7 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
 
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray1);
                 bgPalette.SetColor(1, ChompGameSpecs.White);
                 bgPalette.SetColor(2, ChompGameSpecs.BlueGray2);
@@ -133,7 +133,7 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = _realScroll.Value;
 
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray2);
                 bgPalette.SetColor(1, ChompGameSpecs.Green1);
                 bgPalette.SetColor(2, ChompGameSpecs.Green2);
@@ -173,7 +173,7 @@ namespace ChompGame.MainGame
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = 0;
 
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
                 bgPalette.SetColor(1, ChompGameSpecs.LightBlue);
                 bgPalette.SetColor(2, ChompGameSpecs.LightYellow);
@@ -181,7 +181,7 @@ namespace ChompGame.MainGame
             }
             else if (_tileModule.ScreenPoint.Y == 40)
             {
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
 
                 switch (_paletteCycleIndex.Value)
                 {
@@ -213,7 +213,7 @@ namespace ChompGame.MainGame
             }
             else if (_tileModule.ScreenPoint.Y == 48)
             {
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.Green3);
                 bgPalette.SetColor(1, ChompGameSpecs.Blue1);
                 bgPalette.SetColor(2, ChompGameSpecs.Green1);

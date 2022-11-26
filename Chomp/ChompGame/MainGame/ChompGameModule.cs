@@ -248,11 +248,17 @@ namespace ChompGame.MainGame
 
             //todo, define level palettes elsewhere
 
-            var bgPalette = GameSystem.CoreGraphicsModule.GetBackgroundPalette();
+            var bgPalette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
             bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
             bgPalette.SetColor(1, ChompGameSpecs.Gray1);
             bgPalette.SetColor(2, ChompGameSpecs.Gray2);
             bgPalette.SetColor(3, ChompGameSpecs.Gray3);
+
+            var bgPalette2 = GameSystem.CoreGraphicsModule.GetBackgroundPalette(1);
+            bgPalette2.SetColor(0, ChompGameSpecs.BlueGray2);
+            bgPalette2.SetColor(1, ChompGameSpecs.DarkBrown);
+            bgPalette2.SetColor(2, ChompGameSpecs.DarkBrown);
+            bgPalette2.SetColor(3, ChompGameSpecs.Gray3);
 
             var bombPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(0);
             bombPalette.SetColor(1, ChompGameSpecs.Black); 
@@ -350,8 +356,11 @@ namespace ChompGame.MainGame
 
             _levelNameTableBuilder.BuildBackgroundNametable();
 
-            var levelMap =_levelNameTableBuilder.BuildNameTable(GameSystem.Memory);
-            _worldScroller.Initialize(testScene, _playerController.WorldSprite, levelMap);
+            //todo, use level number as seed
+            var levelMap =_levelNameTableBuilder.BuildNameTable(GameSystem.Memory, 1);
+            var levelAttributeTable = _levelNameTableBuilder.BuildAttributeTable(GameSystem.Memory, levelMap.Bytes);
+
+            _worldScroller.Initialize(testScene, _playerController.WorldSprite, levelMap, levelAttributeTable);
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(testScene, levelMap);

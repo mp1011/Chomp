@@ -20,6 +20,7 @@ namespace ChompGame.GameSystem
 
         public NBitPlane NameTable { get; private set; }
 
+        public NBitPlane AttributeTable { get; private set; }
 
         public TileModule(MainSystem gameSystem) : base(gameSystem) 
         { 
@@ -35,6 +36,8 @@ namespace ChompGame.GameSystem
             base.BuildMemory(builder);
             _tileStartIndex = builder.AddNibblePoint();
             NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
+            AttributeTable = builder.AddNBitPlane(Specs.AttributeTableBitsPerBlock, Specs.NameTableWidth / Specs.AttributeTableBlockSize,
+                Specs.NameTablePixelHeight / Specs.AttributeTableBlockSize);
         }
 
         public override void OnHBlank()

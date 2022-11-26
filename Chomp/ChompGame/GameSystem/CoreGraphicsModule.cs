@@ -17,8 +17,18 @@ namespace ChompGame.GameSystem
         public GameByteGridPoint ScreenPoint { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
         public ScanlineDrawBuffer ScanlineDrawBuffer { get; private set; }
-        public Palette GetBackgroundPalette() => GetPalette(0);
-        public Palette GetSpritePalette(byte index) => GetPalette((byte)(1 + index));
+        public Palette GetBackgroundPalette(byte index) => GetPalette(index);
+
+        public Palette GetBackgroundPalette(GameByteGridPoint screenPoint)
+        {
+            int attrX = (screenPoint.X + _tileModule.Scroll.X) / (Specs.TileWidth * Specs.AttributeTableBlockSize);
+            int attrY = (screenPoint.Y + _tileModule.Scroll.Y) / (Specs.TileHeight * Specs.AttributeTableBlockSize);
+
+            byte index = _tileModule.AttributeTable[attrX, attrY];
+            return GetPalette(index);
+        }
+
+        public Palette GetSpritePalette(byte index) => GetPalette((byte)(2 + index));
 
         private Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
 
@@ -73,11 +83,14 @@ namespace ChompGame.GameSystem
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
 
-            var palette = GetBackgroundPalette();
             int scanlineColumn = 0;
-           
+            var palette = GetBackgroundPalette(ScreenPoint);
+
             for (int i = 0; i < _screenData.Length; i++)
             {
+                //todo, don't need to compute this every pixel
+                palette = GetBackgroundPalette(ScreenPoint);
+
                 var color = palette[ScanlineDrawBuffer[scanlineColumn]];
                 _screenData[i] = color;
                 scanlineColumn++;

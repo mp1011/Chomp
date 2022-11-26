@@ -19,6 +19,8 @@ namespace ChompGame.MainGame
 
         private WorldSprite _focusSprite;
         private NBitPlane _levelNameTable;
+        private NBitPlane _levelAttributeTable;
+
         private SceneDefinition _sceneDefinition;
 
         public WorldScroller(
@@ -47,17 +49,32 @@ namespace ChompGame.MainGame
                     .Clamp(0, cameraXMax);
             }
         }
-        public void Initialize(SceneDefinition scene, WorldSprite focusSprite, NBitPlane levelNameTable)
+        public void Initialize(SceneDefinition scene, WorldSprite focusSprite, NBitPlane levelNameTable, NBitPlane levelAttributeTable)
         {
             _sceneDefinition = scene;
             _focusSprite = focusSprite;
             _levelNameTable = levelNameTable;
+            _levelAttributeTable = levelAttributeTable;
         }
 
         public void UpdateVram()
         {
-            byte copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
-            byte copyHeight = (byte)Math.Min(_specs.NameTableHeight, _levelNameTable.Height);
+            byte copyWidth = (byte)Math.Min(_specs.NameTableWidth / _specs.AttributeTableBlockSize, _levelAttributeTable.Width);
+            byte copyHeight = (byte)Math.Min(_specs.NameTableHeight / _specs.AttributeTableBlockSize, _levelAttributeTable.Height);
+
+            _levelAttributeTable.CopyTo(
+                destination: _tileModule.AttributeTable,
+                source: new InMemoryByteRectangle(
+                    _worldScrollX.Value / _specs.AttributeTableBlockSize,
+                    _worldScrollY.Value / _specs.AttributeTableBlockSize,
+                    copyWidth,
+                    copyHeight),
+                destinationPoint: new Point(0, _sceneDefinition.GroundLow / _specs.AttributeTableBlockSize),
+                specs: _specs,
+                memory: _tileModule.GameSystem.Memory);
+
+            copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
+            copyHeight = (byte)Math.Min(_specs.NameTableHeight, _levelNameTable.Height);
 
             _levelNameTable.CopyTo(
                 destination: _tileModule.NameTable,

@@ -83,12 +83,26 @@ namespace ChompGame.MainGame.SceneModels
             return nameTable;
         }
 
-        public NBitPlane BuildNameTable(SystemMemory memory)
+        public NBitPlane BuildAttributeTable(SystemMemory memory, int nameTableBytes)
+        {
+            //fix address
+            NBitPlane attributeTable = NBitPlane.Create(memory.GetAddress(AddressLabels.FreeRAM) + nameTableBytes, memory, _specs.AttributeTableBitsPerBlock,
+               GetForegroundWidth() / _specs.AttributeTableBlockSize, GetForegroundHeight() / _specs.AttributeTableBlockSize);
+
+            attributeTable[3, 0] = 1;
+            attributeTable[4, 0] = 1;
+            attributeTable[5, 0] = 1;
+            attributeTable[6, 0] = 1;
+
+            return attributeTable;
+        }
+
+        public NBitPlane BuildNameTable(SystemMemory memory, int seed)
         {
             NBitPlane nameTable = NBitPlane.Create(memory.GetAddress(AddressLabels.FreeRAM), memory, _specs.NameTableBitPlanes,
                 GetForegroundWidth(), GetForegroundHeight());
 
-            var rnd = new Random(_sceneDefinition.Address);
+            var rnd = new Random(seed);
                     
             int groundPosition = rnd.Next(nameTable.Height);
             int tilesUntilNextChange = GetTilesUntilNextChange(rnd);
@@ -181,6 +195,16 @@ namespace ChompGame.MainGame.SceneModels
 
                 tilesUntilNextChange--;
             }
+
+
+            nameTable[6, 1] = 7;
+            nameTable[7, 1] = 7;
+            nameTable[8, 1] = 7;
+            nameTable[9, 1] = 7;
+            nameTable[10, 1] = 7;
+            nameTable[11, 1] = 7;
+            nameTable[12, 1] = 7;
+            nameTable[13, 1] = 7;
 
             return nameTable;
         }

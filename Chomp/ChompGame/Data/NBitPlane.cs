@@ -18,6 +18,8 @@ namespace ChompGame.Data
         {
             switch (planeCount)
             {
+                case 1:
+                    return new OneBitPlane(address, memory, width, height);
                 case 2:
                     return new TwoBitPlane(address, memory, width, height);
                 case 4:
@@ -135,6 +137,28 @@ namespace ChompGame.Data
             }
         }
     }
+
+    public class OneBitPlane : NBitPlane
+    {
+        public OneBitPlane(int address, SystemMemory memory, int width, int height) 
+            : base(address, memory, 1, width, height)
+        {
+        }
+
+        public override byte this[int index]
+        {
+            get
+            {
+                var p0 = _planes[0][index] ? 1 : 0;
+                return (byte)(p0);
+            }
+            set
+            {
+                _planes[0][index] = (value & 1) > 0;
+            }
+        }
+    }
+
 
     public class TwoBitPlane : NBitPlane
     {
