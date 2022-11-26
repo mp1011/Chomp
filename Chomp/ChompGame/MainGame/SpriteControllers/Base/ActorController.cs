@@ -20,6 +20,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected ActorController(
             SpriteType spriteType,
             SpritesModule spritesModule,
+            WorldScroller scroller,
             SystemMemoryBuilder memoryBuilder,
             GameByte levelTimer,
             Bit stateMask = Bit.Right6)
@@ -32,6 +33,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                levelTimer,
                memoryBuilder,
                spriteIndex: 255,
+               worldScroller: scroller,
                spriteDefinition: new SpriteDefinition(spriteType, memoryBuilder.Memory));
             _levelTimer = levelTimer;
         }

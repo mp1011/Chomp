@@ -8,6 +8,7 @@ namespace ChompGame.MainGame
         private readonly Specs _specs;
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
+        private readonly WorldScroller _worldScroller;
 
         private readonly GameByte _levelTimer;
         private readonly GameByte _currentLevel;
@@ -19,6 +20,7 @@ namespace ChompGame.MainGame
         public RasterInterrupts(
             Specs specs, 
             CoreGraphicsModule coreGraphicsModule,
+            WorldScroller scroller,
             TileModule tileModule, 
             GameByte levelTimer, 
             GameByte currentLevel)
@@ -26,7 +28,7 @@ namespace ChompGame.MainGame
             _specs = specs;
             _tileModule = tileModule;
             _coreGraphicsModule = coreGraphicsModule;
-
+            _worldScroller = scroller;
             _levelTimer = levelTimer;
             _currentLevel = currentLevel;
         }
@@ -105,7 +107,7 @@ namespace ChompGame.MainGame
             //mountain layer 1
             if (_tileModule.ScreenPoint.Y == 28)
             {
-                _tileModule.Scroll.X = (byte)(_realScroll.Value / 4);
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
 
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
@@ -117,7 +119,7 @@ namespace ChompGame.MainGame
             //mountain layer 2
             if (_tileModule.ScreenPoint.Y == 36)
             {
-                _tileModule.Scroll.X = (byte)(_realScroll.Value / 2);
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
 
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette();
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray1);

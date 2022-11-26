@@ -59,6 +59,29 @@ namespace ChompGame.MainGame.SceneModels
               @"00000500001200000050000120000000
                       12341623416621234162341662123434");
         }
+        public NBitPlane BuildNameTable_Test(SystemMemory memory)
+        {
+            NBitPlane nameTable = NBitPlane.Create(memory.GetAddress(AddressLabels.FreeRAM), memory, _specs.NameTableBitPlanes,
+                 GetForegroundWidth(), GetForegroundHeight());
+
+            int y = 3;
+            int i = 12;
+            for (int col = 0; col < nameTable.Width; col++)
+            {
+                i--;
+                if(i==0)
+                {
+                    i = 12;
+                    y--;
+                    if (y <= 0)
+                        y = 0;
+                }
+                nameTable[col, y] = (byte)_sceneDefinition.BlockTile;
+            }
+
+
+            return nameTable;
+        }
 
         public NBitPlane BuildNameTable(SystemMemory memory)
         {

@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -188,6 +189,27 @@ namespace ChompGame.MainGame.SceneModels
             return GroundTopBegin + index;
         }
 
+        public int GetLevelTileWidth(Specs specs)
+        {
+            switch (Shape)
+            {
+                case LevelShape.Horizontal:
+                    return (MapSize + 1) * specs.NameTableWidth;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public int GetLevelTileHeight(Specs specs)
+        {
+            switch (Shape)
+            {
+                case LevelShape.Horizontal:
+                    return specs.NameTableHeight;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 
 

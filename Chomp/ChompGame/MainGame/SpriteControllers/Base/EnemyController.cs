@@ -10,10 +10,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         protected EnemyController(SpriteType spriteType, 
             SpritesModule spritesModule, 
+            WorldScroller scroller,
             ChompAudioService audioService,
             SystemMemoryBuilder memoryBuilder, 
             GameByte levelTimer, 
-            Bit stateMask = Bit.Right6) : base(spriteType, spritesModule, memoryBuilder, levelTimer, stateMask)
+            Bit stateMask = Bit.Right6) : base(spriteType, spritesModule, scroller, memoryBuilder, levelTimer, stateMask)
         {
             _audioService = audioService;
         }
@@ -38,6 +39,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             }
             else
                 UpdateBehavior();
+
+            WorldSprite.UpdateSpritePosition();
         }
 
         protected abstract void UpdateBehavior();

@@ -41,10 +41,6 @@ namespace ChompGame.MainGame
         private GameByteEnum<GameState> _gameState;
         private GameByte _timer;
         private GameByte _currentLevel;
-
-        private GameByte _worldScrollX;
-        private GameByte _worldScrollY;
-
         private PlayerController _playerController;
 
         private SpriteControllerPool<LizardEnemyController> _lizardEnemyControllers;
@@ -65,7 +61,7 @@ namespace ChompGame.MainGame
             _tileModule = tileModule;
             _statusBarModule = statusBarModule;
             _musicModule = musicModule;
-            _collisionDetector = new CollisionDetector(tileModule, Specs);
+            _collisionDetector = new CollisionDetector(Specs);
             _statusBar = new StatusBar(_tileModule);
         }
 
@@ -75,17 +71,18 @@ namespace ChompGame.MainGame
             _timer = memoryBuilder.AddByte();
             _currentLevel = memoryBuilder.AddByte();
 
+            _worldScroller = new WorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
+
             _rasterInterrupts = new RasterInterrupts(Specs,
                 GameSystem.CoreGraphicsModule,
+                _worldScroller,
                 _tileModule,
                 _timer,
                 _currentLevel);
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
-            _worldScrollX = memoryBuilder.AddByte();
-            _worldScrollY = memoryBuilder.AddByte();
-
+           
             memoryBuilder.AddLabel(AddressLabels.FreeRAM);
             memoryBuilder.AddBytes(1024);
 
@@ -172,27 +169,27 @@ namespace ChompGame.MainGame
 
         private void AddSpriteControllers(SystemMemoryBuilder memoryBuilder)
         {
-            _playerController = new PlayerController(_spritesModule, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
+            _playerController = new PlayerController(_spritesModule, _worldScroller, _inputModule, _statusBar, _audioService, _collisionDetector, _timer, memoryBuilder);
 
             _lizardBulletControllers = new SpriteControllerPool<BulletController>(
                2,
                _spritesModule,
-               () => new BulletController(_spritesModule, _timer, memoryBuilder, SpriteType.LizardBullet));
+               () => new BulletController(_spritesModule, _worldScroller, _timer, memoryBuilder, SpriteType.LizardBullet));
 
             _lizardEnemyControllers = new SpriteControllerPool<LizardEnemyController>(
                 2,
                 _spritesModule,
-                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _audioService, _collisionDetector, _timer, memoryBuilder));
+                () => new LizardEnemyController(_lizardBulletControllers, _spritesModule, _worldScroller, _audioService, _collisionDetector, _timer, memoryBuilder));
 
             _birdEnemyControllers = new SpriteControllerPool<BirdEnemyController>(
                1,
                _spritesModule,
-               () => new BirdEnemyController(_playerController.WorldSprite, _spritesModule, _audioService, _timer, memoryBuilder));
+               () => new BirdEnemyController(_playerController.WorldSprite, _spritesModule, _worldScroller, _audioService, _timer, memoryBuilder));
 
             _bombControllers = new SpriteControllerPool<BombController>(
                 size: 2,
                 _spritesModule,
-                () => new BombController(_spritesModule, _playerController, _collisionDetector, memoryBuilder, _timer));
+                () => new BombController(_spritesModule, _worldScroller, _playerController, _collisionDetector, memoryBuilder, _timer));
         }
 
         public override void OnStartup()
@@ -280,19 +277,18 @@ namespace ChompGame.MainGame
             bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
 
             var playerSpriteDefinition = new SpriteDefinition(SpriteType.Player, GameSystem.Memory);
-            var playerSprite = _spritesModule.GetSprite(0);
-            playerSprite.X = 16;
-            playerSprite.Y = 16;
+            _playerController.WorldSprite.X = 16;
+            _playerController.WorldSprite.Y = 16;
             _playerController.Palette = 1;
-            _playerController.ConfigureSprite(playerSprite);
+            _playerController.ConfigureSprite(_playerController.GetSprite());
 
 
-            //var lizard1 = _lizardEnemyControllers
-            //    .TryAddNew()
-            //    .GetSprite();
-            //lizard1.X = 32;
-            //lizard1.Y = 40;
-            //lizard1.Palette = 2;
+            var lizard1 = _lizardEnemyControllers
+                .TryAddNew();
+
+            lizard1.WorldSprite.X = 32;
+            lizard1.WorldSprite.Y = 40;
+            lizard1.GetSprite().Palette = 2;
 
             //var lizard2 = _lizardEnemyControllers
             //    .TryAddNew()
@@ -301,25 +297,24 @@ namespace ChompGame.MainGame
             //lizard2.Y = 40;
             //lizard2.Palette = 1;
 
-            //var bird = _birdEnemyControllers
-            //    .TryAddNew()
-            //    .GetSprite();
-            //bird.X = 32;
-            //bird.Y = 32;
-           // bird.Palette = 2;
+            var bird = _birdEnemyControllers
+                .TryAddNew();
+            bird.WorldSprite.X = 32;
+            bird.WorldSprite.Y = 32;
+            bird.GetSprite().Palette = 2;
 
             var bomb = _bombControllers
-                .TryAddNew()
-                .GetSprite();
-            bomb.X = 32;
-            bomb.Y = 16;
+                .TryAddNew();
+
+            bomb.WorldSprite.X = 32;
+            bomb.WorldSprite.Y = 16;
             bomb.Palette = 0;
 
             var bomb2 = _bombControllers
-              .TryAddNew()
-              .GetSprite();
-            bomb2.X = 50;
-            bomb2.Y = 16;
+              .TryAddNew();
+
+            bomb2.WorldSprite.X = 50;
+            bomb2.WorldSprite.Y = 16;
             bomb2.Palette = 0;
 
             _lizardBulletControllers.Execute(b => b.Palette = 3, 
@@ -342,11 +337,11 @@ namespace ChompGame.MainGame
 
             GameDebug.Watch2 = new DebugWatch(
                 name: "Player Sprite X",
-                () => playerSprite.X);
+                () => _playerController.GetSprite().X);
 
             GameDebug.Watch3 = new DebugWatch(
                name: "Player Sprite Y",
-               () => playerSprite.Y);
+               () => _playerController.GetSprite().Y);
 
 
             _statusBar.AddToScore(123456789);
@@ -356,9 +351,10 @@ namespace ChompGame.MainGame
             _levelNameTableBuilder.BuildBackgroundNametable();
 
             var levelMap =_levelNameTableBuilder.BuildNameTable(GameSystem.Memory);
-            _worldScroller = new WorldScroller(Specs, _tileModule, _spritesModule, _playerController.WorldSprite, 
-                levelMap, _worldScrollX, _worldScrollY, testScene);
+            _worldScroller.Initialize(testScene, _playerController.WorldSprite, levelMap);
             _worldScroller.UpdateVram();
+
+            _collisionDetector.Initialize(testScene, levelMap);
         }
 
         public void PlayScene()
@@ -369,7 +365,15 @@ namespace ChompGame.MainGame
             _birdEnemyControllers.Execute(c => c.Update());
             _bombControllers.Execute(c => c.Update());
 
-            _worldScroller.Update();
+            if(_worldScroller.Update())
+            {
+                _playerController.WorldSprite.UpdateSpritePosition();
+                _lizardEnemyControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
+                _lizardBulletControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
+                _birdEnemyControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
+                _bombControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
+            }
+
             _rasterInterrupts.Update();
 
             _playerController.CheckEnemyOrBulletCollisions(_lizardBulletControllers);

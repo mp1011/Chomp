@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using Microsoft.Xna.Framework;
 
@@ -8,9 +9,10 @@ namespace ChompGame.MainGame
     {
         private readonly Specs _specs;
         private readonly SpritesModule _spritesModule;
+        private readonly WorldScroller _scroller;
 
         public GameByte SpriteIndex { get; }
-        public NibblePoint WorldBlock { get; }
+
         public PrecisionMotion Motion { get; }
 
         public bool FlipX
@@ -19,35 +21,18 @@ namespace ChompGame.MainGame
             set => GetSprite().FlipX = value;
         }
 
+        private ExtendedPoint _position;
+
         public int X
         {
-            get
-            {
-                var sprite = GetSprite();
-                return sprite.X + WorldBlock.X * _specs.NameTablePixelWidth;
-            }
-            set
-            {
-                var sprite = GetSprite();
-
-                WorldBlock.X = (byte)(value / _specs.NameTablePixelWidth);
-                sprite.X = (byte)(value % _specs.NameTablePixelWidth);
-            }
+            get => _position.X;
+            set => _position.X = value;
         }
+
         public int Y
         {
-            get
-            {
-                var sprite = GetSprite();
-                return sprite.Y + WorldBlock.Y * _specs.NameTablePixelHeight;
-            }
-            set
-            {
-                var sprite = GetSprite();
-
-                WorldBlock.Y = (byte)(value / _specs.NameTablePixelHeight);
-                sprite.Y = (byte)(value % _specs.NameTablePixelHeight);
-            }
+            get => _position.Y;
+            set => _position.Y = value;
         }
 
         public Point TopLeft => new Point(X, Y);
@@ -76,17 +61,31 @@ namespace ChompGame.MainGame
             Specs specs,
             SpritesModule spritesModule, 
             GameByte spriteIndex, 
-            NibblePoint worldBlock, 
-            PrecisionMotion motion)
+            ExtendedPoint position,
+            PrecisionMotion motion, 
+            WorldScroller scroller)
         {
+            _position = position;
+            _scroller = scroller;
             _specs = specs;
             _spritesModule = spritesModule;
             SpriteIndex = spriteIndex;
-            WorldBlock = worldBlock;
             Motion = motion;
         }
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
+
+        public void UpdateSpritePosition()
+        {
+            var sprite = GetSprite();
+
+            int spriteX = (X - _scroller.WorldScrollPixelX).NMod(_specs.NameTablePixelWidth);
+            int spriteY = (Y - _scroller.WorldScrollPixelY).NMod(_specs.NameTablePixelHeight);
+
+            sprite.X = (byte)spriteX;
+            sprite.Y = (byte)spriteY;
+
+        }
 
         public bool IsInBounds()
         {

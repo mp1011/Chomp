@@ -15,11 +15,12 @@ namespace ChompGame.MainGame.SpriteControllers
         public LizardEnemyController(
             SpriteControllerPool<BulletController> lizardBulletControllers,
             SpritesModule spritesModule,
+            WorldScroller scroller,
             ChompAudioService audioService,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder)
-            : base(SpriteType.Lizard, spritesModule, audioService, memoryBuilder, levelTimer)
+            : base(SpriteType.Lizard, spritesModule, scroller, audioService, memoryBuilder, levelTimer)
         {
             _lizardBulletControllers = lizardBulletControllers;
             _collisionDetector = collisionDetector;

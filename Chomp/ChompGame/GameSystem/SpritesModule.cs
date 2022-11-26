@@ -99,7 +99,9 @@ namespace ChompGame.GameSystem
                         drawCol = drawCol.NMod(Specs.NameTablePixelWidth);
 
                         if (drawCol >= 0 && drawCol < Specs.ScreenWidth)
+                        {                  
                             _coreGraphicsModule.ScanlineDrawBuffer[drawCol] = pixel;
+                        }
                     }
                     else
                     {

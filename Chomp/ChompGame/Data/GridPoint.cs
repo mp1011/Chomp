@@ -131,24 +131,4 @@ namespace ChompGame.Data
             set => _yByte.Value = value;
         }
     }
-
-    public class FullGameByteGridPoint : GameByteGridPoint
-    {
-        public FullGameByteGridPoint(GameByte xByte, GameByte yByte) : base(xByte, yByte, 255, 255)
-        {
-        }
-
-        public override bool Next()
-        {
-            X++;
-
-            if (X == 0)
-            {
-                Y++;
-                return true;
-            }
-
-            return false;
-        }
-    }
 }

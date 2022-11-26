@@ -21,13 +21,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public PlayerController(
             SpritesModule spritesModule, 
+            WorldScroller scroller,
             InputModule inputModule, 
             StatusBar statusBar,
             ChompAudioService audioService,
             CollisionDetector collisionDetector,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Player, spritesModule, memoryBuilder, levelTimer, Bit.Right4)
+            : base(SpriteType.Player, spritesModule, scroller, memoryBuilder, levelTimer, Bit.Right4)
         {
             _statusBar = statusBar;
             _audioService = audioService;
@@ -88,6 +89,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
                 Motion.YSpeed = -_movingSpriteController.JumpSpeed;
             }
+
+            WorldSprite.UpdateSpritePosition();
         }
 
         public void CheckBombPickup(SpriteControllerPool<BombController> bombs)

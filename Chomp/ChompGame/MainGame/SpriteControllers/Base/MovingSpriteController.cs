@@ -82,7 +82,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder,
             byte spriteIndex,
-            SpriteDefinition spriteDefinition)
+            SpriteDefinition spriteDefinition,
+            WorldScroller worldScroller)
         {
             _spriteDefinition = spriteDefinition;
             _spritesModule = spritesModule;
@@ -94,8 +95,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 specs: _spritesModule.Specs,
                 spritesModule: _spritesModule,
                 spriteIndex: memoryBuilder.AddByte(spriteIndex),
-                worldBlock: memoryBuilder.AddNibblePoint(),
-                motion: Motion.CurrentMotion);          
+                motion: Motion.CurrentMotion,
+                scroller: worldScroller,
+                position: memoryBuilder.AddExtendedPoint());          
         }
 
         public void Update()

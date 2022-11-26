@@ -2,6 +2,7 @@
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame;
+using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -16,13 +17,19 @@ namespace ChompGame.Helpers
 
     class CollisionDetector 
     {
-        private readonly TileModule _tileModule;
         private readonly Specs _specs;
-
-        public CollisionDetector(TileModule tileModule, Specs specs)
+        private SubsectionNBitPlane _levelTileMap;
+       
+        public CollisionDetector(Specs specs)
         {
             _specs = specs;
-            _tileModule = tileModule;
+        }
+
+        public void Initialize(SceneDefinition sceneDefinition, NBitPlane levelTileMap)
+        {
+            _levelTileMap = new SubsectionNBitPlane(levelTileMap, new Point(0, sceneDefinition.GroundLow),
+                sceneDefinition.GetLevelTileWidth(_specs),
+                sceneDefinition.GetLevelTileHeight(_specs));
         }
 
         public bool CheckCollision(MovingSprite s1, MovingSprite s2)
@@ -44,7 +51,7 @@ namespace ChompGame.Helpers
                                         .Divide(_specs.TileWidth)
                                         .Add(2, 2);
 
-            _tileModule.NameTable.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
+            _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
                 if (t < solidTileBeginIndex)
                     return;
@@ -55,13 +62,13 @@ namespace ChompGame.Helpers
                     _specs.TileWidth, 
                     _specs.TileHeight);
 
-                var tileLeft = _tileModule.NameTable[
-                    (x - 1).NMod(_tileModule.NameTable.Width), 
-                    y.NMod(_tileModule.NameTable.Height)];
+                var tileLeft = _levelTileMap[
+                    (x - 1).NMod(_levelTileMap.Width), 
+                    y.NMod(_levelTileMap.Height)];
                 
-                var tileRight = _tileModule.NameTable[
-                    (x + 1).NMod(_tileModule.NameTable.Width), 
-                    y.NMod(_tileModule.NameTable.Height)];
+                var tileRight = _levelTileMap[
+                    (x + 1).NMod(_levelTileMap.Width), 
+                    y.NMod(_levelTileMap.Height)];
 
                 bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < solidTileBeginIndex;
                 bool checkRightCollision = actor.XSpeed < 0 && tileRight < solidTileBeginIndex;
@@ -85,26 +92,26 @@ namespace ChompGame.Helpers
                // collisionInfo += new CollisionInfo(XCorrection: correction.X);
             }
 
-            _tileModule.NameTable.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
+            _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
                 if (t < solidTileBeginIndex)
                     return;
 
-                var tileAbove = _tileModule.NameTable[
-                    x.NMod(_tileModule.NameTable.Width), 
-                    (y - 1).NMod(_tileModule.NameTable.Height)];
+                var tileAbove = _levelTileMap[
+                    x.NMod(_levelTileMap.Width), 
+                    (y - 1).NMod(_levelTileMap.Height)];
 
-                var tileBelow = _tileModule.NameTable[
-                    x.NMod(_tileModule.NameTable.Width), 
-                    (y + 1).NMod(_tileModule.NameTable.Height)];
+                var tileBelow = _levelTileMap[
+                    x.NMod(_levelTileMap.Width), 
+                    (y + 1).NMod(_levelTileMap.Height)];
 
-                var tileLeft = _tileModule.NameTable[
-                    (x - 1).NMod(_tileModule.NameTable.Width), 
-                    y.NMod(_tileModule.NameTable.Height)];
+                var tileLeft = _levelTileMap[
+                    (x - 1).NMod(_levelTileMap.Width), 
+                    y.NMod(_levelTileMap.Height)];
 
-                var tileRight = _tileModule.NameTable[
-                    (x + 1).NMod(_tileModule.NameTable.Width), 
-                    y.NMod(_tileModule.NameTable.Height)];
+                var tileRight = _levelTileMap[
+                    (x + 1).NMod(_levelTileMap.Width), 
+                    y.NMod(_levelTileMap.Height)];
 
                 var tileBounds = new Rectangle(
                     x * _specs.TileWidth,

@@ -150,7 +150,7 @@ namespace ChompGame.Data
 
         public override string ToString() => $"{Value} {Value.ToString("X2")}";
 
-        public MaskedByte WithMask(Bit mask) => new MaskedByte(Address, mask, _memory);
+        public GameByte WithMask(Bit mask) => (byte)mask == 255 ? this : new MaskedByte(Address, mask, _memory);
     }
 
     public class MaskedByte : GameByte
@@ -361,4 +361,5 @@ namespace ChompGame.Data
         }
     }
 
+    
 }

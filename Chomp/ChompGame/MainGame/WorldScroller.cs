@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework;
@@ -8,32 +9,49 @@ namespace ChompGame.MainGame
 {
     class WorldScroller
     {
+        private const byte _scrollPad = 8;
+
         private Specs _specs;
         private GameByte _worldScrollX;
         private GameByte _worldScrollY;
         private TileModule _tileModule;
         private SpritesModule _spritesModule;
+
         private WorldSprite _focusSprite;
         private NBitPlane _levelNameTable;
         private SceneDefinition _sceneDefinition;
 
-        public WorldScroller(Specs specs, 
+        public WorldScroller(
+            SystemMemoryBuilder memoryBuilder,
+            Specs specs, 
             TileModule tileModule, 
-            SpritesModule spritesModule, 
-            WorldSprite focusSprite, 
-            NBitPlane levelNameTable,
-            GameByte x,
-            GameByte y, 
-            SceneDefinition sceneDefinition)
+            SpritesModule spritesModule)
         {
             _specs = specs;
             _tileModule = tileModule;
             _spritesModule = spritesModule;
+            _worldScrollX = memoryBuilder.AddByte();
+            _worldScrollY = memoryBuilder.AddByte();
+        }
+
+        public int WorldScrollPixelX => _worldScrollX * _specs.TileWidth;
+        public int WorldScrollPixelY => _worldScrollY * _specs.TileHeight;
+
+        public int CameraPixelX
+        {
+            get
+            {
+                int cameraXMax = (_levelNameTable.Width * _specs.TileWidth) - _specs.ScreenWidth;
+
+                return (_focusSprite.X - (_specs.ScreenWidth / 2))
+                    .Clamp(0, cameraXMax);
+            }
+        }
+        public void Initialize(SceneDefinition scene, WorldSprite focusSprite, NBitPlane levelNameTable)
+        {
+            _sceneDefinition = scene;
             _focusSprite = focusSprite;
             _levelNameTable = levelNameTable;
-            _sceneDefinition = sceneDefinition;
-            _worldScrollX = x;
-            _worldScrollY = y;
         }
 
         public void UpdateVram()
@@ -49,19 +67,41 @@ namespace ChompGame.MainGame
                 memory: _tileModule.GameSystem.Memory);
         }
 
-        public void Update()
+        private int AdjustWorldScroll()
         {
-            if(_focusSprite.X < _specs.ScreenWidth / 2)
-            {
-                _tileModule.Scroll.X = 0;
-                _spritesModule.Scroll.X = 0;
-            }
-            else
-            {
-                byte scroll = (byte)(_focusSprite.X - (_specs.ScreenWidth / 2));
-                _tileModule.Scroll.X = scroll;
-                _spritesModule.Scroll.X = scroll;
-            }
+            int newWorldScroll = (CameraPixelX - (_specs.NameTablePixelWidth - _specs.ScreenWidth) / 2)
+                .Clamp(0, WorldScrollMaxX * _specs.TileWidth);
+
+            _worldScrollX.Value = (byte)(newWorldScroll / _specs.TileWidth);
+            UpdateVram();
+
+            return CameraPixelX - newWorldScroll;
         }
+
+        private int WorldScrollMaxX => _levelNameTable.Width - _specs.NameTableWidth;
+
+        public bool Update()
+        {
+            bool changed = false;
+            int scrollX = CameraPixelX - WorldScrollPixelX;
+
+            if (scrollX < _scrollPad && _worldScrollX.Value > 0)
+            {
+                scrollX = AdjustWorldScroll();
+                changed = true;
+            }
+            else if (scrollX > _specs.NameTablePixelWidth - _specs.ScreenWidth - _scrollPad
+                && _worldScrollX.Value < WorldScrollMaxX)
+            {
+                scrollX = AdjustWorldScroll();
+                changed = true;
+            }
+
+            _tileModule.Scroll.X = (byte)scrollX;
+            _spritesModule.Scroll.X = (byte)scrollX;
+
+            return changed;
+        }
+
     }
 }

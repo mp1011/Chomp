@@ -25,9 +25,10 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public BombController(
             SpritesModule spritesModule,
+            WorldScroller scroller,
             PlayerController playerController,
             CollisionDetector collisionDetector, SystemMemoryBuilder memoryBuilder, GameByte levelTimer)
-            : base(SpriteType.Bomb, spritesModule, memoryBuilder, levelTimer, Bit.Right5)
+            : base(SpriteType.Bomb, spritesModule, scroller, memoryBuilder, levelTimer, Bit.Right5)
         {
             _collisionDetector = collisionDetector;
             _playerController = playerController;
@@ -83,6 +84,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _playerController.CheckBombThrow(this);
             }
+
+            WorldSprite.UpdateSpritePosition();
         }
 
         public void DoThrow()

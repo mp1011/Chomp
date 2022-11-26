@@ -242,9 +242,6 @@ namespace ChompGame.Data
             return new TwoBitArray(AddBitArray(length), AddBitArray(length));
         }
 
-        public FullGameByteGridPoint AddFullGridPoint() =>
-            new FullGameByteGridPoint(AddByte(), AddByte());
-
         public GameByteGridPoint AddGridPoint(byte width, byte height, Bit mask)
             => AddGridPoint(width, height, mask, mask);
 
@@ -257,6 +254,11 @@ namespace ChompGame.Data
                 height);
 
             return b;
+        }
+
+        public ExtendedPoint AddExtendedPoint()
+        {
+            return new ExtendedPoint(this);
         }
 
         public Sprite[] AddSprite(int count, SpritesModule spritesModule)

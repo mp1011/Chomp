@@ -35,10 +35,7 @@ namespace ChompGame.GameSystem
             builder.AddBytes(Specs.NumPalettes * Specs.BytesPerPalette);
             PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
-            if(Specs.ScreenWidth==256 && Specs.ScreenHeight==256)
-                ScreenPoint = builder.AddFullGridPoint();
-            else 
-                ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
+            ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
 
             switch(Specs.BitsPerPixel)
             {
@@ -109,6 +106,9 @@ namespace ChompGame.GameSystem
                 for(int x = 0; x < sprite.Width; x++)
                 {
                     int scanlineColumn = ((sprite.X - _spritesModule.Scroll.X) + x).NMod(Specs.NameTablePixelWidth);
+
+                    if (scanlineColumn >= Specs.ScreenWidth)
+                        continue;
 
                     if (_spritesModule.ScanlineSpritePixelPriority.Get(scanlineSpriteIndex, x))
                     {                        

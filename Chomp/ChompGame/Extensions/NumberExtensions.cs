@@ -54,5 +54,15 @@ namespace ChompGame.Extensions
             else
                 return c1;
         }
+
+        public static int Clamp(this int i, int min, int max)
+        {
+            if (i < min)
+                return min;
+            if (i > max)
+                return max;
+            else
+                return i;
+        }
     }
 }

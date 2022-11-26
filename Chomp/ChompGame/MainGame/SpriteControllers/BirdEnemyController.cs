@@ -13,11 +13,13 @@ namespace ChompGame.MainGame.SpriteControllers
         public BirdEnemyController(
             WorldSprite player,
             SpritesModule spritesModule,
+            WorldScroller scroller,
             ChompAudioService chompAudioService,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Bird,
                    spritesModule,
+                   scroller,
                    chompAudioService,
                    memoryBuilder, 
                    levelTimer)

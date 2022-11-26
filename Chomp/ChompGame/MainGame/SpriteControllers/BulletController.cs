@@ -10,9 +10,10 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         public BulletController(
             SpritesModule spritesModule,
+            WorldScroller scroller,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder, 
-            SpriteType spriteType) : base(spriteType, spritesModule, memoryBuilder, levelTimer)
+            SpriteType spriteType) : base(spriteType, spritesModule, scroller, memoryBuilder, levelTimer)
         { 
         }
 
@@ -54,6 +55,8 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
             }
+
+            WorldSprite.UpdateSpritePosition();
         }
 
         public void HandlePlayerCollision(WorldSprite player)
