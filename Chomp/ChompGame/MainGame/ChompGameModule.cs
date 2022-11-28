@@ -36,7 +36,7 @@ namespace ChompGame.MainGame
         private readonly MusicModule _musicModule;
         private readonly StatusBar _statusBar;
         private NBitPlane _masterPatternTable;
-        private LevelNameTableBuilder _levelNameTableBuilder;
+        private LevelBuilder _levelBuilder;
        
         private GameByteEnum<GameState> _gameState;
         private GameByte _timer;
@@ -156,7 +156,7 @@ namespace ChompGame.MainGame
 
             //bomb
             new SpriteDefinition(memoryBuilder,
-               tile: 14,
+               tile: 2,
                secondTileOffset: 0,
                sizeX: 1,
                sizeY: 1,
@@ -233,14 +233,12 @@ namespace ChompGame.MainGame
             SceneDefinition testScene = new SceneDefinition(
                GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
 
-            _levelNameTableBuilder = new LevelNameTableBuilder(testScene, _tileModule, Specs);
+            _levelBuilder = new LevelBuilder(testScene, _tileModule, Specs);
 
-            PatternTableCreator.CreateVRAMPatternTable(
-                testScene,
+            _levelBuilder.SetupVRAMPatternTable(
                 _masterPatternTable,
                 GameSystem.CoreGraphicsModule.PatternTable,
-                GameSystem.Memory,
-                Specs);
+                GameSystem.Memory);
 
             PatternTableExporter.ExportPatternTable(
                 GameSystem.GraphicsDevice, 
@@ -289,12 +287,12 @@ namespace ChompGame.MainGame
             _playerController.ConfigureSprite(_playerController.GetSprite());
 
 
-            var lizard1 = _lizardEnemyControllers
-                .TryAddNew();
+            //var lizard1 = _lizardEnemyControllers
+            //    .TryAddNew();
 
-            lizard1.WorldSprite.X = 32;
-            lizard1.WorldSprite.Y = 40;
-            lizard1.GetSprite().Palette = 2;
+            //lizard1.WorldSprite.X = 32;
+            //lizard1.WorldSprite.Y = 40;
+            //lizard1.GetSprite().Palette = 2;
 
             //var lizard2 = _lizardEnemyControllers
             //    .TryAddNew()
@@ -303,11 +301,11 @@ namespace ChompGame.MainGame
             //lizard2.Y = 40;
             //lizard2.Palette = 1;
 
-            var bird = _birdEnemyControllers
-                .TryAddNew();
-            bird.WorldSprite.X = 32;
-            bird.WorldSprite.Y = 32;
-            bird.GetSprite().Palette = 2;
+            //var bird = _birdEnemyControllers
+            //    .TryAddNew();
+            //bird.WorldSprite.X = 32;
+            //bird.WorldSprite.Y = 32;
+            //bird.GetSprite().Palette = 2;
 
             var bomb = _bombControllers
                 .TryAddNew();
@@ -354,16 +352,17 @@ namespace ChompGame.MainGame
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
 
-            _levelNameTableBuilder.BuildBackgroundNametable();
+            _levelBuilder.BuildBackgroundNametable();
 
             //todo, use level number as seed
-            var levelMap =_levelNameTableBuilder.BuildNameTable(GameSystem.Memory, 1);
-            var levelAttributeTable = _levelNameTableBuilder.BuildAttributeTable(GameSystem.Memory, levelMap.Bytes);
+            var levelMap =_levelBuilder.BuildNameTable(GameSystem.Memory, 1);
+            var levelAttributeTable = _levelBuilder.BuildAttributeTable(GameSystem.Memory, levelMap.Bytes);
 
             _worldScroller.Initialize(testScene, _playerController.WorldSprite, levelMap, levelAttributeTable);
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(testScene, levelMap);
+            _rasterInterrupts.SetScene(testScene);
         }
 
         public void PlayScene()

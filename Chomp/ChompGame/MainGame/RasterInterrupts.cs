@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 
 namespace ChompGame.MainGame
 {
@@ -16,6 +17,7 @@ namespace ChompGame.MainGame
         private GameByte _realScroll;
         private GameByte _autoScroll;
         private MaskedByte _paletteCycleIndex;
+        private SceneDefinition _sceneDefinition;
 
         public RasterInterrupts(
             Specs specs, 
@@ -38,6 +40,11 @@ namespace ChompGame.MainGame
             _realScroll = memoryBuilder.AddByte();
             _autoScroll = memoryBuilder.AddByte();
             _paletteCycleIndex = memoryBuilder.AddMaskedByte(Bit.Right2);
+        }
+
+        public void SetScene(SceneDefinition scene)
+        {
+            _sceneDefinition = scene;
         }
 
         public void Update()
@@ -65,6 +72,14 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
+            GameDebug.Watch4 = new DebugWatch("CameraPixelX", () => _worldScroller.CameraPixelX);
+
+            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+                HandleStatusBar();
+
+            if(_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+                HandleParallax();
+
             switch (_currentLevel.Value)
             {
                 case 0:
@@ -73,9 +88,7 @@ namespace ChompGame.MainGame
             }
         }
 
-        //todo, need more standard way to handle interupts for status bar
-
-        private void OnHBlank_Stage0()
+        private void HandleStatusBar()
         {
             if (_tileModule.ScreenPoint.Y == 0)
             {
@@ -86,29 +99,63 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = 0;
             }
-            else if(_tileModule.ScreenPoint.Y == 8)
+            else if (_tileModule.ScreenPoint.Y == 8)
             {
-                _tileModule.Scroll.X = _autoScroll.Value;
-            }
-
-            if (_tileModule.ScreenPoint.Y == 8)
-            {
+                _tileModule.Scroll.X = _realScroll.Value;
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = 0;
+            }
+        }
 
-                //clouds
+        private void HandleParallax()
+        {
+            int layerABegin = _sceneDefinition.ParallaxLayerABeginTile * _specs.TileHeight;
+            int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
+            int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerBTiles * _specs.TileHeight;
+            int parallaxEnd = layerCBegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
+
+            if (_tileModule.ScreenPoint.Y == layerABegin && _sceneDefinition.ParallaxLayerATiles > 0)
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
+            }
+
+            if (_tileModule.ScreenPoint.Y == layerBBegin && _sceneDefinition.ParallaxLayerBTiles > 0)
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
+            }
+
+            if (_tileModule.ScreenPoint.Y == layerCBegin && _sceneDefinition.ParallaxLayerATiles > 0)
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
+            }
+
+            if (_tileModule.ScreenPoint.Y == parallaxEnd)
+            {
+                _tileModule.Scroll.X = _realScroll.Value;
+            }
+        }
+
+        //todo, build palettes into scene definition
+        private void OnHBlank_Stage0()
+        {
+            int layerABegin = _sceneDefinition.ParallaxLayerABeginTile * _specs.TileHeight;
+            int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
+            int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerBTiles * _specs.TileHeight;
+            int parallaxEnd = layerCBegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
+
+            //sky 
+            if (_tileModule.ScreenPoint.Y == 8)
+            {
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
-                bgPalette.SetColor(1, ChompGameSpecs.White);
+                bgPalette.SetColor(1, ChompGameSpecs.Green1);
                 bgPalette.SetColor(2, ChompGameSpecs.Green2);
                 bgPalette.SetColor(3, ChompGameSpecs.Green3);
             }
 
             //mountain layer 1
-            if (_tileModule.ScreenPoint.Y == 28)
+            if (_tileModule.ScreenPoint.Y == layerBBegin)
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
-
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
                 bgPalette.SetColor(1, ChompGameSpecs.BlueGray2);
@@ -117,10 +164,8 @@ namespace ChompGame.MainGame
             }
 
             //mountain layer 2
-            if (_tileModule.ScreenPoint.Y == 36)
+            if (_tileModule.ScreenPoint.Y == layerCBegin)
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
-
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray1);
                 bgPalette.SetColor(1, ChompGameSpecs.White);
@@ -129,18 +174,14 @@ namespace ChompGame.MainGame
             }
 
             //background layer
-            if (_tileModule.ScreenPoint.Y == 44)
+            if (_tileModule.ScreenPoint.Y == parallaxEnd)
             {
-                _tileModule.Scroll.X = _realScroll.Value;
-
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray2);
                 bgPalette.SetColor(1, ChompGameSpecs.Green1);
                 bgPalette.SetColor(2, ChompGameSpecs.Green2);
                 bgPalette.SetColor(3, ChompGameSpecs.Green3);
             }
-
-
         }
 
 

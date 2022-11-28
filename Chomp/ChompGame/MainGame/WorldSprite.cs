@@ -5,15 +5,36 @@ using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
 {
+    public enum WorldSpriteStatus : byte
+    {
+        Inactive=0,
+        Hidden=1,
+        Active=2
+    }
+
+    public enum BoundsCheck : byte
+    {
+        InBounds=0,
+        OutOfBounds=1,
+        FarOutOfBounds=2
+    }
+
     class WorldSprite
     {
         private readonly Specs _specs;
         private readonly SpritesModule _spritesModule;
         private readonly WorldScroller _scroller;
+        private readonly TwoBitEnum<WorldSpriteStatus> _status;
 
         public GameByte SpriteIndex { get; }
 
         public PrecisionMotion Motion { get; }
+
+        public WorldSpriteStatus Status
+        {
+            get => _status.Value;
+            set => _status.Value = value;
+        }
 
         public bool FlipX
         {
@@ -58,18 +79,19 @@ namespace ChompGame.MainGame
         public int YSpeed => Motion.YSpeed;
 
         public WorldSprite(
+            SystemMemoryBuilder memoryBuilder,
             Specs specs,
-            SpritesModule spritesModule, 
-            GameByte spriteIndex, 
-            ExtendedPoint position,
+            SpritesModule spritesModule,
             PrecisionMotion motion, 
             WorldScroller scroller)
         {
-            _position = position;
+            SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
+            _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 6);
+                
+            _position = memoryBuilder.AddExtendedPoint();
             _scroller = scroller;
             _specs = specs;
             _spritesModule = spritesModule;
-            SpriteIndex = spriteIndex;
             Motion = motion;
         }
 
@@ -87,15 +109,26 @@ namespace ChompGame.MainGame
 
         }
 
-        public bool IsInBounds()
+        public BoundsCheck CheckInBounds()
         {
-            //todo need to fix this
-            return true;
+            if (X >= _spritesModule.Scroll.X
+                && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth
+                && Y >= _spritesModule.Scroll.Y
+                && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight)
+            {
+                return BoundsCheck.InBounds;
+            }
 
-            //return X >= _spritesModule.Scroll.X
-            //    && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth
-            //    && Y >= _spritesModule.Scroll.Y
-            //    && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight;
+            int threshold = 32;
+            if (X >= _spritesModule.Scroll.X - threshold
+              && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth + threshold
+              && Y >= _spritesModule.Scroll.Y - threshold
+              && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight + threshold)
+            {
+                return BoundsCheck.OutOfBounds;
+            }
+
+            return BoundsCheck.FarOutOfBounds;
         }
     }
 }

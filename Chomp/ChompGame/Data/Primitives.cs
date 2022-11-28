@@ -309,6 +309,8 @@ namespace ChompGame.Data
         private readonly int _address;
         private readonly byte _shift;
         private readonly byte _mask;
+
+        public int Address => _address;
             
         public TwoBit(SystemMemory memory, int address, int shift)
         {
@@ -340,6 +342,8 @@ namespace ChompGame.Data
         where T : Enum
     {
         private TwoBit _value;
+
+        public int Address => _value.Address;
 
         public TwoBitEnum(SystemMemory memory, int address, int shift)  
         {

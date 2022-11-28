@@ -19,8 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
-            if (DestroyIfOutOfBounds())
-                return;
+            HideOrDestroyIfOutOfBounds();
 
             var sprite = GetSprite();
 
@@ -48,8 +47,7 @@ namespace ChompGame.MainGame.SpriteControllers
             
             if (_state.Value == 40 || _state.Value == 60)
             {
-                sprite.Tile = 0;
-                SpriteIndex = 255;
+                Destroy();
             }
             else  if (_state.Value > 40)
             {

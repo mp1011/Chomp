@@ -33,6 +33,17 @@ namespace ChompGame.Data
             Index = newIndex;
         }
 
+        public void Advance(int steps, int extraRowSkip)
+        {
+            while(steps-- > 0)
+            {
+                if(Next())
+                {
+                    Y += (byte)extraRowSkip;
+                }
+            }
+        }
+
         public virtual bool Next() 
         {
             if (X == Width - 1)

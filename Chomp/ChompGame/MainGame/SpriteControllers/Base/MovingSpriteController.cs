@@ -9,6 +9,12 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     {
         public SpriteDefinition _spriteDefinition;
 
+        public WorldSpriteStatus Status
+        {
+            get => WorldSprite.Status;
+            set => WorldSprite.Status = value;
+        }
+
         public byte WalkSpeed =>
             _spriteDefinition.MovementSpeed switch 
             {
@@ -93,11 +99,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
+                memoryBuilder: memoryBuilder,
                 spritesModule: _spritesModule,
-                spriteIndex: memoryBuilder.AddByte(spriteIndex),
                 motion: Motion.CurrentMotion,
-                scroller: worldScroller,
-                position: memoryBuilder.AddExtendedPoint());          
+                scroller: worldScroller);          
         }
 
         public void Update()

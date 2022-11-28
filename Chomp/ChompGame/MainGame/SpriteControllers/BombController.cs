@@ -37,9 +37,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
-            if (DestroyIfOutOfBounds())
-                return;
-
+            HideOrDestroyIfOutOfBounds();
+              
             if(_state.Value >= (int)BombState.Explode)
             {
                 Motion.Stop();

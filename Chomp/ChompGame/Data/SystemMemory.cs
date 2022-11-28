@@ -31,6 +31,9 @@ namespace ChompGame.Data
             }
             set
             {
+                if (index == 1183)
+                    GameDebug.NoOp();
+
                 _memory[index] = value;
             }
         }

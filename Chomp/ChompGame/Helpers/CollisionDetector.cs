@@ -15,10 +15,38 @@ namespace ChompGame.Helpers
         public bool IsOnGround { get; set; }
     }
 
+    /// <summary>
+    /// adds 2 tiles to Y to account for status bar
+    /// </summary>
+    class BitPlaneForCollision : IGrid<byte>
+    {
+        private NBitPlane _realMap;
+        private const int _statusBarRows = 2;
+
+        public BitPlaneForCollision(NBitPlane realMap)
+        {
+            _realMap = realMap;
+        }
+
+        public byte this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public byte this[int x, int y]
+        {
+            get => _realMap[x, y - _statusBarRows];
+            set => _realMap[x, y - _statusBarRows] = value;
+        }
+        public int Width => _realMap.Width;
+
+        public int Height => _realMap.Height + _statusBarRows;
+
+        public int Bytes => _realMap.Bytes;
+
+        public byte ValueFromChar(char s) => _realMap.ValueFromChar(s);
+    }
+
     class CollisionDetector 
     {
         private readonly Specs _specs;
-        private SubsectionNBitPlane _levelTileMap;
+        private BitPlaneForCollision _levelTileMap;
        
         public CollisionDetector(Specs specs)
         {
@@ -27,9 +55,7 @@ namespace ChompGame.Helpers
 
         public void Initialize(SceneDefinition sceneDefinition, NBitPlane levelTileMap)
         {
-            _levelTileMap = new SubsectionNBitPlane(levelTileMap, new Point(0, sceneDefinition.GroundLow),
-                sceneDefinition.GetLevelTileWidth(_specs),
-                sceneDefinition.GetLevelTileHeight(_specs));
+            _levelTileMap = new BitPlaneForCollision(levelTileMap);
         }
 
         public bool CheckCollision(MovingSprite s1, MovingSprite s2)

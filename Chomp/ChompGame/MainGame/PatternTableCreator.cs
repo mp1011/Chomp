@@ -30,6 +30,14 @@ namespace ChompGame.MainGame
                 new Rectangle(0, 0, 2, 2),
                 specs);
 
+            //bomb 
+            CopyPatternTableRegion(
+                masterPatternTableImage,
+                masterPatternTable,
+                new Rectangle(5, 1, 1, 1),
+                specs);
+
+
             //lizard enemy
             CopyPatternTableRegion(
               masterPatternTableImage,
@@ -58,13 +66,7 @@ namespace ChompGame.MainGame
               new Rectangle(4, 1, 1, 1),
               specs);
 
-            //bomb 
-            CopyPatternTableRegion(
-                masterPatternTableImage,
-                masterPatternTable,
-                new Rectangle(5, 1, 1, 1),
-                specs);
-
+          
             //text and health guage
             CopyPatternTableRegion(
                masterPatternTableImage,
@@ -76,9 +78,8 @@ namespace ChompGame.MainGame
             CopyPatternTableRegion(
                masterPatternTableImage,
                masterPatternTable,
-               new Rectangle(0, 8, 8, 1),
+               new Rectangle(0, 8, 7, 1),
                 specs);
-
     
             //grass
             CopyPatternTableRegion(
@@ -163,27 +164,6 @@ namespace ChompGame.MainGame
 
                     masterPatternTable[x, y] = (byte)pixelIndex;
                 }
-            }
-        }
-
-
-        public static void CreateVRAMPatternTable(
-            SceneDefinition sceneDefinition, 
-            NBitPlane masterPatternTable,
-            NBitPlane vramPatternTable,
-            SystemMemory memory,
-            Specs specs)
-        {
-
-            for (var regionIndex = 0; regionIndex < sceneDefinition.RegionCount; regionIndex++)
-            {
-                var region = sceneDefinition.GetRegion(regionIndex);
-                masterPatternTable.CopyTilesTo(
-                    vramPatternTable,
-                    region.TileRegion,
-                    region.TileDestination,
-                    specs,
-                    memory);
             }
         }
     }

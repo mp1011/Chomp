@@ -1,58 +1,85 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
-using Microsoft.Xna.Framework;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
 {
+    public enum ScrollStyle : byte
+    {
+        None=0,
+        NameTable=1,
+        Horizontal=2,
+        Vertical=3
+    }
+
+    [Flags]
+    public enum SpriteLoadFlags : byte
+    {
+        Player = 1,
+        Lizard = 2,
+        Bird = 4
+    }
+
     public enum LevelShape : byte
     {
-        Horizontal=0,
-        Vertical=1,
-        Square=2
+        Flat = 0,
+
+        //ScrollStyle 0
+        CornerStairs=1,
+        BigStair=2,
+        TShape=3,
+
+        //ScrollStyle 1
+        TwoHorizontalChambers=1,
+        TwoVerticalChambers=2,
+        FourChambers=3,
+
+        //ScrollStyle 2
+        LowVariance=1,
+        MediumVariance=2,
+        HighVariance=3,
+
+        //ScrollStyle 3
+        ZigZag=1,
+        Ladder=2
     }
 
     class SceneDefinition
     {
         private readonly SystemMemory _systemMemory;
-        
-        private readonly LowNibble _regionMapCount;
-        private readonly HighNibble _mapSize;
 
-        private readonly LowNibble _tileRow;
-        private readonly HighNibble _groundVariation;
+        //byte 0
+        private readonly TwoBitEnum<ScrollStyle> _scrollStyle;
+        private readonly TwoBitEnum<LevelShape> _levelShape;
+        private TwoBit _beginTiles;
+        private TwoBit _endTiles;
 
-        private readonly LowNibble _groundLowTile;
-        private readonly HighNibble _groundHighTile;
+        //byte 1
+        private GameByteEnum<SpriteLoadFlags> _sprites;
 
+        //byte 2
+        private readonly MaskedByte _parallaxTileBegin;
         private readonly TwoBit _groundFillTiles;
         private readonly TwoBit _groundTopTiles;
         private readonly GameBit _sideTiles;
 
-        private readonly TwoBitEnum<LevelShape> _shape;
+        //byte 3
+        private readonly LowNibble _bgTileRow;
+        private readonly TwoBit _parallaxSizeA;
+        private readonly TwoBit _parallaxSizeB;
 
-        //one bit remaining 
-
-        public int Address => _regionMapCount.Address;
+        public int Address => _scrollStyle.Address;
 
         public int RegionStartAddress => Address + 4;
 
-        public int TileRegionStartAddress => RegionStartAddress +
-            (RegionCount * PatternTableRegionMap.ByteLength);
 
-        public byte RegionCount => _regionMapCount.Value;
+        public int BgTile => 7;
 
-        public byte MapSize => _mapSize.Value;
+        public int BeginTiles => _beginTiles.Value;
 
-        public byte GroundHigh => _groundHighTile.Value;
-        
-        public byte GroundLow => _groundLowTile.Value;
+        public int EndTiles => _endTiles.Value;
 
-        public byte GroundVariation => _groundVariation.Value;
-
-        public int BlockTile => 8;
-
-        public int GroundFillStart => BlockTile + 1;
+        public int GroundFillStart => BgTile + 2;
 
         public int GroundFillEnd => GroundFillStart + _groundFillTiles.Value;
 
@@ -74,65 +101,93 @@ namespace ChompGame.MainGame.SceneModels
 
         public int RightTileEnd => RightTileBegin + (_sideTiles.Value ? 1 : 0);
 
-        public LevelShape Shape => _shape.Value;
-
         public byte TileRow
         {
-            get => _tileRow.Value;
+            get => _bgTileRow.Value;
         }
 
+        public int ParallaxLayerABeginTile => BeginTiles + _parallaxTileBegin.Value;
+
+        public int ParallaxLayerATiles => _parallaxSizeA.Value;
+
+        public int ParallaxLayerBTiles => _parallaxSizeB.Value;
+
+        public LevelShape LevelShape => _levelShape.Value;
+
+        public ScrollStyle ScrollStyle => _scrollStyle.Value;
+
+        public bool HasSprite(SpriteLoadFlags flag) => _sprites.Value.HasFlag(flag);
+
         public SceneDefinition(SystemMemoryBuilder memoryBuilder, 
-            byte tileRow,
-            byte mapSize,
-            LevelShape shape,
-            byte groundLowTile,
-            byte groundHighTile,
-            byte groundVariation,
+            ScrollStyle scrollStyle,
+            LevelShape levelShape,
+            byte beginTiles,
+            byte endTiles,
+            SpriteLoadFlags spriteLoadFlags,
             byte groundFillTiles,
             byte groundTopTiles,
-            byte sideTiles)
+            byte sideTiles,
+            byte tileRow,
+            byte parallaxTileBegin,
+            byte parallaxSizeA,
+            byte parallaxSizeB)
         {
 
             _systemMemory = memoryBuilder.Memory;
 
-            memoryBuilder.AddNibbles(ref _regionMapCount, ref _mapSize);
-            memoryBuilder.AddNibbles(ref _tileRow, ref _groundVariation);
-            memoryBuilder.AddNibbles(ref _groundLowTile, ref _groundHighTile);
-
-            _groundFillTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
-            _groundTopTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
-            _sideTiles = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
-            _shape = new TwoBitEnum<LevelShape>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 5);
-
+            _scrollStyle = new TwoBitEnum<ScrollStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
+            _levelShape = new TwoBitEnum<LevelShape>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
+            _beginTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
+            _endTiles = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
             memoryBuilder.AddByte();
 
-            _mapSize.Value = mapSize;
-            _groundHighTile.Value = groundHighTile;
-            _groundLowTile.Value = groundLowTile;
-            _groundVariation.Value = groundVariation;
+            _sprites = new GameByteEnum<SpriteLoadFlags>(memoryBuilder.AddByte());
+
+            _parallaxTileBegin = memoryBuilder.AddMaskedByte(Bit.Right3);
+            _groundFillTiles = new TwoBit(memoryBuilder.Memory, _parallaxTileBegin.Address, 3);
+            _groundTopTiles = new TwoBit(memoryBuilder.Memory, _parallaxTileBegin.Address, 5);
+            _sideTiles = new GameBit(_parallaxTileBegin.Address, Bit.Bit7, memoryBuilder.Memory);
+            
+            _bgTileRow = new LowNibble(memoryBuilder);
+            _parallaxSizeA = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
+            _parallaxSizeB = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+            memoryBuilder.AddByte();
+
+            _scrollStyle.Value = scrollStyle;
+            _levelShape.Value = levelShape;
+            _beginTiles.Value = beginTiles;
+            _endTiles.Value = endTiles;
+
+            _sprites.Value = spriteLoadFlags;
+
             _groundFillTiles.Value = (byte)(groundFillTiles-1);
             _groundTopTiles.Value = (byte)(groundTopTiles -1);
             _sideTiles.Value = sideTiles == 2;
-            _tileRow.Value = tileRow;
-            _shape.Value = shape;
+
+            _bgTileRow.Value = tileRow;
+
+            _parallaxTileBegin.Value = parallaxTileBegin;
+            _parallaxSizeA.Value = parallaxSizeA;
+            _parallaxSizeB.Value = parallaxSizeB;
         }
 
         public SceneDefinition(int address, SystemMemory systemMemory)
         {
-            _regionMapCount = new LowNibble(address, systemMemory);
-            _mapSize = new HighNibble(address, systemMemory);
+            _scrollStyle = new TwoBitEnum<ScrollStyle>(systemMemory, address, shift: 0);
+            _levelShape = new TwoBitEnum<LevelShape>(systemMemory, address, shift: 2);
+            _beginTiles = new TwoBit(systemMemory, address, 4);
+            _endTiles = new TwoBit(systemMemory, address, 6);
 
-            _tileRow = new LowNibble(address + 1, systemMemory);
-            _groundVariation = new HighNibble(address + 1, systemMemory);
+            _sprites = new GameByteEnum<SpriteLoadFlags>(new GameByte(address + 1, systemMemory));
 
-            _groundLowTile = new LowNibble(address + 2, systemMemory);
-            _groundHighTile = new HighNibble(address + 2, systemMemory);
+            _parallaxTileBegin = new MaskedByte(address + 2, Bit.Right3, systemMemory);
+            _groundFillTiles = new TwoBit(systemMemory, address + 2, 3);
+            _groundTopTiles = new TwoBit(systemMemory, address + 2, 5);
+            _sideTiles = new GameBit(address + 2, Bit.Bit7, systemMemory);
 
-            _groundFillTiles = new TwoBit(systemMemory, address + 3, 0);
-            _groundTopTiles = new TwoBit(systemMemory, address + 3, 2);
-            _sideTiles = new GameBit(address + 3, Bit.Bit4, systemMemory);
-
-            _shape = new TwoBitEnum<LevelShape>(systemMemory, address + 3, shift: 5);
+            _bgTileRow = new LowNibble(address + 3, systemMemory);
+            _parallaxSizeA = new TwoBit(systemMemory, address + 3, 4);
+            _parallaxSizeB = new TwoBit(systemMemory, address + 3, 6);
 
             _systemMemory = systemMemory;
         }
@@ -142,24 +197,6 @@ namespace ChompGame.MainGame.SceneModels
             return new PatternTableRegionMap(
                 RegionStartAddress + (index * PatternTableRegionMap.ByteLength),
                 _systemMemory);
-        }
-
-        public void AddPatternTableRegion(
-            SystemMemoryBuilder memoryBuilder,
-            InMemoryByteRectangle region,
-            Point destination)
-        {
-            _regionMapCount.Value++;
-
-            int address = memoryBuilder.CurrentAddress;
-            memoryBuilder.AddBytes(PatternTableRegionMap.ByteLength);
-
-            new NibbleRectangle(address, memoryBuilder.Memory)
-                .CopyFrom(region);
-
-            var pt = new NibblePoint(address + 2, memoryBuilder.Memory);
-            pt.X = (byte)destination.X;
-            pt.Y = (byte)destination.Y;
         }
 
         public int GetLeftSideTile(int row) => _sideTiles.Value
@@ -191,10 +228,15 @@ namespace ChompGame.MainGame.SceneModels
 
         public int GetLevelTileWidth(Specs specs)
         {
-            switch (Shape)
+            switch (ScrollStyle)
             {
-                case LevelShape.Horizontal:
-                    return (MapSize + 1) * specs.NameTableWidth;
+                case ScrollStyle.None:
+                case ScrollStyle.Vertical:
+                    return specs.ScreenWidth / specs.TileWidth;
+                case ScrollStyle.NameTable:
+                    return specs.NameTableWidth;
+                case ScrollStyle.Horizontal:
+                    return (specs.ScreenWidth / specs.TileWidth) * 5;              
                 default:
                     throw new NotImplementedException();
             }
@@ -202,10 +244,17 @@ namespace ChompGame.MainGame.SceneModels
 
         public int GetLevelTileHeight(Specs specs)
         {
-            switch (Shape)
+            int statusBarTiles = 2;
+
+            switch (ScrollStyle)
             {
-                case LevelShape.Horizontal:
-                    return specs.NameTableHeight;
+                case ScrollStyle.None:
+                case ScrollStyle.Horizontal:
+                    return (specs.ScreenHeight / specs.TileHeight) - statusBarTiles;
+                case ScrollStyle.NameTable:
+                    return specs.NameTableHeight - statusBarTiles;
+                case ScrollStyle.Vertical:
+                    return (specs.ScreenHeight / specs.TileHeight) * 5;
                 default:
                     throw new NotImplementedException();
             }

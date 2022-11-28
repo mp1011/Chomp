@@ -1,4 +1,5 @@
 ﻿using ChompGame.GameSystem;
+using ChompGame.MainGame;
 using ChompGame.MainGame.SpriteControllers.Base;
 using System;
 using System.Linq;
@@ -30,11 +31,13 @@ namespace ChompGame.Data
 
             for (byte i = 0; i < _items.Length; i++)
             {
-                if (_items[i].SpriteIndex != 255)
+                if (_items[i].Status != WorldSpriteStatus.Inactive)
                     continue;
 
                 _items[i].SpriteIndex = freeSpriteIndex;
+                _items[i].Status = WorldSpriteStatus.Active;
                 _items[i].ConfigureSprite(_spritesModule.GetSprite(freeSpriteIndex));
+
                 return _items[i];
             }
 
@@ -45,7 +48,7 @@ namespace ChompGame.Data
         {
             foreach(var item in _items)
             {
-                if (!skipIfInactive || item.SpriteIndex != 255)
+                if (!skipIfInactive || item.Status != WorldSpriteStatus.Inactive)
                 {
                     action(item);
                 }

@@ -69,19 +69,33 @@ namespace ChompGame.MainGame
                     _worldScrollY.Value / _specs.AttributeTableBlockSize,
                     copyWidth,
                     copyHeight),
-                destinationPoint: new Point(0, _sceneDefinition.GroundLow / _specs.AttributeTableBlockSize),
+                destinationPoint: new Point(0, 1),
                 specs: _specs,
                 memory: _tileModule.GameSystem.Memory);
 
             copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
-            copyHeight = (byte)Math.Min(_specs.NameTableHeight, _levelNameTable.Height);
-
+          
+            //top section
             _levelNameTable.CopyTo(
                 destination: _tileModule.NameTable,
-                source: new InMemoryByteRectangle(_worldScrollX.Value, _worldScrollY.Value, copyWidth, copyHeight),
-                destinationPoint: new Point(0, _sceneDefinition.GroundLow),
+                source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.ParallaxLayerABeginTile),
+                destinationPoint: new Point(0, 2),
                 specs: _specs,
                 memory: _tileModule.GameSystem.Memory);
+
+            int bottomSectionBegin = 2 + (_sceneDefinition.ParallaxLayerABeginTile + (_sceneDefinition.ParallaxLayerATiles * 2) + _sceneDefinition.ParallaxLayerBTiles);
+
+            int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
+
+            //bottom section
+            _levelNameTable.CopyTo(
+                destination: _tileModule.NameTable,
+                source: new InMemoryByteRectangle(_worldScrollX.Value, bottomSectionBegin, copyWidth, bottomSectionHeight),
+                destinationPoint: new Point(0, bottomSectionBegin  + 2),
+                specs: _specs,
+                memory: _tileModule.GameSystem.Memory);
+
+
         }
 
         private int AdjustWorldScroll()

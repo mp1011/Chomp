@@ -10,6 +10,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly TwoBit _palette;
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
+        public WorldSpriteStatus Status
+        {
+            get => WorldSprite.Status;
+            set => WorldSprite.Status = value;
+        }
 
         public byte Palette
         {
@@ -61,21 +66,27 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         }
 
-        public bool DestroyIfOutOfBounds()
+        public void HideOrDestroyIfOutOfBounds()
         {
-            if (!WorldSprite.IsInBounds())
+            var boundsCheck = WorldSprite.CheckInBounds();
+            if(boundsCheck == BoundsCheck.FarOutOfBounds)
             {
                 Destroy();
-                return true;
             }
-
-            return false;
+            else if(boundsCheck == BoundsCheck.OutOfBounds)
+            {
+                Status = WorldSpriteStatus.Hidden;
+            }
+            else
+            {
+                Status = WorldSpriteStatus.Active;
+            }
         }
 
         public void Destroy()
         {
             GetSprite().Tile = 0;
-            SpriteIndex = 255;
+            WorldSprite.Status = WorldSpriteStatus.Inactive;        
         }
 
         public Sprite GetSprite() => _movingSpriteController.GetSprite();

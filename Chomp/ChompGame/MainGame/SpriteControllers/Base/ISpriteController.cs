@@ -6,6 +6,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     {
         byte SpriteIndex { get; set; }
 
+        WorldSpriteStatus Status { get; set; }
+
         Sprite GetSprite();
 
         WorldSprite WorldSprite { get; }

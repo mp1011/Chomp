@@ -62,9 +62,9 @@ namespace ChompGame.Data
             Point destinationPoint,
             Specs specs)
         {           
-            for (int y = 0; y < source.Height * specs.TileHeight; y++)
+            for (int y = 0; y < source.Height; y++)
             {
-                for (int x = 0; x < source.Width * specs.TileWidth; x++)
+                for (int x = 0; x < source.Width; x++)
                 {
                     destination[destinationPoint.X + x, destinationPoint.Y + y] =
                         this[source.X + x, source.Y + y];

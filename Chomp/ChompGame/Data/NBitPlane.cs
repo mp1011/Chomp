@@ -219,66 +219,6 @@ namespace ChompGame.Data
         }
     }
 
-    public class SubsectionNBitPlane : IGrid<byte>
-    {
-        private NBitPlane _innerPlane;
-        private Point _innerPlanePosition;
-        
-        public SubsectionNBitPlane(NBitPlane innerPlane, Point innerPlanePosition, int outerWidth, int outerHeight)
-        {
-            _innerPlane = innerPlane;
-            _innerPlanePosition = innerPlanePosition;
-            Width = outerWidth;
-            Height = outerHeight;
-        }
-
-        public byte this[int index]
-        {
-            get
-            {
-                throw new NotImplementedException(); //implement if needed
-            }
-            set
-            {
-                throw new NotImplementedException(); //implement if needed
-            }
-        }
-
-        public byte this[int x, int y]
-        {
-            get
-            {
-                int subX = x - _innerPlanePosition.X;
-                int subY = y - _innerPlanePosition.Y;
-
-                if (subX < 0 || subX >= _innerPlane.Width)
-                    return 0;
-                else if (subY < 0 || subY >= _innerPlane.Height)
-                    return 0;
-                else
-                    return _innerPlane[subX, subY];
-            }
-            set
-            {
-                int subX = x - _innerPlanePosition.X;
-                int subY = y - _innerPlanePosition.Y;
-
-                if (subX < 0 || subX >= _innerPlane.Width)
-                    return;
-                else if (subY < 0 || subY >= _innerPlane.Height)
-                    return;
-                else
-                    _innerPlane[subX, subY] = value;
-            }
-        }
-
-        public int Width { get; }
-
-        public int Height { get; }
-
-        public int Bytes => _innerPlane.Bytes;
-
-        public byte ValueFromChar(char s) => _innerPlane.ValueFromChar(s);
-    }
+    
 
 }
