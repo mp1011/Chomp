@@ -109,7 +109,7 @@ namespace ChompGame.MainGame
 
         private void HandleParallax()
         {
-            int layerABegin = _sceneDefinition.ParallaxLayerABeginTile * _specs.TileHeight;
+            int layerABegin = (2+_sceneDefinition.ParallaxLayerABeginTile) * _specs.TileHeight;
             int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
             int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerBTiles * _specs.TileHeight;
             int parallaxEnd = layerCBegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
@@ -138,11 +138,7 @@ namespace ChompGame.MainGame
         //todo, build palettes into scene definition
         private void OnHBlank_Stage0()
         {
-            int layerABegin = _sceneDefinition.ParallaxLayerABeginTile * _specs.TileHeight;
-            int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
-            int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerBTiles * _specs.TileHeight;
-            int parallaxEnd = layerCBegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
-
+          
             //sky 
             if (_tileModule.ScreenPoint.Y == 8)
             {
@@ -154,7 +150,7 @@ namespace ChompGame.MainGame
             }
 
             //mountain layer 1
-            if (_tileModule.ScreenPoint.Y == layerBBegin)
+            if (_tileModule.ScreenPoint.Y == _sceneDefinition.LayerBBeginTile * _specs.TileHeight)
             {
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
@@ -164,7 +160,7 @@ namespace ChompGame.MainGame
             }
 
             //mountain layer 2
-            if (_tileModule.ScreenPoint.Y == layerCBegin)
+            if (_tileModule.ScreenPoint.Y == _sceneDefinition.LayerCBeginTile * _specs.TileHeight)
             {
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray1);
@@ -174,7 +170,7 @@ namespace ChompGame.MainGame
             }
 
             //background layer
-            if (_tileModule.ScreenPoint.Y == parallaxEnd)
+            if (_tileModule.ScreenPoint.Y == _sceneDefinition.ParallaxEndTile * _specs.TileHeight)
             {
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.BlueGray2);

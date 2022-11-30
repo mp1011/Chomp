@@ -1,14 +1,16 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 
 namespace ChompGame.MainGame.SceneModels
 {
     class SceneBuilder
     {
-        public static SceneDefinition SetupTestScene(SystemMemoryBuilder memoryBuilder)
+        public static SceneDefinition SetupTestScene(SystemMemoryBuilder memoryBuilder, Specs specs)
         {
             SceneDefinition testScene = new SceneDefinition(
+                specs: specs,
                 scrollStyle: ScrollStyle.Horizontal,
-                levelShape: LevelShape.Flat,
+                levelShape: LevelShape.LowVariance,
                 beginTiles:0,
                 endTiles:2,
                 spriteLoadFlags: SpriteLoadFlags.Player | SpriteLoadFlags.Bird | SpriteLoadFlags.Lizard,

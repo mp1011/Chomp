@@ -68,6 +68,17 @@ namespace ChompGame.MainGame.SpriteControllers
 
             var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
 
+            if(collisionInfo.XCorrection < 0 && Motion.XSpeed > 0)
+            {
+                Motion.XSpeed = 0;
+            }
+
+            if (collisionInfo.XCorrection > 0 && Motion.XSpeed < 0)
+            {
+                Motion.XSpeed = 0;
+            }
+
+
             if (_inputModule.Player1.RightKey.IsDown())
             {
                 Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;

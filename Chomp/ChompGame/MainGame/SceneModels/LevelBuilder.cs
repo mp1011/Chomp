@@ -32,7 +32,6 @@ namespace ChompGame.MainGame.SceneModels
             int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerBTiles;
             int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
          
-
             //mountain layer 1
             _tileModule.NameTable.SetFromString(0, layerBBegin,
                 @"00000500000005000000050000000500
@@ -50,35 +49,44 @@ namespace ChompGame.MainGame.SceneModels
             NBitPlane attributeTable = NBitPlane.Create(
                 memory.GetAddress(AddressLabels.FreeRAM) + nameTableBytes, memory, 
                 _specs.AttributeTableBitsPerBlock,
-               _sceneDefinition.GetLevelTileWidth(_specs) / _specs.AttributeTableBlockSize,
-               _sceneDefinition.GetLevelTileHeight(_specs) / _specs.AttributeTableBlockSize);
+               _sceneDefinition.LevelTileWidth / _specs.AttributeTableBlockSize,
+               _sceneDefinition.LevelTileHeight / _specs.AttributeTableBlockSize);
 
             return attributeTable;
         }
-
 
         public NBitPlane BuildNameTable(SystemMemory memory, int seed)
         {
             NBitPlane nameTable = NBitPlane.Create(memory.GetAddress(AddressLabels.FreeRAM), 
                 memory, 
                 _specs.NameTableBitPlanes,
-                _sceneDefinition.GetLevelTileWidth(_specs),
-                _sceneDefinition.GetLevelTileHeight(_specs));
+                _sceneDefinition.LevelTileWidth,
+                _sceneDefinition.LevelTileHeight);
 
-          
-            return SetupDefaultTiles(nameTable);
+
+            nameTable = AddEdgeTiles(nameTable);
+            nameTable = AddShapeTiles(nameTable, seed);
+
+            return nameTable;
         }
 
-        private NBitPlane SetupDefaultTiles(NBitPlane nameTable)
+        private NBitPlane AddEdgeTiles(NBitPlane nameTable)
         {
             return _sceneDefinition.ScrollStyle switch 
             {
-                ScrollStyle.Horizontal => _sceneDefinition.LevelShape switch 
-                {
-                    LevelShape.Flat => AddEdgeTiles(nameTable,
+                ScrollStyle.Horizontal => AddEdgeTiles(nameTable,
                                                    top: _sceneDefinition.BeginTiles,
-                                                   bottom: _sceneDefinition.EndTiles),
-                    _ => throw new NotImplementedException(),
+                                                   bottom: _sceneDefinition.EndTiles),             
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        private NBitPlane AddShapeTiles(NBitPlane nameTable, int seed)
+        {
+            return _sceneDefinition.ScrollStyle switch {
+                ScrollStyle.Horizontal => _sceneDefinition.LevelShape switch {
+                    LevelShape.Flat => nameTable,
+                    _ => AddGroundVariance(nameTable, seed)
                 },
                 _ => throw new NotImplementedException(),
             };
@@ -90,7 +98,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 for(var col = 0; col < nameTable.Width; col++)
                 {
-                    nameTable[row, col] = 9; //todo
+                    nameTable[row, col] = (byte)_sceneDefinition.GetGroundFillTile(row, col);
                 }
             }
 
@@ -98,7 +106,10 @@ namespace ChompGame.MainGame.SceneModels
             {
                 for (var col = 0; col < nameTable.Width; col++)
                 {
-                    nameTable[col, row] = 9; //todo
+                    if (row == nameTable.Height - bottom)
+                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundTopTile(col);
+                    else 
+                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundFillTile(row, col);
                 }
             }
 
@@ -106,6 +117,69 @@ namespace ChompGame.MainGame.SceneModels
                 throw new NotImplementedException();
 
             return nameTable;
+        }
+
+
+
+
+        private NBitPlane AddGroundVariance(NBitPlane nameTable, int seed)
+        {
+            var rng = new Random(seed);
+            int nextSectionBegin = 0;
+            int currentSectionBegin = 0;
+
+            int groundUpper = _sceneDefinition.ParallaxEndTile;
+            int groundLower = nameTable.Height;
+
+            int groundPosition = rng.Next(groundUpper, groundLower);
+            
+            for (var col = 0; col < nameTable.Width; col++)
+            {
+                for (var row = _sceneDefinition.ParallaxEndTile; row < nameTable.Height; row++)
+                {
+               
+                    if(col == nextSectionBegin)
+                    {
+                        nextSectionBegin = nextSectionBegin + GetNextGroundSectionWidth(rng);
+                        int nextGroundPosition = rng.Next(groundUpper, groundLower);
+                        if(nextGroundPosition == groundPosition)
+                        {
+                            nextGroundPosition = groundPosition - 1;
+                            if (nextGroundPosition < groundUpper)
+                                nextGroundPosition = groundPosition + 1;
+                        }
+
+                        groundPosition = nextGroundPosition;
+                        currentSectionBegin = col;
+                    }
+
+                    if (row < groundPosition)
+                        nameTable[col, row] = 0;
+                    else if (row == groundPosition && col == currentSectionBegin)
+                        nameTable[col, row] = (byte)_sceneDefinition.GroundLeftCorner;
+                    else if (row == groundPosition && col == nextSectionBegin - 1)
+                        nameTable[col, row] = (byte)_sceneDefinition.GroundRightCorner;
+                    else if (row == groundPosition)
+                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundTopTile(col);
+                    else if(col == currentSectionBegin)
+                        nameTable[col, row] = (byte)_sceneDefinition.GetLeftSideTile(row);
+                    else if (col == nextSectionBegin - 1)
+                        nameTable[col, row] = (byte)_sceneDefinition.GetRightSideTile(row);
+                    else 
+                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundFillTile(row,col);
+                }
+            }
+            
+            return nameTable;
+        }
+
+        private int GetNextGroundSectionWidth(Random rng)
+        {
+            return _sceneDefinition.LevelShape switch {
+                LevelShape.LowVariance => rng.Next(8, 16),
+                LevelShape.MediumVariance => rng.Next(6, 12),
+                _ => rng.Next(3, 6)
+            };
         }
 
         public void SetupVRAMPatternTable(

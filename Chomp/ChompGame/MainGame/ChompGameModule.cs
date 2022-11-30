@@ -101,7 +101,7 @@ namespace ChompGame.MainGame
 
             memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
 
-            SceneBuilder.SetupTestScene(memoryBuilder);
+            SceneBuilder.SetupTestScene(memoryBuilder, Specs);
         }
 
         private void AddSpriteDefinitions(SystemMemoryBuilder memoryBuilder)
@@ -231,7 +231,7 @@ namespace ChompGame.MainGame
         {
             //todo, ability to load scene by key 
             SceneDefinition testScene = new SceneDefinition(
-               GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory);
+               GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory, Specs);
 
             _levelBuilder = new LevelBuilder(testScene, _tileModule, Specs);
 
