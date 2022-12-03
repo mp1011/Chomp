@@ -6,7 +6,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class BulletController : ActorController, ICollidesWithPlayer
+    class BulletController : ActorController, ICollidesWithPlayer, IEnemyOrBulletSpriteController
     {
         public BulletController(
             SpritesModule spritesModule,

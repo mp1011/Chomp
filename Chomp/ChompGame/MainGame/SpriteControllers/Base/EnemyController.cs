@@ -4,7 +4,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {
-    abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb
+    abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, IEnemyOrBulletSpriteController
     {
         protected readonly ChompAudioService _audioService;
 

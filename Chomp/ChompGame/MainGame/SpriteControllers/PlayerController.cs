@@ -129,8 +129,7 @@ namespace ChompGame.MainGame.SpriteControllers
             bombController.DoThrow();
         }
 
-        public void CheckEnemyOrBulletCollisions<T>(SpriteControllerPool<T> sprites)
-            where T : class, ISpriteController, ICollidesWithPlayer
+        public void CheckEnemyOrBulletCollisions(IEnemyOrBulletSpriteControllerPool sprites)
         {
             if (_state.Value > 0)
                 return;

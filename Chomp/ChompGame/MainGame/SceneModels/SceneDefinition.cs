@@ -46,6 +46,8 @@ namespace ChompGame.MainGame.SceneModels
 
     class SceneDefinition
     {
+        public const int Bytes = 5;
+
         private const  int _statusBarTiles = 2;
 
         private readonly SystemMemory _systemMemory;
@@ -75,9 +77,12 @@ namespace ChompGame.MainGame.SceneModels
         private readonly GameByte _partsAddress;
 
         public int Address => _scrollStyle.Address;
-
-        public int RegionStartAddress => Address + 4;
-
+        
+        public byte PartsAddress
+        {
+            get => _partsAddress.Value;
+            set => _partsAddress.Value = value;
+        }
 
         public int BgTile => 7;
 
@@ -165,7 +170,7 @@ namespace ChompGame.MainGame.SceneModels
             _parallaxSizeB = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
             memoryBuilder.AddByte();
 
-            memoryBuilder.AddByte(); //parts address
+            _partsAddress = memoryBuilder.AddByte(); //parts address
 
             _scrollStyle.Value = scrollStyle;
             _levelShape.Value = levelShape;
@@ -208,11 +213,9 @@ namespace ChompGame.MainGame.SceneModels
             _systemMemory = systemMemory;
         }
 
-        public PatternTableRegionMap GetRegion(int index)
-        {
-            return new PatternTableRegionMap(
-                RegionStartAddress + (index * PatternTableRegionMap.ByteLength),
-                _systemMemory);
+        public SceneDefinition(Level level, SystemMemory memory, Specs specs)
+            :this(memory.GetAddress(AddressLabels.SceneDefinitions) + (int)level, memory,specs)
+        { 
         }
 
         public int GetLeftSideTile(int row) => _sideTiles.Value

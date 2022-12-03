@@ -6,11 +6,21 @@ using System.Linq;
 
 namespace ChompGame.Data
 {
-    class SpriteControllerPool<T>
+    interface ISpriteControllerPool
+    {
+        void Execute(Action<ISpriteController> action, bool skipIfInactive = true);
+    }
+
+    interface IEnemyOrBulletSpriteControllerPool : ISpriteControllerPool
+    {
+        void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true);
+    }
+
+    class SpriteControllerPool<T> : ISpriteControllerPool
         where T:class, ISpriteController
     {
         private readonly SpritesModule _spritesModule;
-        private readonly T[] _items;
+        protected readonly T[] _items;
          
         public SpriteControllerPool(
             int size, 
@@ -54,7 +64,36 @@ namespace ChompGame.Data
                 }
             }
         }
-
-
+        public void Execute(Action<ISpriteController> action, bool skipIfInactive = true)
+        {
+            foreach (var item in _items)
+            {
+                if (!skipIfInactive || item.Status != WorldSpriteStatus.Inactive)
+                {
+                    action(item);
+                }
+            }
+        }
     }
+
+    class EnemyOrBulletSpriteControllerPool<T> : SpriteControllerPool<T>, IEnemyOrBulletSpriteControllerPool
+        where T : class, IEnemyOrBulletSpriteController
+    {
+        public EnemyOrBulletSpriteControllerPool(int size, SpritesModule spritesModule, Func<T> generateController) 
+            : base(size, spritesModule, generateController)
+        {
+        }
+
+        public void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true)
+        {
+            foreach (var item in _items)
+            {
+                if (!skipIfInactive || item.Status != WorldSpriteStatus.Inactive)
+                {
+                    action(item);
+                }
+            }
+        }
+    }
+
 }

@@ -3,11 +3,16 @@ using ChompGame.GameSystem;
 
 namespace ChompGame.MainGame.SceneModels
 {
+    public enum Level:byte 
+    {
+        TestScene=0,
+    }
+
     class SceneBuilder
     {
-        public static SceneDefinition SetupTestScene(SystemMemoryBuilder memoryBuilder, Specs specs)
+        public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
         {
-            SceneDefinition testScene = new SceneDefinition(
+            new SceneDefinition(
                 specs: specs,
                 scrollStyle: ScrollStyle.Horizontal,
                 levelShape: LevelShape.MediumVariance,
@@ -22,8 +27,16 @@ namespace ChompGame.MainGame.SceneModels
                 parallaxTileBegin:3,
                 parallaxSizeA: 2,
                 parallaxSizeB: 2);
+        }
 
-            return testScene;
+        public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
+        {
+            SceneDefinition testScene = new SceneDefinition(Level.TestScene, builder.Memory, specs);
+
+            testScene.PartsAddress = 0;
+
+            new ScenePart(builder, ScenePartType.EnemyType1, 6, 6, testScene);
+
         }
     }
 }
