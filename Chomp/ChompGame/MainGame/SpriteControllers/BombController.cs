@@ -35,24 +35,25 @@ namespace ChompGame.MainGame.SpriteControllers
             _isThrown = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
         }
 
-        public void Update()
+        protected override void UpdateActive()
         {
-            HideOrDestroyIfOutOfBounds();
-              
             if(_state.Value >= (int)BombState.Explode)
             {
                 Motion.Stop();
 
-                var sprite = GetSprite();
-                sprite.Palette = 3;
-                sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
+                if (WorldSprite.Status == WorldSpriteStatus.Active)
+                {
+                    var sprite = GetSprite();
+                    sprite.Palette = 3;
+                    sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
+                }
 
                 if (_levelTimer.IsMod(2))
                     _state.Value++;
 
                 if(_state.Value >= (int)BombState.Destroy)
                 {
-                    Destroy();
+                    WorldSprite.Destroy();
                 }
             }
             else if (_state.Value < (int)BombState.RiseBegin)
@@ -83,8 +84,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _playerController.CheckBombThrow(this);
             }
-
-            WorldSprite.UpdateSpritePosition();
         }
 
         public void DoThrow()

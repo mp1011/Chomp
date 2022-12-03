@@ -129,7 +129,7 @@ namespace ChompGame.MainGame.SceneModels
             int currentSectionBegin = 0;
 
             int groundUpper = _sceneDefinition.ParallaxEndTile;
-            int groundLower = nameTable.Height;
+            int groundLower = nameTable.Height+1;
 
             int groundPosition = rng.Next(groundUpper, groundLower);
             

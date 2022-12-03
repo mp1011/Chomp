@@ -71,6 +71,9 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBit _parallaxSizeA;
         private readonly TwoBit _parallaxSizeB;
 
+        //byte 4
+        private readonly GameByte _partsAddress;
+
         public int Address => _scrollStyle.Address;
 
         public int RegionStartAddress => Address + 4;
@@ -162,6 +165,8 @@ namespace ChompGame.MainGame.SceneModels
             _parallaxSizeB = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
             memoryBuilder.AddByte();
 
+            memoryBuilder.AddByte(); //parts address
+
             _scrollStyle.Value = scrollStyle;
             _levelShape.Value = levelShape;
             _beginTiles.Value = beginTiles;
@@ -199,6 +204,7 @@ namespace ChompGame.MainGame.SceneModels
             _parallaxSizeA = new TwoBit(systemMemory, address + 3, 4);
             _parallaxSizeB = new TwoBit(systemMemory, address + 3, 6);
 
+            _partsAddress = new GameByte(address + 4, systemMemory);
             _systemMemory = systemMemory;
         }
 
@@ -241,7 +247,7 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.None => _specs.ScreenWidth / _specs.TileWidth,
                 ScrollStyle.Vertical => _specs.ScreenWidth / _specs.TileWidth,
                 ScrollStyle.NameTable => _specs.NameTableWidth,
-                ScrollStyle.Horizontal => (_specs.ScreenWidth / _specs.TileWidth) * 5,
+                ScrollStyle.Horizontal => (_specs.ScreenWidth / _specs.TileWidth) * 4,
                 _ => throw new NotImplementedException()
             };
 
@@ -250,7 +256,7 @@ namespace ChompGame.MainGame.SceneModels
                  ScrollStyle.None => (_specs.ScreenHeight / _specs.TileHeight) - _statusBarTiles,
                  ScrollStyle.Horizontal => (_specs.ScreenHeight / _specs.TileHeight) - _statusBarTiles,
                  ScrollStyle.NameTable => _specs.NameTableHeight - _statusBarTiles,
-                 ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 5,
+                 ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 4,
                  _ => throw new NotImplementedException()
              };
     }

@@ -12,6 +12,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         WorldSprite WorldSprite { get; }
 
-        void ConfigureSprite(Sprite sprite);
+        void InitializeSprite();
     }
 }

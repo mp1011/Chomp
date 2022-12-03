@@ -41,7 +41,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SpriteIndex = 0;
         }
 
-        public void Update()
+        protected override void UpdateActive()
         {
             if(_state.Value > 0)
             {
@@ -100,8 +100,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
                 Motion.YSpeed = -_movingSpriteController.JumpSpeed;
             }
-
-            WorldSprite.UpdateSpritePosition();
         }
 
         public void CheckBombPickup(SpriteControllerPool<BombController> bombs)

@@ -10,6 +10,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly TwoBit _palette;
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
+        private readonly SpritesModule _spritesModule;
+
         public WorldSpriteStatus Status
         {
             get => WorldSprite.Status;
@@ -30,6 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             GameByte levelTimer,
             Bit stateMask = Bit.Right6)
         {
+            _spritesModule = spritesModule;
             _state = memoryBuilder.AddMaskedByte(stateMask);
             _palette = new TwoBit(memoryBuilder.Memory, _state.Address, 6);
 
@@ -53,9 +56,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _movingSpriteController.SpriteIndex = value;
         }
 
-        public void ConfigureSprite(Sprite sprite)
+        public void InitializeSprite()
         {
-            _movingSpriteController.ConfigureSprite(sprite);
+            Status = WorldSpriteStatus.Active;
+            var sprite = GetSprite();
+            WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = _palette.Value;
             _state.Value = 0;
             OnSpriteCreated(sprite);
@@ -66,29 +71,41 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         }
 
-        public void HideOrDestroyIfOutOfBounds()
+        private void HideOrDestroyIfOutOfBounds()
         {
             var boundsCheck = WorldSprite.CheckInBounds();
+
             if(boundsCheck == BoundsCheck.FarOutOfBounds)
             {
-                Destroy();
+                WorldSprite.Destroy();
             }
             else if(boundsCheck == BoundsCheck.OutOfBounds)
             {
-                Status = WorldSpriteStatus.Hidden;
+                WorldSprite.Hide();
             }
-            else
+            else if(Status != WorldSpriteStatus.Active)
             {
-                Status = WorldSpriteStatus.Active;
+                WorldSprite.Show();
+                if (Status == WorldSpriteStatus.Active)
+                {
+                    InitializeSprite();
+                }
             }
-        }
-
-        public void Destroy()
-        {
-            GetSprite().Tile = 0;
-            WorldSprite.Status = WorldSpriteStatus.Inactive;        
         }
 
         public Sprite GetSprite() => _movingSpriteController.GetSprite();
+
+        public void Update()
+        {
+            HideOrDestroyIfOutOfBounds();
+
+            if (WorldSprite.Status == WorldSpriteStatus.Active)
+            {
+                UpdateActive();
+                WorldSprite.UpdateSprite();
+            }
+        }
+
+        protected abstract void UpdateActive();
     }
 }

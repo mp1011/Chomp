@@ -239,12 +239,20 @@ namespace ChompGame.Data
         }
     }
 
-    public class LowNibble
+
+    public abstract class Nibble
+    {
+        public abstract byte Value { get; set; }
+        
+        public abstract int Address { get; }
+    }
+
+    public class LowNibble : Nibble
     {
         private int _address;
         private SystemMemory _memory;
 
-        public int Address => _address;
+        public override int Address => _address;
 
         public LowNibble(SystemMemoryBuilder memoryBuilder)
         {
@@ -257,7 +265,7 @@ namespace ChompGame.Data
             _memory = memory;
         }
 
-        public byte Value
+        public override byte Value
         {
             get
             {
@@ -271,10 +279,13 @@ namespace ChompGame.Data
         }
     }
 
-    public class HighNibble
+
+    public class HighNibble : Nibble
     {
         private int _address;
         private SystemMemory _memory;
+
+        public override int Address => _address;
 
         public HighNibble(SystemMemoryBuilder memoryBuilder)
         {
@@ -288,7 +299,7 @@ namespace ChompGame.Data
             _memory = memory;
         }
 
-        public byte Value
+        public override byte Value
         {
             get
             {
@@ -365,5 +376,35 @@ namespace ChompGame.Data
         }
     }
 
-    
+    public class FourBitEnum<T>
+        where T : Enum
+    {
+        private Nibble _value;
+
+        public int Address => _value.Address;
+
+        public FourBitEnum(SystemMemory memory, int address, bool low)
+        {
+            if (low)
+                _value = new LowNibble(address, memory);
+            else 
+                _value = new HighNibble(address, memory);
+        }
+
+        public T Value
+        {
+            get
+            {
+                object currentValue = _value.Value;
+                return (T)currentValue;
+            }
+            set
+            {
+                var byteValue = (byte)(object)value;
+                _value.Value = byteValue;
+            }
+        }
+    }
+
+
 }

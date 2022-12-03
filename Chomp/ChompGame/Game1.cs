@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ChompGame
@@ -83,6 +84,7 @@ namespace ChompGame
             _filter.SetData(_filterPixels);
         }
 
+      
         protected override void Draw(GameTime gameTime)
         {
             _renderTimer.Restart();

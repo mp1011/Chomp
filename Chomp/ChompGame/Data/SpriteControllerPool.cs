@@ -36,7 +36,7 @@ namespace ChompGame.Data
 
                 _items[i].SpriteIndex = freeSpriteIndex;
                 _items[i].Status = WorldSpriteStatus.Active;
-                _items[i].ConfigureSprite(_spritesModule.GetSprite(freeSpriteIndex));
+                _items[i].InitializeSprite();
 
                 return _items[i];
             }

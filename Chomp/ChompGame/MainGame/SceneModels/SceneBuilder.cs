@@ -10,7 +10,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition testScene = new SceneDefinition(
                 specs: specs,
                 scrollStyle: ScrollStyle.Horizontal,
-                levelShape: LevelShape.LowVariance,
+                levelShape: LevelShape.MediumVariance,
                 beginTiles:0,
                 endTiles:2,
                 spriteLoadFlags: SpriteLoadFlags.Player | SpriteLoadFlags.Bird | SpriteLoadFlags.Lizard,

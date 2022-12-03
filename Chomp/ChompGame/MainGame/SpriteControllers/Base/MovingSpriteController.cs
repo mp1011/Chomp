@@ -5,9 +5,9 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {
-    class MovingSpriteController : ISpriteController
+    class MovingSpriteController// : ISpriteController
     {
-        public SpriteDefinition _spriteDefinition;
+        private SpriteDefinition _spriteDefinition;
 
         public WorldSpriteStatus Status
         {
@@ -81,7 +81,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => WorldSprite.SpriteIndex.Value = value;
         }
 
-        public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex);
+        public Sprite GetSprite() => WorldSprite.GetSprite();
+
+        public void ConfigureSprite(Sprite s) => WorldSprite.ConfigureSprite(s);
 
         public MovingSpriteController(
             SpritesModule spritesModule,
@@ -99,6 +101,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
+                spriteDefinition: spriteDefinition,
                 memoryBuilder: memoryBuilder,
                 spritesModule: _spritesModule,
                 motion: Motion.CurrentMotion,
@@ -107,6 +110,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void Update()
         {
+            if (WorldSprite.Status != WorldSpriteStatus.Active)
+                return;
+
             if (FallSpeed != 0)
             {
                 Motion.TargetYSpeed = FallSpeed;
@@ -148,12 +154,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             }
         }
 
-        public void ConfigureSprite(Sprite sprite)
-        {
-            sprite.Tile = _spriteDefinition.Tile;
-            sprite.Tile2Offset = _spriteDefinition.SecondTileOffset;
-            sprite.SizeX = _spriteDefinition.SizeX;
-            sprite.SizeY = _spriteDefinition.SizeY;
-        }
+       
     }
 }

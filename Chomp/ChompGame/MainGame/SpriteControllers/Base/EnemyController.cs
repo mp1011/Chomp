@@ -25,21 +25,17 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             Destroyed=63
         }
 
-        public void Update()
-        {
-            HideOrDestroyIfOutOfBounds();
-      
+        protected override void UpdateActive()
+        {      
             if (_state.Value >= (int)State.Dying)
             {
                  _state.Value++;
 
                 if (_state.Value == (int)State.Destroyed)
-                    Destroy();
+                    WorldSprite.Destroy();
             }
             else
                 UpdateBehavior();
-
-            WorldSprite.UpdateSpritePosition();
         }
 
         protected abstract void UpdateBehavior();
@@ -54,7 +50,12 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 return;
 
             _state.Value = 40;
-            GetSprite().Palette = 3;
+
+            if (WorldSprite.Status == WorldSpriteStatus.Active)
+            {
+                GetSprite().Palette = 3;
+            }
+
             Motion.Stop();
 
             _audioService.PlaySound(ChompAudioService.Sound.Noise);

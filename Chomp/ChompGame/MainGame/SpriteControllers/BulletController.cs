@@ -17,9 +17,10 @@ namespace ChompGame.MainGame.SpriteControllers
         { 
         }
 
-        public void Update()
+        protected override void UpdateActive() 
         {
-            HideOrDestroyIfOutOfBounds();
+            if (WorldSprite.Status != WorldSpriteStatus.Active)
+                return;
 
             var sprite = GetSprite();
 
@@ -47,14 +48,12 @@ namespace ChompGame.MainGame.SpriteControllers
             
             if (_state.Value == 40 || _state.Value == 60)
             {
-                Destroy();
+                WorldSprite.Destroy();
             }
             else  if (_state.Value > 40)
             {
                 sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
             }
-
-            WorldSprite.UpdateSpritePosition();
         }
 
         public void HandlePlayerCollision(WorldSprite player)

@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
@@ -21,7 +22,8 @@ namespace ChompGame.MainGame
 
     class WorldSprite
     {
-        private readonly Specs _specs;
+        private readonly Specs _specs; 
+        private SpriteDefinition _spriteDefinition;
         private readonly SpritesModule _spritesModule;
         private readonly WorldScroller _scroller;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
@@ -81,12 +83,14 @@ namespace ChompGame.MainGame
         public WorldSprite(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,
+            SpriteDefinition spriteDefinition,
             SpritesModule spritesModule,
             PrecisionMotion motion, 
             WorldScroller scroller)
         {
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
             _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 6);
+            _spriteDefinition = spriteDefinition;
                 
             _position = memoryBuilder.AddExtendedPoint();
             _scroller = scroller;
@@ -97,8 +101,11 @@ namespace ChompGame.MainGame
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
 
-        public void UpdateSpritePosition()
+        public void UpdateSprite()
         {
+            if (Status != WorldSpriteStatus.Active)
+                return;
+
             var sprite = GetSprite();
 
             int spriteX = (X - _scroller.WorldScrollPixelX).NMod(_specs.NameTablePixelWidth);
@@ -111,24 +118,71 @@ namespace ChompGame.MainGame
 
         public BoundsCheck CheckInBounds()
         {
-            if (X >= _spritesModule.Scroll.X
-                && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth
-                && Y >= _spritesModule.Scroll.Y
-                && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight)
+            if (X >= _scroller.WorldScrollPixelX
+                && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth
+                && Y >= _scroller.WorldScrollPixelY
+                && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight)
             {
                 return BoundsCheck.InBounds;
             }
 
             int threshold = 32;
-            if (X >= _spritesModule.Scroll.X - threshold
-              && X < _spritesModule.Scroll.X + _specs.NameTablePixelWidth + threshold
-              && Y >= _spritesModule.Scroll.Y - threshold
-              && Y < _spritesModule.Scroll.Y + _specs.NameTablePixelHeight + threshold)
+            if (X >= _scroller.WorldScrollPixelX - threshold
+              && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth + threshold
+              && Y >= _scroller.WorldScrollPixelY - threshold
+              && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight + threshold)
             {
                 return BoundsCheck.OutOfBounds;
             }
 
             return BoundsCheck.FarOutOfBounds;
         }
+
+        public void ConfigureSprite(Sprite sprite)
+        {
+            sprite.Tile = _spriteDefinition.Tile;
+            sprite.Tile2Offset = _spriteDefinition.SecondTileOffset;
+            sprite.SizeX = _spriteDefinition.SizeX;
+            sprite.SizeY = _spriteDefinition.SizeY;
+        }
+
+        public void Show()
+        {
+            if (Status == WorldSpriteStatus.Active)
+                return;
+
+            var newSpriteIndex = _spritesModule.GetFreeSpriteIndex();
+            if (newSpriteIndex == 255)
+            {
+                Status = WorldSpriteStatus.Hidden;
+            }
+            else
+            {
+                SpriteIndex.Value = newSpriteIndex;
+                Status = WorldSpriteStatus.Active;
+                ConfigureSprite(GetSprite());
+            }
+        }
+
+        public void Hide()
+        {
+            if (Status == WorldSpriteStatus.Active)
+            {
+                GetSprite().Tile = 0;
+            }
+
+            Status = WorldSpriteStatus.Hidden;
+        }
+
+        public void Destroy()
+        {
+            if (Status == WorldSpriteStatus.Active)
+            {
+                GetSprite().Tile = 0;
+            }
+
+            Status = WorldSpriteStatus.Inactive;
+        }
+
     }
 }

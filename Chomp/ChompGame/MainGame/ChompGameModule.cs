@@ -13,7 +13,8 @@ namespace ChompGame.MainGame
         NameTables,
         SceneDefinitions,
         SpriteDefinitions,
-        FreeRAM
+        SceneParts,
+        FreeRAM,
     }
 
     class ChompGameModule : Module, IMasterModule
@@ -284,7 +285,8 @@ namespace ChompGame.MainGame
             _playerController.WorldSprite.X = 16;
             _playerController.WorldSprite.Y = 16;
             _playerController.Palette = 1;
-            _playerController.ConfigureSprite(_playerController.GetSprite());
+
+            _playerController.InitializeSprite();
 
 
             //var lizard1 = _lizardEnemyControllers
@@ -314,12 +316,12 @@ namespace ChompGame.MainGame
             bomb.WorldSprite.Y = 16;
             bomb.Palette = 0;
 
-            var bomb2 = _bombControllers
-              .TryAddNew();
+            //var bomb2 = _bombControllers
+            //  .TryAddNew();
 
-            bomb2.WorldSprite.X = 50;
-            bomb2.WorldSprite.Y = 16;
-            bomb2.Palette = 0;
+            //bomb2.WorldSprite.X = 50;
+            //bomb2.WorldSprite.Y = 16;
+            //bomb2.Palette = 0;
 
             _lizardBulletControllers.Execute(b => b.Palette = 3, 
                 skipIfInactive:false);
@@ -375,11 +377,11 @@ namespace ChompGame.MainGame
 
             if(_worldScroller.Update())
             {
-                _playerController.WorldSprite.UpdateSpritePosition();
-                _lizardEnemyControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
-                _lizardBulletControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
-                _birdEnemyControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
-                _bombControllers.Execute(c => c.WorldSprite.UpdateSpritePosition());
+                _playerController.WorldSprite.UpdateSprite();
+                _lizardEnemyControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                _lizardBulletControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                _birdEnemyControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                _bombControllers.Execute(c => c.WorldSprite.UpdateSprite());
             }
 
             _rasterInterrupts.Update();
