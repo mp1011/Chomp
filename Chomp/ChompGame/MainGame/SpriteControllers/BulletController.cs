@@ -1,6 +1,5 @@
-﻿using ChompGame.Data;
+﻿using ChompGame.Data.Memory;
 using ChompGame.Extensions;
-using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -9,11 +8,9 @@ namespace ChompGame.MainGame.SpriteControllers
     class BulletController : ActorController, ICollidesWithPlayer, IEnemyOrBulletSpriteController
     {
         public BulletController(
-            SpritesModule spritesModule,
-            WorldScroller scroller,
-            GameByte levelTimer,
+            ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder, 
-            SpriteType spriteType) : base(spriteType, spritesModule, scroller, memoryBuilder, levelTimer)
+            SpriteType spriteType) : base(spriteType, gameModule, memoryBuilder)
         { 
         }
 
@@ -67,5 +64,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _movingSpriteController.Motion.TargetXSpeed = 0;
             _movingSpriteController.Motion.TargetYSpeed = 0;
         }
+
+        public bool HandleBombCollision(WorldSprite player) => false;
     }
 }

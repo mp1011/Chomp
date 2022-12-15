@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using System;
 using System.Collections.Generic;
 using System.Text;

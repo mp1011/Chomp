@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
@@ -20,21 +21,15 @@ namespace ChompGame.MainGame.SpriteControllers
         public bool IsHoldingBomb => _bombPickup.Value;
 
         public PlayerController(
-            SpritesModule spritesModule, 
-            WorldScroller scroller,
-            InputModule inputModule, 
-            StatusBar statusBar,
-            ChompAudioService audioService,
-            CollisionDetector collisionDetector,
-            GameByte levelTimer,
+            ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Player, spritesModule, scroller, memoryBuilder, levelTimer, Bit.Right4)
+            : base(SpriteType.Player, gameModule, memoryBuilder, Bit.Right4)
         {
-            _statusBar = statusBar;
-            _audioService = audioService;
+            _statusBar = gameModule.StatusBar;
+            _audioService = gameModule.AudioService;
 
-            _inputModule = inputModule;
-            _collisionDetector = collisionDetector;
+            _inputModule = gameModule.InputModule;
+            _collisionDetector = gameModule.CollissionDetector;
 
             _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
 

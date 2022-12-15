@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
@@ -24,13 +25,12 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         public BombController(
-            SpritesModule spritesModule,
-            WorldScroller scroller,
-            PlayerController playerController,
-            CollisionDetector collisionDetector, SystemMemoryBuilder memoryBuilder, GameByte levelTimer)
-            : base(SpriteType.Bomb, spritesModule, scroller, memoryBuilder, levelTimer, Bit.Right5)
+                ChompGameModule gameModule,
+                PlayerController playerController,
+                SystemMemoryBuilder memoryBuilder)
+            : base(SpriteType.Bomb, gameModule, memoryBuilder, Bit.Right5)
         {
-            _collisionDetector = collisionDetector;
+            _collisionDetector = gameModule.CollissionDetector;
             _playerController = playerController;
             _isThrown = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
         }
@@ -103,20 +103,19 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        public void CheckEnemyCollisions<T>(SpriteControllerPool<T> sprites)
-          where T : class, ISpriteController, ICollidesWithBomb
+        public void CheckEnemyCollisions(IEnemyOrBulletSpriteControllerPool sprites)
         {
             if (!_isThrown)
                 return;
 
             sprites.Execute(p =>
             {
-                if (p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
+                if (p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds)
+                    && p.HandleBombCollision(WorldSprite))
                 {
                     _isThrown.Value = false;
-                    p.HandleBombCollision(WorldSprite);
                     _state.Value = (int)BombState.Explode;
-                }
+                }                
             });
         }
 

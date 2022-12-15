@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteModels;
 
@@ -9,14 +10,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly ChompAudioService _audioService;
 
         protected EnemyController(SpriteType spriteType, 
-            SpritesModule spritesModule, 
-            WorldScroller scroller,
-            ChompAudioService audioService,
+            ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder, 
-            GameByte levelTimer, 
-            Bit stateMask = Bit.Right6) : base(spriteType, spritesModule, scroller, memoryBuilder, levelTimer, stateMask)
+            Bit stateMask = Bit.Right6) : base(spriteType, gameModule, memoryBuilder, stateMask)
         {
-            _audioService = audioService;
+            _audioService = gameModule.AudioService;
         }
 
         public enum State
@@ -44,10 +42,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         {
         }
 
-        public void HandleBombCollision(WorldSprite player)
+        public bool HandleBombCollision(WorldSprite player)
         {
             if (_state.Value >= (int)State.Dying)
-                return;
+                return false;
 
             _state.Value = 40;
 
@@ -59,6 +57,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             Motion.Stop();
 
             _audioService.PlaySound(ChompAudioService.Sound.Noise);
+            return true;
         }
     }
 }

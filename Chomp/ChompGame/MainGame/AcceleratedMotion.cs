@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using Microsoft.Xna.Framework;
 

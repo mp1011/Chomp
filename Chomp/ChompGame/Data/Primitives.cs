@@ -1,4 +1,5 @@
-﻿using ChompGame.Extensions;
+﻿using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using System;
 
 namespace ChompGame.Data

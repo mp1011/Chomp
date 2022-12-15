@@ -1,5 +1,6 @@
 ﻿using ChompGame.Audio;
 using ChompGame.Data;
+using ChompGame.Data.Memory;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using System.Linq;

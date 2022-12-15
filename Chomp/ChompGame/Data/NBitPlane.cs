@@ -31,6 +31,12 @@ namespace ChompGame.Data
             }
         }
 
+        public void Reset()
+        {
+            foreach (var plane in _planes)
+                plane.Reset();
+        }
+
         protected NBitPlane(int address, SystemMemory memory, int planeCount, int width, int height)
         {
             Address = address;

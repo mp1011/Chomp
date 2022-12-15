@@ -17,7 +17,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         void Update();
     }
 
-    interface IEnemyOrBulletSpriteController : ISpriteController, ICollidesWithPlayer
+    interface IEnemyOrBulletSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb
     {
 
     }

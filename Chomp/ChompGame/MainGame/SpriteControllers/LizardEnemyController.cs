@@ -1,6 +1,6 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.Extensions;
-using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
@@ -10,20 +10,16 @@ namespace ChompGame.MainGame.SpriteControllers
     class LizardEnemyController : EnemyController
     {
         private readonly CollisionDetector _collisionDetector;
-        private readonly SpriteControllerPool<BulletController> _lizardBulletControllers;
+        private readonly IEnemyOrBulletSpriteControllerPool _lizardBulletControllers;
 
         public LizardEnemyController(
-            SpriteControllerPool<BulletController> lizardBulletControllers,
-            SpritesModule spritesModule,
-            WorldScroller scroller,
-            ChompAudioService audioService,
-            CollisionDetector collisionDetector,
-            GameByte levelTimer,
+            IEnemyOrBulletSpriteControllerPool lizardBulletControllers,
+            ChompGameModule chompGameModule,
             SystemMemoryBuilder memoryBuilder)
-            : base(SpriteType.Lizard, spritesModule, scroller, audioService, memoryBuilder, levelTimer)
+            : base(SpriteType.Lizard, chompGameModule, memoryBuilder)
         {
             _lizardBulletControllers = lizardBulletControllers;
-            _collisionDetector = collisionDetector;
+            _collisionDetector = chompGameModule.CollissionDetector;
         }
 
         protected override void UpdateBehavior()

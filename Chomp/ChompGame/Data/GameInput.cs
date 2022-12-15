@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using ChompGame.Data.Memory;
+using Microsoft.Xna.Framework.Input;
 
 namespace ChompGame.Data
 {

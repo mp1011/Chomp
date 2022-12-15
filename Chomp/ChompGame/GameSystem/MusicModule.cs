@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 

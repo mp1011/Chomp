@@ -1,4 +1,5 @@
-﻿using ChompGame.GameSystem;
+﻿using ChompGame.Data.Memory;
+using ChompGame.GameSystem;
 
 namespace ChompGame.Data
 {

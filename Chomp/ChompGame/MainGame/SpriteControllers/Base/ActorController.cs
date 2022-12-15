@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteModels;
 
@@ -26,24 +27,22 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         protected ActorController(
             SpriteType spriteType,
-            SpritesModule spritesModule,
-            WorldScroller scroller,
+            ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder,
-            GameByte levelTimer,
             Bit stateMask = Bit.Right6)
         {
-            _spritesModule = spritesModule;
+            _spritesModule = gameModule.SpritesModule;
             _state = memoryBuilder.AddMaskedByte(stateMask);
             _palette = new TwoBit(memoryBuilder.Memory, _state.Address, 6);
 
             _movingSpriteController = new MovingSpriteController(
-               spritesModule,
-               levelTimer,
+               gameModule.SpritesModule,
+               gameModule.LevelTimer,
                memoryBuilder,
                spriteIndex: 255,
-               worldScroller: scroller,
+               worldScroller: gameModule.WorldScroller,
                spriteDefinition: new SpriteDefinition(spriteType, memoryBuilder.Memory));
-            _levelTimer = levelTimer;
+            _levelTimer = gameModule.LevelTimer;
         }
 
         public AcceleratedMotion Motion => _movingSpriteController.Motion;

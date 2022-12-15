@@ -1,5 +1,8 @@
 ﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteControllers;
+using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -7,25 +10,25 @@ namespace ChompGame.MainGame.SceneModels
 {
     class LevelBuilder
     {
-        private Specs _specs;
         private SceneDefinition _sceneDefinition;
-        private TileModule _tileModule;
+        private ChompGameModule _gameModule;
 
-        public LevelBuilder(SceneDefinition sceneDefinition, TileModule tileModule, Specs specs)
+        public LevelBuilder(ChompGameModule chompGameModule, SceneDefinition sceneDefinition)
         {
+            _gameModule = chompGameModule;
             _sceneDefinition = sceneDefinition;
-            _specs = specs;
-            _tileModule = tileModule;
         }
 
         private void FillStatusBarTopLine()
         {
-            _tileModule.NameTable
+            _gameModule.TileModule.NameTable
                 .SetFromString(@"01277734562777777");            
         }
 
         public void BuildBackgroundNametable()
         {
+            _gameModule.TileModule.NameTable.Reset();
+
             FillStatusBarTopLine();
 
             int layerABegin = 2 + _sceneDefinition.BeginTiles + _sceneDefinition.ParallaxLayerABeginTile;
@@ -33,12 +36,12 @@ namespace ChompGame.MainGame.SceneModels
             int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
          
             //mountain layer 1
-            _tileModule.NameTable.SetFromString(0, layerBBegin,
+            _gameModule.TileModule.NameTable.SetFromString(0, layerBBegin,
                 @"00000500000005000000050000000500
                         34121625341216253412162534121625");
 
             //mountain layer 2
-            _tileModule.NameTable.SetFromString(0, layerCBegin,
+            _gameModule.TileModule.NameTable.SetFromString(0, layerCBegin,
               @"00000500001200000050000120000000
                       12341623416621234162341662123434");
         }
@@ -48,21 +51,22 @@ namespace ChompGame.MainGame.SceneModels
             //fix address
             NBitPlane attributeTable = NBitPlane.Create(
                 memory.GetAddress(AddressLabels.FreeRAM) + nameTableBytes, memory, 
-                _specs.AttributeTableBitsPerBlock,
-               _sceneDefinition.LevelTileWidth / _specs.AttributeTableBlockSize,
-               _sceneDefinition.LevelTileHeight / _specs.AttributeTableBlockSize);
+                _gameModule.Specs.AttributeTableBitsPerBlock,
+               _sceneDefinition.LevelTileWidth / _gameModule.Specs.AttributeTableBlockSize,
+               _sceneDefinition.LevelTileHeight / _gameModule.Specs.AttributeTableBlockSize);
 
             return attributeTable;
         }
 
-        public NBitPlane BuildNameTable(SystemMemory memory, int seed)
+        public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, int seed)
         {
-            NBitPlane nameTable = NBitPlane.Create(memory.GetAddress(AddressLabels.FreeRAM), 
-                memory, 
-                _specs.NameTableBitPlanes,
+            NBitPlane nameTable = NBitPlane.Create(memoryBuilder.CurrentAddress, 
+                memoryBuilder.Memory,
+                _gameModule.Specs.NameTableBitPlanes,
                 _sceneDefinition.LevelTileWidth,
                 _sceneDefinition.LevelTileHeight);
 
+            memoryBuilder.AddBytes(nameTable.Bytes);
 
             nameTable = AddEdgeTiles(nameTable);
             nameTable = AddShapeTiles(nameTable, seed);
@@ -182,6 +186,60 @@ namespace ChompGame.MainGame.SceneModels
             };
         }
 
+        public SceneSpriteControllers CreateSpriteControllers(SystemMemoryBuilder memoryBuilder)
+        {
+            PlayerController playerController = null;
+            SpriteControllerPool<BombController> bombControllers = null;
+
+
+            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+            {
+                playerController = new PlayerController(_gameModule, memoryBuilder);
+
+                bombControllers = new SpriteControllerPool<BombController>(
+                     size: 2,
+                     _gameModule.SpritesModule,
+                     () => new BombController(_gameModule, playerController, memoryBuilder));
+            }
+
+            IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
+
+           
+            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Lizard))
+            {
+                extraA = new EnemyOrBulletSpriteControllerPool<BulletController>(
+                   2,
+                   _gameModule.SpritesModule,
+                   () => new BulletController(_gameModule, memoryBuilder, SpriteType.LizardBullet));
+
+
+                enemyA = new EnemyOrBulletSpriteControllerPool<LizardEnemyController>(
+                    2,
+                    _gameModule.SpritesModule,
+                    () => new LizardEnemyController(extraA, _gameModule, memoryBuilder));
+            }
+
+            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Bird))
+            {
+                if (enemyA == null)
+                {
+                    enemyA = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
+                        2,
+                        _gameModule.SpritesModule,
+                        () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder));
+                }
+                else
+                {
+                    enemyB = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
+                       2,
+                       _gameModule.SpritesModule,
+                       () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder));
+                }
+            }
+
+            return new SceneSpriteControllers(_gameModule, playerController, bombControllers, enemyA, enemyB, extraA, extraB);
+        }
+
         public void SetupVRAMPatternTable(
            NBitPlane masterPatternTable,
            NBitPlane vramPatternTable,
@@ -192,7 +250,7 @@ namespace ChompGame.MainGame.SceneModels
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(0, (int)_sceneDefinition.TileRow, 8, 1),
                 destinationPoint: new Point(0, 0),
-                _specs,
+                _gameModule.Specs,
                 memory);
 
             //tile row 2
@@ -200,10 +258,10 @@ namespace ChompGame.MainGame.SceneModels
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(8, (int)_sceneDefinition.TileRow, 8, 1),
                 destinationPoint: new Point(0, 1),
-                _specs,
+                _gameModule.Specs,
                 memory);
 
-            GridPoint spriteDestination = new ByteGridPoint(_specs.PatternTableTilesAcross, _specs.PatternTableTilesDown);
+            GridPoint spriteDestination = new ByteGridPoint(_gameModule.Specs.PatternTableTilesAcross, _gameModule.Specs.PatternTableTilesDown);
             spriteDestination.Y = 2;
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
@@ -213,7 +271,7 @@ namespace ChompGame.MainGame.SceneModels
                   destination: vramPatternTable,
                   source: new InMemoryByteRectangle(0, 0, 2, 2),
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _specs,
+                  _gameModule.Specs,
                   memory);
 
                 //bomb sprite
@@ -221,7 +279,7 @@ namespace ChompGame.MainGame.SceneModels
                   destination: vramPatternTable,
                   source: new InMemoryByteRectangle(5, 1, 1, 1),
                   destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
-                  _specs,
+                  _gameModule.Specs,
                   memory);
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
@@ -231,7 +289,7 @@ namespace ChompGame.MainGame.SceneModels
                     destination: vramPatternTable,
                     source: new InMemoryByteRectangle(4, 3, 8, 2),
                     destinationPoint: new Point(0, 5),
-                    _specs,
+                    _gameModule.Specs,
                     memory);
 
                 //status bar text 2
@@ -239,7 +297,7 @@ namespace ChompGame.MainGame.SceneModels
                     destination: vramPatternTable,
                     source: new InMemoryByteRectangle(12, 4, 2, 1),
                     destinationPoint: new Point(6, 7),
-                    _specs,
+                    _gameModule.Specs,
                     memory);
 
                 //health guage
@@ -247,7 +305,7 @@ namespace ChompGame.MainGame.SceneModels
                     destination: vramPatternTable,
                     source: new InMemoryByteRectangle(0, 4, 4, 1),
                     destinationPoint: new Point(0, 7),
-                    _specs,
+                    _gameModule.Specs,
                     memory);
             }
 
@@ -259,7 +317,7 @@ namespace ChompGame.MainGame.SceneModels
                   destination: vramPatternTable,
                   source: new InMemoryByteRectangle(2, 0, 2, 2),
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _specs,
+                  _gameModule.Specs,
                   memory);
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
@@ -269,7 +327,7 @@ namespace ChompGame.MainGame.SceneModels
                   destination: vramPatternTable,
                   source: new InMemoryByteRectangle(4, 0, 4, 1),
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _specs,
+                  _gameModule.Specs,
                   memory);
 
                 spriteDestination.Advance(4, extraRowSkip: 1);
@@ -282,7 +340,7 @@ namespace ChompGame.MainGame.SceneModels
                   destination: vramPatternTable,
                   source: new InMemoryByteRectangle(8, 0, 4, 1),
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _specs,
+                  _gameModule.Specs,
                   memory);
 
                 spriteDestination.Advance(4, extraRowSkip: 1);

@@ -42,6 +42,8 @@ namespace ChompGame.GameSystem
         public virtual int AudioROMBytes => 64;
 
         public virtual int NumSounds => 8;
+
+        public virtual int GameRAMSize => 0;
     };
 
     public class PongSpecs : Specs
@@ -212,7 +214,7 @@ namespace ChompGame.GameSystem
 
         public override int BytesPerPalette => 3;
         public override int NumPalettes => 6;
-
+        public override int GameRAMSize => 1024;
         public override Color[] SystemColors { get; } = new Color[64];
 
         public ChompGameSpecs()
@@ -313,6 +315,7 @@ namespace ChompGame.GameSystem
         public override int TileWidth => 8;
         public override int TileHeight => 8;
         public override int AudioChannels => 1;
+
         public override Color[] SystemColors => new Color[]
        {
             Color.Black,        //0
@@ -332,6 +335,5 @@ namespace ChompGame.GameSystem
             Color.Tan,          //14
             Color.DarkOrange    //15
        };
-    };
-
+    }
 }

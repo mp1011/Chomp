@@ -1,141 +1,26 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-namespace ChompGame.Data
+namespace ChompGame.Data.Memory
 {
-    public abstract class MemoryBlock
-    {
-        public abstract byte this[int index] { get; set; }
-        public abstract void BlockCopy(int sourceStart, int destinationStart, int length);
-    }
-
-    public class FixedMemoryBlock : MemoryBlock
-    {
-        private byte[] _memory;
-
-        public FixedMemoryBlock(byte[] memory)
-        {
-            _memory = memory;
-        }
-
-        public override byte this[int index]
-        {
-            get
-            {
-                if (index >= _memory.Length)
-                    index = _memory.Length - 1;
-                return _memory[index];
-            }
-            set
-            {
-                if (index == 1183)
-                    GameDebug.NoOp();
-
-                _memory[index] = value;
-            }
-        }
-
-        public override void BlockCopy(int sourceStart, int destinationStart, int length)
-        {
-            Array.Copy(sourceArray: _memory,
-                sourceIndex: sourceStart,
-                destinationArray: _memory,
-                destinationIndex: destinationStart,
-                length: length);
-        }
-
-        public override string ToString()
-        {
-            return string.Join("",
-                _memory.Select(i => i.ToString("X2")).ToArray());
-        }
-    }
-
-    public class DynamicMemoryBlock : MemoryBlock
-    {
-        private List<byte> _memory = new List<byte>();
-
-        public DynamicMemoryBlock()
-        {
-        }
-
-        public int Count => _memory.Count;
-
-        public override byte this[int index]
-        {
-            get => _memory[index];
-            set => _memory[index] = value;
-        }
-
-        public override void BlockCopy(int sourceStart, int destinationStart, int length)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void Add(byte value)
-        {
-            _memory.Add(value);
-        }
-
-        public FixedMemoryBlock ToFixed() => new FixedMemoryBlock(_memory.ToArray());
-    }
-
-    public class SystemMemory
-    {
-        private MemoryBlock _memory;
-
-        private Dictionary<AddressLabels, int> _addressLabels = new Dictionary<AddressLabels, int>();
-
-
-        public byte this[int index] 
-        {
-            get => _memory[index];
-            set => _memory[index] = value;
-        }
-
-        public void BlockCopy(int sourceStart, int destinationStart, int length)
-        {
-            _memory.BlockCopy(sourceStart, destinationStart, length);
-        }
-
-        public SystemMemory(Action<SystemMemoryBuilder> configureMemory, Specs specs)
-        {
-            var memoryBuilder = new SystemMemoryBuilder(this, specs);
-
-            _memory = memoryBuilder.Bytes;
-            configureMemory(memoryBuilder);
-            _memory = memoryBuilder.Build();
-        }
-
-
-        public void AddLabel(AddressLabels label, int address)
-        {
-            _addressLabels.Add(label, address);
-        }
-
-        public int GetAddress(AddressLabels label) => _addressLabels[label];
-
-        public override string ToString() => _memory.ToString();
-    }
-
     public class SystemMemoryBuilder
     {
-        public DynamicMemoryBlock Bytes { get; } = new DynamicMemoryBlock();
+        public DynamicMemoryBlock Bytes { get; }
 
         private SystemMemory _systemMemory;
         private Specs _specs;
 
-        public int CurrentAddress => Bytes.Count;
+        public int CurrentAddress => Bytes.CurrentAddress;
 
         public SystemMemory Memory => _systemMemory;
 
-        public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs)
+        public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs, bool gameRamBuilder)
         {
             _specs = specs;
             _systemMemory = systemMemory;
+            Bytes = gameRamBuilder ? new GameRamMemoryBlock(systemMemory, specs) as DynamicMemoryBlock : new ListMemoryBlock();
         }
 
         public void AddLabel(AddressLabels label)
@@ -175,7 +60,7 @@ namespace ChompGame.Data
             return new ByteAddressWithFPad(AddByte(), _systemMemory);
         }
 
-        public GameByte AddByte(byte value=0)
+        public GameByte AddByte(byte value = 0)
         {
             var b = new GameByte(CurrentAddress, _systemMemory);
             Bytes.Add(value);
@@ -251,9 +136,9 @@ namespace ChompGame.Data
         public GameByteGridPoint AddGridPoint(byte width, byte height, Bit xMask, Bit yMask)
         {
             var b = new GameByteGridPoint(
-                AddByte().WithMask(xMask), 
-                AddByte().WithMask(yMask), 
-                width, 
+                AddByte().WithMask(xMask),
+                AddByte().WithMask(yMask),
+                width,
                 height);
 
             return b;
@@ -274,4 +159,5 @@ namespace ChompGame.Data
                 .ToArray();
         }
     }
+
 }

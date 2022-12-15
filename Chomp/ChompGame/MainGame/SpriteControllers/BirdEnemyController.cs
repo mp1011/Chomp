@@ -1,5 +1,5 @@
 ﻿using ChompGame.Data;
-using ChompGame.GameSystem;
+using ChompGame.Data.Memory;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -12,17 +12,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public BirdEnemyController(
             WorldSprite player,
-            SpritesModule spritesModule,
-            WorldScroller scroller,
-            ChompAudioService chompAudioService,
-            GameByte levelTimer,
+            ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Bird,
-                   spritesModule,
-                   scroller,
-                   chompAudioService,
-                   memoryBuilder, 
-                   levelTimer)
+                    gameModule,                  
+                    memoryBuilder)
         {
             _player = player;
         }

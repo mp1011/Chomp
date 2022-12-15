@@ -1,4 +1,6 @@
-﻿namespace ChompGame.Data
+﻿using ChompGame.Data.Memory;
+
+namespace ChompGame.Data
 {
 
     public abstract class ByteRectangleBase

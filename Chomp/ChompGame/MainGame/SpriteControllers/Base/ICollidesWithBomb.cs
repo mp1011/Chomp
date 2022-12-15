@@ -2,6 +2,6 @@
 {
     interface ICollidesWithBomb
     {
-        void HandleBombCollision(WorldSprite player);
+        bool HandleBombCollision(WorldSprite player);
     }
 }

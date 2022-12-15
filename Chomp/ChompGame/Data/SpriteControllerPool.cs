@@ -14,6 +14,7 @@ namespace ChompGame.Data
     interface IEnemyOrBulletSpriteControllerPool : ISpriteControllerPool
     {
         void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true);
+        public ISpriteController TryAddNew();
     }
 
     class SpriteControllerPool<T> : ISpriteControllerPool
@@ -33,7 +34,7 @@ namespace ChompGame.Data
                 .ToArray();
         }
 
-        public T TryAddNew()
+        public ISpriteController TryAddNew()
         {
             byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
             if (freeSpriteIndex == 255)

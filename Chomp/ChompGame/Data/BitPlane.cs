@@ -23,6 +23,11 @@ namespace ChompGame.Data
             _memory = memory;
             Width = width;
             Height = height;
+
+            if((Width * Height) % 8 != 0)
+            {
+                throw new Exception("Bit plane area must be a multiple of 8");
+            }
         }
 
         public bool this[int index]
@@ -54,6 +59,14 @@ namespace ChompGame.Data
         public bool ValueFromChar(char s)
         {
             return s == '1';
+        }
+
+        public void Reset()
+        {
+            for (int x = 0; x < Bytes; x++)
+            {
+                _memory[_address + x] = 0;
+            }
         }
 
         public void CopyTo(
