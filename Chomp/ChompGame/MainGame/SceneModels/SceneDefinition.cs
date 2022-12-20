@@ -47,7 +47,7 @@ namespace ChompGame.MainGame.SceneModels
 
     class SceneDefinition
     {
-        public const int Bytes = 5;
+        public const int Bytes = 6;
 
         private const  int _statusBarTiles = 2;
 
@@ -76,6 +76,12 @@ namespace ChompGame.MainGame.SceneModels
 
         //byte 4
         private readonly GameByte _partsAddress;
+
+        //byte 5
+        private TwoBit _enemyAPalette;
+        private TwoBit _enemyBPalette;
+        private TwoBit _extraAPalette;
+        private TwoBit _extraBPalette;
 
         public int Address => _scrollStyle.Address;
         
@@ -148,7 +154,11 @@ namespace ChompGame.MainGame.SceneModels
             byte tileRow,
             byte parallaxTileBegin,
             byte parallaxSizeA,
-            byte parallaxSizeB)
+            byte parallaxSizeB,
+            byte enemyAPalette,
+            byte enemyBPalette,
+            byte extraAPalette,
+            byte extraBPalette)
         {
             _specs = specs;
             _systemMemory = memoryBuilder.Memory;
@@ -189,6 +199,17 @@ namespace ChompGame.MainGame.SceneModels
             _parallaxTileBegin.Value = parallaxTileBegin;
             _parallaxSizeA.Value = parallaxSizeA;
             _parallaxSizeB.Value = parallaxSizeB;
+
+            var palletes = memoryBuilder.AddByte();
+            _enemyAPalette = new TwoBit(memoryBuilder.Memory, palletes.Address, 0);
+            _enemyBPalette = new TwoBit(memoryBuilder.Memory, palletes.Address, 2);
+            _extraAPalette = new TwoBit(memoryBuilder.Memory, palletes.Address, 4);
+            _extraBPalette = new TwoBit(memoryBuilder.Memory, palletes.Address, 6);
+
+            _enemyAPalette.Value = enemyAPalette;
+            _enemyBPalette.Value = enemyBPalette;
+            _extraAPalette.Value = extraAPalette;
+            _extraBPalette.Value = extraBPalette;
         }
 
         public SceneDefinition(int address, SystemMemory systemMemory, Specs specs)
@@ -212,6 +233,12 @@ namespace ChompGame.MainGame.SceneModels
 
             _partsAddress = new GameByte(address + 4, systemMemory);
             _systemMemory = systemMemory;
+
+            _enemyAPalette = new TwoBit(systemMemory, address + 5, 0);
+            _enemyBPalette = new TwoBit(systemMemory, address + 5, 2);
+            _extraAPalette = new TwoBit(systemMemory, address + 5, 4);
+            _extraBPalette = new TwoBit(systemMemory, address + 5, 6);
+
         }
 
         public SceneDefinition(Level level, SystemMemory memory, Specs specs)
@@ -263,5 +290,14 @@ namespace ChompGame.MainGame.SceneModels
                  ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 4,
                  _ => throw new NotImplementedException()
              };
+
+        public byte GetPalette(ScenePartType scenePartType)
+        {
+            return scenePartType switch {
+                ScenePartType.EnemyType1 => _enemyAPalette.Value,
+                ScenePartType.EnemyType2 => _enemyBPalette.Value,
+                _ => 0
+            };
+        }
     }
 }

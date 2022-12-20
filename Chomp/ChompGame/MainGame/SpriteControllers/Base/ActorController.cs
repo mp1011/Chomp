@@ -55,13 +55,16 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _movingSpriteController.SpriteIndex = value;
         }
 
-        public void InitializeSprite()
+        public void InitializeSprite(byte palette)
         {
+            _palette.Value = palette;
             Status = WorldSpriteStatus.Active;
             var sprite = GetSprite();
             WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = _palette.Value;
             _state.Value = 0;
+
+            _movingSpriteController.Motion.Stop();
             OnSpriteCreated(sprite);
         }
 
@@ -87,7 +90,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 WorldSprite.Show();
                 if (Status == WorldSpriteStatus.Active)
                 {
-                    InitializeSprite();
+                    InitializeSprite(_palette.Value);
                 }
             }
         }

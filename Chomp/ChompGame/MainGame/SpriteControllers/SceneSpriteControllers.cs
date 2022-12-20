@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 
@@ -16,6 +17,8 @@ namespace ChompGame.MainGame.SpriteControllers
         private IEnemyOrBulletSpriteControllerPool _extra2Controllers;
 
         private SceneDefinition _scene;
+
+        private Specs Specs => _gameModule.Specs;
 
         public SceneSpriteControllers(ChompGameModule chompGameModule, 
             PlayerController playerController, 
@@ -45,7 +48,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.WorldSprite.X = 16;
                 _playerController.WorldSprite.Y = 16;
                 _playerController.Palette = 1;
-                _playerController.InitializeSprite();
+                _playerController.InitializeSprite(1);
                 _playerController.Motion.XSpeed = 0;
                 _playerController.Motion.YSpeed = 0;
             }
@@ -61,6 +64,8 @@ namespace ChompGame.MainGame.SpriteControllers
             GameDebug.Watch3 = new DebugWatch(
                name: "Player Sprite Y",
                () => _playerController.GetSprite().Y);
+
+            CheckSpriteSpawn();
         }
 
         public void Update()
@@ -89,8 +94,56 @@ namespace ChompGame.MainGame.SpriteControllers
             _enemyBControllers.Execute(c => c.WorldSprite.UpdateSprite());
             _extra1Controllers.Execute(c => c.WorldSprite.UpdateSprite());
             //todo, when to use extra2
+
+            CheckSpriteSpawn();
         }
 
+        public void CheckSpriteSpawn()
+        {
+            byte index = 0;
+
+            ScenePartsHeader header = new ScenePartsHeader(_gameModule.GameSystem.Memory.GetAddress(AddressLabels.SceneParts), _gameModule.GameSystem.Memory);
+
+            for(int i = 0; i < header.PartsCount; i++)
+            {
+                if (header.IsPartActived(i))
+                    continue;
+
+                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _scene);
+                var pool = GetPool(sp.Type);
+                if (pool.CanAddNew())
+                {
+                    int spawnX = sp.X * Specs.TileWidth;
+                    int spawnY = sp.Y * Specs.TileHeight;
+
+                    if (spawnX >= _gameModule.WorldScroller.WorldScrollPixelX
+                        && spawnY >= _gameModule.WorldScroller.WorldScrollPixelY
+                        && spawnX <= _gameModule.WorldScroller.WorldScrollPixelX + Specs.NameTablePixelWidth
+                        && spawnY <= _gameModule.WorldScroller.WorldScrollPixelY + Specs.NameTablePixelHeight)
+                    {
+                        var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
+                        if (sprite != null)
+                        {
+                            header.MarkActive(i);
+                            sprite.WorldSprite.X = spawnX;
+                            sprite.WorldSprite.Y = spawnY;
+                        }
+                    }
+                }
+                index++;
+                sp = new ScenePart(_gameModule.GameSystem.Memory, index, _scene);
+            }
+        }
+
+        private ISpriteControllerPool GetPool(ScenePartType scenePartType) =>
+
+            scenePartType switch {
+                ScenePartType.Bomb => _bombControllers,
+                ScenePartType.EnemyType1 => _enemyAControllers,
+                ScenePartType.EnemyType2 => _enemyBControllers,
+                _ => null
+            };
+        
         public void CheckCollissions()
         {
             _playerController.CheckEnemyOrBulletCollisions(_enemyAControllers);

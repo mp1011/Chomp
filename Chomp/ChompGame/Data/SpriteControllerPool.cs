@@ -9,12 +9,13 @@ namespace ChompGame.Data
     interface ISpriteControllerPool
     {
         void Execute(Action<ISpriteController> action, bool skipIfInactive = true);
+        ISpriteController TryAddNew(byte palette);
+        bool CanAddNew();
     }
 
     interface IEnemyOrBulletSpriteControllerPool : ISpriteControllerPool
     {
-        void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true);
-        public ISpriteController TryAddNew();
+        void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true);       
     }
 
     class SpriteControllerPool<T> : ISpriteControllerPool
@@ -34,7 +35,24 @@ namespace ChompGame.Data
                 .ToArray();
         }
 
-        public ISpriteController TryAddNew()
+        public bool CanAddNew()
+        {
+            byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
+            if (freeSpriteIndex == 255)
+                return false;
+
+            for (byte i = 0; i < _items.Length; i++)
+            {
+                if (_items[i].Status != WorldSpriteStatus.Inactive)
+                    continue;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public ISpriteController TryAddNew(byte palette)
         {
             byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
             if (freeSpriteIndex == 255)
@@ -47,7 +65,7 @@ namespace ChompGame.Data
 
                 _items[i].SpriteIndex = freeSpriteIndex;
                 _items[i].Status = WorldSpriteStatus.Active;
-                _items[i].InitializeSprite();
+                _items[i].InitializeSprite(palette);
 
                 return _items[i];
             }

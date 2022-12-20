@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using System;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -9,6 +10,45 @@ namespace ChompGame.MainGame.SceneModels
         EnemyType1,
         EnemyType2,
         Pit
+    }
+
+    class ScenePartsHeader
+    {
+        private readonly GameByte _partCount;
+
+        private readonly BitArray _activatedParts;
+
+        public int PartsCount => _partCount.Value;
+
+        public int FirstPartAddress => _partCount.Address + 1 + (int)Math.Ceiling((byte)_partCount.Value / 8.0);
+
+        public bool IsPartActived(int index) => _activatedParts[index];
+
+        public void MarkActive(int index) => _activatedParts[index] = true;
+
+        public ScenePartsHeader(SystemMemoryBuilder memoryBuilder, params Func<SystemMemoryBuilder, ScenePart>[] parts)
+        {
+            _partCount = memoryBuilder.AddByte();
+            _partCount.Value = (byte)parts.Length;
+
+            _activatedParts = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+
+            memoryBuilder.AddBytes((int)Math.Ceiling((byte)parts.Length / 8.0));
+
+            foreach(var part in parts)
+            {
+                part(memoryBuilder);
+            }
+        }
+
+        public ScenePartsHeader(int address, SystemMemory memory)
+        {
+            _partCount = new GameByte(address, memory);
+            _activatedParts = new BitArray(address + 1, memory);
+        }
+
+
+
     }
 
     class ScenePart
@@ -141,12 +181,5 @@ namespace ChompGame.MainGame.SceneModels
             _xExtra2 = new TwoBit(memory, _positionExtra.Address, 4);
             _yExtra2 = new TwoBit(memory, _positionExtra.Address, 6);
         }
-
-        public ScenePart(SystemMemory memory, byte index, SceneDefinition definition)
-            :this(memory, memory.GetAddress(AddressLabels.SceneParts) + index * Bytes, definition)
-        {
-
-        }
-
     }
 }

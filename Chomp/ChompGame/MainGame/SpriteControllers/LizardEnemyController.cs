@@ -47,7 +47,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_state.Value == 16 + SpriteIndex)
             {
                 _state.Value = 0;
-                var fireball = _lizardBulletControllers.TryAddNew();
+                var fireball = _lizardBulletControllers.TryAddNew(3);
                 if (fireball != null)
                 {
                     var thisSprite = _movingSpriteController.WorldSprite;
