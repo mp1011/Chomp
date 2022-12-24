@@ -102,7 +102,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 for(var col = 0; col < nameTable.Width; col++)
                 {
-                    nameTable[row, col] = (byte)_sceneDefinition.GetGroundFillTile(row, col);
+                    nameTable[row, col] = 1;
                 }
             }
 
@@ -130,7 +130,6 @@ namespace ChompGame.MainGame.SceneModels
         {
             var rng = new Random(seed);
             int nextSectionBegin = 0;
-            int currentSectionBegin = 0;
 
             int groundUpper = _sceneDefinition.ParallaxEndTile;
             int groundLower = nameTable.Height+1;
@@ -154,23 +153,12 @@ namespace ChompGame.MainGame.SceneModels
                         }
 
                         groundPosition = nextGroundPosition;
-                        currentSectionBegin = col;
                     }
 
                     if (row < groundPosition)
                         nameTable[col, row] = 0;
-                    else if (row == groundPosition && col == currentSectionBegin)
-                        nameTable[col, row] = (byte)_sceneDefinition.GroundLeftCorner;
-                    else if (row == groundPosition && col == nextSectionBegin - 1)
-                        nameTable[col, row] = (byte)_sceneDefinition.GroundRightCorner;
-                    else if (row == groundPosition)
-                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundTopTile(col);
-                    else if(col == currentSectionBegin)
-                        nameTable[col, row] = (byte)_sceneDefinition.GetLeftSideTile(row);
-                    else if (col == nextSectionBegin - 1)
-                        nameTable[col, row] = (byte)_sceneDefinition.GetRightSideTile(row);
                     else 
-                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundFillTile(row,col);
+                        nameTable[col, row] = 1;
                 }
             }
             
@@ -254,6 +242,34 @@ namespace ChompGame.MainGame.SceneModels
                     header.MarkActive(i);
                 }
             }
+        }
+
+        public void SetProperTiles(NBitPlane levelMap)
+        {
+            levelMap.ForEach(Point.Zero, new Point(levelMap.Width, levelMap.Height), (x, y, b) =>
+            {
+                if (b == 0)
+                    return;
+
+                bool tileAbove = y == 0 ? false : levelMap[x, y - 1] != 0;
+                bool tileBelow = y == levelMap.Height ? true : levelMap[x, y + 1] != 0;
+
+                bool tileLeft = x == 0 ? false : levelMap[x - 1, y] != 0;
+                bool tileRight = y == levelMap.Height ?true : levelMap[x + 1, y] != 0;
+
+                if (!tileAbove && !tileLeft)
+                    levelMap[x, y] = (byte)_sceneDefinition.GroundLeftCorner;
+                else if (!tileAbove && !tileRight)
+                    levelMap[x, y] = (byte)_sceneDefinition.GroundRightCorner;
+                else if (!tileAbove)
+                    levelMap[x, y] = (byte)_sceneDefinition.GetGroundTopTile(x);
+                else if(!tileLeft)
+                    levelMap[x, y] = (byte)_sceneDefinition.GetLeftSideTile(y);
+                else if (!tileRight)
+                    levelMap[x, y] = (byte)_sceneDefinition.GetRightSideTile(y);
+                else
+                    levelMap[x, y] = (byte)_sceneDefinition.GetGroundFillTile(x,y);
+            });
         }
 
         private void AddPit(ScenePart part, NBitPlane levelMap)

@@ -278,6 +278,8 @@ namespace ChompGame.MainGame
             
             _levelBuilder.ApplyLevelAlterations(levelMap);
 
+            _levelBuilder.SetProperTiles(levelMap);
+
             _sceneSpriteControllers.Initialize(testScene, levelMap, levelAttributeTable);
            
             _worldScroller.UpdateVram();
