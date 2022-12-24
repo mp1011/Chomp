@@ -98,10 +98,9 @@ namespace ChompGame.MainGame.SpriteControllers
             CheckSpriteSpawn();
         }
 
+      
         public void CheckSpriteSpawn()
         {
-            byte index = 0;
-
             ScenePartsHeader header = new ScenePartsHeader(_gameModule.GameSystem.Memory.GetAddress(AddressLabels.SceneParts), _gameModule.GameSystem.Memory);
 
             for(int i = 0; i < header.PartsCount; i++)
@@ -130,8 +129,6 @@ namespace ChompGame.MainGame.SpriteControllers
                         }
                     }
                 }
-                index++;
-                sp = new ScenePart(_gameModule.GameSystem.Memory, index, _scene);
             }
         }
 

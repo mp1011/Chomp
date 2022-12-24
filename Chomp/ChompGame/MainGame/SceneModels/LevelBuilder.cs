@@ -240,6 +240,36 @@ namespace ChompGame.MainGame.SceneModels
             return new SceneSpriteControllers(_gameModule, playerController, bombControllers, enemyA, enemyB, extraA, extraB);
         }
 
+        public void ApplyLevelAlterations(NBitPlane levelMap)
+        {
+            ScenePartsHeader header = new ScenePartsHeader(_gameModule.GameSystem.Memory.GetAddress(AddressLabels.SceneParts), _gameModule.GameSystem.Memory);
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {
+                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition);
+
+                if (sp.Type == ScenePartType.Pit)
+                {
+                    AddPit(sp, levelMap);
+                    header.MarkActive(i);
+                }
+            }
+        }
+
+        private void AddPit(ScenePart part, NBitPlane levelMap)
+        {
+            for(int x = part.X; x <= part.X + part.Y; x++)
+            {
+                for(int y = levelMap.Height-1; y > 0; y--)
+                {
+                    if (levelMap[x, y] == 0)
+                        break;
+
+                    levelMap[x, y] = 0;
+                }
+            }
+        }
+
         public void SetupVRAMPatternTable(
            NBitPlane masterPatternTable,
            NBitPlane vramPatternTable,

@@ -39,7 +39,8 @@ namespace ChompGame.MainGame.SceneModels
 
             testScene.PartsAddress = (byte)(builder.CurrentAddress - builder.Memory.GetAddress(AddressLabels.SceneParts));
 
-            new ScenePartsHeader(builder, 
+            new ScenePartsHeader(builder,
+                b => new ScenePart(b, ScenePartType.Pit, 10, 3, testScene),
                 b => new ScenePart(b, ScenePartType.EnemyType1, 8, 6, testScene),
                 b => new ScenePart(b, ScenePartType.Bomb, 6, 6, testScene),
                 b => new ScenePart(b, ScenePartType.EnemyType1, 50, 6, testScene));

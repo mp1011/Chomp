@@ -275,8 +275,11 @@ namespace ChompGame.MainGame
             //todo, use level number as seed
             var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, 1);
             var levelAttributeTable = _levelBuilder.BuildAttributeTable(GameSystem.Memory, levelMap.Bytes);
+            
+            _levelBuilder.ApplyLevelAlterations(levelMap);
 
             _sceneSpriteControllers.Initialize(testScene, levelMap, levelAttributeTable);
+           
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(testScene, levelMap);
