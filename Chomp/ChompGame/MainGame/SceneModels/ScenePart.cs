@@ -26,6 +26,11 @@ namespace ChompGame.MainGame.SceneModels
 
         public void MarkActive(int index) => _activatedParts[index] = true;
 
+        public ScenePartsHeader(Level level, SystemMemory memory) : this(GetAddress(level, memory), memory)
+        {
+
+        }
+
         public ScenePartsHeader(SystemMemoryBuilder memoryBuilder, params Func<SystemMemoryBuilder, ScenePart>[] parts)
         {
             _partCount = memoryBuilder.AddByte();
@@ -47,7 +52,21 @@ namespace ChompGame.MainGame.SceneModels
             _activatedParts = new BitArray(address + 1, memory);
         }
 
+        private static int GetAddress(Level level, SystemMemory memory)
+        {
+            int address = memory.GetAddress(AddressLabels.SceneParts);
+            int index = 0;
 
+            while(index < (int)level)
+            {
+                var header = new ScenePartsHeader(address, memory);
+                address = header.FirstPartAddress + (header.PartsCount * ScenePart.Bytes);
+
+                index++;
+            }
+
+            return address;
+        }
 
     }
 

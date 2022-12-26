@@ -74,29 +74,43 @@ namespace ChompGame.MainGame
                 specs: _specs,
                 memory: _tileModule.GameSystem.Memory);
 
-            copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
-          
-            //top section
-            _levelNameTable.CopyTo(
-                destination: _tileModule.NameTable,
-                source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.ParallaxLayerABeginTile),
-                destinationPoint: new Point(0, 2),
-                specs: _specs,
-                memory: _tileModule.GameSystem.Memory);
+            
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.None)
+            {
+                copyWidth = (byte)_levelNameTable.Width;
+                copyHeight = (byte)_levelNameTable.Height;
 
-            int bottomSectionBegin = 2 + (_sceneDefinition.ParallaxLayerABeginTile + (_sceneDefinition.ParallaxLayerATiles * 2) + _sceneDefinition.ParallaxLayerBTiles);
+                _levelNameTable.CopyTo(
+                   destination: _tileModule.NameTable,
+                   source: new InMemoryByteRectangle((byte)0, (byte)0, copyWidth, copyHeight),
+                   destinationPoint: new Point(0, 2),
+                   specs: _specs,
+                   memory: _tileModule.GameSystem.Memory);
+            }
+            else
+            {
+                copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
 
-            int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
+                //top section
+                _levelNameTable.CopyTo(
+                    destination: _tileModule.NameTable,
+                    source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.ParallaxLayerABeginTile),
+                    destinationPoint: new Point(0, 2),
+                    specs: _specs,
+                    memory: _tileModule.GameSystem.Memory);
 
-            //bottom section
-            _levelNameTable.CopyTo(
-                destination: _tileModule.NameTable,
-                source: new InMemoryByteRectangle(_worldScrollX.Value, bottomSectionBegin, copyWidth, bottomSectionHeight),
-                destinationPoint: new Point(0, bottomSectionBegin  + 2),
-                specs: _specs,
-                memory: _tileModule.GameSystem.Memory);
+                int bottomSectionBegin = 2 + (_sceneDefinition.ParallaxLayerABeginTile + (_sceneDefinition.ParallaxLayerATiles * 2) + _sceneDefinition.ParallaxLayerBTiles);
 
+                int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
 
+                //bottom section
+                _levelNameTable.CopyTo(
+                    destination: _tileModule.NameTable,
+                    source: new InMemoryByteRectangle(_worldScrollX.Value, bottomSectionBegin, copyWidth, bottomSectionHeight),
+                    destinationPoint: new Point(0, bottomSectionBegin + 2),
+                    specs: _specs,
+                    memory: _tileModule.GameSystem.Memory);
+            }
         }
 
         private int AdjustWorldScroll()

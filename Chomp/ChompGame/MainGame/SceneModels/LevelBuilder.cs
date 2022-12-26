@@ -35,25 +35,30 @@ namespace ChompGame.MainGame.SceneModels
             int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerBTiles;
             int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
          
-            //mountain layer 1
-            _gameModule.TileModule.NameTable.SetFromString(0, layerBBegin,
-                @"00000500000005000000050000000500
-                        34121625341216253412162534121625");
+            ////mountain layer 1
+            //_gameModule.TileModule.NameTable.SetFromString(0, layerBBegin,
+            //    @"00000500000005000000050000000500
+            //            34121625341216253412162534121625");
 
-            //mountain layer 2
-            _gameModule.TileModule.NameTable.SetFromString(0, layerCBegin,
-              @"00000500001200000050000120000000
-                      12341623416621234162341662123434");
+            ////mountain layer 2
+            //_gameModule.TileModule.NameTable.SetFromString(0, layerCBegin,
+            //  @"00000500001200000050000120000000
+            //          12341623416621234162341662123434");
         }
 
-        public NBitPlane BuildAttributeTable(SystemMemory memory, int nameTableBytes)
+        public NBitPlane BuildAttributeTable(SystemMemoryBuilder memoryBuilder, int nameTableBytes)
         {
             //fix address
             NBitPlane attributeTable = NBitPlane.Create(
-                memory.GetAddress(AddressLabels.FreeRAM) + nameTableBytes, memory, 
+                memoryBuilder.CurrentAddress, 
+                memoryBuilder.Memory,
                 _gameModule.Specs.AttributeTableBitsPerBlock,
                _sceneDefinition.LevelTileWidth / _gameModule.Specs.AttributeTableBlockSize,
                _sceneDefinition.LevelTileHeight / _gameModule.Specs.AttributeTableBlockSize);
+
+            memoryBuilder.AddBytes(attributeTable.Bytes);
+
+            attributeTable.ForEach((x, y, b) => attributeTable[x, y] = 0);
 
             return attributeTable;
         }
@@ -80,7 +85,12 @@ namespace ChompGame.MainGame.SceneModels
             {
                 ScrollStyle.Horizontal => AddEdgeTiles(nameTable,
                                                    top: _sceneDefinition.BeginTiles,
-                                                   bottom: _sceneDefinition.EndTiles),             
+                                                   bottom: _sceneDefinition.EndTiles),    
+                ScrollStyle.None => AddEdgeTiles(nameTable, 
+                                                    top: _sceneDefinition.BeginTiles,
+                                                    left: _sceneDefinition.BeginTiles,
+                                                    bottom: _sceneDefinition.EndTiles,
+                                                    right: _sceneDefinition.EndTiles),
                 _ => throw new NotImplementedException(),
             };
         }
@@ -92,39 +102,109 @@ namespace ChompGame.MainGame.SceneModels
                     LevelShape.Flat => nameTable,
                     _ => AddGroundVariance(nameTable, seed)
                 },
+                ScrollStyle.None => _sceneDefinition.LevelShape switch {
+                    LevelShape.Flat => nameTable,
+                    LevelShape.CornerStairs => AddCornerStairs(nameTable),
+                    LevelShape.BigStair => AddBigStair(nameTable),
+                    LevelShape.TShape => AddTShape(nameTable),
+                    _ => throw new NotImplementedException(),
+                },
                 _ => throw new NotImplementedException(),
             };
         }
 
-        private NBitPlane AddEdgeTiles(NBitPlane nameTable, int top = 0, int left = 0, int right = 0, int bottom = 0)
+        private NBitPlane AddTShape(NBitPlane nameTable)
         {
-            for(var row = 0; row < top; row++)
-            {
-                for(var col = 0; col < nameTable.Width; col++)
-                {
-                    nameTable[row, col] = 1;
-                }
-            }
+            int floorY = nameTable.Height - 4 - _sceneDefinition.BeginTiles * 2;
+            int ceilingY = _sceneDefinition.EndTiles * 2;
 
-            for (var row = nameTable.Height-bottom; row < nameTable.Height; row++)
-            {
-                for (var col = 0; col < nameTable.Width; col++)
-                {
-                    if (row == nameTable.Height - bottom)
-                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundTopTile(col);
-                    else 
-                        nameTable[col, row] = (byte)_sceneDefinition.GetGroundFillTile(row, col);
-                }
-            }
+            //todo, add variation
+            int pitBegin = 6;
+            int pitEnd = 10;
 
-            if (left != 0 || right != 0)
-                throw new NotImplementedException();
+            nameTable.ForEach((x, y, b) =>
+            {
+                if (y <= ceilingY)
+                    nameTable[x, y] = 1;
+                else if (y >= floorY)
+                {
+                    if (x <= pitBegin || x >= pitEnd)
+                        nameTable[x, y] = 1;
+                    else
+                        nameTable[x, y] = 0;
+                }
+            });
+
+            return nameTable;
+        }
+
+        private NBitPlane AddCornerStairs(NBitPlane nameTable)
+        {
+            int stairSize = 5;
+
+            AddStairs(nameTable, new Rectangle(
+                _sceneDefinition.BeginTiles, 
+                nameTable.Height - _sceneDefinition.BeginTiles - stairSize,
+                stairSize,
+                stairSize), 
+                riseRight: false);
+
+            AddStairs(nameTable, new Rectangle(
+                nameTable.Width - _sceneDefinition.EndTiles - stairSize, 
+                nameTable.Height - _sceneDefinition.BeginTiles - stairSize,
+                stairSize,
+                stairSize),
+                riseRight: true);
+
+            return nameTable;
+        }
+
+        private NBitPlane AddBigStair(NBitPlane nameTable)
+        {
+            int stairSize = 10;
+            AddStairs(nameTable, new Rectangle(
+              nameTable.Width - _sceneDefinition.EndTiles - stairSize,
+              nameTable.Height - _sceneDefinition.BeginTiles - stairSize,
+              stairSize,
+              stairSize),
+              riseRight: true);
+
+            return nameTable;
+        }
+
+        private NBitPlane AddStairs(NBitPlane nameTable, Rectangle region, bool riseRight )
+        {
+
+            nameTable.ForEach(new Point(region.X, region.Y), new Point(region.Right, region.Bottom), (x, y, b) =>
+            {
+                int stairY = y - region.Y;
+                int stairX = x - region.X;
+
+                if (riseRight && stairX >= region.Width - stairY - 1)
+                    nameTable[x, y] = 1;
+                else if (!riseRight && stairX <= stairY)
+                    nameTable[x, y] = 1;
+            });
 
             return nameTable;
         }
 
 
+        private NBitPlane AddEdgeTiles(NBitPlane nameTable, int top = 0, int left = 0, int right = 0, int bottom = 0)
+        {
+            nameTable.ForEach((x, y, b) =>
+            {
+                if(x < left
+                    || y < top
+                    || x >= nameTable.Width - right 
+                    || y >= nameTable.Height - bottom)
+                {
+                    nameTable[x, y] = 1;
+                }
+            });
 
+            return nameTable;
+        }
 
         private NBitPlane AddGroundVariance(NBitPlane nameTable, int seed)
         {
@@ -230,7 +310,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public void ApplyLevelAlterations(NBitPlane levelMap)
         {
-            ScenePartsHeader header = new ScenePartsHeader(_gameModule.GameSystem.Memory.GetAddress(AddressLabels.SceneParts), _gameModule.GameSystem.Memory);
+            ScenePartsHeader header = new ScenePartsHeader(_gameModule.CurrentLevel, _gameModule.GameSystem.Memory);
 
             for (int i = 0; i < header.PartsCount; i++)
             {
@@ -254,8 +334,8 @@ namespace ChompGame.MainGame.SceneModels
                 bool tileAbove = y == 0 ? false : levelMap[x, y - 1] != 0;
                 bool tileBelow = y == levelMap.Height ? true : levelMap[x, y + 1] != 0;
 
-                bool tileLeft = x == 0 ? false : levelMap[x - 1, y] != 0;
-                bool tileRight = y == levelMap.Height ?true : levelMap[x + 1, y] != 0;
+                bool tileLeft = x == 0 ? true : levelMap[x - 1, y] != 0;
+                bool tileRight = x == levelMap.Width ? true : levelMap[x + 1, y] != 0;
 
                 if (!tileAbove && !tileLeft)
                     levelMap[x, y] = (byte)_sceneDefinition.GroundLeftCorner;

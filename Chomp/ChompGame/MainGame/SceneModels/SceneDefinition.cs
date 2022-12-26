@@ -49,7 +49,7 @@ namespace ChompGame.MainGame.SceneModels
     {
         public const int Bytes = 6;
 
-        private const  int _statusBarTiles = 2;
+        public const int StatusBarTiles = 2;
 
         private readonly SystemMemory _systemMemory;
         private readonly Specs _specs;
@@ -74,7 +74,7 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBit _parallaxSizeA;
         private readonly TwoBit _parallaxSizeB;
 
-        //byte 4
+        //byte 4 (todo, repurpose this)
         private readonly GameByte _partsAddress;
 
         //byte 5
@@ -85,12 +85,6 @@ namespace ChompGame.MainGame.SceneModels
 
         public int Address => _scrollStyle.Address;
         
-        public byte PartsAddress
-        {
-            get => _partsAddress.Value;
-            set => _partsAddress.Value = value;
-        }
-
         public int BgTile => 7;
 
         public int BeginTiles => _beginTiles.Value;
@@ -136,7 +130,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public bool HasSprite(SpriteLoadFlags flag) => _sprites.Value.HasFlag(flag);
 
-        public int LayerABeginTile => (_statusBarTiles + ParallaxLayerABeginTile);
+        public int LayerABeginTile => (StatusBarTiles + ParallaxLayerABeginTile);
         public int LayerBBeginTile => LayerABeginTile + ParallaxLayerATiles;
         public int LayerCBeginTile => LayerBBeginTile + ParallaxLayerBTiles;
         public int ParallaxEndTile => LayerCBeginTile + ParallaxLayerATiles;
@@ -242,7 +236,7 @@ namespace ChompGame.MainGame.SceneModels
         }
 
         public SceneDefinition(Level level, SystemMemory memory, Specs specs)
-            :this(memory.GetAddress(AddressLabels.SceneDefinitions) + (int)level, memory,specs)
+            :this(memory.GetAddress(AddressLabels.SceneDefinitions) + ((int)level * SceneDefinition.Bytes), memory,specs)
         { 
         }
 
@@ -284,9 +278,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public int LevelTileHeight =>
              ScrollStyle switch {
-                 ScrollStyle.None => (_specs.ScreenHeight / _specs.TileHeight) - _statusBarTiles,
-                 ScrollStyle.Horizontal => (_specs.ScreenHeight / _specs.TileHeight) - _statusBarTiles,
-                 ScrollStyle.NameTable => _specs.NameTableHeight - _statusBarTiles,
+                 ScrollStyle.None => (_specs.ScreenHeight / _specs.TileHeight) - StatusBarTiles,
+                 ScrollStyle.Horizontal => (_specs.ScreenHeight / _specs.TileHeight) - StatusBarTiles,
+                 ScrollStyle.NameTable => _specs.NameTableHeight - StatusBarTiles,
                  ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 4,
                  _ => throw new NotImplementedException()
              };

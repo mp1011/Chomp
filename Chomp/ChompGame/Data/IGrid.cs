@@ -28,6 +28,12 @@ namespace ChompGame.Data
                 }
             }
         }
+
+        public static void ForEach<T>(this IGrid<T> grid, Action<int, int, T> action)
+        {
+            grid.ForEach(Point.Zero, new Point(grid.Width, grid.Height), action);
+        }
+
         public static void SetFromString<T>(this IGrid<T> grid, string block)
         {
             grid.SetFromString(0, 0, block);

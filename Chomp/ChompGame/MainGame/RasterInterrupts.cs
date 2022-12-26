@@ -13,7 +13,7 @@ namespace ChompGame.MainGame
         private readonly WorldScroller _worldScroller;
 
         private readonly GameByte _levelTimer;
-        private readonly GameByte _currentLevel;
+        private readonly GameByteEnum<Level> _currentLevel;
 
         private GameByte _realScroll;
         private GameByte _autoScroll;
@@ -26,7 +26,7 @@ namespace ChompGame.MainGame
             WorldScroller scroller,
             TileModule tileModule, 
             GameByte levelTimer, 
-            GameByte currentLevel)
+            GameByteEnum<Level> currentLevel)
         {
             _specs = specs;
             _tileModule = tileModule;
@@ -50,24 +50,24 @@ namespace ChompGame.MainGame
 
         public void Update()
         {
-            switch(_currentLevel.Value)
-            {
-                case 1:
+            //switch(_currentLevel.Value)
+            //{
+            //    case 1:
 
-                    if ((_levelTimer.Value % 16) == 0)
-                    {
-                        _autoScroll.Value++;
-                        if (_autoScroll.Value > _specs.NameTablePixelWidth)
-                            _autoScroll.Value = 0;
-                    }
+            //        if ((_levelTimer.Value % 16) == 0)
+            //        {
+            //            _autoScroll.Value++;
+            //            if (_autoScroll.Value > _specs.NameTablePixelWidth)
+            //                _autoScroll.Value = 0;
+            //        }
 
-                    if ((_levelTimer.Value % 4) == 0)
-                    {
-                        _paletteCycleIndex.Value++;
-                    }
+            //        if ((_levelTimer.Value % 4) == 0)
+            //        {
+            //            _paletteCycleIndex.Value++;
+            //        }
 
-                    break;
-            }
+            //        break;
+            //}
            
         }
 
@@ -83,8 +83,11 @@ namespace ChompGame.MainGame
 
             switch (_currentLevel.Value)
             {
-                case 0:
+                case Level.TestSceneHorizontal:
                     OnHBlank_Stage0();
+                    break;
+                default:
+                    OnHBlank_Test();
                     break;
             }
         }
@@ -133,6 +136,18 @@ namespace ChompGame.MainGame
             if (_tileModule.ScreenPoint.Y == parallaxEnd)
             {
                 _tileModule.Scroll.X = _realScroll.Value;
+            }
+        }
+
+        private void OnHBlank_Test()
+        {
+            if (_tileModule.ScreenPoint.Y == 8)
+            {
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
+                bgPalette.SetColor(0, ChompGameSpecs.BlueGray2);
+                bgPalette.SetColor(1, ChompGameSpecs.Green1);
+                bgPalette.SetColor(2, ChompGameSpecs.Green2);
+                bgPalette.SetColor(3, ChompGameSpecs.Green3);
             }
         }
 

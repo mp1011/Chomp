@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Graphics;
+using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;

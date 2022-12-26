@@ -7,6 +7,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class SceneSpriteControllers
     {
+        private GameByteEnum<Level> _currentLevel;
         private ChompGameModule _gameModule;
         private PlayerController _playerController;
         private SpriteControllerPool<BombController> _bombControllers;
@@ -76,10 +77,10 @@ namespace ChompGame.MainGame.SpriteControllers
                 _bombControllers.Execute(c => c.Update());
             }
 
-            _enemyAControllers.Execute(c => c.Update());
-            _enemyBControllers.Execute(c => c.Update());
-            _extra1Controllers.Execute(c => c.Update());
-            //todo, when to use extra2
+            _enemyAControllers?.Execute(c => c.Update());
+            _enemyBControllers?.Execute(c => c.Update());
+            _extra1Controllers?.Execute(c => c.Update());
+            _extra2Controllers?.Execute(c => c.Update());
         }
 
         public void OnWorldScrollerUpdate()
@@ -101,7 +102,7 @@ namespace ChompGame.MainGame.SpriteControllers
       
         public void CheckSpriteSpawn()
         {
-            ScenePartsHeader header = new ScenePartsHeader(_gameModule.GameSystem.Memory.GetAddress(AddressLabels.SceneParts), _gameModule.GameSystem.Memory);
+            ScenePartsHeader header = new ScenePartsHeader(_gameModule.CurrentLevel, _gameModule.GameSystem.Memory);
 
             for(int i = 0; i < header.PartsCount; i++)
             {

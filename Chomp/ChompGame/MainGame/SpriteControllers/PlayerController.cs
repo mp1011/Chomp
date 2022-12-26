@@ -126,6 +126,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void CheckEnemyOrBulletCollisions(IEnemyOrBulletSpriteControllerPool sprites)
         {
+            if (sprites == null)
+                return;
+
             if (_state.Value > 0)
                 return;
 

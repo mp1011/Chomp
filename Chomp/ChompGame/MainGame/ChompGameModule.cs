@@ -41,8 +41,9 @@ namespace ChompGame.MainGame
         private LevelBuilder _levelBuilder;
        
         private GameByteEnum<GameState> _gameState;
+        private GameByteEnum<Level> _currentLevel;
+
         private GameByte _timer;
-        private GameByte _currentLevel;
         private SceneSpriteControllers _sceneSpriteControllers;
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
@@ -55,6 +56,12 @@ namespace ChompGame.MainGame
         public StatusBar StatusBar => _statusBar;
         public ChompAudioService AudioService => _audioService;
         public InputModule InputModule => _inputModule;
+
+        public Level CurrentLevel
+        {
+            get => _currentLevel.Value;
+            set => _currentLevel.Value = value;
+        }
 
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
            SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
@@ -74,7 +81,7 @@ namespace ChompGame.MainGame
         {
             _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
             _timer = memoryBuilder.AddByte();
-            _currentLevel = memoryBuilder.AddByte();
+            _currentLevel = new GameByteEnum<Level>(memoryBuilder.AddByte());
 
             _worldScroller = new WorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
 
@@ -186,6 +193,8 @@ namespace ChompGame.MainGame
 
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
+
+            _currentLevel.Value = Level.TestSceneNoScrollTShape;
            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
     
@@ -210,12 +219,8 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
-
-            //todo, ability to load scene by key 
-            SceneDefinition testScene = new SceneDefinition(
-               GameSystem.Memory.GetAddress(AddressLabels.SceneDefinitions), GameSystem.Memory, Specs);
-
-            _levelBuilder = new LevelBuilder(this, testScene);
+            SceneDefinition scene = new SceneDefinition(_currentLevel.Value, GameSystem.Memory, Specs);
+            _levelBuilder = new LevelBuilder(this, scene);
 
             SystemMemoryBuilder memoryBuilder = new SystemMemoryBuilder(GameSystem.Memory, Specs, gameRamBuilder: true);
             _sceneSpriteControllers = _levelBuilder.CreateSpriteControllers(memoryBuilder);
@@ -248,7 +253,6 @@ namespace ChompGame.MainGame
             bombPalette.SetColor(2, ChompGameSpecs.Gray1);
             bombPalette.SetColor(3, ChompGameSpecs.Gray2); 
 
-
             var playerPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(1);
             playerPalette.SetColor(1, ChompGameSpecs.Orange); //hair
             playerPalette.SetColor(2, ChompGameSpecs.LightTan); //face
@@ -272,20 +276,19 @@ namespace ChompGame.MainGame
 
             _levelBuilder.BuildBackgroundNametable();
 
-            //todo, use level number as seed
-            var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, 1);
-            var levelAttributeTable = _levelBuilder.BuildAttributeTable(GameSystem.Memory, levelMap.Bytes);
+            var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
+            var levelAttributeTable = _levelBuilder.BuildAttributeTable(memoryBuilder, levelMap.Bytes);
             
             _levelBuilder.ApplyLevelAlterations(levelMap);
 
             _levelBuilder.SetProperTiles(levelMap);
 
-            _sceneSpriteControllers.Initialize(testScene, levelMap, levelAttributeTable);
+            _sceneSpriteControllers.Initialize(scene, levelMap, levelAttributeTable);
            
             _worldScroller.UpdateVram();
 
-            _collisionDetector.Initialize(testScene, levelMap);
-            _rasterInterrupts.SetScene(testScene);
+            _collisionDetector.Initialize(scene, levelMap);
+            _rasterInterrupts.SetScene(scene);
         }
 
         public void PlayScene()
