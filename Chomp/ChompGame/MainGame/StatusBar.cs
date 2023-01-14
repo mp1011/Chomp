@@ -1,16 +1,21 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using System;
 
 namespace ChompGame.MainGame
 {
-    class StatusBar : IHBlankHandler
+    class StatusBar
     {
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
         private GameInteger _score;
         private LowNibble _lives;
         private HighNibble _health;
+        private GameRAM _ram;
+        private GameShort _paletteRecall;
+        private Specs _specs;
+
 
         private readonly byte _tileEmpty = 9;
         private readonly byte _tileHalf = 10;
@@ -25,9 +30,11 @@ namespace ChompGame.MainGame
             }
         }
 
-        public StatusBar(TileModule tileModule)
+        public StatusBar(TileModule tileModule, GameRAM ram)
         {
+            _ram = ram;
             _tileModule = tileModule;
+            _specs = tileModule.Specs;
             _coreGraphicsModule = _tileModule.GameSystem.CoreGraphicsModule;
         }
 
@@ -37,26 +44,61 @@ namespace ChompGame.MainGame
             _lives = new LowNibble(memoryBuilder);
             _health = new HighNibble(memoryBuilder);
             memoryBuilder.AddByte();
+
+            _paletteRecall = memoryBuilder.AddShort();
         }
 
-        public void OnHBlank()
+        public void InitializeTiles()
         {
+            var blankline = "".PadRight(16, 'C');
+            _tileModule.NameTable
+                   .SetFromString(@"0123000456730000" + Environment.NewLine + blankline);
+
+            DrawScore();
+            SetLives(_lives.Value);
+            SetHealth(Health);
+
+            _paletteRecall.Value = (ushort)_ram.ClaimMemory(_specs.BytesPerPalette);
+        }
+
+        public void OnHBlank(GameByte realScroll)
+        {
+            //System.Diagnostics.Debug.WriteLine("StatusBar HBlank " + _tileModule.ScreenPoint.Y);
             if (_tileModule.ScreenPoint.Y == 0)
             {
+                realScroll.Value = _tileModule.Scroll.X;
                 _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = 5;
+                _tileModule.TileStartY = Constants.StatusBarTopRow;
 
+                //System.Diagnostics.Debug.WriteLine("STORE BG");
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
+                _ram.StoreData(bgPalette, _paletteRecall.Value);
+
                 bgPalette.SetColor(0, ChompGameSpecs.Black);
                 bgPalette.SetColor(1, ChompGameSpecs.Blue1);
                 bgPalette.SetColor(2, ChompGameSpecs.White);
                 bgPalette.SetColor(3, ChompGameSpecs.Green2);
             }
 
+            if (_tileModule.ScreenPoint.Y < 8)
+            {
+                _tileModule.Scroll.X = 0;
+            }
+            else if (_tileModule.ScreenPoint.Y == 8)
+            {
+                _tileModule.Scroll.X = realScroll.Value;
+                _tileModule.TileStartX = 0;
+                _tileModule.TileStartY = Constants.BgRow;
+
+                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
+                _ram.RetrieveData(bgPalette, _paletteRecall.Value);
+                //System.Diagnostics.Debug.WriteLine("RETRIEVE BG");
+            }
+
             if (_tileModule.ScreenPoint.Y == 4)
             {
                 _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = 6;
+                _tileModule.TileStartY = Constants.StatusBarBottomRow;
             }
         }
 
@@ -100,12 +142,17 @@ namespace ChompGame.MainGame
         {
             _score.Value += value;
 
+            DrawScore();
+        }
+
+        private void DrawScore()
+        {
             string scoreText = _score.Value.ToString("00000000");
             int digitStart = 8;
 
             for (int digit = 0; digit < scoreText.Length; digit++)
             {
-                _tileModule.NameTable[digitStart+digit, 1] = GetDigitTile(scoreText[digit]);
+                _tileModule.NameTable[digitStart + digit, 1] = GetDigitTile(scoreText[digit]);
             }
         }
 

@@ -16,12 +16,20 @@ namespace ChompGame.Data.Memory
 
         public SystemMemory Memory => _systemMemory;
 
-        public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs, bool gameRamBuilder)
+        public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs, GameRAM gameRAM)
         {
             _specs = specs;
             _systemMemory = systemMemory;
-            Bytes = gameRamBuilder ? new GameRamMemoryBlock(systemMemory, specs) as DynamicMemoryBlock : new ListMemoryBlock();
+            Bytes = new GameRamMemoryBlock(systemMemory, specs, gameRAM);
         }
+
+        public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs)
+        {
+            _specs = specs;
+            _systemMemory = systemMemory;
+            Bytes = new ListMemoryBlock();
+        }
+
 
         public void AddLabel(AddressLabels label)
         {

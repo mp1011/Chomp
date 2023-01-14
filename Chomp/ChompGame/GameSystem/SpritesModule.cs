@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Graphics;
+using ChompGame.MainGame;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,7 +76,7 @@ namespace ChompGame.GameSystem
                 byte row = (byte)(ScreenPoint.Y - sprite.Y); //todo, scroll
 
                 //todo, avoid hard coding sprite start
-                patternTableTilePoint.Index = 15 + sprite.Tile;
+                patternTableTilePoint.Index = Constants.SpriteStartIndex + sprite.Tile;
 
                 if (row >= Specs.TileHeight)
                 {

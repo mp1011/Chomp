@@ -34,12 +34,16 @@ namespace ChompGame.Data
             grid.ForEach(Point.Zero, new Point(grid.Width, grid.Height), action);
         }
 
-        public static void SetFromString<T>(this IGrid<T> grid, string block)
+        public static void SetFromString<T>(this IGrid<T> grid, string block, Func<T,bool> shouldReplace=null)
         {
-            grid.SetFromString(0, 0, block);
+            grid.SetFromString(0, 0, block, shouldReplace);
         }
 
-        public static void SetFromString<T>(this IGrid<T> grid, int startX, int startY, string block)
+        public static void SetFromString<T>(this IGrid<T> grid, 
+            int startX, 
+            int startY, 
+            string block,
+            Func<T, bool> shouldReplace = null)
         {
             var lines = block.Split(Environment.NewLine)
                                 .Select(p => p.Trim().Replace(" ",""))
@@ -50,7 +54,10 @@ namespace ChompGame.Data
             {
                 for (int x = 0; x < lines[y].Length; x++)
                 {
-                    grid[startX + x, startY + y] = grid.ValueFromChar(lines[y][x]);
+                    if (shouldReplace == null || shouldReplace(grid[startX + x, startY + y]))
+                    {
+                        grid[startX + x, startY + y] = grid.ValueFromChar(lines[y][x]);
+                    }
                 }
             }
         }

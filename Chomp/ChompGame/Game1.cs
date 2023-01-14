@@ -3,6 +3,7 @@ using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,6 +24,7 @@ namespace ChompGame
         private Texture2D _filter;
 
         private SpriteFont _font;
+
         public MainSystem GameSystem => _gameSystem;
 
         public Game1(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)
@@ -57,9 +59,28 @@ namespace ChompGame
 
         protected override void Update(GameTime gameTime)
         {
+            var ks = Keyboard.GetState();
+
+            _showVram = ks.IsKeyDown(Keys.V);
+
+            if (ks.IsKeyDown(Keys.D1))
+                _paletteIndex = 0;
+            if (ks.IsKeyDown(Keys.D2))
+                _paletteIndex = 1;
+            if (ks.IsKeyDown(Keys.D3))
+                _paletteIndex = 2;
+            if (ks.IsKeyDown(Keys.D4))
+                _paletteIndex = 3;
+            if (ks.IsKeyDown(Keys.D5))
+                _paletteIndex = 4;
+
+
             _gameSystem.OnLogicUpdate();
             base.Update(gameTime);
         }
+
+        private bool _showVram;
+        private byte _paletteIndex;
 
         private Stopwatch _renderTimer = new Stopwatch();
         private long _drawMS;
@@ -83,7 +104,6 @@ namespace ChompGame
 
             _filter.SetData(_filterPixels);
         }
-
       
         protected override void Draw(GameTime gameTime)
         {
@@ -94,7 +114,12 @@ namespace ChompGame
             GenerateFilter();
 
             _spriteBatch.Begin();
-            _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);
+
+            if (_showVram)
+                _gameSystem.CoreGraphicsModule.DrawVram(_spriteBatch, _canvas, _paletteIndex);
+            else 
+                _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);
+
             _spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);

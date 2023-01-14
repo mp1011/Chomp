@@ -11,6 +11,7 @@ namespace ChompGame.MainGame
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
         private readonly WorldScroller _worldScroller;
+        private readonly StatusBar _statusBar;
 
         private readonly GameByte _levelTimer;
         private readonly GameByteEnum<Level> _currentLevel;
@@ -25,10 +26,12 @@ namespace ChompGame.MainGame
             CoreGraphicsModule coreGraphicsModule,
             WorldScroller scroller,
             TileModule tileModule, 
+            StatusBar statusBar,
             GameByte levelTimer, 
             GameByteEnum<Level> currentLevel)
         {
             _specs = specs;
+            _statusBar = statusBar;
             _tileModule = tileModule;
             _coreGraphicsModule = coreGraphicsModule;
             _worldScroller = scroller;
@@ -76,39 +79,21 @@ namespace ChompGame.MainGame
             GameDebug.Watch4 = new DebugWatch("CameraPixelX", () => _worldScroller.CameraPixelX);
 
             if(_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
-                HandleStatusBar();
+                _statusBar.OnHBlank(_realScroll);
 
             if(_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
 
-            switch (_currentLevel.Value)
-            {
-                case Level.TestSceneHorizontal:
-                    OnHBlank_Stage0();
-                    break;
-                default:
-                    OnHBlank_Test();
-                    break;
-            }
-        }
-
-        private void HandleStatusBar()
-        {
-            if (_tileModule.ScreenPoint.Y == 0)
-            {
-                _realScroll.Value = _tileModule.Scroll.X;
-            }
-
-            if (_tileModule.ScreenPoint.Y < 8)
-            {
-                _tileModule.Scroll.X = 0;
-            }
-            else if (_tileModule.ScreenPoint.Y == 8)
-            {
-                _tileModule.Scroll.X = _realScroll.Value;
-                _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = 0;
-            }
+            var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
+            //switch (_currentLevel.Value)
+            //{
+            //    case Level.TestSceneHorizontal:
+            //        OnHBlank_Stage0();
+            //        break;
+            //    default:
+            //        OnHBlank_Test();
+            //        break;
+            //}
         }
 
         private void HandleParallax()
@@ -136,18 +121,6 @@ namespace ChompGame.MainGame
             if (_tileModule.ScreenPoint.Y == parallaxEnd)
             {
                 _tileModule.Scroll.X = _realScroll.Value;
-            }
-        }
-
-        private void OnHBlank_Test()
-        {
-            if (_tileModule.ScreenPoint.Y == 8)
-            {
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
-                bgPalette.SetColor(0, ChompGameSpecs.BlueGray2);
-                bgPalette.SetColor(1, ChompGameSpecs.Green1);
-                bgPalette.SetColor(2, ChompGameSpecs.Green2);
-                bgPalette.SetColor(3, ChompGameSpecs.Green3);
             }
         }
 
@@ -224,7 +197,7 @@ namespace ChompGame.MainGame
             if (_tileModule.ScreenPoint.Y == 8)
             {
                 _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = 0;
+                _tileModule.TileStartY = Constants.BgRow;
 
                 var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
                 bgPalette.SetColor(0, ChompGameSpecs.Black);

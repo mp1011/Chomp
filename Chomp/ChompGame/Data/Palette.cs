@@ -3,13 +3,14 @@ using Microsoft.Xna.Framework;
 
 namespace ChompGame.Data
 {
-    public class Palette
+    public class Palette : IMemoryBlock
     {
         private Specs _specs;
         private NibbleArray _colorsLow;
         private DenseTwoBitArray _colorsHi;
 
         public int Address => _colorsLow.Address;
+        public int Bytes => _specs.BytesPerPalette;
 
         public Palette(Specs specs, NibbleArray colorsLow, DenseTwoBitArray colorsHi)
         {

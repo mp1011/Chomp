@@ -29,6 +29,12 @@ namespace ChompGame.Data
         Left7 = 254
     }
 
+    public interface IMemoryBlock
+    {
+        int Address { get; }
+        int Bytes { get; }
+    }
+
     class GameBit
     {
         private int _address;
@@ -115,6 +121,33 @@ namespace ChompGame.Data
             }
         }
     }
+
+
+    class NibbleEnum<T>
+    {
+        private Nibble _value;
+
+
+        public NibbleEnum(Nibble value)
+        {
+            _value = value;
+        }
+
+        public T Value
+        {
+            get
+            {
+                object currentValue = _value.Value;
+                return (T)currentValue;
+            }
+            set
+            {
+                var byteValue = (byte)(object)value;
+                _value.Value = byteValue;
+            }
+        }
+    }
+
 
     public class GameByte
     {

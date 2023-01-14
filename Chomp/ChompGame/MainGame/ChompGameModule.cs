@@ -48,6 +48,8 @@ namespace ChompGame.MainGame
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
 
+        public GameRAM GameRAM { get; } 
+
         public TileModule TileModule => _tileModule;
         public SpritesModule SpritesModule => _spritesModule;
         public GameByte LevelTimer => _timer;
@@ -74,7 +76,9 @@ namespace ChompGame.MainGame
             _statusBarModule = statusBarModule;
             _musicModule = musicModule;
             _collisionDetector = new CollisionDetector(Specs);
-            _statusBar = new StatusBar(_tileModule);
+
+            GameRAM = new GameRAM(Specs);
+            _statusBar = new StatusBar(_tileModule, GameRAM);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -89,10 +93,20 @@ namespace ChompGame.MainGame
                 GameSystem.CoreGraphicsModule,
                 _worldScroller,
                 _tileModule,
+                _statusBar,
                 _timer,
                 _currentLevel);
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
+
+            //note, have unused bits here
+            var freeRamOffset = new ExtendedByte2(
+                memoryBuilder.AddByte(),
+                new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0));
+
+            GameRAM.Initialize(freeRamOffset, memoryBuilder.Memory);
+
+            memoryBuilder.AddByte();
 
             memoryBuilder.AddLabel(AddressLabels.FreeRAM);
             memoryBuilder.AddBytes(Specs.GameRAMSize);
@@ -194,7 +208,7 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.TestSceneNoScrollTShape;
+            _currentLevel.Value = Level.TestSceneNoScrollFlat;
            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
     
@@ -222,7 +236,10 @@ namespace ChompGame.MainGame
             SceneDefinition scene = new SceneDefinition(_currentLevel.Value, GameSystem.Memory, Specs);
             _levelBuilder = new LevelBuilder(this, scene);
 
-            SystemMemoryBuilder memoryBuilder = new SystemMemoryBuilder(GameSystem.Memory, Specs, gameRamBuilder: true);
+            SystemMemoryBuilder memoryBuilder = new SystemMemoryBuilder(GameSystem.Memory, 
+                Specs,
+                GameRAM);
+
             _sceneSpriteControllers = _levelBuilder.CreateSpriteControllers(memoryBuilder);
 
             _levelBuilder.SetupVRAMPatternTable(
@@ -237,15 +254,15 @@ namespace ChompGame.MainGame
             //todo, define level palettes elsewhere
 
             var bgPalette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
-            bgPalette.SetColor(0, ChompGameSpecs.LightBlue);
-            bgPalette.SetColor(1, ChompGameSpecs.Gray1);
-            bgPalette.SetColor(2, ChompGameSpecs.Gray2);
-            bgPalette.SetColor(3, ChompGameSpecs.Gray3);
+            bgPalette.SetColor(0, ChompGameSpecs.Gray3);
+            bgPalette.SetColor(1, ChompGameSpecs.Green1);
+            bgPalette.SetColor(2, ChompGameSpecs.Green2);
+            bgPalette.SetColor(3, ChompGameSpecs.Green3);
 
             var bgPalette2 = GameSystem.CoreGraphicsModule.GetBackgroundPalette(1);
-            bgPalette2.SetColor(0, ChompGameSpecs.BlueGray2);
-            bgPalette2.SetColor(1, ChompGameSpecs.DarkBrown);
-            bgPalette2.SetColor(2, ChompGameSpecs.DarkBrown);
+            bgPalette2.SetColor(0, ChompGameSpecs.Orange);
+            bgPalette2.SetColor(1, ChompGameSpecs.Gray1);
+            bgPalette2.SetColor(2, ChompGameSpecs.Gray2);
             bgPalette2.SetColor(3, ChompGameSpecs.Gray3);
 
             var bombPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(0);
@@ -274,14 +291,15 @@ namespace ChompGame.MainGame
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
 
-            _levelBuilder.BuildBackgroundNametable();
-
+           
             var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
             var levelAttributeTable = _levelBuilder.BuildAttributeTable(memoryBuilder, levelMap.Bytes);
             
             _levelBuilder.ApplyLevelAlterations(levelMap);
 
             _levelBuilder.SetProperTiles(levelMap);
+
+            _levelBuilder.BuildBackgroundNametable(levelMap);
 
             _sceneSpriteControllers.Initialize(scene, levelMap, levelAttributeTable);
            
@@ -321,6 +339,7 @@ namespace ChompGame.MainGame
                     bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
                 }
             }
+
         }
 
         public void OnVBlank()
@@ -331,7 +350,6 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
-            _statusBar.OnHBlank();
             _rasterInterrupts.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();

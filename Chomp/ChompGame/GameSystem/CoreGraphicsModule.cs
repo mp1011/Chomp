@@ -80,6 +80,31 @@ namespace ChompGame.GameSystem
             _tileModule = GameSystem.GetModule<TileModule>();
         }
 
+        public void DrawVram(SpriteBatch spriteBatch, Texture2D canvas, byte paletteIndex)
+        {
+            ScreenPoint.Reset();
+            var palette = GetPalette(paletteIndex);
+
+            for (int i = 0; i < _screenData.Length; i++)
+            {
+                if (ScreenPoint.X < Specs.PatternTableWidth
+                    && ScreenPoint.Y < Specs.PatternTableHeight)
+                {
+                    var color = palette[PatternTable[ScreenPoint.X, ScreenPoint.Y]];
+                    _screenData[i] = color;
+                }
+                else
+                {
+                    _screenData[i] = Color.Black;
+                }
+
+                ScreenPoint.Next();
+            }
+
+            canvas.SetData(_screenData);
+            spriteBatch.Draw(canvas, Vector2.Zero, Color.White);
+        }
+
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
         {
             ScreenPoint.Reset();
@@ -101,7 +126,9 @@ namespace ChompGame.GameSystem
                 {
                     DrawSprites(i - scanlineColumn + 1);
                     scanlineColumn = 0;
-                    GameSystem.OnHBlank();
+
+                    if(ScreenPoint.Y != 0)
+                        GameSystem.OnHBlank();
                 }
             }
 

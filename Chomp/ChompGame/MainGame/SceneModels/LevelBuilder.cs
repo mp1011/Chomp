@@ -19,31 +19,40 @@ namespace ChompGame.MainGame.SceneModels
             _sceneDefinition = sceneDefinition;
         }
 
-        private void FillStatusBarTopLine()
-        {
-            _gameModule.TileModule.NameTable
-                .SetFromString(@"01277734562777777");            
-        }
-
-        public void BuildBackgroundNametable()
+        public void BuildBackgroundNametable(NBitPlane nameTable)
         {
             _gameModule.TileModule.NameTable.Reset();
+            _gameModule.StatusBar.InitializeTiles(); 
+          
+            //todo, handle theme bg's diferently
 
-            FillStatusBarTopLine();
+            switch(_sceneDefinition.ScrollStyle)
+            {
+                case ScrollStyle.None:
 
-            int layerABegin = 2 + _sceneDefinition.BeginTiles + _sceneDefinition.ParallaxLayerABeginTile;
-            int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerBTiles;
-            int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
+                    int mountain1Pos = 6; //todo, should be in level data
+                    //int mountain2Pos = 8;
+
+                    //mountain layer 1
+                    nameTable.SetFromString(0, mountain1Pos,
+                        @"0000050000000500
+                                3412162534121625",
+                        shouldReplace: b => b==0);
+
+                    ////mountain layer 2
+                    //nameTable.SetFromString(0, mountain2Pos,
+                    //  @"00000500001200000050000120000000
+                    //          12341623416621234162341662123434",
+                    //    shouldReplace: b => b == 0);
+
+                    break;
+
+            }
+            //int layerABegin = 2 + _sceneDefinition.BeginTiles + _sceneDefinition.ParallaxLayerABeginTile;
+            //int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerBTiles;
+            //int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
          
-            ////mountain layer 1
-            //_gameModule.TileModule.NameTable.SetFromString(0, layerBBegin,
-            //    @"00000500000005000000050000000500
-            //            34121625341216253412162534121625");
-
-            ////mountain layer 2
-            //_gameModule.TileModule.NameTable.SetFromString(0, layerCBegin,
-            //  @"00000500001200000050000120000000
-            //          12341623416621234162341662123434");
+            
         }
 
         public NBitPlane BuildAttributeTable(SystemMemoryBuilder memoryBuilder, int nameTableBytes)
@@ -58,7 +67,20 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
-            attributeTable.ForEach((x, y, b) => attributeTable[x, y] = 0);
+            //int mountain1Pos = 6; //todo, should be in level data
+
+            attributeTable.ForEach((x, y, b) => 
+            {
+                if(x == 0 
+                || y == 0
+                || x == attributeTable.Width - 1
+                || y >= 4)
+                    attributeTable[x, y] = 0;
+                else 
+                    attributeTable[x, y] = 1;
+            });
+
+
 
             return attributeTable;
         }
@@ -87,10 +109,10 @@ namespace ChompGame.MainGame.SceneModels
                                                    top: _sceneDefinition.BeginTiles,
                                                    bottom: _sceneDefinition.EndTiles),    
                 ScrollStyle.None => AddEdgeTiles(nameTable, 
-                                                    top: _sceneDefinition.BeginTiles,
-                                                    left: _sceneDefinition.BeginTiles,
-                                                    bottom: _sceneDefinition.EndTiles,
-                                                    right: _sceneDefinition.EndTiles),
+                                                    top: _sceneDefinition.TopTiles * 2,
+                                                    left: _sceneDefinition.LeftTiles * 2,
+                                                    bottom: _sceneDefinition.BottomTiles * 2,
+                                                    right: _sceneDefinition.RightTiles * 2),
                 _ => throw new NotImplementedException(),
             };
         }
@@ -343,12 +365,12 @@ namespace ChompGame.MainGame.SceneModels
                     levelMap[x, y] = (byte)_sceneDefinition.GroundRightCorner;
                 else if (!tileAbove)
                     levelMap[x, y] = (byte)_sceneDefinition.GetGroundTopTile(x);
-                else if(!tileLeft)
-                    levelMap[x, y] = (byte)_sceneDefinition.GetLeftSideTile(y);
+                else if (!tileLeft)
+                    levelMap[x, y] = (byte)_sceneDefinition.LeftTile;
                 else if (!tileRight)
-                    levelMap[x, y] = (byte)_sceneDefinition.GetRightSideTile(y);
+                    levelMap[x, y] = (byte)_sceneDefinition.RightTile;
                 else
-                    levelMap[x, y] = (byte)_sceneDefinition.GetGroundFillTile(x,y);
+                    levelMap[x, y] = (byte)_sceneDefinition.GetGroundFillTile(x, y);
             });
         }
 
@@ -371,24 +393,64 @@ namespace ChompGame.MainGame.SceneModels
            NBitPlane vramPatternTable,
            SystemMemory memory)
         {
-            //tile row 1
+            //row 0 - top status bar text
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, (int)_sceneDefinition.TileRow, 8, 1),
-                destinationPoint: new Point(0, 0),
+                source: new InMemoryByteRectangle(4, 3, 7, 1),
+                destinationPoint: new Point(1, 0),
                 _gameModule.Specs,
                 memory);
 
-            //tile row 2
+            //row 1 - bottom status bar text
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
-                source: new InMemoryByteRectangle(8, (int)_sceneDefinition.TileRow, 8, 1),
+                source: new InMemoryByteRectangle(4, 4, 8, 1),
                 destinationPoint: new Point(0, 1),
                 _gameModule.Specs,
                 memory);
 
+            // row 2 - more text
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(12, 4, 2, 1),
+                destinationPoint: new Point(6, 2),
+                _gameModule.Specs,
+                memory);
+
+            // row 2 - health guage
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(0, 4, 4, 1),
+                destinationPoint: new Point(0, 2),
+                _gameModule.Specs,
+                memory);
+
+            // row 3 - background
+            // row 4 - foreground
+            //todo- store theme definition separately
+            switch (_sceneDefinition.Theme)
+            {
+                case Theme.Plains:
+                    //tile row 1
+                    masterPatternTable.CopyTilesTo(
+                        destination: vramPatternTable,
+                        source: new InMemoryByteRectangle(0, 5, 8, 1),
+                        destinationPoint: new Point(1, 3),
+                        _gameModule.Specs,
+                        memory);
+
+                    //tile row 2
+                    masterPatternTable.CopyTilesTo(
+                        destination: vramPatternTable,
+                        source: new InMemoryByteRectangle(0, 12, 8, 1),
+                        destinationPoint: new Point(0, 4),
+                        _gameModule.Specs,
+                        memory);
+                    break;
+            }
+
             GridPoint spriteDestination = new ByteGridPoint(_gameModule.Specs.PatternTableTilesAcross, _gameModule.Specs.PatternTableTilesDown);
-            spriteDestination.Y = 2;
+            spriteDestination.Y = 5;
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
             {
@@ -410,29 +472,7 @@ namespace ChompGame.MainGame.SceneModels
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
 
-                //status bar text
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(4, 3, 8, 2),
-                    destinationPoint: new Point(0, 5),
-                    _gameModule.Specs,
-                    memory);
-
-                //status bar text 2
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(12, 4, 2, 1),
-                    destinationPoint: new Point(6, 7),
-                    _gameModule.Specs,
-                    memory);
-
-                //health guage
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(0, 4, 4, 1),
-                    destinationPoint: new Point(0, 7),
-                    _gameModule.Specs,
-                    memory);
+               
             }
 
 

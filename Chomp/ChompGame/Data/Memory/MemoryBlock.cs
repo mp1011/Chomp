@@ -94,12 +94,14 @@ namespace ChompGame.Data.Memory
     {
         private SystemMemory _memory;
         private Specs _specs;
+        private GameRAM _gameRAM;
 
-        public GameRamMemoryBlock(SystemMemory memory, Specs specs)
+        public GameRamMemoryBlock(SystemMemory memory, Specs specs, GameRAM gameRAM)
         {
             _memory = memory;
             _specs = specs;
-            _currentAddress = _memory.GetAddress(AddressLabels.FreeRAM);
+            _currentAddress = gameRAM.CurrentAddress;
+            _gameRAM = gameRAM;
         }
 
         public override byte this[int index] { get => _memory[index]; set => _memory[index] = value; }
@@ -113,8 +115,7 @@ namespace ChompGame.Data.Memory
             this[_currentAddress] = value;
             _currentAddress++;
 
-            if (_currentAddress > _memory.GetAddress(AddressLabels.FreeRAM) + _specs.GameRAMSize)
-                throw new Exception("Access Violation");
+            _gameRAM.CurrentAddress++;
         }
 
         public override FixedMemoryBlock ToFixed()

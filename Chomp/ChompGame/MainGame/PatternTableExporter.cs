@@ -13,7 +13,7 @@ namespace ChompGame.MainGame
         /// </summary>
         /// <param name="device"></param>
         /// <param name="patternTable"></param>
-        public static void ExportPatternTable(GraphicsDevice device, NBitPlane patternTable)
+        public static void ExportPatternTable(GraphicsDevice device, NBitPlane patternTable, string name="patterntable.png")
         {
             var bmp = new Texture2D(device, patternTable.Width, patternTable.Height);
 
@@ -28,10 +28,10 @@ namespace ChompGame.MainGame
 
             bmp.SetData(colors.ToArray());
 
-            if (File.Exists("patterntable.png"))
-                File.Delete("patterntable.png");
+            if (File.Exists(name))
+                File.Delete(name);
 
-            using (var fs = new FileStream("patterntable.png", FileMode.Create))
+            using (var fs = new FileStream(name, FileMode.Create))
             {
                 bmp.SaveAsPng(fs, bmp.Width, bmp.Height);
                 fs.Flush();

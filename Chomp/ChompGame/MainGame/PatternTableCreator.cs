@@ -1,8 +1,6 @@
 ﻿using ChompGame.Data;
-using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
-using ChompGame.MainGame.SceneModels;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,74 +21,29 @@ namespace ChompGame.MainGame
                 graphicsDevice,
                 specs);
 
-            //player
-            CopyPatternTableRegion(
-                masterPatternTableImage,
-                masterPatternTable,
-                new Rectangle(0, 0, 2, 2),
-                specs);
+            Color[] colors = new Color[]
+            {
+                new Color(254,10,255),
+                new Color(0,0,0),
+                new Color(57,66,99),
+                new Color(255,255,255)
+            };
 
-            //bomb 
-            CopyPatternTableRegion(
-                masterPatternTableImage,
-                masterPatternTable,
-                new Rectangle(5, 1, 1, 1),
-                specs);
+            masterPatternTable.ForEach((x, y, b) =>
+            {
+                var imageColor = masterPatternTableImage.GetPixel(x, y);
+                int colorIndex = Array.IndexOf(colors, imageColor);
+                if (colorIndex == -1)
+                    throw new Exception($"Unexpected color at {x} {y}");
 
-
-            //lizard enemy
-            CopyPatternTableRegion(
-              masterPatternTableImage,
-              masterPatternTable,
-              new Rectangle(2, 0, 2, 2),
-              specs);
-
-            //fireball
-            CopyPatternTableRegion(
-              masterPatternTableImage,
-              masterPatternTable,
-              new Rectangle(4, 0, 4, 1),
-              specs);
-
-            //bird enemy
-            CopyPatternTableRegion(
-                masterPatternTableImage,
-                masterPatternTable,
-                new Rectangle(8, 0, 4, 1),
-                specs);
-
-            //coin
-            CopyPatternTableRegion(
-              masterPatternTableImage,
-              masterPatternTable,
-              new Rectangle(4, 1, 1, 1),
-              specs);
-
-          
-            //text and health guage
-            CopyPatternTableRegion(
-               masterPatternTableImage,
-               masterPatternTable,
-               new Rectangle(0, 3, 14, 2),
-                specs);
-
-            //mountains
-            CopyPatternTableRegion(
-               masterPatternTableImage,
-               masterPatternTable,
-               new Rectangle(0, 8, 7, 1),
-                specs);
-    
-            //grass
-            CopyPatternTableRegion(
-               masterPatternTableImage,
-               masterPatternTable,
-               new Rectangle(8, 8, 8, 1),
-                specs);
+                masterPatternTable[x, y] = (byte)colorIndex;
+            });
 
             ExportToDisk(
                 masterPatternTable,
                 new DiskFile(ContentFolder.PatternTables, "master.pt"));
+
+            PatternTableExporter.ExportPatternTable(graphicsDevice, masterPatternTable, "master.png");
         }
 
         private static void ExportToDisk(NBitPlane table, DiskFile destination)
@@ -116,55 +69,6 @@ namespace ChompGame.MainGame
             File.WriteAllLines(file.FullName, rows);
                 
         }
-
-        private static void CopyPatternTableRegion(
-            DiskBitmap masterImage, 
-            NBitPlane masterPatternTable, 
-            Rectangle tileRegion,
-            Specs specs)
-        {
-            Color transparentColor = new Color(255, 0, 255);
-            var pixelRegion = new Rectangle(
-                tileRegion.X * specs.TileWidth,
-                tileRegion.Y * specs.TileHeight,
-                tileRegion.Width * specs.TileWidth,
-                tileRegion.Height * specs.TileHeight);
-
-            Color[] colors = new Color[2.Power(specs.BitsPerPixel)];
-            int insertIndex = 1;
-            int pixelIndex = 0;
-
-            for (int y = pixelRegion.Y; y < pixelRegion.Bottom; y++)
-            {
-                for (int x = pixelRegion.X; x < pixelRegion.Right; x++)
-                {
-                    Color pixelColor = masterImage.GetPixel(x, y);
-
-                    if (pixelColor.Equals(transparentColor))
-                    {
-                        colors[0] = new Color(0, 0, 0, 0);
-                        pixelIndex = 0;
-                    }
-                    else
-                    {
-                        int index = Array.IndexOf(colors, pixelColor);
-
-                        if (index == -1)
-                        {
-                            colors[insertIndex] = pixelColor;
-                            pixelIndex = insertIndex;
-
-                            insertIndex++;
-                            if (insertIndex == colors.Length)
-                                insertIndex = 0;
-                        }
-                        else
-                            pixelIndex = index;
-                    }
-
-                    masterPatternTable[x, y] = (byte)pixelIndex;
-                }
-            }
-        }
+    
     }
 }

@@ -28,7 +28,7 @@ namespace ChompGame.Data
 
         public SystemMemory(Action<SystemMemoryBuilder> configureMemory, Specs specs)
         {
-            var memoryBuilder = new SystemMemoryBuilder(this, specs, gameRamBuilder: false);
+            var memoryBuilder = new SystemMemoryBuilder(this, specs);
 
             _memory = memoryBuilder.Bytes;
             configureMemory(memoryBuilder);
