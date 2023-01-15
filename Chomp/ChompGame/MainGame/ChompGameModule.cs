@@ -251,40 +251,7 @@ namespace ChompGame.MainGame
                 GameSystem.GraphicsDevice, 
                 GameSystem.CoreGraphicsModule.PatternTable);
 
-            //todo, define level palettes elsewhere
-
-            var bgPalette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
-            bgPalette.SetColor(0, ChompGameSpecs.Gray3);
-            bgPalette.SetColor(1, ChompGameSpecs.Green1);
-            bgPalette.SetColor(2, ChompGameSpecs.Green2);
-            bgPalette.SetColor(3, ChompGameSpecs.Green3);
-
-            var bgPalette2 = GameSystem.CoreGraphicsModule.GetBackgroundPalette(1);
-            bgPalette2.SetColor(0, ChompGameSpecs.Orange);
-            bgPalette2.SetColor(1, ChompGameSpecs.Gray1);
-            bgPalette2.SetColor(2, ChompGameSpecs.Gray2);
-            bgPalette2.SetColor(3, ChompGameSpecs.Gray3);
-
-            var bombPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(0);
-            bombPalette.SetColor(1, ChompGameSpecs.Black); 
-            bombPalette.SetColor(2, ChompGameSpecs.Gray1);
-            bombPalette.SetColor(3, ChompGameSpecs.Gray2); 
-
-            var playerPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(1);
-            playerPalette.SetColor(1, ChompGameSpecs.Orange); //hair
-            playerPalette.SetColor(2, ChompGameSpecs.LightTan); //face
-            playerPalette.SetColor(3, ChompGameSpecs.DarkBrown); //legs
-
-            var enemyPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(2);
-            enemyPallete.SetColor(1, ChompGameSpecs.Green1); 
-            enemyPallete.SetColor(2, ChompGameSpecs.Green2); 
-            enemyPallete.SetColor(3, ChompGameSpecs.Red3); 
-
-            var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(3);
-            bulletPallete.SetColor(0, ChompGameSpecs.Black);
-            bulletPallete.SetColor(1, ChompGameSpecs.Red2);
-            bulletPallete.SetColor(2, ChompGameSpecs.Red3);
-            bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
+            _levelBuilder.SetPalettes();
 
             _gameState.Value = GameState.PlayScene;
             _statusBar.AddToScore(123456789);
@@ -293,9 +260,10 @@ namespace ChompGame.MainGame
 
            
             var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
-            var levelAttributeTable = _levelBuilder.BuildAttributeTable(memoryBuilder, levelMap.Bytes);
-            
+           
             _levelBuilder.ApplyLevelAlterations(levelMap);
+
+            var levelAttributeTable = _levelBuilder.BuildAttributeTable(memoryBuilder, levelMap);
 
             _levelBuilder.SetProperTiles(levelMap);
 

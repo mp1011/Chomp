@@ -30,14 +30,16 @@ namespace ChompGame.MainGame.SceneModels
             {
                 case ScrollStyle.None:
 
-                    int mountain1Pos = 6; //todo, should be in level data
-                    //int mountain2Pos = 8;
+                    int mountain1Pos = _sceneDefinition.GetBgPosition1();
 
-                    //mountain layer 1
-                    nameTable.SetFromString(0, mountain1Pos,
-                        @"0000050000000500
+                    if (mountain1Pos != 0)
+                    {
+                        //mountain layer 1
+                        nameTable.SetFromString(0, mountain1Pos,
+                            @"0000050000000500
                                 3412162534121625",
-                        shouldReplace: b => b==0);
+                            shouldReplace: b => b == 0);
+                    }
 
                     ////mountain layer 2
                     //nameTable.SetFromString(0, mountain2Pos,
@@ -55,7 +57,9 @@ namespace ChompGame.MainGame.SceneModels
             
         }
 
-        public NBitPlane BuildAttributeTable(SystemMemoryBuilder memoryBuilder, int nameTableBytes)
+        public NBitPlane BuildAttributeTable(
+            SystemMemoryBuilder memoryBuilder, 
+            NBitPlane nameTable)
         {
             //fix address
             NBitPlane attributeTable = NBitPlane.Create(
@@ -67,20 +71,25 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
-            //int mountain1Pos = 6; //todo, should be in level data
+            int mountainAttributePos = _sceneDefinition.GetBgPosition1() / _gameModule.Specs.AttributeTableBlockSize;
 
             attributeTable.ForEach((x, y, b) => 
             {
-                if(x == 0 
-                || y == 0
-                || x == attributeTable.Width - 1
-                || y >= 4)
+                bool isSolid = nameTable[x * 2, y * 2] != 0;
+
+                //0 = green tiles, gray bg
+                //1 = gray tiles, orange bg
+
+                if (y > mountainAttributePos)
+                    attributeTable[x, y] = 0; //green tiles, gray 
+                else
+                    attributeTable[x, y] = 1;
+
+                if (isSolid || y > mountainAttributePos)
                     attributeTable[x, y] = 0;
-                else 
+                else
                     attributeTable[x, y] = 1;
             });
-
-
 
             return attributeTable;
         }
@@ -354,10 +363,10 @@ namespace ChompGame.MainGame.SceneModels
                     return;
 
                 bool tileAbove = y == 0 ? false : levelMap[x, y - 1] != 0;
-                bool tileBelow = y == levelMap.Height ? true : levelMap[x, y + 1] != 0;
+                bool tileBelow = y == levelMap.Height-1 ? true : levelMap[x, y + 1] != 0;
 
                 bool tileLeft = x == 0 ? true : levelMap[x - 1, y] != 0;
-                bool tileRight = x == levelMap.Width ? true : levelMap[x + 1, y] != 0;
+                bool tileRight = x == levelMap.Width-1 ? true : levelMap[x + 1, y] != 0;
 
                 if (!tileAbove && !tileLeft)
                     levelMap[x, y] = (byte)_sceneDefinition.GroundLeftCorner;
@@ -386,6 +395,51 @@ namespace ChompGame.MainGame.SceneModels
                     levelMap[x, y] = 0;
                 }
             }
+        }
+
+        public void SetPalettes()
+        {
+            var graphics = _gameModule.GameSystem.CoreGraphicsModule;
+
+            var foregroundPalette = graphics.GetBackgroundPalette(0);
+            var backgroundPalette = graphics.GetBackgroundPalette(1);
+            var bombPalette = graphics.GetSpritePalette(0);
+            var playerPalette = graphics.GetSpritePalette(1);
+            var enemyPallete = graphics.GetSpritePalette(2);
+            var bulletPallete = graphics.GetSpritePalette(3);
+
+            switch(_sceneDefinition.Theme)
+            {
+                case Theme.Plains:
+                    foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
+                    foregroundPalette.SetColor(1, ChompGameSpecs.Green1);
+                    foregroundPalette.SetColor(2, ChompGameSpecs.Green2);
+                    foregroundPalette.SetColor(3, ChompGameSpecs.Green3);
+
+                    backgroundPalette.SetColor(0, ChompGameSpecs.LightBlue);
+                    backgroundPalette.SetColor(1, ChompGameSpecs.Gray1);
+                    backgroundPalette.SetColor(2, ChompGameSpecs.Gray2);
+                    backgroundPalette.SetColor(3, ChompGameSpecs.Gray3);
+                    break;
+            }
+           
+
+            bombPalette.SetColor(1, ChompGameSpecs.Black);
+            bombPalette.SetColor(2, ChompGameSpecs.Gray1);
+            bombPalette.SetColor(3, ChompGameSpecs.Gray2);
+
+            playerPalette.SetColor(1, ChompGameSpecs.Orange); //hair
+            playerPalette.SetColor(2, ChompGameSpecs.DarkBrown); //legs
+            playerPalette.SetColor(3, ChompGameSpecs.LightTan); //face
+
+            enemyPallete.SetColor(1, ChompGameSpecs.Green1);
+            enemyPallete.SetColor(2, ChompGameSpecs.Green2);
+            enemyPallete.SetColor(3, ChompGameSpecs.Red3);
+
+            bulletPallete.SetColor(0, ChompGameSpecs.Black);
+            bulletPallete.SetColor(1, ChompGameSpecs.Red2);
+            bulletPallete.SetColor(2, ChompGameSpecs.Red3);
+            bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
         }
 
         public void SetupVRAMPatternTable(

@@ -65,16 +65,18 @@ namespace ChompGame.MainGame.SceneModels
 
     class SceneDefinition
     {
-        public const int Bytes = 6;
+        public const int Bytes = 3;
 
         public const int StatusBarTiles = 2;
 
         private readonly SystemMemory _systemMemory;
         private readonly Specs _specs;
 
-        //byte 0 (4 bits free)
+        //byte 0
         private readonly TwoBitEnum<ScrollStyle> _scrollStyle;
         private readonly TwoBitEnum<LevelShape> _levelShape;
+        private readonly TwoBit _bgPosition1;
+        private readonly TwoBit _bgPosition2;
 
         //byte 1
         private NibbleEnum<Theme> _theme;          
@@ -88,7 +90,7 @@ namespace ChompGame.MainGame.SceneModels
         private Nibble _begin; 
         private Nibble _end;
 
-        //parallax info (vertical scroll only)
+        //parallax info (vertical scroll only) - may remove this
         private readonly MaskedByte _parallaxTileBegin;
         private readonly TwoBit _parallaxSizeA;
         private readonly TwoBit _parallaxSizeB;
@@ -146,6 +148,15 @@ namespace ChompGame.MainGame.SceneModels
         public int LayerCBeginTile => LayerBBeginTile + ParallaxLayerBTiles;
         public int ParallaxEndTile => LayerCBeginTile + ParallaxLayerATiles;
 
+        public byte GetBgPosition1()
+        {
+            //todo, may depend on scroll style
+            if (_bgPosition1.Value == 0)
+                return 0;
+            else
+                return (byte)(2 + _bgPosition1.Value*2);
+        }
+
         public SceneDefinition(SystemMemoryBuilder memoryBuilder, 
             Specs specs,
             ScrollStyle scrollStyle,
@@ -155,13 +166,17 @@ namespace ChompGame.MainGame.SceneModels
             byte left=0,
             byte top=0,
             byte right=0,
-            byte bottom=0)
+            byte bottom=0,
+            byte bg1=0,
+            byte bg2=0)
         {
             _specs = specs;
             _systemMemory = memoryBuilder.Memory;
 
             _scrollStyle = new TwoBitEnum<ScrollStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
             _levelShape = new TwoBitEnum<LevelShape>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
+            _bgPosition1 = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
+            _bgPosition2 = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
             memoryBuilder.AddByte();
 
             _theme = new NibbleEnum<Theme>(new LowNibble(memoryBuilder));
@@ -200,6 +215,9 @@ namespace ChompGame.MainGame.SceneModels
                 _right.Value = right;
                 _bottom.Value = bottom;
             }
+
+            _bgPosition1.Value = bg1;
+            _bgPosition2.Value = bg2;
         }
 
         public SceneDefinition(int address, SystemMemory systemMemory, Specs specs)
@@ -207,7 +225,9 @@ namespace ChompGame.MainGame.SceneModels
             _specs = specs;
             _scrollStyle = new TwoBitEnum<ScrollStyle>(systemMemory, address, 0);
             _levelShape = new TwoBitEnum<LevelShape>(systemMemory, address, 2);
-         
+            _bgPosition1 = new TwoBit(systemMemory, address, 4);
+            _bgPosition2 = new TwoBit(systemMemory, address, 6);
+
             _theme = new NibbleEnum<Theme>(new LowNibble(address + 1, systemMemory));
             _enemies = new NibbleEnum<EnemyGroup>(new HighNibble(address + 1, systemMemory));
       
