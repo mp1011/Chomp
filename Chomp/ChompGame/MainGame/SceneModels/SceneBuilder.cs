@@ -52,10 +52,11 @@ namespace ChompGame.MainGame.SceneModels
                theme: Theme.Plains,
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
-               top: 1,
-               bottom: 1,
+               top: 0,
+               bottom: 2,
                left: 1,
-               right: 1
+               right: 1,
+               bg1:1
            );
 
             //TestSceneNoScrollBigStair

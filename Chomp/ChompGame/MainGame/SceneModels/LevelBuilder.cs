@@ -171,18 +171,18 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddCornerStairs(NBitPlane nameTable)
         {
-            int stairSize = 5;
+            int stairSize = 4;
 
             AddStairs(nameTable, new Rectangle(
-                _sceneDefinition.BeginTiles, 
-                nameTable.Height - _sceneDefinition.BeginTiles - stairSize,
+                _sceneDefinition.LeftTiles*2, 
+                nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
                 stairSize,
                 stairSize), 
                 riseRight: false);
 
             AddStairs(nameTable, new Rectangle(
-                nameTable.Width - _sceneDefinition.EndTiles - stairSize, 
-                nameTable.Height - _sceneDefinition.BeginTiles - stairSize,
+                nameTable.Width - _sceneDefinition.RightTiles*2 - stairSize,
+                nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
                 stairSize,
                 stairSize),
                 riseRight: true);

@@ -194,7 +194,7 @@ namespace ChompGame.MainGame.SceneModels
 
 
             _scrollStyle.Value = scrollStyle;
-            _levelShape.Value = LevelShape;
+            _levelShape.Value = levelShape;
             _theme.Value = theme;
             _enemies.Value = enemyGroup;
              
