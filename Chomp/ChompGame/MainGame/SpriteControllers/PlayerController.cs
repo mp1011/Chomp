@@ -59,10 +59,12 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             _movingSpriteController.Update();
+            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
+            _movingSpriteController.AfterCollision(collisionInfo);
+            
             _inputModule.OnLogicUpdate();
 
-            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
-
+            
             if(collisionInfo.XCorrection < 0 && Motion.XSpeed > 0)
             {
                 Motion.XSpeed = 0;

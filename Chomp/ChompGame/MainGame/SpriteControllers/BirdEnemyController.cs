@@ -22,8 +22,9 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         protected override void UpdateBehavior() 
-        { 
-           _movingSpriteController.Update();
+        {
+            throw new System.NotImplementedException();
+          // _movingSpriteController.Update();
 
             if((_levelTimer % 32) == 0)
             {

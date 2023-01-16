@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
@@ -109,16 +110,32 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 scroller: worldScroller);          
         }
 
+        public void AfterCollision(CollisionInfo collisionInfo)
+        {
+            if (FallSpeed != 0)
+            {
+                if (collisionInfo.YCorrection < 0 || collisionInfo.IsOnGround)
+                {
+                    Motion.YSpeed = 0;
+                    Motion.TargetYSpeed = 0;
+                }
+                else
+                {
+                    Motion.TargetYSpeed = FallSpeed;
+                    Motion.YAcceleration = GravityAccel;
+                }
+            }
+
+            if (collisionInfo.YCorrection > 0 || collisionInfo.IsOnGround)
+            {
+                Motion.YSpeed = 0;
+            }
+        }
+
         public void Update()
         {
             if (WorldSprite.Status != WorldSpriteStatus.Active)
                 return;
-
-            if (FallSpeed != 0)
-            {
-                Motion.TargetYSpeed = FallSpeed;
-                Motion.YAcceleration = GravityAccel;
-            }
 
             var sprite = WorldSprite.GetSprite();
             Motion.Apply(WorldSprite);

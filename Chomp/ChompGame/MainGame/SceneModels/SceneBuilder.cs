@@ -26,7 +26,9 @@ namespace ChompGame.MainGame.SceneModels
                 enemyGroup: EnemyGroup.Lizard_Bird,
                 memoryBuilder: memoryBuilder,
                 top:0,
-                bottom:2
+                bottom:2,
+                bg1: 3,
+                bg2: 1
             );
 
             //TestSceneNoScrollFlat
@@ -40,7 +42,7 @@ namespace ChompGame.MainGame.SceneModels
                top: 1,
                bottom: 1,
                left: 1,
-               right: 0,
+               right: 2,
                bg1: 2
            );
 
@@ -67,9 +69,9 @@ namespace ChompGame.MainGame.SceneModels
                theme: Theme.Plains,
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
-               top: 1,
+               top: 0,
                bottom: 1,
-               left: 1,
+               left: 0,
                right: 1
            );
 
@@ -82,9 +84,9 @@ namespace ChompGame.MainGame.SceneModels
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
                top: 1,
-               bottom: 1,
+               bottom: 3,
                left: 1,
-               right: 1
+               right: 2
            );
         }
 

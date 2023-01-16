@@ -90,11 +90,6 @@ namespace ChompGame.MainGame.SceneModels
         private Nibble _begin; 
         private Nibble _end;
 
-        //parallax info (vertical scroll only) - may remove this
-        private readonly MaskedByte _parallaxTileBegin;
-        private readonly TwoBit _parallaxSizeA;
-        private readonly TwoBit _parallaxSizeB;
-
         public int Address => _scrollStyle.Address;
         
         public int GroundFillStart => 8;
@@ -113,11 +108,13 @@ namespace ChompGame.MainGame.SceneModels
 
         public int RightTile => LeftTile + 1;
 
-        public int ParallaxLayerABeginTile => 0;// BeginTiles + _parallaxTileBegin.Value;
+        public int ParallaxLayerABeginTile => BeginTiles + _bgPosition1.Value;
 
-        public int ParallaxLayerATiles => _parallaxSizeA.Value;
+        public int ParallaxLayerBBeginTile => ParallaxLayerABeginTile + ParallaxLayerATiles;
 
-        public int ParallaxLayerBTiles => _parallaxSizeB.Value;
+        public int ParallaxLayerATiles => _bgPosition1.Value;
+
+        public int ParallaxLayerBTiles => _bgPosition2.Value;
 
         public LevelShape LevelShape => _levelShape.Value;
 

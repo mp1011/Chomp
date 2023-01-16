@@ -41,20 +41,33 @@ namespace ChompGame.MainGame.SceneModels
                             shouldReplace: b => b == 0);
                     }
 
-                    ////mountain layer 2
-                    //nameTable.SetFromString(0, mountain2Pos,
-                    //  @"00000500001200000050000120000000
-                    //          12341623416621234162341662123434",
-                    //    shouldReplace: b => b == 0);
-
                     break;
 
+                case ScrollStyle.Horizontal:
+
+                    mountain1Pos = _sceneDefinition.ParallaxLayerABeginTile;
+                    int mountain2Pos = _sceneDefinition.ParallaxLayerBBeginTile;
+              
+                    //mountain layer 1
+                    nameTable.SetFromString(0, mountain1Pos,
+                        @"0000050000000500
+                            3412162534121625",
+                        shouldReplace: b => b == 0);
+
+
+                    //mountain layer 2
+                    nameTable.SetFromString(0, mountain2Pos,
+                      @"00000500001200000050000120000000
+                              12341623416621234162341662123434",
+                        shouldReplace: b => b == 0);
+
+                    break;
             }
             //int layerABegin = 2 + _sceneDefinition.BeginTiles + _sceneDefinition.ParallaxLayerABeginTile;
             //int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerBTiles;
             //int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
-         
-            
+
+
         }
 
         public NBitPlane BuildAttributeTable(
@@ -72,10 +85,14 @@ namespace ChompGame.MainGame.SceneModels
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
             int mountainAttributePos = _sceneDefinition.GetBgPosition1() / _gameModule.Specs.AttributeTableBlockSize;
+            if (mountainAttributePos == 0)
+                mountainAttributePos = 255;
 
             attributeTable.ForEach((x, y, b) => 
             {
-                bool isSolid = nameTable[x * 2, y * 2] != 0;
+                bool isSolid = nameTable[x * 2, y * 2] != 0
+                    || nameTable[(x * 2)+1, (y * 2)+1] != 0;
+
 
                 //0 = green tiles, gray bg
                 //1 = gray tiles, orange bg
@@ -146,12 +163,12 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddTShape(NBitPlane nameTable)
         {
-            int floorY = nameTable.Height - 4 - _sceneDefinition.BeginTiles * 2;
-            int ceilingY = _sceneDefinition.EndTiles * 2;
+            int ceilingY = _sceneDefinition.TopTiles * 2;
+            int floorY = ceilingY + (_sceneDefinition.BottomTiles * 2);
 
             //todo, add variation
-            int pitBegin = 6;
-            int pitEnd = 10;
+            int pitBegin = 4 + _sceneDefinition.LeftTiles*2;
+            int pitEnd = pitBegin + _sceneDefinition.RightTiles*2;
 
             nameTable.ForEach((x, y, b) =>
             {
@@ -163,6 +180,10 @@ namespace ChompGame.MainGame.SceneModels
                         nameTable[x, y] = 1;
                     else
                         nameTable[x, y] = 0;
+                }
+                else
+                {
+                    nameTable[x, y] = 0;
                 }
             });
 
@@ -194,8 +215,8 @@ namespace ChompGame.MainGame.SceneModels
         {
             int stairSize = 10;
             AddStairs(nameTable, new Rectangle(
-              nameTable.Width - _sceneDefinition.EndTiles - stairSize,
-              nameTable.Height - _sceneDefinition.BeginTiles - stairSize,
+              nameTable.Width - _sceneDefinition.RightTiles*2 - stairSize,
+              nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
               stairSize,
               stairSize),
               riseRight: true);
@@ -411,7 +432,12 @@ namespace ChompGame.MainGame.SceneModels
             switch(_sceneDefinition.Theme)
             {
                 case Theme.Plains:
-                    foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
+
+                    if(_sceneDefinition.GetBgPosition1() == 0)
+                        foregroundPalette.SetColor(0, ChompGameSpecs.LightBlue);
+                    else
+                        foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
+
                     foregroundPalette.SetColor(1, ChompGameSpecs.Green1);
                     foregroundPalette.SetColor(2, ChompGameSpecs.Green2);
                     foregroundPalette.SetColor(3, ChompGameSpecs.Green3);

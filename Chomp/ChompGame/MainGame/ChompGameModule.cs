@@ -208,7 +208,7 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.TestSceneNoScrollCornerStairs;
+            _currentLevel.Value = Level.TestSceneHorizontal;
            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
     

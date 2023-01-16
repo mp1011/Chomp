@@ -77,6 +77,103 @@ namespace ChompGame.Helpers
                                         .Divide(_specs.TileWidth)
                                         .Add(2, 2);
 
+            var actorBounds = actor.Bounds;
+
+            _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
+            {
+                if (t < solidTileBeginIndex)
+                    return;
+
+                var tileBounds = new Rectangle(
+                    x * _specs.TileWidth,
+                    y * _specs.TileHeight,
+                    _specs.TileWidth,
+                    _specs.TileHeight);
+              
+                var tileLeft = _levelTileMap[
+                    (x - 1).NMod(_levelTileMap.Width),
+                    y.NMod(_levelTileMap.Height)];
+
+                var tileRight = _levelTileMap[
+                    (x + 1).NMod(_levelTileMap.Width),
+                    y.NMod(_levelTileMap.Height)];
+
+                var tileAbove = _levelTileMap[
+                   x.NMod(_levelTileMap.Width),
+                   (y - 1).NMod(_levelTileMap.Height)];
+
+                var tileBelow = _levelTileMap[
+                    x.NMod(_levelTileMap.Width),
+                    (y + 1).NMod(_levelTileMap.Height)];
+
+                if (!tileBounds.Intersects(actorBounds))
+                {
+                    if (collisionInfo.IsOnGround
+                        || tileAbove >= solidTileBeginIndex)
+                    {
+                        return;
+                    }
+
+                    if(actorBounds.Bottom == tileBounds.Top
+                        && actorBounds.Right >= tileBounds.X 
+                        && actorBounds.X <= tileBounds.Right 
+                        && actor.YSpeed >= 0)
+                    {
+                        collisionInfo.IsOnGround = true;
+                    }
+
+                    return;
+                }
+
+                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < solidTileBeginIndex;
+                bool checkRightCollision = actor.XSpeed < 0 && tileRight < solidTileBeginIndex;
+                bool checkAbove = actor.YSpeed >= 0 && tileAbove < solidTileBeginIndex;
+                bool checkBelow = actor.YSpeed < 0 && tileBelow < solidTileBeginIndex;
+
+                int leftMove = actorBounds.Right - tileBounds.Left;
+                int rightMove = tileBounds.Right - actorBounds.Left;
+                int upMove = actorBounds.Bottom - tileBounds.Top;
+                int downMove = tileBounds.Bottom - actorBounds.Top;
+
+                if (leftMove > 0 && checkLeftCollision && actor.XSpeed > 0)
+                    collisionInfo.XCorrection = -(leftMove);
+                else if (rightMove > 0 && checkRightCollision && actor.XSpeed < 0)
+                    collisionInfo.XCorrection = rightMove;
+                else if (upMove > 0 && checkAbove && actor.YSpeed > 0)
+                    collisionInfo.YCorrection = -upMove;
+                else if (downMove > 0 && checkBelow && actor.YSpeed < 0)
+                    collisionInfo.YCorrection = downMove;
+            });
+
+
+            if (collisionInfo.XCorrection != 0)
+            {
+                actor.X += collisionInfo.XCorrection;
+            }
+
+            if (collisionInfo.YCorrection != 0)
+            {
+                actor.Y += collisionInfo.YCorrection;
+            }
+
+            return collisionInfo;
+        }
+
+
+        public CollisionInfo DetectCollisions2(WorldSprite actor)
+        {
+            int solidTileBeginIndex = 8;
+            var collisionInfo = new CollisionInfo();
+
+            var topLeftTile = actor.TopLeft
+                .Divide(_specs.TileWidth)
+                .Add(-2, -2);
+
+
+            var bottomRightTile = actor.BottomRight
+                                        .Divide(_specs.TileWidth)
+                                        .Add(2, 2);
+
             _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
                 if (t < solidTileBeginIndex)
@@ -123,6 +220,15 @@ namespace ChompGame.Helpers
                 if (t < solidTileBeginIndex)
                     return;
 
+                var tileBounds = new Rectangle(
+                   x * _specs.TileWidth,
+                   y * _specs.TileHeight,
+                   _specs.TileWidth,
+                   _specs.TileHeight);
+
+                if (actor.Bounds.Intersects(tileBounds))
+                    return;
+
                 var tileAbove = _levelTileMap[
                     x.NMod(_levelTileMap.Width), 
                     (y - 1).NMod(_levelTileMap.Height)];
@@ -139,17 +245,10 @@ namespace ChompGame.Helpers
                     (x + 1).NMod(_levelTileMap.Width), 
                     y.NMod(_levelTileMap.Height)];
 
-                var tileBounds = new Rectangle(
-                    x * _specs.TileWidth,
-                    y * _specs.TileHeight,
-                    _specs.TileWidth,
-                    _specs.TileHeight);
-
                 bool checkAbove = actor.YSpeed >= 0 && tileAbove < solidTileBeginIndex;
                 bool checkBelow = actor.YSpeed < 0 && tileBelow < solidTileBeginIndex;
 
-                CheckCollisionCorrectionY(actor, collisionInfo, collisionInfo, tileBounds,
-                    tileLeft != 0, tileRight != 0, checkAbove, checkBelow);
+         
             });
 
             //foreach (var block in _actorManager.GetActors(ActorType.Gizmo))

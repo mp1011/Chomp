@@ -58,11 +58,13 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_state.Value < (int)BombState.RiseBegin)
             {
+                int ySpeed = Motion.YSpeed;
                 _movingSpriteController.Update();
 
-                int ySpeed = Motion.YSpeed;
                 var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
-                if (_state.Value < 2 && collisionInfo.YCorrection < 0)
+                _movingSpriteController.AfterCollision(collisionInfo);
+                
+                if (_state.Value < 2 && (collisionInfo.YCorrection < 0 || collisionInfo.IsOnGround))
                 {
                     _isThrown.Value = false;
                     Motion.XSpeed = 0;
