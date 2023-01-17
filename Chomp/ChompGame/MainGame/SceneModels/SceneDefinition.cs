@@ -7,14 +7,23 @@ namespace ChompGame.MainGame.SceneModels
 {
     public enum Theme : byte
     {
-        Plains,
-        Ocean,
-        Forest,
-        Desert,
-        City,
-        Space,
-        TechBase,
-        GlitchCore
+        Plains = 0,
+        Ocean = 1,
+        Forest = 2,
+        Desert = 3,
+        City = 4,
+        Space = 5,
+        TechBase = 6,
+        GlitchCore = 7,
+        Max =15
+    }
+
+    public enum ParallaxLayer
+    {
+        Begin,
+        Back1,
+        Back2,
+        Foreground
     }
 
     public enum EnemyGroup : byte
@@ -67,7 +76,7 @@ namespace ChompGame.MainGame.SceneModels
     {
         public const int Bytes = 3;
 
-        public const int StatusBarTiles = 2;
+        public int StatusBarTiles => Constants.StatusBarTiles;
 
         private readonly SystemMemory _systemMemory;
         private readonly Specs _specs;
@@ -108,24 +117,16 @@ namespace ChompGame.MainGame.SceneModels
 
         public int RightTile => LeftTile + 1;
 
-        public int ParallaxLayerABeginTile => BeginTiles + _bgPosition1.Value;
-
-        public int ParallaxLayerBBeginTile => ParallaxLayerABeginTile + ParallaxLayerATiles;
-
-        public int ParallaxLayerATiles => _bgPosition1.Value;
-
-        public int ParallaxLayerBTiles => _bgPosition2.Value;
-
         public LevelShape LevelShape => _levelShape.Value;
 
         public ScrollStyle ScrollStyle => _scrollStyle.Value;
 
-        public int BeginTiles => _begin.Value;
-        public int EndTiles => _end.Value;
-        public int LeftTiles => _left.Value;
-        public int RightTiles => _right.Value;
-        public int TopTiles => _top.Value;
-        public int BottomTiles => _bottom.Value;
+        public int BeginTiles => _begin.Value * 2;
+        public int EndTiles => _end.Value * 2;
+        public int LeftTiles => _left.Value * 2;
+        public int RightTiles => _right.Value * 2;
+        public int TopTiles => _top.Value * 2;
+        public int BottomTiles => _bottom.Value * 2;
 
         public Theme Theme => _theme.Value;
 
@@ -140,10 +141,17 @@ namespace ChompGame.MainGame.SceneModels
             };
         }
 
-        public int LayerABeginTile => (StatusBarTiles + ParallaxLayerABeginTile);
-        public int LayerBBeginTile => LayerABeginTile + ParallaxLayerATiles;
-        public int LayerCBeginTile => LayerBBeginTile + ParallaxLayerBTiles;
-        public int ParallaxEndTile => LayerCBeginTile + ParallaxLayerATiles;
+        public int GetParallaxLayerTile(ParallaxLayer layer, bool includeStatusBar) =>
+            layer switch {
+                ParallaxLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + BeginTiles,
+                ParallaxLayer.Back1 => GetParallaxLayerTile(ParallaxLayer.Begin, includeStatusBar) + _bgPosition1.Value,
+                ParallaxLayer.Back2 => GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar) + _bgPosition2.Value,
+                ParallaxLayer.Foreground => LevelTileHeight + (includeStatusBar? Constants.StatusBarTiles : 0) - EndTiles,
+                _ => 0
+            };
+
+        public int GetParallaxLayerPixel(ParallaxLayer layer, bool includeStatusBar) =>
+            GetParallaxLayerTile(layer, includeStatusBar) * _specs.TileHeight;
 
         public byte GetBgPosition1()
         {

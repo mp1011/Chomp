@@ -11,6 +11,7 @@ namespace ChompGame.MainGame
 {
     public enum AddressLabels
     {
+        MainTimer,
         NameTables,
         SceneDefinitions,
         SpriteDefinitions,
@@ -48,7 +49,7 @@ namespace ChompGame.MainGame
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
 
-        public GameRAM GameRAM { get; } 
+        public GameRAM GameRAM => GameSystem.GameRAM;
 
         public TileModule TileModule => _tileModule;
         public SpritesModule SpritesModule => _spritesModule;
@@ -59,6 +60,8 @@ namespace ChompGame.MainGame
         public ChompAudioService AudioService => _audioService;
         public InputModule InputModule => _inputModule;
 
+        public PaletteModule PaletteModule { get; }
+
         public Level CurrentLevel
         {
             get => _currentLevel.Value;
@@ -66,7 +69,8 @@ namespace ChompGame.MainGame
         }
 
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
-           SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule)
+           SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule,
+           PaletteModule paletteModule)
            : base(mainSystem)
         {
             _audioService = new ChompAudioService(audioModule);
@@ -77,13 +81,16 @@ namespace ChompGame.MainGame
             _musicModule = musicModule;
             _collisionDetector = new CollisionDetector(Specs);
 
-            GameRAM = new GameRAM(Specs);
+            PaletteModule = paletteModule;
             _statusBar = new StatusBar(_tileModule, GameRAM);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _gameState = new GameByteEnum<GameState>(memoryBuilder.AddByte());
+
+            memoryBuilder.Memory.AddLabel(AddressLabels.MainTimer, memoryBuilder.CurrentAddress);
+
             _timer = memoryBuilder.AddByte();
             _currentLevel = new GameByteEnum<Level>(memoryBuilder.AddByte());
 
@@ -93,9 +100,7 @@ namespace ChompGame.MainGame
                 GameSystem.CoreGraphicsModule,
                 _worldScroller,
                 _tileModule,
-                _statusBar,
-                _timer,
-                _currentLevel);
+                _statusBar);
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
@@ -251,13 +256,12 @@ namespace ChompGame.MainGame
                 GameSystem.GraphicsDevice, 
                 GameSystem.CoreGraphicsModule.PatternTable);
 
-            _levelBuilder.SetPalettes();
+            PaletteModule.SetScene(scene);
 
             _gameState.Value = GameState.PlayScene;
             _statusBar.AddToScore(123456789);
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
-
            
             var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
            
@@ -291,23 +295,7 @@ namespace ChompGame.MainGame
 
             _sceneSpriteControllers.CheckCollissions();
 
-            if (_timer.Value % 8 == 0)
-            {
-                var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(3);
-                if (bulletPallete.GetColorIndex(1) == ChompGameSpecs.Red2)
-                {
-                    bulletPallete.SetColor(1, ChompGameSpecs.Red3);
-                    bulletPallete.SetColor(2, ChompGameSpecs.Orange);
-                    bulletPallete.SetColor(3, ChompGameSpecs.White);
-                }
-                else
-                {
-                    bulletPallete.SetColor(1, ChompGameSpecs.Red2);
-                    bulletPallete.SetColor(2, ChompGameSpecs.Red3);
-                    bulletPallete.SetColor(3, ChompGameSpecs.LightYellow);
-                }
-            }
-
+            PaletteModule.Update();
         }
 
         public void OnVBlank()
@@ -319,6 +307,7 @@ namespace ChompGame.MainGame
         public void OnHBlank()
         {
             _rasterInterrupts.OnHBlank();
+            PaletteModule.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
         }

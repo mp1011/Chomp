@@ -13,7 +13,6 @@ namespace ChompGame.MainGame
         private LowNibble _lives;
         private HighNibble _health;
         private GameRAM _ram;
-        private GameShort _paletteRecall;
         private Specs _specs;
 
 
@@ -44,8 +43,6 @@ namespace ChompGame.MainGame
             _lives = new LowNibble(memoryBuilder);
             _health = new HighNibble(memoryBuilder);
             memoryBuilder.AddByte();
-
-            _paletteRecall = memoryBuilder.AddShort();
         }
 
         public void InitializeTiles()
@@ -57,27 +54,15 @@ namespace ChompGame.MainGame
             DrawScore();
             SetLives(_lives.Value);
             SetHealth(Health);
-
-            _paletteRecall.Value = (ushort)_ram.ClaimMemory(_specs.BytesPerPalette);
         }
 
         public void OnHBlank(GameByte realScroll)
         {
-            //System.Diagnostics.Debug.WriteLine("StatusBar HBlank " + _tileModule.ScreenPoint.Y);
             if (_tileModule.ScreenPoint.Y == 0)
             {
                 realScroll.Value = _tileModule.Scroll.X;
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = Constants.StatusBarTopRow;
-
-                //System.Diagnostics.Debug.WriteLine("STORE BG");
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
-                _ram.StoreData(bgPalette, _paletteRecall.Value);
-
-                bgPalette.SetColor(0, ChompGameSpecs.Black);
-                bgPalette.SetColor(1, ChompGameSpecs.Blue1);
-                bgPalette.SetColor(2, ChompGameSpecs.White);
-                bgPalette.SetColor(3, ChompGameSpecs.Green2);
             }
 
             if (_tileModule.ScreenPoint.Y < 8)
@@ -89,10 +74,6 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.X = realScroll.Value;
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = Constants.BgRow;
-
-                var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
-                _ram.RetrieveData(bgPalette, _paletteRecall.Value);
-                //System.Diagnostics.Debug.WriteLine("RETRIEVE BG");
             }
 
             if (_tileModule.ScreenPoint.Y == 4)

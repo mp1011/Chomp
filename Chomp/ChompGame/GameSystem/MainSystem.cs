@@ -17,10 +17,13 @@ namespace ChompGame.GameSystem
 
         public CoreGraphicsModule CoreGraphicsModule { get; }
       
+        public GameRAM GameRAM { get; }
+
         public MainSystem(Specs specs, GraphicsDevice graphicsDevice,
             Func<MainSystem,CoreGraphicsModule> createCoreGraphicsModule,
             params Func<MainSystem, IModule>[] createModules)
         {
+            GameRAM = new GameRAM(specs);
             GraphicsDevice = graphicsDevice;
             Specs = specs;
             CoreGraphicsModule = createCoreGraphicsModule(this);

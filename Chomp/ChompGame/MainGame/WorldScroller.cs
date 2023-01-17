@@ -94,13 +94,12 @@ namespace ChompGame.MainGame
                 //top section
                 _levelNameTable.CopyTo(
                     destination: _tileModule.NameTable,
-                    source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.ParallaxLayerABeginTile),
+                    source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar:false)),
                     destinationPoint: new Point(0, 2),
                     specs: _specs,
                     memory: _tileModule.GameSystem.Memory);
 
-                int bottomSectionBegin = 2 + (_sceneDefinition.ParallaxLayerABeginTile + (_sceneDefinition.ParallaxLayerATiles * 2) + _sceneDefinition.ParallaxLayerBTiles);
-
+                int bottomSectionBegin = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
                 int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
 
                 //bottom section

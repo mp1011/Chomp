@@ -1,6 +1,7 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.MainGame;
+using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -165,12 +166,14 @@ namespace ChompGame
                 s => new TileModule(s),
                 s => new StatusBarModule(s, s.GetModule<TileModule>()),
                 s => new MusicModule(s, cm),
+                s => new PaletteModule(s, s.CoreGraphicsModule, s.GameRAM),
                 s => new ChompGameModule(s, s.GetModule<InputModule>(),
                                        s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>(),
                                        s.GetModule<StatusBarModule>(),
-                                       s.GetModule<MusicModule>()));
+                                       s.GetModule<MusicModule>(),
+                                       s.GetModule<PaletteModule>()));
 
             return RunGame(gameSystem);
         }
