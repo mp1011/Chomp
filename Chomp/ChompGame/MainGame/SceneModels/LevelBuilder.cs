@@ -51,8 +51,8 @@ namespace ChompGame.MainGame.SceneModels
 
                     //mountain layer 1
                     nameTable.SetFromString(0, mountain1Pos,
-                        @"0000050000000500
-                            3412162534121625",
+                        @"00000500000005000000050000000500
+                                34121625341216253412162534121625",
                         shouldReplace: b => b == 0);
 
 
@@ -142,7 +142,7 @@ namespace ChompGame.MainGame.SceneModels
             attributeTable.ForEach((x, y, b) =>
             {
                 if (y >= groundPosition)
-                    attributeTable[x, y] = 1; 
+                    attributeTable[x, y] = 1;
                 else
                     attributeTable[x, y] = 0;
             });
@@ -299,42 +299,41 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddGroundVariance(NBitPlane nameTable, int seed)
         {
+            var rng = new Random(seed);
+            int nextSectionBegin = 0;
+
+            int groundUpper = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
+            int groundLower = nameTable.Height;
+
+            int groundPosition = rng.Next(groundUpper, groundLower);
+
+            for (var col = 0; col < nameTable.Width; col++)
+            {
+                for (var row = groundUpper; row < nameTable.Height; row++)
+                {
+
+                    if (col == nextSectionBegin)
+                    {
+                        nextSectionBegin = nextSectionBegin + GetNextGroundSectionWidth(rng);
+                        int nextGroundPosition = rng.Next(groundUpper, groundLower);
+                        if (nextGroundPosition == groundPosition)
+                        {
+                            nextGroundPosition = groundPosition - 1;
+                            if (nextGroundPosition < groundUpper)
+                                nextGroundPosition = groundPosition + 1;
+                        }
+
+                        groundPosition = nextGroundPosition;
+                    }
+
+                    if (row < groundPosition)
+                        nameTable[col, row] = 0;
+                    else
+                        nameTable[col, row] = 1;
+                }
+            }
+
             return nameTable;
-            //var rng = new Random(seed);
-            //int nextSectionBegin = 0;
-
-            //int groundUpper = _sceneDefinition.ParallaxEndTile;
-            //int groundLower = nameTable.Height+1;
-
-            //int groundPosition = rng.Next(groundUpper, groundLower);
-            
-            //for (var col = 0; col < nameTable.Width; col++)
-            //{
-            //    for (var row = _sceneDefinition.ParallaxEndTile; row < nameTable.Height; row++)
-            //    {
-               
-            //        if(col == nextSectionBegin)
-            //        {
-            //            nextSectionBegin = nextSectionBegin + GetNextGroundSectionWidth(rng);
-            //            int nextGroundPosition = rng.Next(groundUpper, groundLower);
-            //            if(nextGroundPosition == groundPosition)
-            //            {
-            //                nextGroundPosition = groundPosition - 1;
-            //                if (nextGroundPosition < groundUpper)
-            //                    nextGroundPosition = groundPosition + 1;
-            //            }
-
-            //            groundPosition = nextGroundPosition;
-            //        }
-
-            //        if (row < groundPosition)
-            //            nameTable[col, row] = 0;
-            //        else 
-            //            nameTable[col, row] = 1;
-            //    }
-            //}
-            
-            //return nameTable;
         }
 
         private int GetNextGroundSectionWidth(Random rng)

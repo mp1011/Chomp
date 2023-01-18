@@ -96,6 +96,21 @@ namespace ChompGame.MainGame
 
         private void HandleParallax()
         {
+
+            if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
+            }
+            else if(_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetParallaxLayerPixel(ParallaxLayer.Back2, includeStatusBar:true))
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetParallaxLayerPixel(ParallaxLayer.Foreground, includeStatusBar: true))
+            {
+                _tileModule.Scroll.X = _realScroll.Value;
+            }
+
+
             //int layerABegin = (2+_sceneDefinition.ParallaxLayerABeginTile) * _specs.TileHeight;
             //int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
             //int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerBTiles * _specs.TileHeight;

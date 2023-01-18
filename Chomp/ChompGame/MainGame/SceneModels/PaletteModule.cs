@@ -73,13 +73,13 @@ namespace ChompGame.MainGame.SceneModels
                 ChompGameSpecs.LightBlue,
                 ChompGameSpecs.Green1,
                 ChompGameSpecs.Green2,
-                ChompGameSpecs.Green2);
+                ChompGameSpecs.Green3);
 
             DefinePalette(PaletteKey.PlainsGroundMountain,
                 ChompGameSpecs.BlueGray2,
                 ChompGameSpecs.Green1,
                 ChompGameSpecs.Green2,
-                ChompGameSpecs.Green2);
+                ChompGameSpecs.Green3);
 
             DefinePalette(PaletteKey.PlainsSky,
                 ChompGameSpecs.LightBlue,

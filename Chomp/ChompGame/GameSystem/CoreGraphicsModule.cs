@@ -26,7 +26,10 @@ namespace ChompGame.GameSystem
             int attrX = (screenPoint.X + _tileModule.Scroll.X) / (Specs.TileWidth * Specs.AttributeTableBlockSize);
             int attrY = (screenPoint.Y + _tileModule.Scroll.Y) / (Specs.TileHeight * Specs.AttributeTableBlockSize);
 
-            byte index = _tileModule.AttributeTable[attrX, attrY];
+            attrX %= _tileModule.AttributeTable.Width;
+            attrY %= _tileModule.AttributeTable.Height;
+
+            byte index = _tileModule.AttributeTable[attrX, attrY];            
             return GetPalette(index);
         }
 

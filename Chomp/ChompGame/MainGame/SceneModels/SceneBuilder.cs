@@ -97,8 +97,9 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, ScenePartType.Pit, 10, 3, scene),
                 b => new ScenePart(b, ScenePartType.Pit, 20, 2, scene),
                // b => new ScenePart(b, ScenePartType.EnemyType1, 8, 6, scene),
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
-                b => new ScenePart(b, ScenePartType.EnemyType1, 50, 6, scene));
+                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene)
+              //  b => new ScenePart(b, ScenePartType.EnemyType1, 50, 6, scene)
+                );
 
             scene = new SceneDefinition(Level.TestSceneNoScrollFlat, builder.Memory, specs);
                 new ScenePartsHeader(builder,
