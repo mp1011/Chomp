@@ -7,8 +7,7 @@ namespace ChompGame.MainGame.SceneModels
     //Max 16
     public enum PaletteKey : byte
     {
-        PlainsGroundSky,
-        PlainsGroundMountain,
+        PlainsGround,
         PlainsSky,
         PlainsSky2,
         Bomb,
@@ -69,14 +68,8 @@ namespace ChompGame.MainGame.SceneModels
         {
             _timer = new GameByte(GameSystem.Memory.GetAddress(AddressLabels.MainTimer), GameSystem.Memory);
 
-            DefinePalette(PaletteKey.PlainsGroundSky,
+            DefinePalette(PaletteKey.PlainsGround,
                 ChompGameSpecs.LightBlue,
-                ChompGameSpecs.Green1,
-                ChompGameSpecs.Green2,
-                ChompGameSpecs.Green3);
-
-            DefinePalette(PaletteKey.PlainsGroundMountain,
-                ChompGameSpecs.BlueGray2,
                 ChompGameSpecs.Green1,
                 ChompGameSpecs.Green2,
                 ChompGameSpecs.Green3);
@@ -135,13 +128,16 @@ namespace ChompGame.MainGame.SceneModels
             {
                 case Theme.Plains:
 
-                    if (sceneDefinition.GetBgPosition1() == 0)
-                        LoadPalette(PaletteKey.PlainsGroundSky, foregroundPalette);
-                    else
-                        LoadPalette(PaletteKey.PlainsGroundMountain, foregroundPalette);
-                  
+                    LoadPalette(PaletteKey.PlainsGround, foregroundPalette);                   
                     LoadPalette(PaletteKey.PlainsSky, backgroundPalette);
                     _bgPalette1.Value = PaletteKey.PlainsSky;
+
+                    if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+                        foregroundPalette.SetColor(0, ChompGameSpecs.BlueGray2);
+                    else if (sceneDefinition.GetBgPosition1() == 0)
+                        foregroundPalette.SetColor(0, ChompGameSpecs.LightBlue);
+                    else
+                        foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
 
                     if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                         _bgPalette2.Value = PaletteKey.PlainsSky2;
@@ -177,7 +173,8 @@ namespace ChompGame.MainGame.SceneModels
             {
                 LoadPalette(_bgPalette1.Value, _graphicsModule.GetBackgroundPalette(0));
             }
-            else if(_graphicsModule.ScreenPoint.Y == _currentScene.GetParallaxLayerPixel(ParallaxLayer.Back2, includeStatusBar: true))
+            else if(_currentScene.ScrollStyle == ScrollStyle.Horizontal 
+                && _graphicsModule.ScreenPoint.Y == _currentScene.GetParallaxLayerPixel(ParallaxLayer.Back2, includeStatusBar: true))
             {
                 LoadPalette(_bgPalette2.Value, _graphicsModule.GetBackgroundPalette(0));
             }

@@ -39,6 +39,8 @@ namespace ChompGame.MainGame.SceneModels
                             @"0000050000000500
                                 3412162534121625",
                             shouldReplace: b => b == 0);
+
+                        
                     }
 
                     break;
@@ -120,15 +122,10 @@ namespace ChompGame.MainGame.SceneModels
                 bool isSolid = nameTable[x * 2, y * 2] != 0
                     || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
 
-                if (y > mountainAttributePos)
-                    attributeTable[x, y] = 0; //green tiles, gray 
-                else
+                if (isSolid || y >= mountainAttributePos)
                     attributeTable[x, y] = 1;
-
-                if (isSolid || y > mountainAttributePos)
+                else
                     attributeTable[x, y] = 0;
-                else
-                    attributeTable[x, y] = 1;
 
             });
 
@@ -234,15 +231,15 @@ namespace ChompGame.MainGame.SceneModels
             int stairSize = 4;
 
             AddStairs(nameTable, new Rectangle(
-                _sceneDefinition.LeftTiles*2, 
-                nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
+                _sceneDefinition.LeftTiles, 
+                nameTable.Height - _sceneDefinition.BottomTiles - stairSize,
                 stairSize,
                 stairSize), 
                 riseRight: false);
 
             AddStairs(nameTable, new Rectangle(
-                nameTable.Width - _sceneDefinition.RightTiles*2 - stairSize,
-                nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
+                nameTable.Width - _sceneDefinition.RightTiles - stairSize,
+                nameTable.Height - _sceneDefinition.BottomTiles - stairSize,
                 stairSize,
                 stairSize),
                 riseRight: true);
