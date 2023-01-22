@@ -9,22 +9,23 @@ namespace ChompGame.MainGame.SceneModels
         Bomb,
         EnemyType1,
         EnemyType2,
-        Pit
+        Pit,
+        Exit
     }
 
     class ScenePartsHeader
     {
-        private readonly GameByte _partCount;
-
-        private readonly BitArray _activatedParts;
+        protected SystemMemory _memory;
+        protected GameByte _partCount;
 
         public int PartsCount => _partCount.Value;
 
-        public int FirstPartAddress => _partCount.Address + 1 + (int)Math.Ceiling((byte)_partCount.Value / 8.0);
+        public int FirstPartAddress => _partCount.Address + 1;
+     
+        protected ScenePartsHeader()
+        {
 
-        public bool IsPartActived(int index) => _activatedParts[index];
-
-        public void MarkActive(int index) => _activatedParts[index] = true;
+        }
 
         public ScenePartsHeader(Level level, SystemMemory memory) : this(GetAddress(level, memory), memory)
         {
@@ -33,13 +34,10 @@ namespace ChompGame.MainGame.SceneModels
 
         public ScenePartsHeader(SystemMemoryBuilder memoryBuilder, params Func<SystemMemoryBuilder, ScenePart>[] parts)
         {
+            _memory = memoryBuilder.Memory;
             _partCount = memoryBuilder.AddByte();
             _partCount.Value = (byte)parts.Length;
-
-            _activatedParts = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-
-            memoryBuilder.AddBytes((int)Math.Ceiling((byte)parts.Length / 8.0));
-
+           
             foreach(var part in parts)
             {
                 part(memoryBuilder);
@@ -49,7 +47,12 @@ namespace ChompGame.MainGame.SceneModels
         public ScenePartsHeader(int address, SystemMemory memory)
         {
             _partCount = new GameByte(address, memory);
-            _activatedParts = new BitArray(address + 1, memory);
+            _memory = memory;
+        }
+
+        public ScenePart GetScenePart(int index, SceneDefinition sceneDefinition)
+        {
+            return new ScenePart(_memory, FirstPartAddress + (ScenePart.Bytes * index), sceneDefinition);
         }
 
         private static int GetAddress(Level level, SystemMemory memory)
@@ -69,6 +72,39 @@ namespace ChompGame.MainGame.SceneModels
         }
 
     }
+
+    class DynamicScenePartHeader : ScenePartsHeader
+    {
+        private readonly BitArray _activatedParts;
+
+        public bool IsPartActivated(int index) => _activatedParts[index];
+
+        public void MarkActive(int index) => _activatedParts[index] = true;
+
+        public DynamicScenePartHeader(SystemMemoryBuilder memoryBuilder, Level level)
+        {
+            _memory = memoryBuilder.Memory;
+
+            var header = new ScenePartsHeader(level, memoryBuilder.Memory);
+
+            _activatedParts = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+
+            memoryBuilder.AddBytes((int)Math.Ceiling((byte)_partCount.Value / 8.0));
+
+            _partCount = memoryBuilder.AddByte((byte)header.PartsCount);
+
+            memoryBuilder.AddBytes(ScenePart.Bytes * header.PartsCount);
+
+            memoryBuilder.Memory.BlockCopy(header.FirstPartAddress, FirstPartAddress, ScenePart.Bytes * header.PartsCount);
+        }
+
+        public DynamicScenePartHeader(int address, SystemMemory memory)
+        {
+            _partCount = new GameByte(address, memory);
+            _activatedParts = new BitArray(address + 1, memory);
+        }
+    }
+
 
     class ScenePart
     {
@@ -92,6 +128,20 @@ namespace ChompGame.MainGame.SceneModels
 
         public ScenePartType Type => _type.Value;
 
+        private NibbleEnum<ExitType> _exitType;
+
+        public ExitType ExitType => _exitType.Value;
+
+        public int ExitLevelOffset
+        {
+            get
+            {
+                if (_yBase.Value < 8)
+                    return _yBase.Value + 1;
+                else
+                    return -((_yBase.Value & 7) + 1);
+            }
+        }
 
         public byte X
         {
@@ -170,6 +220,8 @@ namespace ChompGame.MainGame.SceneModels
 
             _type = new FourBitEnum<ScenePartType>(builder.Memory, builder.CurrentAddress, true);
             _xBase = new HighNibble(builder);
+            _exitType = new NibbleEnum<ExitType>(_xBase);
+
             builder.AddByte();
 
             builder.AddNibbles(ref _yBase, ref _positionExtra);
@@ -185,6 +237,23 @@ namespace ChompGame.MainGame.SceneModels
             _type.Value = type;
         }
 
+        public ScenePart(SystemMemoryBuilder builder,
+           ExitType exitType,
+           int exitOffset,
+           SceneDefinition definition) : this(builder, ScenePartType.Exit, (byte)exitType, GetExitOffset(exitOffset), definition)
+        {
+        }
+
+
+        private static byte GetExitOffset(int offset)
+        {
+            if (offset > 0)
+                return (byte)(offset - 1);
+            else
+                return (byte)((-offset - 1) | 8);
+        }
+
+
         public ScenePart(SystemMemory memory, int address, SceneDefinition definition)
         {
             _definition = definition;
@@ -199,6 +268,8 @@ namespace ChompGame.MainGame.SceneModels
 
             _xExtra2 = new TwoBit(memory, _positionExtra.Address, 4);
             _yExtra2 = new TwoBit(memory, _positionExtra.Address, 6);
+
+            _exitType = new NibbleEnum<ExitType>(_xBase);
         }
     }
 }

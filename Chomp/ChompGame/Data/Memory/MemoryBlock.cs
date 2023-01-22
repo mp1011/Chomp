@@ -31,7 +31,7 @@ namespace ChompGame.Data.Memory
             }
             set
             {
-                if (index == 1183)
+                if (index == 1465)
                     GameDebug.NoOp();
 
                 _memory[index] = value;

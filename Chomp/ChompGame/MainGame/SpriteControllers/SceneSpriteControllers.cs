@@ -21,6 +21,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private Specs Specs => _gameModule.Specs;
 
+        public PlayerController Player => _playerController;
+
         public SceneSpriteControllers(ChompGameModule chompGameModule, 
             PlayerController playerController, 
             SpriteControllerPool<BombController> bombControllers, 
@@ -102,34 +104,38 @@ namespace ChompGame.MainGame.SpriteControllers
       
         public void CheckSpriteSpawn()
         {
-            ScenePartsHeader header = new ScenePartsHeader(_gameModule.CurrentLevel, _gameModule.GameSystem.Memory);
+            DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             for(int i = 0; i < header.PartsCount; i++)
             {
-                if (header.IsPartActived(i))
+                if (header.IsPartActivated(i))
                     continue;
 
-                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _scene);
-                var pool = GetPool(sp.Type);
-                if (pool.CanAddNew())
-                {
-                    int spawnX = sp.X * Specs.TileWidth;
-                    int spawnY = sp.Y * Specs.TileHeight;
+                ScenePart sp = header.GetScenePart(i, _scene);
 
-                    if (spawnX >= _gameModule.WorldScroller.WorldScrollPixelX
-                        && spawnY >= _gameModule.WorldScroller.WorldScrollPixelY
-                        && spawnX <= _gameModule.WorldScroller.WorldScrollPixelX + Specs.NameTablePixelWidth
-                        && spawnY <= _gameModule.WorldScroller.WorldScrollPixelY + Specs.NameTablePixelHeight)
+                if (sp.Type == ScenePartType.Exit)
+                    continue;
+
+                var pool = GetPool(sp.Type);
+                if (!pool.CanAddNew())
+                    continue;
+
+                int spawnX = sp.X * Specs.TileWidth;
+                int spawnY = sp.Y * Specs.TileHeight;
+
+                if (spawnX >= _gameModule.WorldScroller.WorldScrollPixelX
+                    && spawnY >= _gameModule.WorldScroller.WorldScrollPixelY
+                    && spawnX <= _gameModule.WorldScroller.WorldScrollPixelX + Specs.NameTablePixelWidth
+                    && spawnY <= _gameModule.WorldScroller.WorldScrollPixelY + Specs.NameTablePixelHeight)
+                {
+                    var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
+                    if (sprite != null)
                     {
-                        var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
-                        if (sprite != null)
-                        {
-                            header.MarkActive(i);
-                            sprite.WorldSprite.X = spawnX;
-                            sprite.WorldSprite.Y = spawnY;
-                        }
+                        header.MarkActive(i);
+                        sprite.WorldSprite.X = spawnX;
+                        sprite.WorldSprite.Y = spawnY;
                     }
-                }
+                }                
             }
         }
 

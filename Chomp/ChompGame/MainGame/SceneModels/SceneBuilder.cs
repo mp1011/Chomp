@@ -56,8 +56,8 @@ namespace ChompGame.MainGame.SceneModels
                memoryBuilder: memoryBuilder,
                top: 0,
                bottom: 2,
-               left: 1,
-               right: 1,
+               left: 0,
+               right: 0,
                bg1:1
            );
 
@@ -103,10 +103,12 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.TestSceneNoScrollFlat, builder.Memory, specs);
                 new ScenePartsHeader(builder,
+                    b => new ScenePart(b, ExitType.Right, 1, scene),
                     b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene));
 
             scene = new SceneDefinition(Level.TestSceneNoScrollCornerStairs, builder.Memory, specs);
             new ScenePartsHeader(builder,
+                b => new ScenePart(b, ExitType.Left, exitOffset: -1, scene),
                 b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene));
 
             scene = new SceneDefinition(Level.TestSceneNoScrollBigStair, builder.Memory, specs);

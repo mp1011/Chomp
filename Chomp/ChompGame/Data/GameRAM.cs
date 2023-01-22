@@ -21,6 +21,18 @@ namespace ChompGame.Data
             _freeRamOffset = freeRamOffset;
         }
 
+        public void Reset()
+        {
+            _freeRamOffset.Value = 0;
+            int beginAddress = _memory.GetAddress(AddressLabels.FreeRAM);
+            int endAddress = beginAddress + _specs.GameRAMSize;
+
+            for (int i = beginAddress; i < endAddress; i++)
+            {
+                _memory[i] = 0;
+            }
+        }
+
         public int ClaimMemory(int size)
         {
             int currentAddress = CurrentAddress;

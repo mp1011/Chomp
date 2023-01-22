@@ -48,6 +48,7 @@ namespace ChompGame.MainGame
         private SceneSpriteControllers _sceneSpriteControllers;
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
+        private SceneDefinition _currentScene;
 
         public GameRAM GameRAM => GameSystem.GameRAM;
 
@@ -61,6 +62,10 @@ namespace ChompGame.MainGame
         public InputModule InputModule => _inputModule;
 
         public PaletteModule PaletteModule { get; }
+
+        public ExitsModule ExitsModule { get; }
+
+        public DynamicScenePartHeader CurrentScenePartHeader { get; private set; }
 
         public Level CurrentLevel
         {
@@ -82,6 +87,7 @@ namespace ChompGame.MainGame
             _collisionDetector = new CollisionDetector(Specs);
 
             PaletteModule = paletteModule;
+            ExitsModule = new ExitsModule(this);
             _statusBar = new StatusBar(_tileModule, GameRAM);
         }
 
@@ -213,7 +219,7 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.TestSceneNoScrollCornerStairs;
+            _currentLevel.Value = Level.TestSceneNoScrollFlat;
            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
     
@@ -238,8 +244,12 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
-            SceneDefinition scene = new SceneDefinition(_currentLevel.Value, GameSystem.Memory, Specs);
-            _levelBuilder = new LevelBuilder(this, scene);
+            ResetSprites();
+
+            _currentScene = new SceneDefinition(_currentLevel.Value, GameSystem.Memory, Specs);
+            _levelBuilder = new LevelBuilder(this, _currentScene);
+
+            GameRAM.Reset();
 
             SystemMemoryBuilder memoryBuilder = new SystemMemoryBuilder(GameSystem.Memory, 
                 Specs,
@@ -256,7 +266,7 @@ namespace ChompGame.MainGame
                 GameSystem.GraphicsDevice, 
                 GameSystem.CoreGraphicsModule.PatternTable);
 
-            PaletteModule.SetScene(scene);
+            PaletteModule.SetScene(_currentScene);
 
             _gameState.Value = GameState.PlayScene;
             _statusBar.AddToScore(123456789);
@@ -264,7 +274,9 @@ namespace ChompGame.MainGame
             _statusBar.Health = 8;
            
             var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
-           
+
+            CurrentScenePartHeader = new DynamicScenePartHeader(memoryBuilder, _currentLevel.Value);
+
             _levelBuilder.ApplyLevelAlterations(levelMap);
 
             var levelAttributeTable = _levelBuilder.BuildAttributeTable(memoryBuilder, levelMap);
@@ -273,12 +285,24 @@ namespace ChompGame.MainGame
 
             _levelBuilder.BuildBackgroundNametable(levelMap);
 
-            _sceneSpriteControllers.Initialize(scene, levelMap, levelAttributeTable);
+            _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable);
            
             _worldScroller.UpdateVram();
 
-            _collisionDetector.Initialize(scene, levelMap);
-            _rasterInterrupts.SetScene(scene);
+            _collisionDetector.Initialize(_currentScene, levelMap);
+            _rasterInterrupts.SetScene(_currentScene);
+
+
+        }
+
+        private void ResetSprites()
+        {
+            for (int i = 0; i < Specs.MaxSprites; i++)
+            {
+                var sprite = SpritesModule.GetSprite(i);
+                sprite.Visible = false;
+                sprite.Tile = 0;
+            }
         }
 
         public void PlayScene()
@@ -296,6 +320,13 @@ namespace ChompGame.MainGame
             _sceneSpriteControllers.CheckCollissions();
 
             PaletteModule.Update();
+
+            int exit = ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
+            if(exit != 0)
+            {
+                _gameState.Value = GameState.LoadScene;
+                CurrentLevel = (Level)((int)CurrentLevel + exit);
+            }
         }
 
         public void OnVBlank()

@@ -145,6 +145,7 @@ namespace ChompGame.MainGame
             sprite.Tile2Offset = _spriteDefinition.SecondTileOffset;
             sprite.SizeX = _spriteDefinition.SizeX;
             sprite.SizeY = _spriteDefinition.SizeY;
+            sprite.Visible = true;
         }
 
         public void Show()

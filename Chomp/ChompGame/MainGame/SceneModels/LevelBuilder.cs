@@ -159,6 +159,59 @@ namespace ChompGame.MainGame.SceneModels
 
             nameTable = AddEdgeTiles(nameTable);
             nameTable = AddShapeTiles(nameTable, seed);
+            nameTable = AddExitTiles(nameTable);
+
+            return nameTable;
+        }
+
+
+        private NBitPlane AddExitTiles(NBitPlane nameTable)
+        {
+            ScenePartsHeader header = new ScenePartsHeader(_gameModule.CurrentLevel, _gameModule.GameSystem.Memory);
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {
+                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition);
+
+                if (sp.Type != ScenePartType.Exit)
+                    continue;
+
+                if (sp.ExitType == ExitType.Right)
+                    nameTable = AddRightExit(nameTable);
+                else if (sp.ExitType == ExitType.Left)
+                    nameTable = AddLeftExit(nameTable);
+            }
+
+            return nameTable;
+        }
+
+        private NBitPlane AddRightExit(NBitPlane nameTable)
+        {
+            nameTable.ForEach((x, y, b) =>
+            {
+                if(y >= nameTable.Height - _sceneDefinition.BottomTiles - 4
+                    && y < nameTable.Height - _sceneDefinition.BottomTiles
+                    && x >= nameTable.Width - _sceneDefinition.RightTiles)
+                {
+                    nameTable[x, y] = 0;
+                }
+            });
+
+            return nameTable;
+        }
+
+        private NBitPlane AddLeftExit(NBitPlane nameTable)
+        {
+            nameTable.ForEach((x, y, b) =>
+            {
+
+                if (y >= _sceneDefinition.BottomTiles - 4
+                    && y < _sceneDefinition.BottomTiles
+                    && x <= _sceneDefinition.LeftTiles)
+                {
+                    nameTable[x, y] = 0;
+                }
+            });
 
             return nameTable;
         }
@@ -343,7 +396,7 @@ namespace ChompGame.MainGame.SceneModels
         }
 
         public SceneSpriteControllers CreateSpriteControllers(SystemMemoryBuilder memoryBuilder)
-        {
+        {             
             PlayerController playerController = null;
             SpriteControllerPool<BombController> bombControllers = null;
 
@@ -398,11 +451,11 @@ namespace ChompGame.MainGame.SceneModels
 
         public void ApplyLevelAlterations(NBitPlane levelMap)
         {
-            ScenePartsHeader header = new ScenePartsHeader(_gameModule.CurrentLevel, _gameModule.GameSystem.Memory);
+            DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition);
+                ScenePart sp = header.GetScenePart(i, _sceneDefinition);
 
                 if (sp.Type == ScenePartType.Pit)
                 {
@@ -579,6 +632,14 @@ namespace ChompGame.MainGame.SceneModels
 
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
+
+            //door
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(14, 5, 2, 2),
+                destinationPoint: new Point(6, 6),
+                _gameModule.Specs,
+                memory);
         }
     }
 }
