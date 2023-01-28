@@ -148,6 +148,9 @@ namespace ChompGame.MainGame.SceneModels
             LoadPalette(PaletteKey.Bomb, bombPalette);
             LoadPalette(PaletteKey.Player, playerPalette);
             LoadPalette(PaletteKey.Bullet, bulletPallete);
+            LoadPalette(PaletteKey.GreenEnemy, enemyPallete);
+            LoadPalette(PaletteKey.Bullet, bulletPallete);
+
         }
 
         private void DefinePalette(PaletteKey key, byte color1, byte color2, byte color3, byte color4)

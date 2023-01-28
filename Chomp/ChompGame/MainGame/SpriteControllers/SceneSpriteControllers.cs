@@ -40,7 +40,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _extra2Controllers = extra2Controllers;
         }
 
-        public void Initialize(SceneDefinition scene, NBitPlane levelMap, NBitPlane levelAttributeTable)
+        public void Initialize(SceneDefinition scene, NBitPlane levelMap, NBitPlane levelAttributeTable, ExitType lastExitType)
         {
             _scene = scene;
             if (scene.HasSprite(SpriteLoadFlags.Player))
@@ -54,6 +54,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.InitializeSprite(1);
                 _playerController.Motion.XSpeed = 0;
                 _playerController.Motion.YSpeed = 0;
+                _playerController.SetInitialPosition(levelMap, lastExitType);
             }
 
             GameDebug.Watch1 = new DebugWatch(

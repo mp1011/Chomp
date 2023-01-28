@@ -50,6 +50,18 @@ namespace ChompGame.MainGame
                     .Clamp(0, cameraXMax);
             }
         }
+
+        public int CameraPixelY
+        {
+            get
+            {
+                int cameraYMax = (_levelNameTable.Height * _specs.TileHeight) - _specs.ScreenHeight;
+
+                return (_focusSprite.Y - (_specs.ScreenHeight / 2))
+                    .Clamp(0, cameraYMax);
+            }
+        }
+
         public void Initialize(SceneDefinition scene, WorldSprite focusSprite, NBitPlane levelNameTable, NBitPlane levelAttributeTable)
         {
             _sceneDefinition = scene;
@@ -74,45 +86,80 @@ namespace ChompGame.MainGame
                 specs: _specs,
                 memory: _tileModule.GameSystem.Memory);
 
-            
-            if (_sceneDefinition.ScrollStyle == ScrollStyle.None)
+            switch(_sceneDefinition.ScrollStyle)
             {
-                copyWidth = (byte)_levelNameTable.Width;
-                copyHeight = (byte)_levelNameTable.Height;
-
-                _levelNameTable.CopyTo(
-                   destination: _tileModule.NameTable,
-                   source: new InMemoryByteRectangle((byte)0, (byte)0, copyWidth, copyHeight),
-                   destinationPoint: new Point(0, 2),
-                   specs: _specs,
-                   memory: _tileModule.GameSystem.Memory);
-            }
-            else
-            {
-                copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
-
-                //top section
-                _levelNameTable.CopyTo(
-                    destination: _tileModule.NameTable,
-                    source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar:false)),
-                    destinationPoint: new Point(0, 2),
-                    specs: _specs,
-                    memory: _tileModule.GameSystem.Memory);
-
-                int bottomSectionBegin = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
-                int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
-
-                //bottom section
-                _levelNameTable.CopyTo(
-                    destination: _tileModule.NameTable,
-                    source: new InMemoryByteRectangle(_worldScrollX.Value, bottomSectionBegin, copyWidth, bottomSectionHeight),
-                    destinationPoint: new Point(0, bottomSectionBegin + 2),
-                    specs: _specs,
-                    memory: _tileModule.GameSystem.Memory);
+                case ScrollStyle.None:
+                    UpdateVram_NoScroll();
+                    break;
+                case ScrollStyle.Horizontal:
+                    UpdateVram_Horizontal();
+                    break;
+                case ScrollStyle.Vertical:
+                    UpdateVram_Vertical();
+                    break;
+                case ScrollStyle.NameTable:
+                    UpdateVram_XY();
+                    break;
             }
         }
 
-        private int AdjustWorldScroll()
+        private void UpdateVram_NoScroll()
+        {
+            var copyWidth = (byte)_levelNameTable.Width;
+            var copyHeight = (byte)_levelNameTable.Height;
+
+            _levelNameTable.CopyTo(
+               destination: _tileModule.NameTable,
+               source: new InMemoryByteRectangle((byte)0, (byte)0, copyWidth, copyHeight),
+               destinationPoint: new Point(0, 2),
+               specs: _specs,
+               memory: _tileModule.GameSystem.Memory);
+        }
+
+        private void UpdateVram_Vertical()
+        {
+            var copyWidth = _levelNameTable.Width;
+            byte copyHeight = (byte)Math.Min(_specs.NameTableHeight, _levelNameTable.Height);
+
+            _levelNameTable.CopyTo(
+                 destination: _tileModule.NameTable,
+                 source: new InMemoryByteRectangle(0, _worldScrollY.Value, copyWidth, copyHeight),
+                 destinationPoint: new Point(0, 2),
+                 specs: _specs,
+                 memory: _tileModule.GameSystem.Memory);
+
+        }
+
+        private void UpdateVram_XY()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void UpdateVram_Horizontal()
+        {
+            byte copyWidth = (byte)Math.Min(_specs.NameTableWidth, _levelNameTable.Width);
+
+            //top section
+            _levelNameTable.CopyTo(
+                destination: _tileModule.NameTable,
+                source: new InMemoryByteRectangle(_worldScrollX.Value, 0, copyWidth, _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar: false)),
+                destinationPoint: new Point(0, 2),
+                specs: _specs,
+                memory: _tileModule.GameSystem.Memory);
+
+            int bottomSectionBegin = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
+            int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
+
+            //bottom section
+            _levelNameTable.CopyTo(
+                destination: _tileModule.NameTable,
+                source: new InMemoryByteRectangle(_worldScrollX.Value, bottomSectionBegin, copyWidth, bottomSectionHeight),
+                destinationPoint: new Point(0, bottomSectionBegin + 2),
+                specs: _specs,
+                memory: _tileModule.GameSystem.Memory);
+        }
+
+        private int AdjustWorldScrollX()
         {
             int newWorldScroll = (CameraPixelX - (_specs.NameTablePixelWidth - _specs.ScreenWidth) / 2)
                 .Clamp(0, WorldScrollMaxX * _specs.TileWidth);
@@ -123,27 +170,78 @@ namespace ChompGame.MainGame
             return CameraPixelX - newWorldScroll;
         }
 
+        private int AdjustWorldScrollY()
+        {
+            int newWorldScroll = (CameraPixelY - (_specs.NameTablePixelHeight - _specs.ScreenHeight) / 2)
+                .Clamp(0, WorldScrollMaxY * _specs.TileHeight);
+
+            _worldScrollY.Value = (byte)(newWorldScroll / _specs.TileHeight);
+            UpdateVram();
+
+            return CameraPixelY - newWorldScroll;
+        }
+
         private int WorldScrollMaxX => _levelNameTable.Width - _specs.NameTableWidth;
+        private int WorldScrollMaxY => _levelNameTable.Height - _specs.NameTableHeight;
 
         public bool Update()
         {
+            switch(_sceneDefinition.ScrollStyle)
+            {
+                case ScrollStyle.Vertical: 
+                    return Update_Vertical();
+                case ScrollStyle.Horizontal:
+                    return Update_Horizontal();
+                default:
+                    return false;
+            }
+        }
+
+        private bool Update_Horizontal()
+        {
+
             bool changed = false;
             int scrollX = CameraPixelX - WorldScrollPixelX;
 
             if (scrollX < _scrollPad && _worldScrollX.Value > 0)
             {
-                scrollX = AdjustWorldScroll();
+                scrollX = AdjustWorldScrollX();
                 changed = true;
             }
             else if (scrollX > _specs.NameTablePixelWidth - _specs.ScreenWidth - _scrollPad
                 && _worldScrollX.Value < WorldScrollMaxX)
             {
-                scrollX = AdjustWorldScroll();
+                scrollX = AdjustWorldScrollX();
                 changed = true;
             }
 
             _tileModule.Scroll.X = (byte)scrollX;
             _spritesModule.Scroll.X = (byte)scrollX;
+
+            return changed;
+        }
+
+
+        private bool Update_Vertical()
+        {
+
+            bool changed = false;
+            int scrollY = CameraPixelY - WorldScrollPixelY;
+
+            if (scrollY < _scrollPad && _worldScrollY.Value > 0)
+            {
+                scrollY = AdjustWorldScrollY();
+                changed = true;
+            }
+            else if (scrollY > _specs.NameTablePixelWidth - _specs.ScreenWidth - _scrollPad
+                && _worldScrollX.Value < WorldScrollMaxX)
+            {
+                scrollY = AdjustWorldScrollY();
+                changed = true;
+            }
+
+            _tileModule.Scroll.Y = (byte)scrollY;
+            _spritesModule.Scroll.Y = (byte)scrollY;
 
             return changed;
         }

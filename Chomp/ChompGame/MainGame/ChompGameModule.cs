@@ -43,6 +43,7 @@ namespace ChompGame.MainGame
        
         private GameByteEnum<GameState> _gameState;
         private GameByteEnum<Level> _currentLevel;
+        private NibbleEnum<ExitType> _lastExitType;
 
         private GameByte _timer;
         private SceneSpriteControllers _sceneSpriteControllers;
@@ -99,6 +100,11 @@ namespace ChompGame.MainGame
 
             _timer = memoryBuilder.AddByte();
             _currentLevel = new GameByteEnum<Level>(memoryBuilder.AddByte());
+
+            //unused bits here
+            _lastExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
+          
+            memoryBuilder.AddByte();
 
             _worldScroller = new WorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
 
@@ -219,10 +225,11 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.TestSceneNoScrollFlat;
-           // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
+            _currentLevel.Value = Level.Level1_3_Pit;
+            _lastExitType.Value = ExitType.Right;
+            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
-    
+
         public void OnLogicUpdate()
         {
             _musicModule.Update();
@@ -285,13 +292,12 @@ namespace ChompGame.MainGame
 
             _levelBuilder.BuildBackgroundNametable(levelMap);
 
-            _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable);
+            _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value);
            
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(_currentScene, levelMap);
             _rasterInterrupts.SetScene(_currentScene);
-
 
         }
 
@@ -321,11 +327,12 @@ namespace ChompGame.MainGame
 
             PaletteModule.Update();
 
-            int exit = ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
-            if(exit != 0)
+            var exit = ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
+            if(exit != null)
             {
                 _gameState.Value = GameState.LoadScene;
-                CurrentLevel = (Level)((int)CurrentLevel + exit);
+                CurrentLevel = (Level)((int)CurrentLevel + exit.ExitLevelOffset);
+                _lastExitType.Value = exit.ExitType;
             }
         }
 

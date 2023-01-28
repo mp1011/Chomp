@@ -89,7 +89,7 @@ namespace ChompGame.MainGame.SceneModels
 
             _activatedParts = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
 
-            memoryBuilder.AddBytes((int)Math.Ceiling((byte)_partCount.Value / 8.0));
+            memoryBuilder.AddBytes((int)Math.Ceiling((byte)header.PartsCount / 8.0));
 
             _partCount = memoryBuilder.AddByte((byte)header.PartsCount);
 

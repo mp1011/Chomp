@@ -3,13 +3,16 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController : ActorController
     {
+        private readonly Specs _specs;
         private const byte _recoilSpeed = 30;
         private readonly StatusBar _statusBar;
         private readonly ChompAudioService _audioService;
@@ -25,6 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Player, gameModule, memoryBuilder, Bit.Right4)
         {
+            _specs = gameModule.Specs;
             _statusBar = gameModule.StatusBar;
             _audioService = gameModule.AudioService;
 
@@ -35,6 +39,55 @@ namespace ChompGame.MainGame.SpriteControllers
 
             SpriteIndex = 0;
         }
+
+        public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType)
+        {
+            switch(lastExitType)
+            {
+                case ExitType.Right:
+                    SetInitialPosition_Horizontal(levelMap, new Point(0, levelMap.Height - 1),  1);
+                    break;
+                case ExitType.Left:
+                    SetInitialPosition_Horizontal(levelMap, new Point(levelMap.Width-1, levelMap.Height - 1), -1);
+                    break;
+                case ExitType.Bottom:
+                    SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width/2, 1), 1);
+                    break;
+                default:
+                    throw new System.NotImplementedException();
+            }
+        }
+
+        private void SetInitialPosition_Horizontal(NBitPlane levelMap, Point startPoint, int xOffset)
+        {
+            Point pt = startPoint;
+
+            while(levelMap[pt.X,pt.Y] != 0)
+            {
+                pt = new Point(pt.X, pt.Y - 1);
+                if(pt.Y == 0)
+                {
+                    pt = new Point(pt.X + xOffset, startPoint.Y);
+                }               
+            }
+
+            WorldSprite.X = (pt.X * _specs.TileWidth) + xOffset;
+            WorldSprite.Y = (pt.Y + 1) * _specs.TileHeight;
+        }
+
+        private void SetInitialPosition_Vertical(NBitPlane levelMap, Point startPoint, int yOffset)
+        {
+            Point pt = startPoint;
+
+            while (levelMap[pt.X, pt.Y] != 0)
+            {
+                pt = new Point(pt.X, pt.Y + yOffset);                
+            }
+
+            WorldSprite.X = pt.X * _specs.TileWidth;
+            WorldSprite.Y = pt.Y * _specs.TileHeight;
+        }
+
 
         protected override void UpdateActive()
         {

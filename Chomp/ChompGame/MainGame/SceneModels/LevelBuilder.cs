@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
-using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -180,6 +179,9 @@ namespace ChompGame.MainGame.SceneModels
                     nameTable = AddRightExit(nameTable);
                 else if (sp.ExitType == ExitType.Left)
                     nameTable = AddLeftExit(nameTable);
+                else if (sp.ExitType == ExitType.Bottom)
+                    nameTable = AddBottomExit(nameTable);
+
             }
 
             return nameTable;
@@ -202,12 +204,32 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddLeftExit(NBitPlane nameTable)
         {
+            //todo, needs to be fixed
+            //nameTable.ForEach((x, y, b) =>
+            //{
+
+            //    if (y >= nameTable.Height - _sceneDefinition.BottomTiles - 4
+            //        && y < nameTable.Height - _sceneDefinition.BottomTiles
+            //        && x <= _sceneDefinition.LeftTiles)
+            //    {
+            //        nameTable[x, y] = 0;
+            //    }
+            //});
+
+            return nameTable;
+        }
+
+        private NBitPlane AddBottomExit(NBitPlane nameTable)
+        {
+            int xStart = (nameTable.Width / 2) - 2;
+            int width = 4;
+
             nameTable.ForEach((x, y, b) =>
             {
 
-                if (y >= _sceneDefinition.BottomTiles - 4
-                    && y < _sceneDefinition.BottomTiles
-                    && x <= _sceneDefinition.LeftTiles)
+                if (x >= xStart 
+                    && x < xStart + width
+                    && y >= nameTable.Height - _sceneDefinition.BottomTiles)
                 {
                     nameTable[x, y] = 0;
                 }
@@ -216,13 +238,19 @@ namespace ChompGame.MainGame.SceneModels
             return nameTable;
         }
 
+
         private NBitPlane AddEdgeTiles(NBitPlane nameTable)
         {
             return _sceneDefinition.ScrollStyle switch 
             {
                 ScrollStyle.Horizontal => AddEdgeTiles(nameTable,
-                                                   top: _sceneDefinition.BeginTiles,
-                                                   bottom: _sceneDefinition.EndTiles),
+                                                   top: _sceneDefinition.TopTiles,
+                                                   bottom: _sceneDefinition.BottomTiles),
+                ScrollStyle.Vertical => AddEdgeTiles(nameTable,
+                                                    left: _sceneDefinition.LeftTiles,
+                                                    right: _sceneDefinition.RightTiles,
+                                                    bottom: _sceneDefinition.BottomTiles),
+                 
                 ScrollStyle.None => AddEdgeTiles(nameTable, 
                                                     top: _sceneDefinition.TopTiles,
                                                     left: _sceneDefinition.LeftTiles,
@@ -234,10 +262,18 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddShapeTiles(NBitPlane nameTable, int seed)
         {
-            return _sceneDefinition.ScrollStyle switch {
-                ScrollStyle.Horizontal => _sceneDefinition.LevelShape switch {
+            return _sceneDefinition.ScrollStyle switch 
+            {
+                ScrollStyle.Horizontal => _sceneDefinition.LevelShape switch 
+                {
                     LevelShape.Flat => nameTable,
                     _ => AddGroundVariance(nameTable, seed)
+                },
+                ScrollStyle.Vertical => _sceneDefinition.LevelShape switch 
+                {
+                    LevelShape.ZigZag => nameTable, //todo 
+                    LevelShape.Ladder => nameTable, //todo
+                    _ => nameTable 
                 },
                 ScrollStyle.None => _sceneDefinition.LevelShape switch {
                     LevelShape.Flat => nameTable,
@@ -283,20 +319,47 @@ namespace ChompGame.MainGame.SceneModels
         {
             int stairSize = 4;
 
-            AddStairs(nameTable, new Rectangle(
-                _sceneDefinition.LeftTiles, 
+            Rectangle leftStair = new Rectangle(
+                _sceneDefinition.LeftTiles,
                 nameTable.Height - _sceneDefinition.BottomTiles - stairSize,
                 stairSize,
-                stairSize), 
-                riseRight: false);
+                stairSize);
 
-            AddStairs(nameTable, new Rectangle(
+            Rectangle rightStair = new Rectangle(
                 nameTable.Width - _sceneDefinition.RightTiles - stairSize,
                 nameTable.Height - _sceneDefinition.BottomTiles - stairSize,
                 stairSize,
-                stairSize),
-                riseRight: true);
+                stairSize);
 
+            switch (_sceneDefinition.CornerStairStyle)
+            {
+                case CornerStairStyle.OneBlockDouble:
+                case CornerStairStyle.TwoBlockDouble:
+                    AddStairs(nameTable,
+                        leftStair,
+                        riseRight: false,
+                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+
+                    AddStairs(nameTable,
+                        rightStair,
+                        riseRight: true,
+                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+
+                    break;
+                case CornerStairStyle.TwoBlockLeft:
+                    AddStairs(nameTable,
+                        leftStair,
+                        riseRight: false,
+                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+                    break;
+                case CornerStairStyle.TwoBlockRight:
+                    AddStairs(nameTable,
+                        rightStair,
+                        riseRight: true,
+                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+                    break;
+            }
+            
             return nameTable;
         }
 
@@ -308,14 +371,14 @@ namespace ChompGame.MainGame.SceneModels
               nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
               stairSize,
               stairSize),
-              riseRight: true);
+              riseRight: true,
+              bigStep: false);
 
             return nameTable;
         }
 
-        private NBitPlane AddStairs(NBitPlane nameTable, Rectangle region, bool riseRight )
+        private NBitPlane AddStairs(NBitPlane nameTable, Rectangle region, bool riseRight, bool bigStep )
         {
-
             nameTable.ForEach(new Point(region.X, region.Y), new Point(region.Right, region.Bottom), (x, y, b) =>
             {
                 int stairY = y - region.Y;
@@ -325,6 +388,21 @@ namespace ChompGame.MainGame.SceneModels
                     nameTable[x, y] = 1;
                 else if (!riseRight && stairX <= stairY)
                     nameTable[x, y] = 1;
+
+                if(riseRight 
+                    && stairX % 2 == 0
+                    && stairX+1 >= region.Width - stairY - 1)
+                {
+                    nameTable[x, y] = 1;
+                }
+
+                if (!riseRight
+                   && stairX % 2 == 1
+                   && stairX -1 <= stairY)
+                {
+                    nameTable[x, y] = 1;
+                }
+
             });
 
             return nameTable;

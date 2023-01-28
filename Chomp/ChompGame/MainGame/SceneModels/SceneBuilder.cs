@@ -5,122 +5,199 @@ namespace ChompGame.MainGame.SceneModels
 {
     public enum Level:byte 
     {
-        TestSceneHorizontal=0,
-        TestSceneNoScrollFlat = 1,
-        TestSceneNoScrollCornerStairs = 2,
-        TestSceneNoScrollBigStair = 3,
-        TestSceneNoScrollTShape = 4,
-
+        Level1_1_Start,
+        Level1_2_Horizontal,
+        Level1_3_Pit,
+        Level1_4_DeadEnd,
+        Level1_5_Vertical,
+        Level1_6_Platforms,
+        Level1_7_Door,
+        Level1_8_Door2,
+        Level1_9_Platforms2,
+        Level1_10_Stair,
+        Level1_11_Pillars
     }
 
     class SceneBuilder
     {
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
         {
-            //TestSceneHorizontal
-            new SceneDefinition(
-                specs: specs,
-                scrollStyle: ScrollStyle.Horizontal,
-                levelShape: LevelShape.MediumVariance,
-                theme: Theme.Plains,
-                enemyGroup: EnemyGroup.Lizard_Bird,
-                memoryBuilder: memoryBuilder,
-                top:0,
-                bottom:2,
-                bg1: 3,
-                bg2: 2
-            );
-
-            //TestSceneNoScrollFlat
-            new SceneDefinition(
+            //Level1_1_Start
+            SceneDefinition.NoScrollFlat(
                specs: specs,
-               scrollStyle: ScrollStyle.None,
-               levelShape: LevelShape.Flat,
                theme: Theme.Plains,
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
-               top: 1,
+               top: 0,
                bottom: 1,
                left: 1,
-               right: 2,
-               bg1: 2
+               right: 0,
+               bgPosition: 2
+            );
+
+            //Level1_2_Horizontal,
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.MediumVariance,
+                theme: Theme.Plains,
+                enemyGroup: EnemyGroup.Lizard_Bird,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 2,
+                bgPosition1: 3,
+                bgPosition2: 2
+            );
+
+            //Level1_3_Pit,
+            SceneDefinition.NoScrollCornerStairs(
+                specs: specs,
+                theme: Theme.Plains,
+                enemyGroup: EnemyGroup.Lizard_Bird,
+                memoryBuilder: memoryBuilder,
+                left:0,
+                top: 0,
+                right:0,
+                bottom: 2,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.TwoBlockDouble
+            );
+
+            //Level1_4_DeadEnd,
+            SceneDefinition.NoScrollFlat(
+              specs: specs,
+              theme: Theme.Plains,
+              enemyGroup: EnemyGroup.Lizard_Bird,
+              memoryBuilder: memoryBuilder,
+              top: 0,
+              bottom: 2,
+              left: 0,
+              right: 2,
+              bgPosition: 2
            );
 
-            //TestSceneNoScrollCornerStairs
-            new SceneDefinition(
+            //Level1_5_Vertical,
+            SceneDefinition.VerticalScroll(
+              specs: specs,
+              variance: LevelShape.MediumVariance,
+              theme: Theme.Plains,
+              enemyGroup: EnemyGroup.Lizard_Bird,
+              memoryBuilder: memoryBuilder,
+              left: 2,
+              right: 2
+          );
+
+            //Level1_6_Platforms,
+            SceneDefinition.HorizontalScroll(
                specs: specs,
-               scrollStyle: ScrollStyle.None,
-               levelShape: LevelShape.CornerStairs,
+               variance: LevelShape.HighVariance,
                theme: Theme.Plains,
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
                top: 0,
                bottom: 2,
-               left: 0,
-               right: 0,
-               bg1:1
+               bgPosition1: 3,
+               bgPosition2: 2
            );
 
-            //TestSceneNoScrollBigStair
-            new SceneDefinition(
+            //Level1_7_Door,
+            SceneDefinition.NoScrollFlat(
                specs: specs,
-               scrollStyle: ScrollStyle.None,
-               levelShape: LevelShape.BigStair,
-               theme: Theme.Plains,
-               enemyGroup: EnemyGroup.Lizard_Bird,
-               memoryBuilder: memoryBuilder,
-               top: 0,
-               bottom: 1,
-               left: 0,
-               right: 1
-           );
-
-            //TestSceneNoScrollTShape
-            new SceneDefinition(
-               specs: specs,
-               scrollStyle: ScrollStyle.None,
-               levelShape: LevelShape.TShape,
                theme: Theme.Plains,
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
                top: 1,
-               bottom: 3,
+               bottom: 1,
                left: 1,
-               right: 2
-           );
+               right: 1,
+               bgPosition: 2
+            );
+
+            //Level1_8_Door2,
+            SceneDefinition.NoScrollFlat(
+               specs: specs,
+               theme: Theme.Plains,
+               enemyGroup: EnemyGroup.Lizard_Bird,
+               memoryBuilder: memoryBuilder,
+               top: 1,
+               bottom: 1,
+               left: 1,
+               right: 1,
+               bgPosition: 2
+            );
+
+            //Level1_9_Platforms2,
+            SceneDefinition.HorizontalScroll(
+              specs: specs,
+              variance: LevelShape.HighVariance,
+              theme: Theme.Plains,
+              enemyGroup: EnemyGroup.Lizard_Bird,
+              memoryBuilder: memoryBuilder,
+              top: 0,
+              bottom: 2,
+              bgPosition1: 3,
+              bgPosition2: 2
+          );
+
+            //Level1_10_Stair,
+            SceneDefinition.NoScrollBigStairs(
+             specs: specs,
+             theme: Theme.Plains,
+             enemyGroup: EnemyGroup.Lizard_Bird,
+             memoryBuilder: memoryBuilder,
+             top: 0,
+             bottom: 2,
+             left: 0,
+             right: 2,
+             bgPosition: 2
+          );
+
+            //Level1_11_Pillars
+            SceneDefinition.HorizontalScroll(
+                 specs: specs,
+                 variance: LevelShape.Flat,
+                 theme: Theme.Plains,
+                 enemyGroup: EnemyGroup.Lizard_Bird,
+                 memoryBuilder: memoryBuilder,
+                 top: 0,
+                 bottom: 2,
+                 bgPosition1: 3,
+                 bgPosition2: 2
+         );
+
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
         {
-            SceneDefinition scene = new SceneDefinition(Level.TestSceneHorizontal, builder.Memory, specs);
+            SceneDefinition scene = new SceneDefinition(Level.Level1_1_Start, builder.Memory, specs);
             new ScenePartsHeader(builder,
-                b => new ScenePart(b, ScenePartType.Pit, 10, 3, scene),
-                b => new ScenePart(b, ScenePartType.Pit, 20, 2, scene),
-               // b => new ScenePart(b, ScenePartType.EnemyType1, 8, 6, scene),
+                b => new ScenePart(b, ExitType.Right, 1, scene),
                 b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene)
-              //  b => new ScenePart(b, ScenePartType.EnemyType1, 50, 6, scene)
                 );
 
-            scene = new SceneDefinition(Level.TestSceneNoScrollFlat, builder.Memory, specs);
-                new ScenePartsHeader(builder,
-                    b => new ScenePart(b, ExitType.Right, 1, scene),
-                    b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene));
-
-            scene = new SceneDefinition(Level.TestSceneNoScrollCornerStairs, builder.Memory, specs);
+            scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);
             new ScenePartsHeader(builder,
-                b => new ScenePart(b, ExitType.Left, exitOffset: -1, scene),
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene));
+                b => new ScenePart(b, ExitType.Left, -1, scene),
+                b => new ScenePart(b, ExitType.Right, 1, scene),
+                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
+                b => new ScenePart(b, ScenePartType.EnemyType1, 12, 6, scene)
+                );
 
-            scene = new SceneDefinition(Level.TestSceneNoScrollBigStair, builder.Memory, specs);
+            scene = new SceneDefinition(Level.Level1_3_Pit, builder.Memory, specs);
             new ScenePartsHeader(builder,
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene));
+                b => new ScenePart(b, ExitType.Left, -1, scene),
+                b => new ScenePart(b, ExitType.Right, 1, scene),
+                b => new ScenePart(b, ExitType.Bottom, 2, scene)
+                );
 
-            scene = new SceneDefinition(Level.TestSceneNoScrollTShape, builder.Memory, specs);
+            scene = new SceneDefinition(Level.Level1_4_DeadEnd, builder.Memory, specs);
             new ScenePartsHeader(builder,
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene));
+                b => new ScenePart(b, ExitType.Left, -1, scene)
+                );
 
-
-
+            scene = new SceneDefinition(Level.Level1_5_Vertical, builder.Memory, specs);
+            new ScenePartsHeader(builder,
+                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene)
+                );
         }
     }
 }

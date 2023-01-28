@@ -21,16 +21,18 @@ namespace ChompGame.MainGame.SceneModels
             _gameModule = module;
         }
 
-        public int CheckExits(PlayerController player, SceneDefinition sceneDefinition)
+        public ScenePart CheckExits(PlayerController player, SceneDefinition sceneDefinition)
         {
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             int rightEdge = (sceneDefinition.LevelTileWidth - 1) * _gameModule.Specs.TileWidth;
+            int bottomEdge = (sceneDefinition.LevelTileHeight - 2) * _gameModule.Specs.TileWidth;
 
             if (player.WorldSprite.X != 0
-                && player.WorldSprite.X != rightEdge)
+                && player.WorldSprite.X != rightEdge
+                && player.WorldSprite.Y != bottomEdge)
             {
-                return 0;
+                return null;
             }
 
             for (int i = 0; i < header.PartsCount; i++)
@@ -46,16 +48,21 @@ namespace ChompGame.MainGame.SceneModels
                 if(player.WorldSprite.X == rightEdge
                     && sp.ExitType == ExitType.Right)
                 {
-                    return sp.ExitLevelOffset;
+                    return sp;
                 }
                 else if(player.WorldSprite.X == 0
                     && sp.ExitType == ExitType.Left)
                 {
-                    return sp.ExitLevelOffset;
+                    return sp;
+                }
+                else if(player.WorldSprite.Y == bottomEdge
+                    && sp.ExitType == ExitType.Bottom)
+                {
+                    return sp;
                 }
             }
 
-            return 0;
+            return null;
         }
     }
 }
