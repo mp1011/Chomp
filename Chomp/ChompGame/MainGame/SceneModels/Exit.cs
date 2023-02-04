@@ -42,7 +42,7 @@ namespace ChompGame.MainGame.SceneModels
 
                 ScenePart sp = header.GetScenePart(i, sceneDefinition);
 
-                if (sp.Type != ScenePartType.Exit)
+                if (sp.Type != ScenePartType.SideExit)
                     continue;
 
                 if(player.WorldSprite.X == rightEdge

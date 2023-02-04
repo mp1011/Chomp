@@ -58,12 +58,12 @@ namespace ChompGame.GameSystem
             int offset = (_tileStartIndex.Y * Specs.PatternTableTilesAcross) + _tileStartIndex.X;
 
             nameTablePoint.X = (byte)(Scroll.X / Specs.TileWidth);
-            nameTablePoint.Y = (byte)(ScreenPoint.Y / Specs.TileHeight); // todo, scroll
+            nameTablePoint.Y = (byte)((ScreenPoint.Y + Scroll.Y) / Specs.TileHeight);
 
             patternTableTilePoint.Index = NameTable[nameTablePoint.Index] + offset;
           
             int col = Scroll.X % Specs.TileWidth;
-            int row = ScreenPoint.Y % Specs.TileHeight; //todo, scroll
+            int row = (ScreenPoint.Y + Scroll.Y) % Specs.TileHeight; //todo, scroll
             int remainingTilePixels = Specs.TileWidth - col;
 
             patternTablePoint.X = (byte)(patternTableTilePoint.X * Specs.TileWidth + col);

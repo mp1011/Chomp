@@ -38,11 +38,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         protected abstract void UpdateBehavior();
 
-        public void HandlePlayerCollision(WorldSprite player)
+        public void HandlePlayerCollision(MovingWorldSprite player)
         {
         }
 
-        public bool HandleBombCollision(WorldSprite player)
+        public bool HandleBombCollision(MovingWorldSprite player)
         {
             if (_state.Value >= (int)State.Dying)
                 return false;

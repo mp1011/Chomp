@@ -2,6 +2,6 @@
 {
     interface ICollidesWithPlayer
     {
-        void HandlePlayerCollision(WorldSprite player);
+        void HandlePlayerCollision(MovingWorldSprite player);
     }
 }

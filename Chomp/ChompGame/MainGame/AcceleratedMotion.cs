@@ -59,7 +59,7 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
         }
 
-        public void Apply(WorldSprite sprite)
+        public void Apply(MovingWorldSprite sprite)
         {
             if ((_timer.Value % 4) == 0)
             {
@@ -97,7 +97,7 @@ namespace ChompGame.MainGame
         /// Adjust target x and y speed such that object will move toward target
         /// </summary>
         /// <param name="destination"></param>
-        public void TargetTowards(WorldSprite source, WorldSprite destination, int speed)
+        public void TargetTowards(MovingWorldSprite source, MovingWorldSprite destination, int speed)
         {
             var src = source.Bounds.Center;
             var dest = destination.Bounds.Center;

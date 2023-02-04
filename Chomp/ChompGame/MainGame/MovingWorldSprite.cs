@@ -21,17 +21,15 @@ namespace ChompGame.MainGame
         FarOutOfBounds=2
     }
 
-    class WorldSprite
+    class WorldSprite 
     {
-        private readonly Specs _specs; 
-        private SpriteDefinition _spriteDefinition;
-        private readonly SpritesModule _spritesModule;
-        private readonly WorldScroller _scroller;
+        protected readonly Specs _specs;
+        protected SpriteDefinition _spriteDefinition;
+        protected readonly SpritesModule _spritesModule;
+        protected readonly WorldScroller _scroller;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
 
         public GameByte SpriteIndex { get; }
-
-        public PrecisionMotion Motion { get; }
 
         public WorldSpriteStatus Status
         {
@@ -77,32 +75,26 @@ namespace ChompGame.MainGame
                 return new Rectangle(X, Y, sprite.Width, sprite.Height);
             }
         }
-
-        public int XSpeed => Motion.XSpeed;
-        public int YSpeed => Motion.YSpeed;
-
         public WorldSprite(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,
             SpriteDefinition spriteDefinition,
             SpritesModule spritesModule,
-            PrecisionMotion motion, 
             WorldScroller scroller)
         {
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
             _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 6);
             _spriteDefinition = spriteDefinition;
-                
+
             _position = memoryBuilder.AddExtendedPoint();
             _scroller = scroller;
             _specs = specs;
             _spritesModule = spritesModule;
-            Motion = motion;
         }
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
 
-        public void UpdateSprite()
+        public virtual void UpdateSprite()
         {
             if (Status != WorldSpriteStatus.Active)
                 return;
@@ -114,7 +106,6 @@ namespace ChompGame.MainGame
 
             sprite.X = (byte)spriteX;
             sprite.Y = (byte)spriteY;
-
         }
 
         public BoundsCheck CheckInBounds()
@@ -186,5 +177,37 @@ namespace ChompGame.MainGame
             Status = WorldSpriteStatus.Inactive;
         }
 
+    }
+
+    class MovingWorldSprite : WorldSprite
+    {
+        public PrecisionMotion Motion { get; }
+        public int XSpeed => Motion.XSpeed;
+        public int YSpeed => Motion.YSpeed;
+
+        public MovingWorldSprite(
+            SystemMemoryBuilder memoryBuilder,
+            Specs specs,
+            SpriteDefinition spriteDefinition,
+            SpritesModule spritesModule,
+            PrecisionMotion motion, 
+            WorldScroller scroller) : base(memoryBuilder, specs,spriteDefinition, spritesModule, scroller)
+        {           
+            Motion = motion;
+        }
+
+        public override void UpdateSprite()
+        {
+            if (Status != WorldSpriteStatus.Active)
+                return;
+
+            var sprite = GetSprite();
+
+            int spriteX = (X - _scroller.WorldScrollPixelX).NMod(_specs.NameTablePixelWidth);
+            int spriteY = (Y - _scroller.WorldScrollPixelY).NMod(_specs.NameTablePixelHeight);
+
+            sprite.X = (byte)spriteX;
+            sprite.Y = (byte)spriteY;
+        }
     }
 }

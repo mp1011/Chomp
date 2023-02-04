@@ -53,7 +53,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        public void HandlePlayerCollision(WorldSprite player)
+        public void HandlePlayerCollision(MovingWorldSprite player)
         {
             if (_state.Value >= 40)
                 return;
@@ -65,6 +65,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _movingSpriteController.Motion.TargetYSpeed = 0;
         }
 
-        public bool HandleBombCollision(WorldSprite player) => false;
+        public bool HandleBombCollision(MovingWorldSprite player) => false;
     }
 }

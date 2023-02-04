@@ -123,9 +123,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public int GroundRightCorner => GroundTopEnd + 1;
 
-        public int LeftTile => GroundRightCorner + 1;
+        public int LeftTileIndex => GroundRightCorner + 1;
 
-        public int RightTile => LeftTile + 1;
+        public int RightTileIndex => LeftTileIndex + 1;
 
         public LevelShape LevelShape => _levelShape.Value;
 
@@ -148,7 +148,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public int BottomTiles => _scrollStyle.Value switch {
             ScrollStyle.Horizontal => _end.Value * 2,
-            ScrollStyle.Vertical => 2,
+            ScrollStyle.Vertical => 4,
             _ => _bottom.Value * 2
         };
 

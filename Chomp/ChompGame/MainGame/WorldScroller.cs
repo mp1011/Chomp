@@ -18,7 +18,7 @@ namespace ChompGame.MainGame
         private TileModule _tileModule;
         private SpritesModule _spritesModule;
 
-        private WorldSprite _focusSprite;
+        private MovingWorldSprite _focusSprite;
         private NBitPlane _levelNameTable;
         private NBitPlane _levelAttributeTable;
 
@@ -62,12 +62,19 @@ namespace ChompGame.MainGame
             }
         }
 
-        public void Initialize(SceneDefinition scene, WorldSprite focusSprite, NBitPlane levelNameTable, NBitPlane levelAttributeTable)
+        public void Initialize(SceneDefinition scene, MovingWorldSprite focusSprite, NBitPlane levelNameTable, NBitPlane levelAttributeTable)
         {
             _sceneDefinition = scene;
             _focusSprite = focusSprite;
             _levelNameTable = levelNameTable;
             _levelAttributeTable = levelAttributeTable;
+            _worldScrollX.Value = 0;
+            _worldScrollY.Value = 0;
+
+            _tileModule.Scroll.X = 0;
+            _tileModule.Scroll.Y = 0;
+            _spritesModule.Scroll.X = 0;
+            _spritesModule.Scroll.Y = 0;
         }
 
         public void UpdateVram()
@@ -119,12 +126,12 @@ namespace ChompGame.MainGame
         private void UpdateVram_Vertical()
         {
             var copyWidth = _levelNameTable.Width;
-            byte copyHeight = (byte)Math.Min(_specs.NameTableHeight, _levelNameTable.Height);
+            byte copyHeight = (byte)Math.Min(_specs.NameTableHeight - Constants.StatusBarTiles, _levelNameTable.Height);
 
             _levelNameTable.CopyTo(
                  destination: _tileModule.NameTable,
                  source: new InMemoryByteRectangle(0, _worldScrollY.Value, copyWidth, copyHeight),
-                 destinationPoint: new Point(0, 2),
+                 destinationPoint: new Point(0, Constants.StatusBarTiles),
                  specs: _specs,
                  memory: _tileModule.GameSystem.Memory);
 
@@ -233,8 +240,8 @@ namespace ChompGame.MainGame
                 scrollY = AdjustWorldScrollY();
                 changed = true;
             }
-            else if (scrollY > _specs.NameTablePixelWidth - _specs.ScreenWidth - _scrollPad
-                && _worldScrollX.Value < WorldScrollMaxX)
+            else if (scrollY > _specs.NameTablePixelHeight - _specs.ScreenHeight - _scrollPad
+                && _worldScrollY.Value < WorldScrollMaxY)
             {
                 scrollY = AdjustWorldScrollY();
                 changed = true;

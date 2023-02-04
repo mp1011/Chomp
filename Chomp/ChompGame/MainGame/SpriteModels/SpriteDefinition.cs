@@ -10,6 +10,7 @@ namespace ChompGame.MainGame.SpriteModels
         LizardBullet,
         Bird,
         Bomb,
+        Door,
         Max=31
     }
 

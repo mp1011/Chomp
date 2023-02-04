@@ -106,6 +106,7 @@ namespace ChompGame.MainGame.SceneModels
 
             return _sceneDefinition.ScrollStyle switch {
                 ScrollStyle.Horizontal => BuildAttributeTable_Horizontal(attributeTable, nameTable),
+                ScrollStyle.Vertical => BuildAttributeTable_Vertical(attributeTable, nameTable),
                 _ => BuildAttributeTable_Default(attributeTable, nameTable)
             };          
         }
@@ -146,6 +147,17 @@ namespace ChompGame.MainGame.SceneModels
             return attributeTable;
         }
 
+        private NBitPlane BuildAttributeTable_Vertical(NBitPlane attributeTable, NBitPlane nameTable)
+        {
+            attributeTable.ForEach((x, y, b) =>
+            {
+                attributeTable[x, y] = 1;
+            });
+
+            return attributeTable;
+        }
+
+
         public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, int seed)
         {
             NBitPlane nameTable = NBitPlane.Create(memoryBuilder.CurrentAddress, 
@@ -172,7 +184,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition);
 
-                if (sp.Type != ScenePartType.Exit)
+                if (sp.Type != ScenePartType.SideExit)
                     continue;
 
                 if (sp.ExitType == ExitType.Right)
@@ -271,7 +283,7 @@ namespace ChompGame.MainGame.SceneModels
                 },
                 ScrollStyle.Vertical => _sceneDefinition.LevelShape switch 
                 {
-                    LevelShape.ZigZag => nameTable, //todo 
+                    LevelShape.ZigZag => AddZigZagTiles(nameTable),
                     LevelShape.Ladder => nameTable, //todo
                     _ => nameTable 
                 },
@@ -284,6 +296,48 @@ namespace ChompGame.MainGame.SceneModels
                 },
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        private NBitPlane AddZigZagTiles(NBitPlane nameTable)
+        {
+            int sectionHeight = 9;
+            int gapSize = 2;
+            bool left = true;
+
+            Point p = new Point(0, _sceneDefinition.TopTiles + sectionHeight);
+
+            while (p.Y < nameTable.Height - _sceneDefinition.BottomTiles)
+            {
+                if (left)
+                {
+                    p = new Point(p.X + 1, p.Y);
+                    if(p.X == nameTable.Width - _sceneDefinition.RightTiles - gapSize)
+                    {
+                        left = false;
+                        p.X = nameTable.Width - _sceneDefinition.RightTiles;
+                        p.Y += sectionHeight;
+                    }
+
+                    nameTable[p.X, p.Y] = 1;
+                    nameTable[p.X, p.Y+1] = 1;
+
+                }
+                else
+                {
+                    p = new Point(p.X - 1, p.Y);
+                    if (p.X == _sceneDefinition.LeftTiles + gapSize)
+                    {
+                        left = true;
+                        p.X = _sceneDefinition.LeftTiles;
+                        p.Y += sectionHeight;
+                    }
+
+                    nameTable[p.X, p.Y] = 1;
+                    nameTable[p.X, p.Y + 1] = 1;
+                }
+            }
+
+            return nameTable;
         }
 
         private NBitPlane AddTShape(NBitPlane nameTable)
@@ -477,6 +531,7 @@ namespace ChompGame.MainGame.SceneModels
         {             
             PlayerController playerController = null;
             SpriteControllerPool<BombController> bombControllers = null;
+            SpriteControllerPool<DoorController> doorControllers = null;
 
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
@@ -487,6 +542,11 @@ namespace ChompGame.MainGame.SceneModels
                      size: 2,
                      _gameModule.SpritesModule,
                      () => new BombController(_gameModule, playerController, memoryBuilder));
+
+                doorControllers = new SpriteControllerPool<DoorController>(
+                    size: 2,
+                    _gameModule.SpritesModule,
+                    () => new DoorController(_gameModule, memoryBuilder));
             }
 
             IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
@@ -524,7 +584,13 @@ namespace ChompGame.MainGame.SceneModels
                 }
             }
 
-            return new SceneSpriteControllers(_gameModule, playerController, bombControllers, enemyA, enemyB, extraA, extraB);
+            return new SceneSpriteControllers(_gameModule, playerController, 
+                bombControllers,
+                doorControllers,
+                enemyA, 
+                enemyB, 
+                extraA, 
+                extraB);
         }
 
         public void ApplyLevelAlterations(NBitPlane levelMap)
@@ -563,9 +629,9 @@ namespace ChompGame.MainGame.SceneModels
                 else if (!tileAbove)
                     levelMap[x, y] = (byte)_sceneDefinition.GetGroundTopTile(x);
                 else if (!tileLeft)
-                    levelMap[x, y] = (byte)_sceneDefinition.LeftTile;
+                    levelMap[x, y] = (byte)_sceneDefinition.LeftTileIndex;
                 else if (!tileRight)
-                    levelMap[x, y] = (byte)_sceneDefinition.RightTile;
+                    levelMap[x, y] = (byte)_sceneDefinition.RightTileIndex;
                 else
                     levelMap[x, y] = (byte)_sceneDefinition.GetGroundFillTile(x, y);
             });

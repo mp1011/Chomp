@@ -10,7 +10,8 @@ namespace ChompGame.MainGame.SceneModels
         EnemyType1,
         EnemyType2,
         Pit,
-        Exit
+        SideExit,
+        DoorExit
     }
 
     class ScenePartsHeader
@@ -240,7 +241,7 @@ namespace ChompGame.MainGame.SceneModels
         public ScenePart(SystemMemoryBuilder builder,
            ExitType exitType,
            int exitOffset,
-           SceneDefinition definition) : this(builder, ScenePartType.Exit, (byte)exitType, GetExitOffset(exitOffset), definition)
+           SceneDefinition definition) : this(builder, ScenePartType.SideExit, (byte)exitType, GetExitOffset(exitOffset), definition)
         {
         }
 

@@ -11,6 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private ChompGameModule _gameModule;
         private PlayerController _playerController;
         private SpriteControllerPool<BombController> _bombControllers;
+        private SpriteControllerPool<DoorController> _doorControllers;
 
         private IEnemyOrBulletSpriteControllerPool _enemyAControllers;
         private IEnemyOrBulletSpriteControllerPool _enemyBControllers;
@@ -26,6 +27,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public SceneSpriteControllers(ChompGameModule chompGameModule, 
             PlayerController playerController, 
             SpriteControllerPool<BombController> bombControllers, 
+            SpriteControllerPool<DoorController> doorControllers,
             IEnemyOrBulletSpriteControllerPool enemyAControllers, 
             IEnemyOrBulletSpriteControllerPool enemyBControllers, 
             IEnemyOrBulletSpriteControllerPool extra1Controllers, 
@@ -34,6 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _gameModule = chompGameModule;
             _playerController = playerController;
             _bombControllers = bombControllers;
+            _doorControllers = doorControllers;
             _enemyAControllers = enemyAControllers;
             _enemyBControllers = enemyBControllers;
             _extra1Controllers = extra1Controllers;
@@ -78,6 +81,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _playerController.Update();
                 _bombControllers.Execute(c => c.Update());
+                _doorControllers.Execute(c => c.Update());
             }
 
             _enemyAControllers?.Execute(c => c.Update());
@@ -92,6 +96,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _playerController.WorldSprite.UpdateSprite();
                 _bombControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                _doorControllers.Execute(c => c.WorldSprite.UpdateSprite());
             }
 
             _enemyAControllers.Execute(c => c.WorldSprite.UpdateSprite());
@@ -114,7 +119,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 ScenePart sp = header.GetScenePart(i, _scene);
 
-                if (sp.Type == ScenePartType.Exit)
+                if (sp.Type == ScenePartType.SideExit)
                     continue;
 
                 var pool = GetPool(sp.Type);
@@ -146,6 +151,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.Bomb => _bombControllers,
                 ScenePartType.EnemyType1 => _enemyAControllers,
                 ScenePartType.EnemyType2 => _enemyBControllers,
+                ScenePartType.DoorExit => _doorControllers,
                 _ => null
             };
         

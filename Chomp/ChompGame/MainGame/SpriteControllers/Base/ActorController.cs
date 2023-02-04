@@ -13,6 +13,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
 
+        WorldSprite ISpriteController.WorldSprite => WorldSprite;
+
         public WorldSpriteStatus Status
         {
             get => WorldSprite.Status;
@@ -47,7 +49,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public AcceleratedMotion Motion => _movingSpriteController.Motion;
 
-        public WorldSprite WorldSprite => _movingSpriteController.WorldSprite;
+        public MovingWorldSprite WorldSprite => _movingSpriteController.WorldSprite;
 
         public byte SpriteIndex
         {

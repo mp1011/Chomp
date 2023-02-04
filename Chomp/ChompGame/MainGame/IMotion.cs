@@ -8,6 +8,6 @@ namespace ChompGame.MainGame
 
         public int YSpeed { get; set; }
 
-        void Apply(WorldSprite sprite);
+        void Apply(MovingWorldSprite sprite);
     }
 }

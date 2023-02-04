@@ -78,12 +78,12 @@ namespace ChompGame.MainGame.SceneModels
             //Level1_5_Vertical,
             SceneDefinition.VerticalScroll(
               specs: specs,
-              variance: LevelShape.MediumVariance,
+              variance: LevelShape.ZigZag,
               theme: Theme.Plains,
               enemyGroup: EnemyGroup.Lizard_Bird,
               memoryBuilder: memoryBuilder,
-              left: 2,
-              right: 2
+              left: 1,
+              right: 1
           );
 
             //Level1_6_Platforms,
@@ -196,7 +196,9 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_5_Vertical, builder.Memory, specs);
             new ScenePartsHeader(builder,
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene)
+                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
+                b => new ScenePart(b, ExitType.Right, exitOffset:5, scene),
+                b => new ScenePart(b, ScenePartType.DoorExit, 3, 9, scene)
                 );
         }
     }

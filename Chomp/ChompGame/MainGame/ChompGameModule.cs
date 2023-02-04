@@ -130,7 +130,7 @@ namespace ChompGame.MainGame
 
             memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
 
-            AddSpriteDefinitions(memoryBuilder);
+            SpriteDefinitionBuilder.BuildSpriteDefinitions(memoryBuilder);
 
             _statusBar.BuildMemory(memoryBuilder);
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
@@ -145,71 +145,6 @@ namespace ChompGame.MainGame
             memoryBuilder.AddLabel(AddressLabels.SceneParts);
             SceneBuilder.AddSceneParts(memoryBuilder, Specs);
         }
-
-        private void AddSpriteDefinitions(SystemMemoryBuilder memoryBuilder)
-        {
-            //player
-            new SpriteDefinition(memoryBuilder,
-                tile: 1,
-                secondTileOffset: 1,
-                sizeX: 1,
-                sizeY: 2,
-                gravityStrength: GravityStrength.Medium,
-                movementSpeed: MovementSpeed.Fast,
-                animationStyle: AnimationStyle.AnimateLowerTileOnly,
-                collidesWithBackground: true,
-                flipXWhenMovingLeft: true);
-
-            //lizard
-            new SpriteDefinition(memoryBuilder,
-                tile: 3,
-                secondTileOffset: 1,
-                sizeX: 1,
-                sizeY: 2,
-                gravityStrength: GravityStrength.High,
-                movementSpeed: MovementSpeed.Slow,
-                animationStyle: AnimationStyle.AnimateWhenMoving,
-                collidesWithBackground: true,
-                flipXWhenMovingLeft: true);
-
-            //lizard fireball
-            new SpriteDefinition(memoryBuilder,
-                tile: 5,
-                secondTileOffset: 0,
-                sizeX: 1,
-                sizeY: 1,
-                gravityStrength: GravityStrength.None,
-                movementSpeed: MovementSpeed.Fast,
-                animationStyle: AnimationStyle.NoAnimation,
-                collidesWithBackground: false,
-                flipXWhenMovingLeft: true);
-
-            //bird
-            new SpriteDefinition(memoryBuilder,
-                tile: 17,
-                secondTileOffset: 0,
-                sizeX: 2,
-                sizeY: 1,
-                gravityStrength: GravityStrength.None,
-                movementSpeed: MovementSpeed.Fast,
-                animationStyle: AnimationStyle.AlwaysAnimate,
-                collidesWithBackground: false,
-                flipXWhenMovingLeft: true);
-
-            //bomb
-            new SpriteDefinition(memoryBuilder,
-               tile: 2,
-               secondTileOffset: 0,
-               sizeX: 1,
-               sizeY: 1,
-               gravityStrength: GravityStrength.Medium,
-               movementSpeed: MovementSpeed.Fast,
-               animationStyle: AnimationStyle.NoAnimation,
-               collidesWithBackground: true,
-               flipXWhenMovingLeft: false);
-        }
-
-
 
         public override void OnStartup()
         {
@@ -276,7 +211,7 @@ namespace ChompGame.MainGame
             PaletteModule.SetScene(_currentScene);
 
             _gameState.Value = GameState.PlayScene;
-            _statusBar.AddToScore(123456789);
+            _statusBar.AddToScore(0);
             _statusBar.SetLives(3);
             _statusBar.Health = 8;
            

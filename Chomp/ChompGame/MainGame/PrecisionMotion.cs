@@ -29,7 +29,7 @@ namespace ChompGame.MainGame
             _subPixelY = memoryBuilder.AddByte();
         }
 
-        public void Apply(WorldSprite sprite)
+        public void Apply(MovingWorldSprite sprite)
         {
             int sx = _subPixelX.Value;
             sx += _motion.X * _motionScale;

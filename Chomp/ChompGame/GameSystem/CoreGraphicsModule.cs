@@ -23,6 +23,9 @@ namespace ChompGame.GameSystem
 
         public Palette GetBackgroundPalette(GameByteGridPoint screenPoint)
         {
+            if (screenPoint.Y < Constants.StatusBarHeight)
+                return GetPalette(0);
+
             int attrX = (screenPoint.X + _tileModule.Scroll.X) / (Specs.TileWidth * Specs.AttributeTableBlockSize);
             int attrY = (screenPoint.Y + _tileModule.Scroll.Y) / (Specs.TileHeight * Specs.AttributeTableBlockSize);
 

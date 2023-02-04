@@ -8,10 +8,10 @@ namespace ChompGame.MainGame.SpriteControllers
     class BirdEnemyController : EnemyController
     {
         private const int _hoverSpeed = 20;
-        private readonly WorldSprite _player;
+        private readonly MovingWorldSprite _player;
 
         public BirdEnemyController(
-            WorldSprite player,
+            MovingWorldSprite player,
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Bird,

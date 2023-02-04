@@ -73,7 +73,7 @@ namespace ChompGame.GameSystem
             for (int i = 0; ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
-                byte row = (byte)(ScreenPoint.Y - sprite.Y); //todo, scroll
+                byte row = (byte)(ScreenPoint.Y + Scroll.Y - sprite.Y); //todo, scroll
 
                 //todo, avoid hard coding sprite start
                 patternTableTilePoint.Index = Constants.SpriteStartIndex + sprite.Tile;
@@ -130,7 +130,7 @@ namespace ChompGame.GameSystem
             {
                 var sprite = GetSprite(spriteIndex);
                 if (!sprite.Visible
-                    || !sprite.IntersectsScanline(ScreenPoint.Y))
+                    || !sprite.IntersectsScanline((byte)(ScreenPoint.Y + Scroll.Y)))
                 {
                     continue;
                 }

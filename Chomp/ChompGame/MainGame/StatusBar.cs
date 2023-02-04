@@ -56,11 +56,13 @@ namespace ChompGame.MainGame
             SetHealth(Health);
         }
 
-        public void OnHBlank(GameByte realScroll)
+        public void OnHBlank(GameByte realScrollX, GameByte realScrollY)
         {
             if (_tileModule.ScreenPoint.Y == 0)
             {
-                realScroll.Value = _tileModule.Scroll.X;
+                realScrollX.Value = _tileModule.Scroll.X;
+                realScrollY.Value = _tileModule.Scroll.Y;
+
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = Constants.StatusBarTopRow;
             }
@@ -68,10 +70,13 @@ namespace ChompGame.MainGame
             if (_tileModule.ScreenPoint.Y < 8)
             {
                 _tileModule.Scroll.X = 0;
+                _tileModule.Scroll.Y = 0;
             }
             else if (_tileModule.ScreenPoint.Y == 8)
             {
-                _tileModule.Scroll.X = realScroll.Value;
+                _tileModule.Scroll.X = realScrollX.Value;
+                _tileModule.Scroll.Y = realScrollY.Value;
+
                 _tileModule.TileStartX = 0;
                 _tileModule.TileStartY = Constants.BgRow;
             }

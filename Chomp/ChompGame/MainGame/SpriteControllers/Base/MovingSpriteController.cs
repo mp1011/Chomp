@@ -76,7 +76,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         private readonly SpritesModule _spritesModule;
 
         public AcceleratedMotion Motion { get; }
-        public WorldSprite WorldSprite { get; }
+        public MovingWorldSprite WorldSprite { get; }
         public byte SpriteIndex
         {
             get => WorldSprite.SpriteIndex.Value;
@@ -101,7 +101,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             Motion = new AcceleratedMotion(levelTimer, memoryBuilder);
 
-            WorldSprite = new WorldSprite(
+            WorldSprite = new MovingWorldSprite(
                 specs: _spritesModule.Specs,
                 spriteDefinition: spriteDefinition,
                 memoryBuilder: memoryBuilder,
