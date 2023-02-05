@@ -12,5 +12,7 @@
         public static readonly byte FgRow = 4;
         public static readonly byte SpriteStartIndex = 39;
 
+        public static readonly byte DoorTile = 15;
+
     }
 }

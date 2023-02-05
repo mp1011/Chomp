@@ -11,7 +11,9 @@ namespace ChompGame.MainGame.SceneModels
         EnemyType2,
         Pit,
         SideExit,
-        DoorExit
+        DoorFowardExit,
+        DoorBackExit,
+        Extra
     }
 
     class ScenePartsHeader
@@ -111,6 +113,8 @@ namespace ChompGame.MainGame.SceneModels
     {
         public const int Bytes = 2;
 
+        public int Address => _type.Address;
+
         private readonly SceneDefinition _definition;
 
         private FourBitEnum<ScenePartType> _type;
@@ -131,13 +135,21 @@ namespace ChompGame.MainGame.SceneModels
 
         private NibbleEnum<ExitType> _exitType;
 
-        public ExitType ExitType => _exitType.Value;
+        public ExitType ExitType
+        {
+            get => _exitType.Value;
+            set => _exitType.Value = value;
+        }
 
         public int ExitLevelOffset
         {
             get
             {
-                if (_yBase.Value < 8)
+                if (ExitType == ExitType.DoorForward)
+                    return 1;
+                else if (ExitType == ExitType.DoorBack)
+                    return -1;
+                else if (_yBase.Value < 8)
                     return _yBase.Value + 1;
                 else
                     return -((_yBase.Value & 7) + 1);

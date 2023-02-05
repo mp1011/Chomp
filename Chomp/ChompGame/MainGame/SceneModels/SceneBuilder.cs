@@ -198,8 +198,14 @@ namespace ChompGame.MainGame.SceneModels
             new ScenePartsHeader(builder,
                 b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
                 b => new ScenePart(b, ExitType.Right, exitOffset:5, scene),
-                b => new ScenePart(b, ScenePartType.DoorExit, 3, 9, scene)
+                b => new ScenePart(b, ScenePartType.DoorFowardExit, 3, 9, scene)
                 );
+
+            scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
+            new ScenePartsHeader(builder,
+                b => new ScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene)
+                );
+
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.MainGame.SceneModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {

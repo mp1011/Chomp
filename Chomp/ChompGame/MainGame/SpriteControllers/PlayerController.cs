@@ -22,6 +22,8 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _bombPickup;
         private GameBit _openingDoor;
 
+        private MaskedByte _afterHitInvincibility;
+
         public bool IsHoldingBomb => _bombPickup.Value;
 
         public PlayerController(
@@ -39,10 +41,12 @@ namespace ChompGame.MainGame.SpriteControllers
             _openingDoor = new GameBit(_state.Address, Bit.Bit6, memoryBuilder.Memory);
             _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
 
+            _afterHitInvincibility = new MaskedByte(_state.Address, Bit.Right4, memoryBuilder.Memory);
             SpriteIndex = 0;
         }
 
-        public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType)
+        public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType,
+            SceneSpriteControllers sceneSpriteControllers)
         {
             switch(lastExitType)
             {
@@ -55,9 +59,23 @@ namespace ChompGame.MainGame.SpriteControllers
                 case ExitType.Bottom:
                     SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width/2, 1), 1);
                     break;
+                case ExitType.DoorForward:
+                    SetInitialPosition_Door(levelMap, sceneSpriteControllers, ExitType.DoorBack);
+                    break;
+                case ExitType.DoorBack:
+                    SetInitialPosition_Door(levelMap, sceneSpriteControllers, ExitType.DoorForward);
+                    break;
                 default:
                     throw new System.NotImplementedException();
             }
+        }
+
+
+        private void SetInitialPosition_Door(NBitPlane levelMap, SceneSpriteControllers sceneSpriteControllers, ExitType enterDoor)
+        {
+            var door = sceneSpriteControllers.GetDoorPosition(enterDoor);
+            WorldSprite.X = door.X;
+            WorldSprite.Y = door.Y;
         }
 
         private void SetInitialPosition_Horizontal(NBitPlane levelMap, Point startPoint, int xOffset)
@@ -93,8 +111,9 @@ namespace ChompGame.MainGame.SpriteControllers
         public void OnOpenDoor()
         {
             _openingDoor.Value = true;
+            var sprite = WorldSprite.GetSprite();
+            sprite.Visible = false;
         }
-
 
         protected override void UpdateActive()
         {
@@ -104,7 +123,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
             }
 
-            if(_state.Value > 0)
+            if(_afterHitInvincibility.Value > 0)
             {
                 var sprite = WorldSprite.GetSprite();               
                 
@@ -115,7 +134,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if (_levelTimer.IsMod(8))
                 {
-                    _state.Value--;
+                    _afterHitInvincibility.Value--;
                 }
 
                 if (_state.Value == 0)

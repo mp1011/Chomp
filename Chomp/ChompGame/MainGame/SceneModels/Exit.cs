@@ -1,28 +1,50 @@
-﻿using ChompGame.MainGame.SpriteControllers;
+﻿using ChompGame.Data.Memory;
+using ChompGame.MainGame.SpriteControllers;
 
 namespace ChompGame.MainGame.SceneModels
 {
     enum ExitType : byte
     {
+        None,
         Left,
         Right,
         Top,
         Bottom,
-        Door1,
-        Door2
+        DoorForward,
+        DoorBack
     }
 
     class ExitsModule
     {
         private readonly ChompGameModule _gameModule;
 
+        public ScenePart ActiveExit { get; private set; }
+
         public ExitsModule(ChompGameModule module)
         {
             _gameModule = module;
         }
 
-        public ScenePart CheckExits(PlayerController player, SceneDefinition sceneDefinition)
+        private void SetActiveExit(ScenePart exit)
         {
+            _gameModule.GameSystem.Memory.BlockCopy(exit.Address, ActiveExit.Address, ScenePart.Bytes);
+        }
+
+        public void BuildMemory(SystemMemoryBuilder memoryBuilder, SceneDefinition sceneDefinition)
+        {
+            ActiveExit = new ScenePart(memoryBuilder, ExitType.None, 1, sceneDefinition);                               
+        }
+
+        public void OnDoorEntered(ExitType exitType)
+        {
+            ActiveExit.ExitType = exitType;
+        }
+
+        public void CheckExits(PlayerController player, SceneDefinition sceneDefinition)
+        {
+            if (ActiveExit.ExitType != ExitType.None)
+                return;
+
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             int rightEdge = (sceneDefinition.LevelTileWidth - 1) * _gameModule.Specs.TileWidth;
@@ -32,7 +54,7 @@ namespace ChompGame.MainGame.SceneModels
                 && player.WorldSprite.X != rightEdge
                 && player.WorldSprite.Y != bottomEdge)
             {
-                return null;
+                return;
             }
 
             for (int i = 0; i < header.PartsCount; i++)
@@ -48,21 +70,22 @@ namespace ChompGame.MainGame.SceneModels
                 if(player.WorldSprite.X == rightEdge
                     && sp.ExitType == ExitType.Right)
                 {
-                    return sp;
+                    SetActiveExit(sp);
+                    return;
                 }
                 else if(player.WorldSprite.X == 0
                     && sp.ExitType == ExitType.Left)
                 {
-                    return sp;
+                    SetActiveExit(sp);
+                    return;
                 }
                 else if(player.WorldSprite.Y == bottomEdge
                     && sp.ExitType == ExitType.Bottom)
                 {
-                    return sp;
+                    SetActiveExit(sp);
+                    return;
                 }
             }
-
-            return null;
         }
     }
 }

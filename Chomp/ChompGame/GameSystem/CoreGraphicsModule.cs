@@ -175,8 +175,18 @@ namespace ChompGame.GameSystem
                 Sprite sprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
                 var palette = GetSpritePalette(sprite.Palette);
 
-                if (sprite.Priority == priority)
+                bool shouldDraw = false;
+                if (sprite.Tile == Constants.DoorTile)
                 {
+                    shouldDraw = !priority;
+                }
+                else
+                {
+                    shouldDraw = sprite.Priority == priority;
+                }
+
+                if(shouldDraw)
+                { 
                     for (int x = 0; x < sprite.Width; x++)
                     {
                         var colorIndex = SpriteScanlineDrawBuffer[drawBufferOffset + x];
@@ -189,7 +199,7 @@ namespace ChompGame.GameSystem
                         if (colorIndex == 0)
                             continue;
 
-                        if (!priority && BackgroundScanlineDrawBuffer[scanlineColumn] != 0)
+                        if (!sprite.Priority && BackgroundScanlineDrawBuffer[scanlineColumn] != 0)
                             continue;
 
                         _screenData[columnStart + scanlineColumn] = palette[colorIndex];

@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -12,9 +13,23 @@ namespace ChompGame.MainGame.SpriteControllers
         private SpritesModule _spritesModule;
         private GameByte _levelTimer;
         private readonly InputModule _inputModule;
-        private GameByte _openState;
+        private MaskedByte _openState;
+        private GameBit _doorType;
+
         private PlayerController _playerController;
         private ChompAudioService _audio;
+        private ExitsModule _exitsModule;
+
+        public ExitType DoorType
+        {
+            get => _doorType.Value
+                ? ExitType.DoorForward
+                : ExitType.DoorBack;
+            set
+            {
+                _doorType.Value = (value == ExitType.DoorForward);
+            }
+        }
 
         public byte SpriteIndex
         {
@@ -41,9 +56,11 @@ namespace ChompGame.MainGame.SpriteControllers
             _inputModule = gameModule.InputModule;
             _playerController = playerController;
             _audio = gameModule.AudioService;
+            _exitsModule = gameModule.ExitsModule;
 
-            _openState = memoryBuilder.AddByte();
-
+            _openState = memoryBuilder.AddMaskedByte(Bit.Right6);
+            _doorType = new GameBit(_openState.Address, Bit.Bit6, memoryBuilder.Memory);
+                
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
                 spriteDefinition: _spriteDefinition,
@@ -58,7 +75,9 @@ namespace ChompGame.MainGame.SpriteControllers
             var sprite = GetSprite();
             WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = 0; //todo
-            sprite.Priority = false;
+            sprite.FlipX = false;
+            sprite.FlipY = false;
+            sprite.Priority = true;
         }
 
         public void Update()
@@ -66,9 +85,6 @@ namespace ChompGame.MainGame.SpriteControllers
             WorldSprite.UpdateSprite();
             if (_openState.Value == 0)
                 return;
-
-            if ((_levelTimer.Value % 2) == 0)
-                _openState.Value++;
 
             if(_openState == 1)
             {
@@ -83,8 +99,7 @@ namespace ChompGame.MainGame.SpriteControllers
             else if (_openState == 20)
             {
                 _audio.PlaySound(ChompAudioService.Sound.DoorClose);
-                _playerController.GetSprite().Visible = false;
-
+               
                 var sprite = GetSprite();
                 sprite.Visible = true;
                 sprite.Tile = (byte)(_spriteDefinition.Tile + 1);
@@ -93,9 +108,15 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 var sprite = GetSprite();
                 sprite.Tile = (byte)(_spriteDefinition.Tile);
+            }
+            else if (_openState == 40)
+            {
+                _exitsModule.OnDoorEntered(DoorType);
                 _openState.Value = 0;
             }
 
+            if ((_levelTimer.Value % 2) == 0)
+                _openState.Value++;
         }
 
         public bool CheckPlayerOpen()

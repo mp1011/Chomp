@@ -2,6 +2,7 @@
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -57,7 +58,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.InitializeSprite(1);
                 _playerController.Motion.XSpeed = 0;
                 _playerController.Motion.YSpeed = 0;
-                _playerController.SetInitialPosition(levelMap, lastExitType);
+                _playerController.SetInitialPosition(levelMap, lastExitType, this);
             }
 
             GameDebug.Watch1 = new DebugWatch(
@@ -107,7 +108,26 @@ namespace ChompGame.MainGame.SpriteControllers
             CheckSpriteSpawn();
         }
 
-      
+        public Point GetDoorPosition(ExitType doorType)
+        {
+            DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {               
+                ScenePart sp = header.GetScenePart(i, _scene);
+
+                if(!(sp.Type == ScenePartType.DoorBackExit && doorType == ExitType.DoorBack)
+                    && !(sp.Type == ScenePartType.DoorFowardExit && doorType == ExitType.DoorForward))
+                {
+                    continue;
+                }
+
+                return new Point(sp.X * Specs.TileWidth, sp.Y * Specs.TileHeight);
+            }
+
+            return new Point(0, 0);
+        }
+
         public void CheckSpriteSpawn()
         {
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
@@ -135,6 +155,15 @@ namespace ChompGame.MainGame.SpriteControllers
                     && spawnY <= _gameModule.WorldScroller.WorldScrollPixelY + Specs.NameTablePixelHeight)
                 {
                     var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
+                    
+                    if(sprite is DoorController dc)
+                    {
+                        if (sp.Type == ScenePartType.DoorBackExit)
+                            dc.DoorType = ExitType.DoorBack;
+                        else
+                            dc.DoorType = ExitType.DoorForward;
+                    }
+
                     if (sprite != null)
                     {
                         header.MarkActive(i);
@@ -151,7 +180,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.Bomb => _bombControllers,
                 ScenePartType.EnemyType1 => _enemyAControllers,
                 ScenePartType.EnemyType2 => _enemyBControllers,
-                ScenePartType.DoorExit => _doorControllers,
+                ScenePartType.DoorBackExit => _doorControllers,
+                ScenePartType.DoorFowardExit => _doorControllers,
                 _ => null
             };
         

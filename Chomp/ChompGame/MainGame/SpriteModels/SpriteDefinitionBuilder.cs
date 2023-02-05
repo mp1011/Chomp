@@ -69,7 +69,7 @@ namespace ChompGame.MainGame.SpriteModels
 
             //door 
             new SpriteDefinition(memoryBuilder,
-               tile: 15,
+               tile: Constants.DoorTile,
                secondTileOffset: 1,
                sizeX: 1,
                sizeY: 2,

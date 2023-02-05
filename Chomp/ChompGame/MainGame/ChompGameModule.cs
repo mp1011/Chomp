@@ -234,6 +234,7 @@ namespace ChompGame.MainGame
             _collisionDetector.Initialize(_currentScene, levelMap);
             _rasterInterrupts.SetScene(_currentScene);
 
+            ExitsModule.BuildMemory(memoryBuilder, _currentScene);
         }
 
         private void ResetSprites()
@@ -262,12 +263,12 @@ namespace ChompGame.MainGame
 
             PaletteModule.Update();
 
-            var exit = ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
-            if(exit != null)
+            ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
+            if(ExitsModule.ActiveExit.ExitType != ExitType.None)
             {
                 _gameState.Value = GameState.LoadScene;
-                CurrentLevel = (Level)((int)CurrentLevel + exit.ExitLevelOffset);
-                _lastExitType.Value = exit.ExitType;
+                CurrentLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
+                _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
             }
         }
 

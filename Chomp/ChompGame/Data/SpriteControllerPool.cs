@@ -1,5 +1,6 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.MainGame;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using System;
 using System.Linq;
