@@ -48,7 +48,7 @@ namespace ChompGame.GameSystem
         public void OnHBlank()
         {
             for (int x = 0; x < Specs.ScreenWidth; x++)
-                GameSystem.CoreGraphicsModule.ScanlineDrawBuffer[x] = 0;
+                GameSystem.CoreGraphicsModule.BackgroundScanlineDrawBuffer[x] = 0;
 
             var y = GameSystem.CoreGraphicsModule.ScreenPoint.Y;
             if (y >= 1 && y < 5)

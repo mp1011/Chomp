@@ -51,6 +51,8 @@ namespace ChompGame.Data
     {
         private readonly BitArray _bit0, _bit1;
 
+        public int Address => _bit0.Address;
+
         public TwoBitArray(BitArray bit0, BitArray bit1)
         {
             _bit0 = bit0;

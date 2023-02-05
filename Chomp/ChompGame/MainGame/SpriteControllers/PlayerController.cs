@@ -20,13 +20,14 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly InputModule _inputModule;
 
         private GameBit _bombPickup;
+        private GameBit _openingDoor;
 
         public bool IsHoldingBomb => _bombPickup.Value;
 
         public PlayerController(
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Player, gameModule, memoryBuilder, Bit.Right4)
+            : base(SpriteType.Player, gameModule, memoryBuilder)
         {
             _specs = gameModule.Specs;
             _statusBar = gameModule.StatusBar;
@@ -35,6 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _inputModule = gameModule.InputModule;
             _collisionDetector = gameModule.CollissionDetector;
 
+            _openingDoor = new GameBit(_state.Address, Bit.Bit6, memoryBuilder.Memory);
             _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
 
             SpriteIndex = 0;
@@ -88,9 +90,20 @@ namespace ChompGame.MainGame.SpriteControllers
             WorldSprite.Y = pt.Y * _specs.TileHeight;
         }
 
+        public void OnOpenDoor()
+        {
+            _openingDoor.Value = true;
+        }
+
 
         protected override void UpdateActive()
         {
+            if (_openingDoor.Value)
+            {
+                _inputModule.OnLogicUpdate();
+                return;
+            }
+
             if(_state.Value > 0)
             {
                 var sprite = WorldSprite.GetSprite();               

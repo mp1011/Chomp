@@ -546,7 +546,7 @@ namespace ChompGame.MainGame.SceneModels
                 doorControllers = new SpriteControllerPool<DoorController>(
                     size: 2,
                     _gameModule.SpritesModule,
-                    () => new DoorController(_gameModule, memoryBuilder));
+                    () => new DoorController(_gameModule, playerController, memoryBuilder));
             }
 
             IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;

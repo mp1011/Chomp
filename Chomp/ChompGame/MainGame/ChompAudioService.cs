@@ -10,7 +10,9 @@ namespace ChompGame.MainGame
             PlayerHit=2,
             Jump=3,
             Test=4,
-            Noise=5
+            Noise=5,
+            DoorOpen=6,
+            DoorClose=7
         }
 
         private readonly BankAudioModule _audioModule;
@@ -62,7 +64,16 @@ namespace ChompGame.MainGame
             _audioModule.NoteSequence[32] = Audio.AudioAction.PlayFSharp;
             _audioModule.NoteSequence[33] = Audio.AudioAction.PlayG;
             _audioModule.NoteSequence[34] = Audio.AudioAction.PlayFSharp;
-            _audioModule.NoteSequence[35] = Audio.AudioAction.PlayF;
+            _audioModule.NoteSequence[36] = Audio.AudioAction.PlayF;
+
+            _audioModule.NoteSequence[36] = Audio.AudioAction.OctaveUp;
+            _audioModule.NoteSequence[37] = Audio.AudioAction.PlayD;
+            _audioModule.NoteSequence[38] = Audio.AudioAction.PlayCSharp;
+            _audioModule.NoteSequence[39] = Audio.AudioAction.PlayC;            
+            _audioModule.NoteSequence[40] = Audio.AudioAction.PlayB;
+            _audioModule.NoteSequence[41] = Audio.AudioAction.PlayASharp;
+
+            //64 byte limit
 
 
             _audioModule
@@ -87,8 +98,18 @@ namespace ChompGame.MainGame
                 .GetSound(4)
                 .Set(28, 4, 8);
 
+            //door open
             _audioModule
-                .GetSound(5)
+              .GetSound(5)
+              .Set(12, 5, 6);
+
+            //door close
+            _audioModule
+              .GetSound(6)
+              .Set(36, 5, 6);
+
+            _audioModule
+                .GetSound(7)
                 .Set(0, 0, 0);
 
             _audioModule.PrepareSounds();
@@ -118,6 +139,13 @@ namespace ChompGame.MainGame
                 case Sound.Noise:
                     _audioModule.GetChannel(0).Play(4);
                     break;
+                case Sound.DoorOpen:
+                    _audioModule.GetChannel(0).Play(5);
+                    break;
+                case Sound.DoorClose:
+                    _audioModule.GetChannel(0).Play(6);
+                    break;
+
             }
         }
     }

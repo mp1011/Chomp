@@ -7,7 +7,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 {
     abstract class ActorController : ISpriteController
     {
-        protected readonly MaskedByte _state;
+        protected readonly GameByte _state;
         protected readonly TwoBit _palette;
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
@@ -30,12 +30,15 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected ActorController(
             SpriteType spriteType,
             ChompGameModule gameModule,
-            SystemMemoryBuilder memoryBuilder,
-            Bit stateMask = Bit.Right6)
+            SystemMemoryBuilder memoryBuilder)
         {
             _spritesModule = gameModule.SpritesModule;
-            _state = memoryBuilder.AddMaskedByte(stateMask);
-            _palette = new TwoBit(memoryBuilder.Memory, _state.Address, 6);
+            _state = memoryBuilder.AddByte();
+
+            //todo, use the space here
+
+            _palette = new TwoBit(memoryBuilder.Memory,  memoryBuilder.CurrentAddress, 0);
+            memoryBuilder.AddByte();
 
             _movingSpriteController = new MovingSpriteController(
                gameModule.SpritesModule,

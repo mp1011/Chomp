@@ -18,23 +18,10 @@ namespace ChompGame.GameSystem
         private Color[] _screenData;
         public GameByteGridPoint ScreenPoint { get; private set; }
         public NBitPlane PatternTable { get; private set; }      
-        public ScanlineDrawBuffer ScanlineDrawBuffer { get; private set; }
+        public ScanlineDrawBuffer BackgroundScanlineDrawBuffer { get; private set; }
+        public ScanlineDrawBuffer SpriteScanlineDrawBuffer { get; private set; }
+
         public Palette GetBackgroundPalette(byte index) => GetPalette(index);
-
-        public Palette GetBackgroundPalette(GameByteGridPoint screenPoint)
-        {
-            if (screenPoint.Y < Constants.StatusBarHeight)
-                return GetPalette(0);
-
-            int attrX = (screenPoint.X + _tileModule.Scroll.X) / (Specs.TileWidth * Specs.AttributeTableBlockSize);
-            int attrY = (screenPoint.Y + _tileModule.Scroll.Y) / (Specs.TileHeight * Specs.AttributeTableBlockSize);
-
-            attrX %= _tileModule.AttributeTable.Width;
-            attrY %= _tileModule.AttributeTable.Height;
-
-            byte index = _tileModule.AttributeTable[attrX, attrY];            
-            return GetPalette(index);
-        }
 
         public Palette GetSpritePalette(byte index) => GetPalette((byte)(2 + index));
 
@@ -58,7 +45,8 @@ namespace ChompGame.GameSystem
             switch(Specs.BitsPerPixel)
             {
                 case 2:
-                    ScanlineDrawBuffer = new TwoBitPixelScanlineDrawBuffer(builder, Specs);
+                    BackgroundScanlineDrawBuffer = new TwoBitPixelScanlineDrawBuffer(builder, Specs);
+                    SpriteScanlineDrawBuffer = new TwoBitPixelScanlineDrawBuffer(builder, Specs);
                     break;
                 default:
                     throw new Exception("Unsupported bits per pixel");
@@ -69,7 +57,7 @@ namespace ChompGame.GameSystem
         {
             for(int i = 0; i < Specs.TileWidth; i++)
             {
-                ScanlineDrawBuffer[startIndex + i] = PatternTable[patternTablePoint.PixelIndex];
+                BackgroundScanlineDrawBuffer[startIndex + i] = PatternTable[patternTablePoint.PixelIndex];
                 patternTablePoint.PixelIndex++;
             }
         }
@@ -111,30 +99,58 @@ namespace ChompGame.GameSystem
             spriteBatch.Draw(canvas, Vector2.Zero, Color.White);
         }
 
+        public Palette GetBackgroundPalette(GameByteGridPoint screenPoint)
+        {
+            if (screenPoint.Y < Constants.StatusBarHeight)
+                return GetPalette(0);
+
+            int attrX = (screenPoint.X + _tileModule.Scroll.X) / (Specs.TileWidth * Specs.AttributeTableBlockSize);
+            int attrY = (screenPoint.Y + _tileModule.Scroll.Y) / (Specs.TileHeight * Specs.AttributeTableBlockSize);
+
+            attrX %= _tileModule.AttributeTable.Width;
+                attrY %= _tileModule.AttributeTable.Height;
+
+                byte index = _tileModule.AttributeTable[attrX, attrY];            
+                return GetPalette(index);
+        }
+
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
         {
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
+            int scanlineColumn = 0;        
+        
+            var bgPalette = GetBackgroundPalette(ScreenPoint);
 
-            int scanlineColumn = 0;
-            var palette = GetBackgroundPalette(ScreenPoint);
+            //todo-scroll
+            int nextAttributeBlock = (Specs.AttributeTableBlockSize * Specs.TileWidth);
 
             for (int i = 0; i < _screenData.Length; i++)
             {
-                //todo, don't need to compute this every pixel
-                palette = GetBackgroundPalette(ScreenPoint);
+                if(scanlineColumn == nextAttributeBlock)
+                {
+                    bgPalette = GetBackgroundPalette(ScreenPoint);
+                    nextAttributeBlock += Specs.AttributeTableBlockSize * Specs.TileWidth;
+                }
 
-                var color = palette[ScanlineDrawBuffer[scanlineColumn]];
-                _screenData[i] = color;
+                _screenData[i] = bgPalette[BackgroundScanlineDrawBuffer[scanlineColumn]];
+                                
                 scanlineColumn++;
 
                 if (ScreenPoint.Next())
                 {
                     DrawSprites(i - scanlineColumn + 1);
+
                     scanlineColumn = 0;
 
-                    if(ScreenPoint.Y != 0)
+                    if (ScreenPoint.Y != 0)
+                    {
                         GameSystem.OnHBlank();
+                       
+                        //todo-scroll
+                        nextAttributeBlock = (Specs.AttributeTableBlockSize * Specs.TileWidth);
+                        bgPalette = GetBackgroundPalette(ScreenPoint);
+                    }
                 }
             }
 
@@ -145,26 +161,42 @@ namespace ChompGame.GameSystem
 
         private void DrawSprites(int columnStart)
         {
+            DrawSprites(columnStart, false);
+            DrawSprites(columnStart, true);           
+        }
+
+        private void DrawSprites(int columnStart, bool priority)
+        {
             int scanlineSpriteIndex = 0;
-            while(_spritesModule.ScanlineSprites[scanlineSpriteIndex] != 255)
+            int drawBufferOffset = 0;
+
+            while (_spritesModule.ScanlineSprites[scanlineSpriteIndex] != 255)
             {
                 Sprite sprite = _spritesModule.GetScanlineSprite(scanlineSpriteIndex);
                 var palette = GetSpritePalette(sprite.Palette);
 
-                for(int x = 0; x < sprite.Width; x++)
+                if (sprite.Priority == priority)
                 {
-                    int scanlineColumn = ((sprite.X - _spritesModule.Scroll.X) + x).NMod(Specs.NameTablePixelWidth);
+                    for (int x = 0; x < sprite.Width; x++)
+                    {
+                        var colorIndex = SpriteScanlineDrawBuffer[drawBufferOffset + x];
 
-                    if (scanlineColumn >= Specs.ScreenWidth)
-                        continue;
+                        int scanlineColumn = ((sprite.X - _spritesModule.Scroll.X) + x).NMod(Specs.NameTablePixelWidth);
 
-                    if (_spritesModule.ScanlineSpritePixelPriority.Get(scanlineSpriteIndex, x))
-                    {                        
-                        var color = palette[ScanlineDrawBuffer[scanlineColumn]];
-                        _screenData[columnStart + scanlineColumn] = color;                        
+                        if (scanlineColumn >= Specs.ScreenWidth)
+                            continue;
+
+                        if (colorIndex == 0)
+                            continue;
+
+                        if (!priority && BackgroundScanlineDrawBuffer[scanlineColumn] != 0)
+                            continue;
+
+                        _screenData[columnStart + scanlineColumn] = palette[colorIndex];
                     }
                 }
-                
+
+                drawBufferOffset += sprite.Width;
                 scanlineSpriteIndex++;
             }
         }

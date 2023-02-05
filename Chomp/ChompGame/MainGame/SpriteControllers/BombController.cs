@@ -28,7 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 ChompGameModule gameModule,
                 PlayerController playerController,
                 SystemMemoryBuilder memoryBuilder)
-            : base(SpriteType.Bomb, gameModule, memoryBuilder, Bit.Right5)
+            : base(SpriteType.Bomb, gameModule, memoryBuilder)
         {
             _collisionDetector = gameModule.CollissionDetector;
             _playerController = playerController;

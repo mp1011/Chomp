@@ -162,6 +162,11 @@ namespace ChompGame.MainGame.SpriteControllers
             _playerController.CheckEnemyOrBulletCollisions(_extra1Controllers);
             _playerController.CheckBombPickup(_bombControllers);
 
+            _doorControllers.Execute(b =>
+            {
+                b.CheckPlayerOpen();
+            });
+
             _bombControllers.Execute(b =>
             {
                 b.CheckEnemyCollisions(_enemyAControllers);

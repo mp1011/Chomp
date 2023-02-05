@@ -26,6 +26,12 @@ namespace ChompGame.Data
 
         private readonly GameByteGridPoint _screenScroll;
 
+        public bool Priority
+        {
+            get => _priority.Value;
+            set => _priority.Value = value;
+        }
+
         public bool Visible
         {
             get => Tile != 0 && _visible.Value;
@@ -54,6 +60,7 @@ namespace ChompGame.Data
             _visible = new GameBit(_palette.Address, Bit.Bit5, memoryBuilder.Memory);
 
             _visible.Value = true;
+            _priority.Value = true;
         }
 
         public Sprite(int address, SystemMemory memory, Specs specs, GameByteGridPoint screenScroll)

@@ -18,8 +18,6 @@ namespace ChompGame.GameSystem
 
         public GameByteArray ScanlineSprites { get; private set; }
 
-        public ScanlineSpritePixelPriority ScanlineSpritePixelPriority { get; private set; }
-
         public override void OnStartup()
         {
         }
@@ -48,9 +46,7 @@ namespace ChompGame.GameSystem
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);
-
-            ScanlineSpritePixelPriority = new ScanlineSpritePixelPriority(builder, Specs);
-
+           
             _sprite0Address = builder.CurrentAddress;
             builder.AddSprite(Specs.MaxSprites, this);
             ScanlineSprites = new GameByteArray(builder.CurrentAddress, builder.Memory);
@@ -60,6 +56,10 @@ namespace ChompGame.GameSystem
 
         public override void OnHBlank()
         {
+            int scanlineSpriteOffset = 0;
+
+            _coreGraphicsModule.SpriteScanlineDrawBuffer.Clear(_coreGraphicsModule.GameSystem.Memory);
+
             FillScanlineSprites();
 
             var patternTableTilePoint = new ByteGridPoint(
@@ -73,7 +73,7 @@ namespace ChompGame.GameSystem
             for (int i = 0; ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
-                byte row = (byte)(ScreenPoint.Y + Scroll.Y - sprite.Y); //todo, scroll
+                byte row = (byte)(ScreenPoint.Y + Scroll.Y - sprite.Y);
 
                 //todo, avoid hard coding sprite start
                 patternTableTilePoint.Index = Constants.SpriteStartIndex + sprite.Tile;
@@ -91,27 +91,13 @@ namespace ChompGame.GameSystem
                 for (int col = 0; col < sprite.Width; col++)
                 {
                     int adjCol = sprite.FlipX ? sprite.Width - (col + 1) : col;
-
                     var pixel = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
-                    if (pixel != 0)
-                    {
-                        ScanlineSpritePixelPriority.Set(i, adjCol, true);
 
-                        int drawCol = (sprite.X + adjCol) - Scroll.X;                          
-                        drawCol = drawCol.NMod(Specs.NameTablePixelWidth);
-
-                        if (drawCol >= 0 && drawCol < Specs.ScreenWidth)
-                        {                  
-                            _coreGraphicsModule.ScanlineDrawBuffer[drawCol] = pixel;
-                        }
-                    }
-                    else
-                    {
-                        ScanlineSpritePixelPriority.Set(i, adjCol, false);
-                    }
-
+                    _coreGraphicsModule.SpriteScanlineDrawBuffer[scanlineSpriteOffset +adjCol] = pixel;
                     patternTablePoint.X++;
-                }      
+                }
+
+                scanlineSpriteOffset += sprite.Width;
             }
         }
 

@@ -50,7 +50,7 @@ namespace ChompGame.Data
 
                 for (int col = 0; col < Specs.TileWidth; col++)
                 {
-                    _coreGraphicsModule.ScanlineDrawBuffer[screenColumn] = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
+                    _coreGraphicsModule.BackgroundScanlineDrawBuffer[screenColumn] = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
                     patternTablePoint.X++;
                     screenColumn++;
                 }

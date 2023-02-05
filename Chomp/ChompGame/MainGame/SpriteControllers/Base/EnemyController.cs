@@ -11,8 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         protected EnemyController(SpriteType spriteType, 
             ChompGameModule gameModule,
-            SystemMemoryBuilder memoryBuilder, 
-            Bit stateMask = Bit.Right6) : base(spriteType, gameModule, memoryBuilder, stateMask)
+            SystemMemoryBuilder memoryBuilder) : base(spriteType, gameModule, memoryBuilder)
         {
             _audioService = gameModule.AudioService;
         }

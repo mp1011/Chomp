@@ -73,7 +73,6 @@ namespace ChompGame.GameSystem
                 .ToArray();
         }
 
-
         public SoundHeader GetSound(int index)
         {
             return new SoundHeader(_soundHeaderAddress + (index * SoundHeader.Length), GameSystem.Memory);
