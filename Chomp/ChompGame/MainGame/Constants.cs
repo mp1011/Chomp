@@ -13,6 +13,7 @@
         public static readonly byte SpriteStartIndex = 39;
 
         public static readonly byte DoorTile = 15;
+        public static readonly byte PlatformTile = 13;
 
     }
 }

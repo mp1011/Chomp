@@ -11,6 +11,7 @@ namespace ChompGame.MainGame.SpriteModels
         Bird,
         Bomb,
         Door,
+        Platform,
         Max=31
     }
 

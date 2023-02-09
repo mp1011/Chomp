@@ -130,6 +130,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             {
                 Motion.YSpeed = 0;
             }
+
+            if(collisionInfo.XCorrection != 0)
+            {
+                Motion.XSpeed = 0;
+            }
         }
 
         public void Update()
@@ -162,6 +167,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if(!shouldAnimate)
             {
                 sprite.Tile = _spriteDefinition.Tile;
+                sprite.Tile2Offset = 1;
             }
             else if ((_levelTimer.Value % 16) == 0)
             {

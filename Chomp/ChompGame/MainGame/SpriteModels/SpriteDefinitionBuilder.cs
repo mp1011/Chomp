@@ -79,6 +79,17 @@ namespace ChompGame.MainGame.SpriteModels
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
 
+            //platform
+            new SpriteDefinition(memoryBuilder,
+              tile: Constants.PlatformTile,
+              secondTileOffset: 0,
+              sizeX: 2,
+              sizeY: 1,
+              gravityStrength: GravityStrength.None,
+              movementSpeed: MovementSpeed.VerySlow,
+              animationStyle: AnimationStyle.NoAnimation,
+              collidesWithBackground: false,
+              flipXWhenMovingLeft: false);
         }
     }
 }

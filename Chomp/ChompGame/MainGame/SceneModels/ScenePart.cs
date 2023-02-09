@@ -6,14 +6,15 @@ namespace ChompGame.MainGame.SceneModels
 {
     enum ScenePartType : byte
     {
-        Bomb,
-        EnemyType1,
-        EnemyType2,
-        Pit,
-        SideExit,
-        DoorFowardExit,
-        DoorBackExit,
-        Extra
+        Bomb=0,
+        EnemyType1=1,
+        EnemyType2=2,
+        Pit=3,
+        SideExit=4,
+        DoorFowardExit=5,
+        DoorBackExit=6,
+        Platform=7,
+        Max=15
     }
 
     class ScenePartsHeader

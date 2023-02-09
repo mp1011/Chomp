@@ -21,6 +21,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private GameBit _bombPickup;
         private GameBit _openingDoor;
+        private GameBit _onPlatform;
+
 
         private MaskedByte _afterHitInvincibility;
 
@@ -38,6 +40,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _inputModule = gameModule.InputModule;
             _collisionDetector = gameModule.CollissionDetector;
 
+            _onPlatform = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
             _openingDoor = new GameBit(_state.Address, Bit.Bit6, memoryBuilder.Memory);
             _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
 
@@ -137,7 +140,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _afterHitInvincibility.Value--;
                 }
 
-                if (_state.Value == 0)
+                if (_afterHitInvincibility.Value == 0)
                 {
                     sprite.Visible = true;
                 }
@@ -160,7 +163,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 Motion.XSpeed = 0;
             }
 
-
             if (_inputModule.Player1.RightKey.IsDown())
             {
                 Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
@@ -177,11 +179,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 Motion.XAcceleration = _movingSpriteController.BrakeAccel;
             }
 
-            if (collisionInfo.IsOnGround && _inputModule.Player1.AKey == GameKeyState.Pressed)
+            if ((collisionInfo.IsOnGround || _onPlatform.Value) 
+                && _inputModule.Player1.AKey == GameKeyState.Pressed)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
                 Motion.YSpeed = -_movingSpriteController.JumpSpeed;
             }
+
+            _onPlatform.Value = false;
         }
 
         public void CheckBombPickup(SpriteControllerPool<BombController> bombs)
@@ -216,14 +221,14 @@ namespace ChompGame.MainGame.SpriteControllers
             if (sprites == null)
                 return;
 
-            if (_state.Value > 0)
+            if (_afterHitInvincibility.Value > 0)
                 return;
 
             sprites.Execute(p =>
             {
                 if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
-                    _state.Value = 15;
+                    _afterHitInvincibility.Value = 15;
                     p.HandlePlayerCollision(WorldSprite);
 
                     if(WorldSprite.FlipX)
@@ -236,6 +241,12 @@ namespace ChompGame.MainGame.SpriteControllers
                     _statusBar.Health--;
                 }
             });
+        }
+
+        public void OnPlatformCollision(CollisionInfo c)
+        {
+            _movingSpriteController.AfterCollision(c);
+            _onPlatform.Value = c.IsOnGround;
         }
     }
 }

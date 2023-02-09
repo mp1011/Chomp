@@ -160,7 +160,7 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.Level1_3_Pit;
+            _currentLevel.Value = Level.Level1_6_Platforms;
             _lastExitType.Value = ExitType.Right;
             // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }

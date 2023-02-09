@@ -203,7 +203,12 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
             new ScenePartsHeader(builder,
-                b => new ScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene)
+                b => new ScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene),
+                b => new ScenePart(b, ScenePartType.Pit, 30,10, scene),
+                b => new ScenePart(b, ScenePartType.Platform, 35, 12, scene),
+                b => new ScenePart(b, ScenePartType.Platform, 12, 12, scene),
+
+                b => new ScenePart(b, ScenePartType.Pit, 10, 10, scene)
                 );
 
         }

@@ -82,6 +82,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
+            HideIfOutOfBounds();
+
+            if (WorldSprite.Status != WorldSpriteStatus.Active)
+                return;
+
             WorldSprite.UpdateSprite();
             if (_openState.Value == 0)
                 return;
@@ -117,6 +122,24 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if ((_levelTimer.Value % 2) == 0)
                 _openState.Value++;
+        }
+
+        private void HideIfOutOfBounds()
+        {
+            var boundsCheck = WorldSprite.CheckInBounds();
+
+            if (boundsCheck == BoundsCheck.FarOutOfBounds || boundsCheck == BoundsCheck.OutOfBounds)
+            {
+                WorldSprite.Hide();
+            }
+            else if (Status != WorldSpriteStatus.Active)
+            {
+                WorldSprite.Show();
+                if (Status == WorldSpriteStatus.Active)
+                {
+                    InitializeSprite(0);
+                }
+            }
         }
 
         public bool CheckPlayerOpen()

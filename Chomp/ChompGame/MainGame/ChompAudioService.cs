@@ -101,12 +101,12 @@ namespace ChompGame.MainGame
             //door open
             _audioModule
               .GetSound(5)
-              .Set(12, 5, 6);
+              .Set(12, 3, 6);
 
             //door close
             _audioModule
               .GetSound(6)
-              .Set(36, 5, 6);
+              .Set(36, 3, 6);
 
             _audioModule
                 .GetSound(7)

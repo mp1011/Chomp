@@ -532,6 +532,7 @@ namespace ChompGame.MainGame.SceneModels
             PlayerController playerController = null;
             SpriteControllerPool<BombController> bombControllers = null;
             SpriteControllerPool<DoorController> doorControllers = null;
+            SpriteControllerPool<PlatformController> platformControllers = null;
 
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
@@ -547,6 +548,11 @@ namespace ChompGame.MainGame.SceneModels
                     size: 2,
                     _gameModule.SpritesModule,
                     () => new DoorController(_gameModule, playerController, memoryBuilder));
+
+                platformControllers = new SpriteControllerPool<PlatformController>(
+                    size: 4,
+                    _gameModule.SpritesModule,
+                    () => new PlatformController(_gameModule, memoryBuilder));
             }
 
             IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
@@ -584,9 +590,10 @@ namespace ChompGame.MainGame.SceneModels
                 }
             }
 
-            return new SceneSpriteControllers(_gameModule, playerController, 
+            return new SceneSpriteControllers(_gameModule, playerController,
                 bombControllers,
                 doorControllers,
+                platformControllers,
                 enemyA, 
                 enemyB, 
                 extraA, 
@@ -776,6 +783,14 @@ namespace ChompGame.MainGame.SceneModels
 
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
+
+            //platform
+            masterPatternTable.CopyTilesTo(
+               destination: vramPatternTable,
+               source: new InMemoryByteRectangle(12, 5, 2, 1),
+               destinationPoint: new Point(4, 6),
+               _gameModule.Specs,
+               memory);
 
             //door
             masterPatternTable.CopyTilesTo(

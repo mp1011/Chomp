@@ -59,6 +59,12 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
         }
 
+        public void SetXSpeed(int speed)
+        {
+            XSpeed = speed;
+            TargetXSpeed = speed;
+        }
+
         public void Apply(MovingWorldSprite sprite)
         {
             if ((_timer.Value % 4) == 0)
