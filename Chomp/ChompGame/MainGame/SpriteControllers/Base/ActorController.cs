@@ -15,6 +15,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
 
+        protected virtual bool DestroyWhenFarOutOfBounds => true;
+
         WorldSprite ISpriteController.WorldSprite => WorldSprite;
 
         public WorldSpriteStatus Status
@@ -86,7 +88,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             if(boundsCheck == BoundsCheck.FarOutOfBounds)
             {
-                WorldSprite.Destroy();
+                if (DestroyWhenFarOutOfBounds)
+                    WorldSprite.Destroy();
+                else
+                    WorldSprite.Hide();
             }
             else if(boundsCheck == BoundsCheck.OutOfBounds)
             {

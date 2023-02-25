@@ -65,6 +65,12 @@ namespace ChompGame.MainGame
             TargetXSpeed = speed;
         }
 
+        public void SetYSpeed(int speed)
+        {
+            YSpeed = speed;
+            TargetYSpeed = speed;
+        }
+
         public void Apply(MovingWorldSprite sprite)
         {
             if ((_timer.Value % 4) == 0)

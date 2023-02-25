@@ -23,7 +23,6 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _openingDoor;
         private GameBit _onPlatform;
 
-
         private MaskedByte _afterHitInvincibility;
 
         public bool IsHoldingBomb => _bombPickup.Value;

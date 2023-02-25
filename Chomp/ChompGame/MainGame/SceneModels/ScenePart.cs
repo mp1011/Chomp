@@ -13,8 +13,11 @@ namespace ChompGame.MainGame.SceneModels
         SideExit=4,
         DoorFowardExit=5,
         DoorBackExit=6,
-        Platform=7,
-        Max=15
+        Platform_LeftRight=7,
+        Platform_UpDown=8,
+        Platform_Falling=9,
+        Platform_Vanishing=10,
+        Max = 15
     }
 
     class ScenePartsHeader

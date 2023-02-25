@@ -168,6 +168,16 @@ namespace ChompGame.MainGame.SpriteControllers
                         else
                             dc.DoorType = ExitType.DoorForward;
                     }
+                    else if(sprite is PlatformController pc)
+                    {
+                        pc.PlatformType = sp.Type switch 
+                        {
+                            ScenePartType.Platform_LeftRight => PlatformType.LeftRight,
+                            ScenePartType.Platform_Vanishing => PlatformType.Vanishing,
+                            ScenePartType.Platform_UpDown => PlatformType.UpDown,
+                            _ =>  PlatformType.Falling
+                        };
+                    }
 
                     if (sprite != null)
                     {
@@ -187,7 +197,10 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.EnemyType2 => _enemyBControllers,
                 ScenePartType.DoorBackExit => _doorControllers,
                 ScenePartType.DoorFowardExit => _doorControllers,
-                ScenePartType.Platform => _platformControllers,
+                ScenePartType.Platform_Falling => _platformControllers,
+                ScenePartType.Platform_LeftRight => _platformControllers,
+                ScenePartType.Platform_UpDown => _platformControllers,
+                ScenePartType.Platform_Vanishing=> _platformControllers,
                 _ => throw new System.NotImplementedException()
             };
         

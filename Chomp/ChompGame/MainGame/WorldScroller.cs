@@ -168,13 +168,18 @@ namespace ChompGame.MainGame
 
         private int AdjustWorldScrollX()
         {
+            if (CameraPixelX == 135)
+                System.Diagnostics.Debug.Write("!");
+
+            System.Diagnostics.Debug.WriteLine($"AdjustWorldScrollX CX={CameraPixelX}");
+
             int newWorldScroll = (CameraPixelX - (_specs.NameTablePixelWidth - _specs.ScreenWidth) / 2)
                 .Clamp(0, WorldScrollMaxX * _specs.TileWidth);
 
             _worldScrollX.Value = (byte)(newWorldScroll / _specs.TileWidth);
             UpdateVram();
 
-            return CameraPixelX - newWorldScroll;
+            return CameraPixelX - WorldScrollPixelX;
         }
 
         private int AdjustWorldScrollY()
