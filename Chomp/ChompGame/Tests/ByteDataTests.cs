@@ -31,5 +31,24 @@ namespace ChompGame.Tests
             
 
         }
+
+        [Fact]
+        public void CanSetMaskedByte()
+        {
+            SystemMemory memory = new SystemMemory(b =>
+            {
+                b.AddByte();
+            }, new PongSpecs());
+
+            var mb1 = new MaskedByte(0, (Bit)28, memory, leftShift:2);
+            var mb2 = new MaskedByte(0, (Bit)224, memory, leftShift:5);
+
+            mb1.Value = 5;
+            mb2.Value = 4;
+
+            Assert.Equal(5, mb1.Value);
+            Assert.Equal(4, mb2.Value);
+
+        }
     }
 }

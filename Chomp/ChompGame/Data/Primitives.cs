@@ -190,9 +190,12 @@ namespace ChompGame.Data
     public class MaskedByte : GameByte
     {
         private byte _mask;
-        public MaskedByte(int address, Bit mask, SystemMemory memory) : base(address, memory)
+        private int _leftShift;
+
+        public MaskedByte(int address, Bit mask, SystemMemory memory, int leftShift=0) : base(address, memory)
         {
             _mask = (byte)mask;
+            _leftShift = leftShift;
         }
 
         public override byte Value
@@ -200,10 +203,12 @@ namespace ChompGame.Data
             get
             {
                 byte b = base.Value;
-                return (byte)(b & _mask);
+                return (byte)((b & _mask) >> _leftShift);
             }
             set
             {
+                value = (byte)(value << _leftShift);
+
                 var maskedValue = (byte)(value & _mask);
                 base.Value = (byte)(base.Value & (byte)~_mask);
                 base.Value = (byte)(base.Value | maskedValue);

@@ -38,6 +38,8 @@ namespace ChompGame.MainGame
         private readonly StatusBarModule _statusBarModule;
         private readonly MusicModule _musicModule;
         private readonly StatusBar _statusBar;
+        private readonly DynamicBlockController _dynamicBlockController;
+
         private NBitPlane _masterPatternTable;
         private LevelBuilder _levelBuilder;
        
@@ -66,6 +68,8 @@ namespace ChompGame.MainGame
 
         public ExitsModule ExitsModule { get; }
 
+        public DynamicBlockController DynamicBlocksController => _dynamicBlockController;
+
         public DynamicScenePartHeader CurrentScenePartHeader { get; private set; }
 
         public Level CurrentLevel
@@ -90,6 +94,7 @@ namespace ChompGame.MainGame
             PaletteModule = paletteModule;
             ExitsModule = new ExitsModule(this);
             _statusBar = new StatusBar(_tileModule, GameRAM);
+            _dynamicBlockController = new DynamicBlockController(this);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -228,13 +233,15 @@ namespace ChompGame.MainGame
             _levelBuilder.BuildBackgroundNametable(levelMap);
 
             _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value);
-           
+
+            _dynamicBlockController.InitializeDynamicBlocks(_currentScene, memoryBuilder, levelMap);
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(_currentScene, levelMap);
             _rasterInterrupts.SetScene(_currentScene);
 
             ExitsModule.BuildMemory(memoryBuilder, _currentScene);
+
         }
 
         private void ResetSprites()

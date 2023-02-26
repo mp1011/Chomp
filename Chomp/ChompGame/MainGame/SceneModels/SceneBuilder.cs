@@ -163,7 +163,6 @@ namespace ChompGame.MainGame.SceneModels
                  bgPosition1: 3,
                  bgPosition2: 2
          );
-
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -171,7 +170,8 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition scene = new SceneDefinition(Level.Level1_1_Start, builder.Memory, specs);
             new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Right, 1, scene),
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene)
+                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true,true,true,true,14,8, scene)
                 );
 
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);

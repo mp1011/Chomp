@@ -144,8 +144,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 ScenePart sp = header.GetScenePart(i, _scene);
 
-                if (sp.Type == ScenePartType.SideExit)
-                    continue;
+                switch(sp.Type)
+                {
+                    case ScenePartType.Coin:
+                    case ScenePartType.DestructibleBlock:
+                    case ScenePartType.LockedDoor:
+                    case ScenePartType.Button:
+                    case ScenePartType.SideExit:
+                        continue;
+                }
 
                 var pool = GetPool(sp.Type);
                 if (!pool.CanAddNew())
@@ -222,6 +229,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 b.CheckEnemyCollisions(_enemyAControllers);
                 b.CheckEnemyCollisions(_enemyBControllers);
+                _gameModule.DynamicBlocksController.CheckBombCollisions(b, _gameModule.GameSystem.Memory, _scene);
             });
         }
     }

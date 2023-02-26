@@ -17,6 +17,10 @@ namespace ChompGame.MainGame.SceneModels
         Platform_UpDown=8,
         Platform_Falling=9,
         Platform_Vanishing=10,
+        Coin=11,
+        DestructibleBlock=12,
+        LockedDoor=13,
+        Button=14,
         Max = 15
     }
 
@@ -135,6 +139,10 @@ namespace ChompGame.MainGame.SceneModels
         private TwoBit _xExtra2;
         private TwoBit _yExtra2;
 
+        private DynamicBlockLocation _dynamicBlockLocation;
+        public DynamicBlockState DynamicBlockState { get; }
+
+
         public ScenePartType Type => _type.Value;
 
         private NibbleEnum<ExitType> _exitType;
@@ -162,14 +170,36 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte X
         {
-            get => _definition.ScrollStyle switch {
-                ScrollStyle.NameTable => (byte)(_xBase.Value + (_xExtra.Value ? 16 : 0)),
-                ScrollStyle.Horizontal => (byte)(_xBase.Value + (_xExtra2.Value * 16)),
-                _ => _xBase.Value
-            };
+            get 
+            {
+                switch (_type.Value)
+                {
+                    case ScenePartType.Coin:
+                    case ScenePartType.DestructibleBlock:
+                    case ScenePartType.Button:
+                    case ScenePartType.LockedDoor:
+                        return _dynamicBlockLocation.TileX;
+                }
+
+                return _definition.ScrollStyle switch {
+                    ScrollStyle.NameTable => (byte)(_xBase.Value + (_xExtra.Value ? 16 : 0)),
+                    ScrollStyle.Horizontal => (byte)(_xBase.Value + (_xExtra2.Value * 16)),
+                    _ => _xBase.Value
+                };
+            }
 
             private set
             {
+                switch (_type.Value)
+                {
+                    case ScenePartType.Coin:
+                    case ScenePartType.DestructibleBlock:
+                    case ScenePartType.Button:
+                    case ScenePartType.LockedDoor:
+                        _dynamicBlockLocation.TileX = value;
+                        return;
+                }
+
                 switch (_definition.ScrollStyle)
                 {
                     case ScrollStyle.NameTable:
@@ -203,6 +233,16 @@ namespace ChompGame.MainGame.SceneModels
 
             private set
             {
+                switch(_type.Value)
+                {
+                    case ScenePartType.Coin:
+                    case ScenePartType.DestructibleBlock:
+                    case ScenePartType.Button:
+                    case ScenePartType.LockedDoor:
+                        _dynamicBlockLocation.TileY = value;
+                        return;
+                }
+
                 switch (_definition.ScrollStyle)
                 {
                     case ScrollStyle.NameTable:
@@ -238,6 +278,7 @@ namespace ChompGame.MainGame.SceneModels
             _type = new FourBitEnum<ScenePartType>(builder.Memory, builder.CurrentAddress, true);
             _xBase = new HighNibble(builder);
             _exitType = new NibbleEnum<ExitType>(_xBase);
+            DynamicBlockState = new DynamicBlockState(builder.Memory, builder.CurrentAddress);
 
             builder.AddByte();
 
@@ -249,9 +290,11 @@ namespace ChompGame.MainGame.SceneModels
             _xExtra2 = new TwoBit(builder.Memory, _positionExtra.Address, 4);
             _yExtra2 = new TwoBit(builder.Memory, _positionExtra.Address, 6);
 
+            _dynamicBlockLocation = new DynamicBlockLocation(builder.Memory, _yBase.Address, definition);
+
+            _type.Value = type;
             X = x;
             Y = y;
-            _type.Value = type;
         }
 
         public ScenePart(SystemMemoryBuilder builder,
@@ -261,7 +304,26 @@ namespace ChompGame.MainGame.SceneModels
         {
         }
 
-
+        public ScenePart(SystemMemoryBuilder builder,
+           DynamicBlockType blockType,
+           bool topLeft,
+           bool topRight,
+           bool bottomLeft,
+           bool bottomRight,
+           byte x,
+           byte y,
+           SceneDefinition definition) : this(builder, 
+               (ScenePartType)((int)ScenePartType.Coin + blockType),
+               x,
+               y,
+               definition)
+        {
+            DynamicBlockState.TopLeft = topLeft;
+            DynamicBlockState.TopRight = topRight;
+            DynamicBlockState.BottomLeft = bottomLeft;
+            DynamicBlockState.BottomRight = bottomRight;
+        }
+ 
         private static byte GetExitOffset(int offset)
         {
             if (offset > 0)
@@ -287,6 +349,11 @@ namespace ChompGame.MainGame.SceneModels
             _yExtra2 = new TwoBit(memory, _positionExtra.Address, 6);
 
             _exitType = new NibbleEnum<ExitType>(_xBase);
+
+
+            DynamicBlockState = new DynamicBlockState(memory, address);
+            _dynamicBlockLocation = new DynamicBlockLocation(memory, _yBase.Address, definition);
+
         }
     }
 }
