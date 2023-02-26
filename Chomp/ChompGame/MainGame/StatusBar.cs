@@ -15,10 +15,11 @@ namespace ChompGame.MainGame
         private GameRAM _ram;
         private Specs _specs;
 
-
-        private readonly byte _tileEmpty = 9;
-        private readonly byte _tileHalf = 10;
-        private readonly byte _tileFull = 11;
+        private readonly byte _tileBlank = 8;
+        private readonly byte _tileCap = 9;
+        private readonly byte _tileEmpty = 10;
+        private readonly byte _tileHalf = 11;
+        private readonly byte _tileFull = 12;
 
         public byte Health
         {
@@ -96,6 +97,8 @@ namespace ChompGame.MainGame
         {
             _lives.Value = value;
             _tileModule.NameTable[0, 1] = GetDigitTile((char)('0' + value));
+            _tileModule.NameTable[1, 1] = _tileBlank;
+
         }
 
         private void SetHealth(byte value)
@@ -121,7 +124,9 @@ namespace ChompGame.MainGame
                     _tileModule.NameTable[2 + i, 1] = _tileEmpty;
             }
 
-            _tileModule.NameTable[6, 1] = 8;
+            _tileModule.NameTable[6, 1] = _tileCap;
+            _tileModule.NameTable[7, 1] = _tileBlank;
+
         }
 
         public void AddToScore(uint value)

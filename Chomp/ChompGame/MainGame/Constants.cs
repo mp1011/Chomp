@@ -8,13 +8,13 @@
         public static readonly byte StatusBarTiles = 2;
 
 
-        public static readonly byte BgRow = 3;
+        public static readonly byte BgRow = 2;
         public static readonly byte FgRow = 4;
         public static readonly byte SpriteStartIndex = 39;
 
         public static readonly byte DoorTile = 15;
         public static readonly byte PlatformTile = 13;
-        public static readonly byte DestructibleBlockTile = 13;
+        public static readonly byte DestructibleBlockTile = 14;
 
 
     }

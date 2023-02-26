@@ -111,7 +111,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public int Address => _scrollStyle.Address;
         
-        public int GroundFillStart => 8;
+        public int GroundFillStart => 16;
 
         public int GroundFillEnd => GroundFillStart + 1;
 

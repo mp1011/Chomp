@@ -197,7 +197,7 @@ namespace ChompGame.GameSystem
 
         public override int NameTableWidth => 32;
         public override int NameTableHeight => 32;
-        public override int NameTableBitPlanes => 4;
+        public override int NameTableBitPlanes => 5;
 
         public override int ScanlineDrawPlanes => 2;
 

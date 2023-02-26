@@ -225,11 +225,23 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte Y
         {
-            get => _definition.ScrollStyle switch {
-                ScrollStyle.NameTable => (byte)(_yBase.Value + (_yExtra.Value ? 16 : 0)),
-                ScrollStyle.Vertical => (byte)(_yBase.Value + (_yExtra2.Value * 16)),
-                _ => _yBase.Value
-            };
+            get
+            {
+                switch (_type.Value)
+                {
+                    case ScenePartType.Coin:
+                    case ScenePartType.DestructibleBlock:
+                    case ScenePartType.Button:
+                    case ScenePartType.LockedDoor:
+                        return _dynamicBlockLocation.TileY;
+                }
+
+                return _definition.ScrollStyle switch {
+                    ScrollStyle.NameTable => (byte)(_yBase.Value + (_yExtra.Value ? 16 : 0)),
+                    ScrollStyle.Vertical => (byte)(_yBase.Value + (_yExtra2.Value * 16)),
+                    _ => _yBase.Value
+                };
+            }
 
             private set
             {

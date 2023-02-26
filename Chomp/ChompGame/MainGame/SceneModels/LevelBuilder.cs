@@ -35,8 +35,8 @@ namespace ChompGame.MainGame.SceneModels
                     {
                         //mountain layer 1
                         nameTable.SetFromString(0, mountain1Pos - Constants.StatusBarTiles,
-                            @"0000050000000500
-                                3412162534121625",
+                            @"00000C0000000C00
+                                    AB89859CAB89859C",
                             shouldReplace: b => b == 0);
 
                         
@@ -676,7 +676,7 @@ namespace ChompGame.MainGame.SceneModels
             //row 1 - bottom status bar text
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
-                source: new InMemoryByteRectangle(4, 4, 8, 1),
+                source: new InMemoryByteRectangle(5, 4, 8, 1),
                 destinationPoint: new Point(0, 1),
                 _gameModule.Specs,
                 memory);
@@ -689,11 +689,11 @@ namespace ChompGame.MainGame.SceneModels
                 _gameModule.Specs,
                 memory);
 
-            // row 2 - health guage
+            // row 2 - health guage, filled tile
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 4, 4, 1),
-                destinationPoint: new Point(0, 2),
+                source: new InMemoryByteRectangle(0, 4, 5, 1),
+                destinationPoint: new Point(1, 2),
                 _gameModule.Specs,
                 memory);
 
@@ -707,7 +707,7 @@ namespace ChompGame.MainGame.SceneModels
                     masterPatternTable.CopyTilesTo(
                         destination: vramPatternTable,
                         source: new InMemoryByteRectangle(0, 5, 8, 1),
-                        destinationPoint: new Point(1, 3),
+                        destinationPoint: new Point(0, 3),
                         _gameModule.Specs,
                         memory);
 
@@ -804,7 +804,7 @@ namespace ChompGame.MainGame.SceneModels
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(13, 6, 1, 1),
-                destinationPoint: new Point(5, 7),
+                destinationPoint: new Point(6, 3),
                 _gameModule.Specs,
                 memory);
         }

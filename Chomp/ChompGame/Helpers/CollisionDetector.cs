@@ -65,7 +65,8 @@ namespace ChompGame.Helpers
 
         public CollisionInfo DetectCollisions(MovingWorldSprite actor)
         {
-            int solidTileBeginIndex = 8;
+            // can we not hard code this?
+            int solidTileBeginIndex = 14;
             var collisionInfo = new CollisionInfo();
 
             var topLeftTile = actor.TopLeft

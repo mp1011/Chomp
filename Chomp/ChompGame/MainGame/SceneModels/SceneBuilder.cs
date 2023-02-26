@@ -171,7 +171,9 @@ namespace ChompGame.MainGame.SceneModels
             new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Right, 1, scene),
                 b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
-                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true,true,true,true,14,8, scene)
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true,true,true,true,14,6, scene),
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 14, 8, scene),
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 14, 10, scene)
                 );
 
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);

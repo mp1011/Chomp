@@ -24,6 +24,8 @@ namespace ChompGame.Data
                     return new TwoBitPlane(address, memory, width, height);
                 case 4:
                     return new FourBitPlane(address, memory, width, height);
+                case 5:
+                    return new FiveBitPlane(address, memory, width, height);
                 case 8:
                     return new BytePlane(address, memory, width, height);
                 default:
@@ -216,6 +218,37 @@ namespace ChompGame.Data
             }
         }
     }
+
+    public class FiveBitPlane : NBitPlane
+    {
+        public FiveBitPlane(int address, SystemMemory memory, int width, int height)
+            : base(address, memory, 5, width, height)
+        {
+        }
+
+        public override byte this[int index]
+        {
+            get
+            {
+                var p0 = _planes[0][index] ? 1 : 0;
+                var p1 = _planes[1][index] ? 2 : 0;
+                var p2 = _planes[2][index] ? 4 : 0;
+                var p3 = _planes[3][index] ? 8 : 0;
+                var p4 = _planes[4][index] ? 16 : 0;
+
+                return (byte)(p0 + p1 + p2 + p3 + p4);
+            }
+            set
+            {
+                _planes[0][index] = (value & 1) > 0;
+                _planes[1][index] = (value & 2) > 0;
+                _planes[2][index] = (value & 4) > 0;
+                _planes[3][index] = (value & 8) > 0;
+                _planes[4][index] = (value & 16) > 0;
+            }
+        }
+    }
+
 
     public class BytePlane : NBitPlane
     {
