@@ -52,22 +52,22 @@ namespace ChompGame.MainGame.SceneModels
 
                     //mountain layer 1
                     nameTable.SetFromString(0, mountain1Pos,
-                        @"00000500000005000000050000000500
-                                34121625341216253412162534121625",
+                        @"00000C0000000C0000000C0000000C00
+                                AB89859CAB89859CAB89859CAB89859C",
                         shouldReplace: b => b == 0);
 
 
                     //mountain layer 2
                     nameTable.SetFromString(0, mountain2Pos,
-                      @"00000500001200000050000120000000
-                              12341623416621234162341662123434",
+                      @"00000C000089000000C0000890000000
+                              89AB859AB855989AB859AB855989ABAB",
                         shouldReplace: b => b == 0);
 
                     nameTable.ForEach((x, y, b) =>
                     {
                         if (y >= mountain2Pos + 2 && y < groundPos)
                         {
-                            nameTable[x, y] = 6;
+                            nameTable[x, y] = 5;
                         }
                     });
 
@@ -533,6 +533,7 @@ namespace ChompGame.MainGame.SceneModels
             SpriteControllerPool<BombController> bombControllers = null;
             SpriteControllerPool<DoorController> doorControllers = null;
             SpriteControllerPool<PlatformController> platformControllers = null;
+            SpriteControllerPool<ExplosionController> explosionControllers = null;
 
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
@@ -554,6 +555,11 @@ namespace ChompGame.MainGame.SceneModels
                     _gameModule.SpritesModule,
                     () => new PlatformController(_gameModule, memoryBuilder));
             }
+
+            explosionControllers = new SpriteControllerPool<ExplosionController>(
+                 size: 4,
+                 _gameModule.SpritesModule,
+                 () => new ExplosionController(_gameModule, memoryBuilder));
 
             IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
 
@@ -594,6 +600,7 @@ namespace ChompGame.MainGame.SceneModels
                 bombControllers,
                 doorControllers,
                 platformControllers,
+                explosionControllers,
                 enemyA, 
                 enemyB, 
                 extraA, 

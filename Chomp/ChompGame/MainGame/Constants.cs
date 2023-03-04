@@ -14,6 +14,7 @@
 
         public static readonly byte DoorTile = 15;
         public static readonly byte PlatformTile = 13;
+        public static readonly byte ExplosionTile = 6;
         public static readonly byte DestructibleBlockTile = 14;
 
 

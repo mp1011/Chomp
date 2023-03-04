@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private readonly CollisionDetector _collisionDetector;
         private readonly PlayerController _playerController;
+        private readonly DynamicBlockController _dynamicBlockController;
         private readonly GameBit _isThrown;
 
         private readonly GameByteEnum<BombState> _bombState;
@@ -34,7 +35,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _collisionDetector = gameModule.CollissionDetector;
             _playerController = playerController;
-
+            _dynamicBlockController = gameModule.DynamicBlocksController;
             _bombState = new GameByteEnum<BombState>(new MaskedByte(_state.Address, Bit.Right5, memoryBuilder.Memory));
             _isThrown = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
         }
@@ -67,6 +68,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
                 _movingSpriteController.AfterCollision(collisionInfo);
+
+                if(collisionInfo.DynamicBlockCollision)
+                {
+                    _dynamicBlockController.HandleBombCollision(collisionInfo);
+                }
                 
                 if ((int)_bombState.Value < 2 && (collisionInfo.YCorrection < 0 || collisionInfo.IsOnGround))
                 {

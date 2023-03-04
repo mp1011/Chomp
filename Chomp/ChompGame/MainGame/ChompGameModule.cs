@@ -234,7 +234,7 @@ namespace ChompGame.MainGame
 
             _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value);
 
-            _dynamicBlockController.InitializeDynamicBlocks(_currentScene, memoryBuilder, levelMap);
+            _dynamicBlockController.InitializeDynamicBlocks(_currentScene, memoryBuilder, levelMap, _sceneSpriteControllers.ExplosionControllers);
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(_currentScene, levelMap);

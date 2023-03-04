@@ -90,6 +90,18 @@ namespace ChompGame.MainGame.SpriteModels
               animationStyle: AnimationStyle.NoAnimation,
               collidesWithBackground: false,
               flipXWhenMovingLeft: false);
+
+            //explosion
+            new SpriteDefinition(memoryBuilder,
+              tile: Constants.ExplosionTile,
+              secondTileOffset: 0,
+              sizeX: 1,
+              sizeY: 1,
+              gravityStrength: GravityStrength.High,
+              movementSpeed: MovementSpeed.Slow,
+              animationStyle: AnimationStyle.AlwaysAnimate,
+              collidesWithBackground: false,
+              flipXWhenMovingLeft: false);
         }
     }
 }

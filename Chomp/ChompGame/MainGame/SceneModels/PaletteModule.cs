@@ -185,11 +185,10 @@ namespace ChompGame.MainGame.SceneModels
 
         public void CyclePalette3(Palette p)
         {
-            var c0 = p.GetColorIndex(0);
-
+            var c1 = p.GetColorIndex(1);
             p.SetColor(1,(byte)p.GetColorIndex(2));
             p.SetColor(2,(byte)p.GetColorIndex(3));
-            p.SetColor(3,(byte)c0);
+            p.SetColor(3,(byte)c1);
         }
 
         public void Update()

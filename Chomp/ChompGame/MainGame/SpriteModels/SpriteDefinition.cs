@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteModels
         Bomb,
         Door,
         Platform,
+        Explosion,
         Max=31
     }
 

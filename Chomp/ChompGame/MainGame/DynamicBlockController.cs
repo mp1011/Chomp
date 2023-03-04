@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using Microsoft.Xna.Framework;
@@ -30,7 +31,7 @@ namespace ChompGame.MainGame
         public DynamicBlock(DynamicBlockType type, SystemMemoryBuilder memoryBuilder, SceneDefinition scene, Specs specs)
         {
             _specs = specs;
-
+            
             //note - 2 bits free
             _type = new TwoBitEnum<DynamicBlockType>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
             State = new DynamicBlockState(memoryBuilder.Memory, memoryBuilder.CurrentAddress);
@@ -62,14 +63,23 @@ namespace ChompGame.MainGame
     {
         private ChompGameModule _gameModule;
         private GameByte _partCount;
+        private SceneDefinition _scene;
+        private SpriteControllerPool<ExplosionController> _explosionControllers;
 
         public DynamicBlockController(ChompGameModule gameModule)
         {
             _gameModule = gameModule;
         }
 
-        public void InitializeDynamicBlocks(SceneDefinition scene, SystemMemoryBuilder memoryBuilder, NBitPlane levelTileMap)
+        public void InitializeDynamicBlocks(
+            SceneDefinition scene, 
+            SystemMemoryBuilder memoryBuilder, 
+            NBitPlane levelTileMap,
+            SpriteControllerPool<ExplosionController> explosionControllers)
         {
+            _scene = scene;
+            _explosionControllers = explosionControllers;
+
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             _partCount = memoryBuilder.AddByte();
@@ -121,48 +131,71 @@ namespace ChompGame.MainGame
                     tileMap[block.Location.TileX, block.Location.TileY] = 0;
 
                 if (block.State.TopRight)
-                    tileMap[block.Location.TileX+1, block.Location.TileY] = Constants.DestructibleBlockTile;
+                    tileMap[block.Location.TileX + 1, block.Location.TileY] = Constants.DestructibleBlockTile;
                 else
                     tileMap[block.Location.TileX + 1, block.Location.TileY] = 0;
 
                 if (block.State.BottomLeft)
-                    tileMap[block.Location.TileX, block.Location.TileY+1] = Constants.DestructibleBlockTile;
+                    tileMap[block.Location.TileX, block.Location.TileY + 1] = Constants.DestructibleBlockTile;
                 else
-                    tileMap[block.Location.TileX + 1, block.Location.TileY] = 0;
+                    tileMap[block.Location.TileX, block.Location.TileY + 1] = 0;
 
                 if (block.State.BottomRight)
-                    tileMap[block.Location.TileX+1, block.Location.TileY+1] = Constants.DestructibleBlockTile;
+                    tileMap[block.Location.TileX + 1, block.Location.TileY + 1] = Constants.DestructibleBlockTile;
                 else
-                    tileMap[block.Location.TileX + 1, block.Location.TileY] = 0;
+                    tileMap[block.Location.TileX + 1, block.Location.TileY + 1] = 0;
             }
             else
                 throw new System.NotImplementedException();
         }
 
-        public void CheckBombCollisions(BombController bombController, SystemMemory memory, SceneDefinition scene)
+        public void HandleBombCollision(CollisionInfo collisionInfo)
         {
+            if (!collisionInfo.DynamicBlockCollision)
+                return;
+
             int address = _partCount.Address + 1;
 
-            for(int index = 0; index < _partCount.Value; index++)
+            for (int index = 0; index < _partCount.Value; index++)
             {
-                DynamicBlock block = new DynamicBlock(memory, address, scene, _gameModule.Specs);
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+                     
+                if(block.State.AnyOn
+                    && (block.Location.TileX == collisionInfo.TileX || block.Location.TileX + 1 == collisionInfo.TileX)
+                    && (block.Location.TileY == collisionInfo.TileY || block.Location.TileY + 1 == collisionInfo.TileY))
+                {
 
-                if (block.Type == DynamicBlockType.DestructibleBlock && block.State.AnyOn)
-                    CheckBombCollision(block, bombController);
+                    _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Noise);
 
+                    if (block.State.TopLeft)
+                        SpawnExplosion(block, 0, 0);
+                    if (block.State.TopRight)
+                        SpawnExplosion(block, 1, 0);
+                    if (block.State.BottomLeft)
+                        SpawnExplosion(block, 0, 1);
+                    if (block.State.BottomRight)
+                        SpawnExplosion(block, 1, 1);
+
+                    block.State.TopLeft = false;
+                    block.State.TopRight = false;
+                    block.State.BottomLeft = false;
+                    block.State.BottomRight = false;
+
+                    _gameModule.WorldScroller.ModifyTiles(t => SetTiles(block, t));
+                }
+              
                 address += block.ByteLength;
             }
         }
-
-        private void CheckBombCollision(DynamicBlock block, BombController bombController)
+      
+        private void SpawnExplosion(DynamicBlock block, int xMod, int yMod)
         {
-            if(bombController.WorldSprite.Bounds.Intersects(block.TotalBounds))
+            var explosionController = _explosionControllers.TryAddNew(3);
+            if (explosionController != null)
             {
-                //todo, check each section
-                block.State.TopLeft = false;
-                block.State.TopRight = false;
-                block.State.BottomLeft = false;
-                block.State.BottomRight = false;
+                explosionController.WorldSprite.X = (block.Location.TileX + xMod) * _gameModule.Specs.TileWidth;
+                explosionController.WorldSprite.Y = (block.Location.TileY + yMod + Constants.StatusBarTiles) * _gameModule.Specs.TileHeight;
+                explosionController.SetMotion(xMod, yMod);
             }
         }
     }

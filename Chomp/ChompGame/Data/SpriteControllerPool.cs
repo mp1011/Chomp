@@ -53,7 +53,9 @@ namespace ChompGame.Data
             return false;
         }
 
-        public ISpriteController TryAddNew(byte palette)
+        ISpriteController ISpriteControllerPool.TryAddNew(byte palette)
+            => TryAddNew(palette);
+        public T TryAddNew(byte palette)
         {
             byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
             if (freeSpriteIndex == 255)
@@ -94,6 +96,7 @@ namespace ChompGame.Data
                 }
             }
         }
+
     }
 
     class EnemyOrBulletSpriteControllerPool<T> : SpriteControllerPool<T>, IEnemyOrBulletSpriteControllerPool

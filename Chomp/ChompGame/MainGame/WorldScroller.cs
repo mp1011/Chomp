@@ -258,5 +258,11 @@ namespace ChompGame.MainGame
             return changed;
         }
 
+        public void ModifyTiles(Action<NBitPlane> modify)
+        {
+            modify(_levelNameTable);
+            UpdateVram();
+        }
+
     }
 }

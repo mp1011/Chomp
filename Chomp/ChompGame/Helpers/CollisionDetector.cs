@@ -13,6 +13,9 @@ namespace ChompGame.Helpers
         public int XCorrection { get; set; }
         public int YCorrection { get; set; }
         public bool IsOnGround { get; set; }
+        public bool DynamicBlockCollision { get; set; }
+        public int TileX { get; set; }
+        public int TileY { get; set; }
     }
 
     /// <summary>
@@ -121,10 +124,25 @@ namespace ChompGame.Helpers
                         && actor.YSpeed >= 0)
                     {
                         collisionInfo.IsOnGround = true;
+                        if (t == Constants.DestructibleBlockTile)
+                        {
+                            collisionInfo.DynamicBlockCollision = true;
+                        }
+
+                        collisionInfo.TileX = x;
+                        collisionInfo.TileY = y - Constants.StatusBarTiles;
                     }
 
                     return;
                 }
+
+                if(t == Constants.DestructibleBlockTile)
+                {
+                    collisionInfo.DynamicBlockCollision = true;
+                }
+
+                collisionInfo.TileX = x;
+                collisionInfo.TileY = y - Constants.StatusBarTiles;
 
                 bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < solidTileBeginIndex;
                 bool checkRightCollision = actor.XSpeed < 0 && tileRight < solidTileBeginIndex;
