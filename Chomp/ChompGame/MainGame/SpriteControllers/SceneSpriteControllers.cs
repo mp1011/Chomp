@@ -52,7 +52,11 @@ namespace ChompGame.MainGame.SpriteControllers
             _extra2Controllers = extra2Controllers;
         }
 
-        public void Initialize(SceneDefinition scene, NBitPlane levelMap, NBitPlane levelAttributeTable, ExitType lastExitType)
+        public void Initialize(SceneDefinition scene, 
+            NBitPlane levelMap, 
+            NBitPlane levelAttributeTable, 
+            ExitType lastExitType,
+            GameBit isCarryingBomb)
         {
             _scene = scene;
             if (scene.HasSprite(SpriteLoadFlags.Player))
@@ -67,6 +71,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.Motion.XSpeed = 0;
                 _playerController.Motion.YSpeed = 0;
                 _playerController.SetInitialPosition(levelMap, lastExitType, this);
+
+                if(isCarryingBomb.Value)
+                {
+                    var bomb = _bombControllers.TryAddNew(0);
+                    bomb.SetCarried();
+
+                    isCarryingBomb.Value = false;
+                }
             }
 
             GameDebug.Watch1 = new DebugWatch(
@@ -99,6 +111,15 @@ namespace ChompGame.MainGame.SpriteControllers
             _enemyBControllers?.Execute(c => c.Update());
             _extra1Controllers?.Execute(c => c.Update());
             _extra2Controllers?.Execute(c => c.Update());
+        }
+
+        public void CheckBombCarry(GameBit isCarryingBomb)
+        {
+            _bombControllers.Execute(c =>
+            {
+                if (c.IsCarried)
+                    isCarryingBomb.Value = true;
+            });
         }
 
         public void OnWorldScrollerUpdate()

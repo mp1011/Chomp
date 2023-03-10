@@ -46,6 +46,7 @@ namespace ChompGame.MainGame
         private GameByteEnum<GameState> _gameState;
         private GameByteEnum<Level> _currentLevel;
         private NibbleEnum<ExitType> _lastExitType;
+        private GameBit _carryingBomb;
 
         private GameByte _timer;
         private SceneSpriteControllers _sceneSpriteControllers;
@@ -108,7 +109,8 @@ namespace ChompGame.MainGame
 
             //unused bits here
             _lastExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
-          
+            _carryingBomb = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+
             memoryBuilder.AddByte();
 
             _worldScroller = new WorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
@@ -232,7 +234,7 @@ namespace ChompGame.MainGame
 
             _levelBuilder.BuildBackgroundNametable(levelMap);
 
-            _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value);
+            _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value, _carryingBomb);
 
             _dynamicBlockController.InitializeDynamicBlocks(_currentScene, memoryBuilder, levelMap, _sceneSpriteControllers.ExplosionControllers);
             _worldScroller.UpdateVram();
@@ -276,6 +278,8 @@ namespace ChompGame.MainGame
                 _gameState.Value = GameState.LoadScene;
                 CurrentLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
                 _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
+
+                _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
             }
         }
 

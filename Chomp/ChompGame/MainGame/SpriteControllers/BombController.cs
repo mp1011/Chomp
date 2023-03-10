@@ -1,7 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
-using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
@@ -40,6 +39,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _isThrown = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
         }
 
+        public bool IsCarried => _bombState.Value == BombState.RiseEnd;
         protected override void UpdateActive()
         {
             if(_bombState.Value >= BombState.Explode)
@@ -96,6 +96,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _playerController.CheckBombThrow(this);
             }
+        }
+
+        public void SetCarried()
+        {
+            _bombState.Value = BombState.RiseEnd;
         }
 
         public void DoThrow()
