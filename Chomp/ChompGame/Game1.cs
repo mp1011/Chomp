@@ -1,4 +1,5 @@
-﻿using ChompGame.GameSystem;
+﻿using ChompGame.Data;
+using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -24,8 +25,9 @@ namespace ChompGame
         private Texture2D _filter;
 
         private SpriteFont _font;
-
         public MainSystem GameSystem => _gameSystem;
+
+        private ScreenRenderSize _screenRenderSize = new ScreenRenderSize();
 
         public Game1(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)
         {
@@ -57,6 +59,7 @@ namespace ChompGame
             _font = Content.Load<SpriteFont>("Font");
         }
 
+        private bool _wasMouseDown;
         protected override void Update(GameTime gameTime)
         {
             var ks = Keyboard.GetState();
@@ -74,6 +77,19 @@ namespace ChompGame
             if (ks.IsKeyDown(Keys.D5))
                 _paletteIndex = 4;
 
+            var ms = Mouse.GetState();
+            if(ms.LeftButton == ButtonState.Pressed)
+            {
+                if (!_wasMouseDown)
+                {
+                    _wasMouseDown = true;
+                    WriteMouseTile(ms.X, ms.Y);
+                }
+            }
+            else
+            {
+                _wasMouseDown = false;
+            }
 
             _gameSystem.OnLogicUpdate();
             base.Update(gameTime);
@@ -105,6 +121,27 @@ namespace ChompGame
             _filter.SetData(_filterPixels);
         }
       
+        private void WriteMouseTile(int x, int y)
+        {
+            int screenX = x - _screenRenderSize.X;
+            int screenY = y - _screenRenderSize.Y;
+            
+            if (screenX < 0 || screenX >= _screenRenderSize.Width)
+                return;
+
+            if (screenY < 0 || screenY >= _screenRenderSize.Height)
+                return;
+
+            int pixelX = (int)(screenX * ((double)_specs.ScreenWidth / _screenRenderSize.Width));
+            int pixelY = (int)(screenY * ((double)_specs.ScreenWidth / _screenRenderSize.Width));
+
+            var cgm = _gameSystem.GetModule<ChompGameModule>();
+            var worldX = cgm.WorldScroller.CameraPixelX + pixelX;
+            var worldY = cgm.WorldScroller.CameraPixelY + pixelY;
+
+            Debug.WriteLine($"X={worldX} Y={worldY} TileX={worldX / _specs.TileWidth} TileY={worldY / _specs.TileHeight}");
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             _renderTimer.Restart();
@@ -129,31 +166,21 @@ namespace ChompGame
 
             var aspectRatio = (double)_renderTarget.Height / _renderTarget.Width;
 
-            int renderWidth = Window.ClientBounds.Width;
-            int renderHeight = (int)(renderWidth * aspectRatio);
-
-            if (renderHeight > Window.ClientBounds.Height)
-            {
-                renderHeight = Window.ClientBounds.Height;
-                renderWidth = (int)(renderHeight / aspectRatio);
-            }
- 
-            int renderColumn = 16 + (Window.ClientBounds.Width - renderWidth) / 2;
-            int renderRow = (Window.ClientBounds.Height - renderHeight) / 2;
+            _screenRenderSize.Update(Window, aspectRatio);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             _spriteBatch.Draw(_renderTarget, new Rectangle(
-                               x: renderColumn,
-                               y: renderRow,
-                               width: renderWidth,
-                               height: renderHeight), Color.White);
+                               x: _screenRenderSize.X,
+                               y: _screenRenderSize.Y,
+                               width: _screenRenderSize.Width,
+                               height: _screenRenderSize.Height), Color.White);
 
             _spriteBatch.Draw(_filter, new Rectangle(
-                             x: renderColumn,
-                             y: renderRow,
-                             width: renderWidth,
-                             height: renderHeight), Color.White);
+                             x: _screenRenderSize.X,
+                             y: _screenRenderSize.Y,
+                             width: _screenRenderSize.Width,
+                             height: _screenRenderSize.Height), Color.White);
          
             _spriteBatch.End();
 

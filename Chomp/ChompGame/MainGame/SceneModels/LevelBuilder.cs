@@ -814,6 +814,14 @@ namespace ChompGame.MainGame.SceneModels
                 destinationPoint: new Point(6, 3),
                 _gameModule.Specs,
                 memory);
+
+            //coin 
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(15, 0, 1, 1),
+                destinationPoint: new Point(7, 3),
+                _gameModule.Specs,
+                memory);
         }
     }
 }

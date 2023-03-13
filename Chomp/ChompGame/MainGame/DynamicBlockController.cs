@@ -123,30 +123,93 @@ namespace ChompGame.MainGame
 
         private void SetTiles(DynamicBlock block, NBitPlane tileMap)
         {
-            if (block.Type == DynamicBlockType.DestructibleBlock)
-            {
-                if (block.State.TopLeft)
-                    tileMap[block.Location.TileX, block.Location.TileY] = Constants.DestructibleBlockTile;
-                else
-                    tileMap[block.Location.TileX, block.Location.TileY] = 0;
+            byte tile = block.Type switch {
+                DynamicBlockType.DestructibleBlock => Constants.DestructibleBlockTile,
+                DynamicBlockType.Coin => Constants.CoinTile,
+                _ => 0
+            };
 
-                if (block.State.TopRight)
-                    tileMap[block.Location.TileX + 1, block.Location.TileY] = Constants.DestructibleBlockTile;
-                else
-                    tileMap[block.Location.TileX + 1, block.Location.TileY] = 0;
-
-                if (block.State.BottomLeft)
-                    tileMap[block.Location.TileX, block.Location.TileY + 1] = Constants.DestructibleBlockTile;
-                else
-                    tileMap[block.Location.TileX, block.Location.TileY + 1] = 0;
-
-                if (block.State.BottomRight)
-                    tileMap[block.Location.TileX + 1, block.Location.TileY + 1] = Constants.DestructibleBlockTile;
-                else
-                    tileMap[block.Location.TileX + 1, block.Location.TileY + 1] = 0;
-            }
+            if (block.State.TopLeft)
+                tileMap[block.Location.TileX, block.Location.TileY] = tile;
             else
-                throw new System.NotImplementedException();
+                tileMap[block.Location.TileX, block.Location.TileY] = 0;
+
+            if (block.State.TopRight)
+                tileMap[block.Location.TileX + 1, block.Location.TileY] = tile;
+            else
+                tileMap[block.Location.TileX + 1, block.Location.TileY] = 0;
+
+            if (block.State.BottomLeft)
+                tileMap[block.Location.TileX, block.Location.TileY + 1] = tile;
+            else
+                tileMap[block.Location.TileX, block.Location.TileY + 1] = 0;
+
+            if (block.State.BottomRight)
+                tileMap[block.Location.TileX + 1, block.Location.TileY + 1] = tile;
+            else
+                tileMap[block.Location.TileX + 1, block.Location.TileY + 1] = 0;
+        }
+
+        public int HandleCoinCollision(CollisionInfo collisionInfo, WorldSprite player)
+        {
+            if (!collisionInfo.DynamicBlockCollision)
+                return 0;
+
+            int address = _partCount.Address + 1;
+
+            for (int index = 0; index < _partCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type == DynamicBlockType.Coin
+                    && block.State.AnyOn)
+                {
+                    int count = 0;
+
+                    if(block.State.TopLeft 
+                        && collisionInfo.TileX == block.Location.TileX 
+                        && collisionInfo.TileY == block.Location.TileY)
+                    {
+                        block.State.TopLeft = false;
+                        count++;
+                    }
+
+                    if (block.State.TopRight
+                       && collisionInfo.TileX == block.Location.TileX + 1
+                       && collisionInfo.TileY == block.Location.TileY)
+                    {
+                        block.State.TopRight = false;
+                        count++;
+                    }
+
+                    if (block.State.BottomLeft
+                       && collisionInfo.TileX == block.Location.TileX
+                       && collisionInfo.TileY == block.Location.TileY + 1)
+                    {
+                        block.State.BottomLeft = false;
+                        count++;
+                    }
+
+                    if (block.State.BottomRight
+                       && collisionInfo.TileX == block.Location.TileX + 1
+                       && collisionInfo.TileY == block.Location.TileY + 1)
+                    {
+                        block.State.BottomRight = false;
+                        count++;
+                    }
+
+                    if (count > 0)
+                    {
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                        _gameModule.WorldScroller.ModifyTiles(t => SetTiles(block, t));
+                        return count;
+                    }
+                }
+
+                address += block.ByteLength;
+            }
+
+            return 0;
         }
 
         public void HandleBombCollision(CollisionInfo collisionInfo)
@@ -159,8 +222,9 @@ namespace ChompGame.MainGame
             for (int index = 0; index < _partCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
-                     
-                if(block.State.AnyOn
+                    
+                if(block.Type == DynamicBlockType.DestructibleBlock 
+                    && block.State.AnyOn
                     && (block.Location.TileX == collisionInfo.TileX || block.Location.TileX + 1 == collisionInfo.TileX)
                     && (block.Location.TileY == collisionInfo.TileY || block.Location.TileY + 1 == collisionInfo.TileY))
                 {

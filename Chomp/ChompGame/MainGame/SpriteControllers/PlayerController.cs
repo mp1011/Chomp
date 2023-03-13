@@ -18,6 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
+        private readonly DynamicBlockController _dynamicBlockController;
 
         private GameBit _bombPickup;
         private GameBit _openingDoor;
@@ -35,6 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _specs = gameModule.Specs;
             _statusBar = gameModule.StatusBar;
             _audioService = gameModule.AudioService;
+            _dynamicBlockController = gameModule.DynamicBlocksController;
 
             _inputModule = gameModule.InputModule;
             _collisionDetector = gameModule.CollissionDetector;
@@ -148,6 +150,12 @@ namespace ChompGame.MainGame.SpriteControllers
             _movingSpriteController.Update();
             var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
             _movingSpriteController.AfterCollision(collisionInfo);
+
+            if (collisionInfo.DynamicBlockCollision)
+            {
+                int coinsCollected = _dynamicBlockController.HandleCoinCollision(collisionInfo, WorldSprite);
+                _statusBar.AddToScore((uint)(coinsCollected * 25));
+            }
             
             _inputModule.OnLogicUpdate();
 

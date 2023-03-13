@@ -170,18 +170,21 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition scene = new SceneDefinition(Level.Level1_1_Start, builder.Memory, specs);
             new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Right, 1, scene),
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
-                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true,true,true,true,12,6, scene),
+                b => new ScenePart(b, ScenePartType.Bomb, 8, 12, scene),
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 6, scene),
                 b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 8, scene),
-                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 10, scene)
-                );
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 10, scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: false, bottomRight: true, x: 8, y: 8, definition: scene)
+                ); 
 
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);
             new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Left, -1, scene),
                 b => new ScenePart(b, ExitType.Right, 1, scene),
-                b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
-                b => new ScenePart(b, ScenePartType.EnemyType1, 12, 6, scene)
+                b => new ScenePart(b, ScenePartType.Bomb, 20, 8, scene),
+                b => new ScenePart(b, ScenePartType.EnemyType1, 12, 12, scene),
+                b => new ScenePart(b, ScenePartType.EnemyType1, 33, 8, scene),
+                b => new ScenePart(b, ScenePartType.EnemyType1, 58, 10, scene)
                 );
 
             scene = new SceneDefinition(Level.Level1_3_Pit, builder.Memory, specs);

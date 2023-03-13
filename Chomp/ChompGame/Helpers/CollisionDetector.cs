@@ -68,8 +68,7 @@ namespace ChompGame.Helpers
 
         public CollisionInfo DetectCollisions(MovingWorldSprite actor)
         {
-            // can we not hard code this?
-            int solidTileBeginIndex = 14;
+            int collidableTileBeginIndex = Constants.CollidableTileBeginIndex;
             var collisionInfo = new CollisionInfo();
 
             var topLeftTile = actor.TopLeft
@@ -85,7 +84,7 @@ namespace ChompGame.Helpers
 
             _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
-                if (t < solidTileBeginIndex)
+                if (t < collidableTileBeginIndex)
                     return;
 
                 var tileBounds = new Rectangle(
@@ -113,7 +112,7 @@ namespace ChompGame.Helpers
                 if (!tileBounds.Intersects(actorBounds))
                 {
                     if (collisionInfo.IsOnGround
-                        || tileAbove >= solidTileBeginIndex)
+                        || tileAbove >= collidableTileBeginIndex)
                     {
                         return;
                     }
@@ -128,6 +127,10 @@ namespace ChompGame.Helpers
                         {
                             collisionInfo.DynamicBlockCollision = true;
                         }
+                        if( t == Constants.CoinTile)
+                        {
+                            collisionInfo.IsOnGround = false;
+                        }
 
                         collisionInfo.TileX = x;
                         collisionInfo.TileY = y - Constants.StatusBarTiles;
@@ -136,7 +139,7 @@ namespace ChompGame.Helpers
                     return;
                 }
 
-                if(t == Constants.DestructibleBlockTile)
+                if(t == Constants.DestructibleBlockTile || t == Constants.CoinTile)
                 {
                     collisionInfo.DynamicBlockCollision = true;
                 }
@@ -144,10 +147,13 @@ namespace ChompGame.Helpers
                 collisionInfo.TileX = x;
                 collisionInfo.TileY = y - Constants.StatusBarTiles;
 
-                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < solidTileBeginIndex;
-                bool checkRightCollision = actor.XSpeed < 0 && tileRight < solidTileBeginIndex;
-                bool checkAbove = actor.YSpeed >= 0 && tileAbove < solidTileBeginIndex;
-                bool checkBelow = actor.YSpeed < 0 && tileBelow < solidTileBeginIndex;
+                if (t == Constants.CoinTile)
+                    return;
+
+                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < collidableTileBeginIndex;
+                bool checkRightCollision = actor.XSpeed < 0 && tileRight < collidableTileBeginIndex;
+                bool checkAbove = actor.YSpeed >= 0 && tileAbove < collidableTileBeginIndex;
+                bool checkBelow = actor.YSpeed < 0 && tileBelow < collidableTileBeginIndex;
 
                 int leftMove = actorBounds.Right - tileBounds.Left;
                 int rightMove = tileBounds.Right - actorBounds.Left;
