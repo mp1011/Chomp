@@ -45,6 +45,12 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public WorldSprite WorldSprite { get; }
 
+        public byte DestructionBitOffset
+        {
+            get => 0;
+            set { }
+        }
+
         public DoorController(
             ChompGameModule gameModule,
             PlayerController playerController,

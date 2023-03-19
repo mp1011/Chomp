@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -9,6 +10,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class BombController : ActorController
     {
+        private readonly ScenePartsDestroyed _scenePartsDestroyed;
         private readonly CollisionDetector _collisionDetector;
         private readonly PlayerController _playerController;
         private readonly DynamicBlockController _dynamicBlockController;
@@ -32,6 +34,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 SystemMemoryBuilder memoryBuilder)
             : base(SpriteType.Bomb, gameModule, memoryBuilder)
         {
+            _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _collisionDetector = gameModule.CollissionDetector;
             _playerController = playerController;
             _dynamicBlockController = gameModule.DynamicBlocksController;
@@ -153,6 +156,8 @@ namespace ChompGame.MainGame.SpriteControllers
             Motion.YSpeed = 0;
             Motion.TargetXSpeed = 0;
             Motion.TargetYSpeed = 0;
+
+            _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
         }
     }
 }

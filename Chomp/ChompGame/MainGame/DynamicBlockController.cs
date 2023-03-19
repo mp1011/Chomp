@@ -24,7 +24,15 @@ namespace ChompGame.MainGame
         public DynamicBlockState State { get; }
         public DynamicBlockLocation Location { get; }
 
-        public int ByteLength => 2;
+        private GameByte _destructionBitOffset;
+
+        public byte DestructionBitOffset
+        {
+            get => _destructionBitOffset.Value;
+            set => _destructionBitOffset.Value = value;
+        }
+
+        public int ByteLength => 3;
 
         public DynamicBlockType Type => _type.Value;    
 
@@ -41,6 +49,8 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
 
             _type.Value = type;
+
+            _destructionBitOffset = memoryBuilder.AddByte();
         }
 
         public DynamicBlock(SystemMemory memory, int address, SceneDefinition scene, Specs specs)
@@ -52,6 +62,8 @@ namespace ChompGame.MainGame
             State = new DynamicBlockState(memory, address);
            
             Location = new DynamicBlockLocation(memory, address+1, scene);
+
+            _destructionBitOffset = new GameByte(address + 2, memory);
         }
 
         public Rectangle TotalBounds => new Rectangle(Location.TileX * _specs.TileWidth, Location.TileY * _specs.TileHeight,
@@ -84,16 +96,22 @@ namespace ChompGame.MainGame
 
             _partCount = memoryBuilder.AddByte();
 
+            byte nextDestructionBitOffset = 0;
+            byte destructionBitOffset = 0;
+
             for (int i = 0; i < header.PartsCount; i++)
             {
                 ScenePart sp = header.GetScenePart(i, scene);
+
+                destructionBitOffset = nextDestructionBitOffset;
+                nextDestructionBitOffset += sp.DestroyBitsRequired;
 
                 DynamicBlockType type;
 
                 switch (sp.Type)
                 {
                     case ScenePartType.Coin:
-                        type = DynamicBlockType.Coin;
+                        type = DynamicBlockType.Coin;                        
                         break;
                     case ScenePartType.DestructibleBlock:
                         type = DynamicBlockType.DestructibleBlock;
@@ -116,8 +134,32 @@ namespace ChompGame.MainGame
                 dynamicBlock.State.TopRight = sp.DynamicBlockState.TopRight;
                 dynamicBlock.State.BottomLeft = sp.DynamicBlockState.BottomLeft;
                 dynamicBlock.State.BottomRight = sp.DynamicBlockState.BottomRight;
+                dynamicBlock.DestructionBitOffset = destructionBitOffset;
+
+                RecallDestroyed(dynamicBlock);
 
                 SetTiles(dynamicBlock, levelTileMap);
+            }
+        }
+
+        private void RecallDestroyed(DynamicBlock block)
+        {
+            if(block.Type == DynamicBlockType.Coin)
+            {
+                block.State.TopLeft = block.State.TopLeft && !_gameModule.ScenePartsDestroyed.IsDestroyed(block.DestructionBitOffset);
+                block.State.TopRight = block.State.TopRight && !_gameModule.ScenePartsDestroyed.IsDestroyed(block.DestructionBitOffset + 1); 
+                block.State.BottomLeft = block.State.BottomLeft && !_gameModule.ScenePartsDestroyed.IsDestroyed(block.DestructionBitOffset + 2);
+                block.State.BottomRight = block.State.BottomRight && !_gameModule.ScenePartsDestroyed.IsDestroyed(block.DestructionBitOffset + 3); ;
+            }
+            else if(block.Type == DynamicBlockType.DestructibleBlock)
+            {
+                if(_gameModule.ScenePartsDestroyed.IsDestroyed(block.DestructionBitOffset))
+                {
+                    block.State.TopLeft = false;
+                    block.State.TopRight = false;
+                    block.State.BottomLeft = false;
+                    block.State.BottomRight = false;
+                }
             }
         }
 
@@ -170,6 +212,7 @@ namespace ChompGame.MainGame
                         && collisionInfo.TileX == block.Location.TileX 
                         && collisionInfo.TileY == block.Location.TileY)
                     {
+                        _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset);
                         block.State.TopLeft = false;
                         count++;
                     }
@@ -178,6 +221,7 @@ namespace ChompGame.MainGame
                        && collisionInfo.TileX == block.Location.TileX + 1
                        && collisionInfo.TileY == block.Location.TileY)
                     {
+                        _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+1);
                         block.State.TopRight = false;
                         count++;
                     }
@@ -186,6 +230,7 @@ namespace ChompGame.MainGame
                        && collisionInfo.TileX == block.Location.TileX
                        && collisionInfo.TileY == block.Location.TileY + 1)
                     {
+                        _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+2);
                         block.State.BottomLeft = false;
                         count++;
                     }
@@ -194,6 +239,7 @@ namespace ChompGame.MainGame
                        && collisionInfo.TileX == block.Location.TileX + 1
                        && collisionInfo.TileY == block.Location.TileY + 1)
                     {
+                        _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+3);
                         block.State.BottomRight = false;
                         count++;
                     }
@@ -244,6 +290,8 @@ namespace ChompGame.MainGame
                     block.State.TopRight = false;
                     block.State.BottomLeft = false;
                     block.State.BottomRight = false;
+
+                    _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset);
 
                     _gameModule.WorldScroller.ModifyTiles(t => SetTiles(block, t));
                 }

@@ -14,6 +14,12 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
+        private readonly MaskedByte _index;
+        public byte DestructionBitOffset
+        {
+            get => _index.Value;
+            set => _index.Value = value;
+        }
 
         protected virtual bool DestroyWhenFarOutOfBounds => true;
 
@@ -39,9 +45,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _spritesModule = gameModule.SpritesModule;
             _state = memoryBuilder.AddByte();
 
-            //todo, use the space here
-
             _palette = new TwoBit(memoryBuilder.Memory,  memoryBuilder.CurrentAddress, 0);
+            _index = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left6, memoryBuilder.Memory, leftShift: 2);
             memoryBuilder.AddByte();
 
             _movingSpriteController = new MovingSpriteController(

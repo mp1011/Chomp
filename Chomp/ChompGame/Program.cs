@@ -171,7 +171,6 @@ namespace ChompGame
                                        s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),
                                        s.GetModule<TileModule>(),
-                                       s.GetModule<StatusBarModule>(),
                                        s.GetModule<MusicModule>(),
                                        s.GetModule<PaletteModule>()));
 

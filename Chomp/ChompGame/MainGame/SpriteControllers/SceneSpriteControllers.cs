@@ -163,15 +163,20 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void CheckSpriteSpawn()
         {
+            byte nextDestructionBitOffset = 0;
+
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             for(int i = 0; i < header.PartsCount; i++)
             {
-                if (header.IsPartActivated(i))
-                    continue;
-
                 ScenePart sp = header.GetScenePart(i, _scene);
 
+                byte destructionBitOffset = nextDestructionBitOffset;
+                nextDestructionBitOffset += sp.DestroyBitsRequired;
+
+                if (header.IsPartActivated(i))
+                    continue;
+            
                 switch(sp.Type)
                 {
                     case ScenePartType.Coin:
@@ -212,6 +217,11 @@ namespace ChompGame.MainGame.SpriteControllers
                             ScenePartType.Platform_UpDown => PlatformType.UpDown,
                             _ =>  PlatformType.Falling
                         };
+                    }
+
+                    if(sp.DestroyBitsRequired > 0)
+                    {
+                        sprite.DestructionBitOffset = destructionBitOffset;
                     }
 
                     if (sprite != null)

@@ -16,6 +16,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         void InitializeSprite(byte palette);
 
         void Update();
+
+        byte DestructionBitOffset { get; set; }
     }
 
     interface IEnemyOrBulletSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb

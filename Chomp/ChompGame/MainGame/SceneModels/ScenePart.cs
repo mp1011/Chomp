@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
@@ -66,6 +67,13 @@ namespace ChompGame.MainGame.SceneModels
             return new ScenePart(_memory, FirstPartAddress + (ScenePart.Bytes * index), sceneDefinition);
         }
 
+        public byte GetScenePartDestroyBitsRequired(int index)
+        {
+            int address = FirstPartAddress + (ScenePart.Bytes * index);
+            var partType = new FourBitEnum<ScenePartType>(_memory, address, true);
+            return partType.Value.DestroyBitsRequired();
+        }
+
         private static int GetAddress(Level level, SystemMemory memory)
         {
             int address = memory.GetAddress(AddressLabels.SceneParts);
@@ -80,6 +88,18 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             return address;
+        }
+
+        public int DestroyBitsNeeded(SceneDefinition scene)
+        {
+            int destroyBitsNeeded = 0;
+
+            for (int p = 0; p < PartsCount; p++)
+            {
+                destroyBitsNeeded += GetScenePart(p, scene).DestroyBitsRequired;
+            }
+
+            return destroyBitsNeeded;
         }
 
     }
@@ -142,6 +162,7 @@ namespace ChompGame.MainGame.SceneModels
         private DynamicBlockLocation _dynamicBlockLocation;
         public DynamicBlockState DynamicBlockState { get; }
 
+        public byte DestroyBitsRequired => Type.DestroyBitsRequired();
 
         public ScenePartType Type => _type.Value;
 

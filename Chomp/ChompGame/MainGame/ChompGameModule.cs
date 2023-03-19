@@ -35,11 +35,10 @@ namespace ChompGame.MainGame
         private readonly SpritesModule _spritesModule;
         private readonly ChompAudioService _audioService;
         private readonly TileModule _tileModule;
-        private readonly StatusBarModule _statusBarModule;
         private readonly MusicModule _musicModule;
         private readonly StatusBar _statusBar;
         private readonly DynamicBlockController _dynamicBlockController;
-
+        
         private NBitPlane _masterPatternTable;
         private LevelBuilder _levelBuilder;
        
@@ -53,6 +52,9 @@ namespace ChompGame.MainGame
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
         private SceneDefinition _currentScene;
+        private ScenePartsDestroyed _scenePartsDestroyed;
+
+        public ScenePartsDestroyed ScenePartsDestroyed => _scenePartsDestroyed;
 
         public GameRAM GameRAM => GameSystem.GameRAM;
 
@@ -80,7 +82,7 @@ namespace ChompGame.MainGame
         }
 
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
-           SpritesModule spritesModule, TileModule tileModule, StatusBarModule statusBarModule, MusicModule musicModule,
+           SpritesModule spritesModule, TileModule tileModule, MusicModule musicModule,
            PaletteModule paletteModule)
            : base(mainSystem)
         {
@@ -88,7 +90,6 @@ namespace ChompGame.MainGame
             _inputModule = inputModule;
             _spritesModule = spritesModule;
             _tileModule = tileModule;
-            _statusBarModule = statusBarModule;
             _musicModule = musicModule;
             _collisionDetector = new CollisionDetector(Specs);
 
@@ -123,6 +124,10 @@ namespace ChompGame.MainGame
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
+            _statusBar.BuildMemory(memoryBuilder);
+
+            _scenePartsDestroyed = new ScenePartsDestroyed(memoryBuilder);
+
             //note, have unused bits here
             var freeRamOffset = new ExtendedByte2(
                 memoryBuilder.AddByte(),
@@ -139,7 +144,6 @@ namespace ChompGame.MainGame
 
             SpriteDefinitionBuilder.BuildSpriteDefinitions(memoryBuilder);
 
-            _statusBar.BuildMemory(memoryBuilder);
             _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
 
             memoryBuilder.AddLabel(AddressLabels.NameTables);
@@ -195,6 +199,7 @@ namespace ChompGame.MainGame
         {
             ResetSprites();
 
+            _scenePartsDestroyed.SetCurrentLevel(_currentLevel.Value, GameSystem.Memory);
             _currentScene = new SceneDefinition(_currentLevel.Value, GameSystem.Memory, Specs);
             _levelBuilder = new LevelBuilder(this, _currentScene);
 

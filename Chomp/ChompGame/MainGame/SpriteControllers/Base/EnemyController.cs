@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
@@ -8,12 +9,14 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, IEnemyOrBulletSpriteController
     {
         protected readonly ChompAudioService _audioService;
+        private ScenePartsDestroyed _scenePartsDestroyed;
 
         protected EnemyController(SpriteType spriteType, 
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder) : base(spriteType, gameModule, memoryBuilder)
         {
             _audioService = gameModule.AudioService;
+            _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
         }
 
         public enum State
@@ -29,7 +32,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                  _state.Value++;
 
                 if (_state.Value == (int)State.Destroyed)
+                {
                     WorldSprite.Destroy();
+                    _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
+                }
             }
             else
                 UpdateBehavior();
@@ -46,7 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (_state.Value >= (int)State.Dying)
                 return false;
 
-            _state.Value = 40;
+            _state.Value = (int)State.Dying;
 
             if (WorldSprite.Status == WorldSpriteStatus.Active)
             {

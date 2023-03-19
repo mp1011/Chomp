@@ -15,7 +15,7 @@ namespace ChompGame.MainGame.SceneModels
         Level1_8_Door2,
         Level1_9_Platforms2,
         Level1_10_Stair,
-        Level1_11_Pillars
+        Level1_11_Pillars,
     }
 
     class SceneBuilder
@@ -167,18 +167,21 @@ namespace ChompGame.MainGame.SceneModels
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
         {
+            int destroyBitsNeeded = 0;
+
             SceneDefinition scene = new SceneDefinition(Level.Level1_1_Start, builder.Memory, specs);
-            new ScenePartsHeader(builder,
+            var header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Right, 1, scene),
                 b => new ScenePart(b, ScenePartType.Bomb, 8, 12, scene),
                 b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 6, scene),
                 b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 8, scene),
                 b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 12, 10, scene),
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: false, bottomRight: true, x: 8, y: 8, definition: scene)
-                ); 
+                );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);
-            new ScenePartsHeader(builder,
+            header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Left, -1, scene),
                 b => new ScenePart(b, ExitType.Right, 1, scene),
                 b => new ScenePart(b, ScenePartType.Bomb, 20, 8, scene),
@@ -186,34 +189,40 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, ScenePartType.EnemyType1, 33, 8, scene),
                 b => new ScenePart(b, ScenePartType.EnemyType1, 58, 10, scene)
                 );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
             scene = new SceneDefinition(Level.Level1_3_Pit, builder.Memory, specs);
-            new ScenePartsHeader(builder,
+            header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Left, -1, scene),
                 b => new ScenePart(b, ExitType.Right, 1, scene),
                 b => new ScenePart(b, ExitType.Bottom, 2, scene)
                 );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
             scene = new SceneDefinition(Level.Level1_4_DeadEnd, builder.Memory, specs);
-            new ScenePartsHeader(builder,
+            header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Left, -1, scene)
                 );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
             scene = new SceneDefinition(Level.Level1_5_Vertical, builder.Memory, specs);
-            new ScenePartsHeader(builder,
+            header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ScenePartType.Bomb, 6, 6, scene),
                 b => new ScenePart(b, ExitType.Right, exitOffset:5, scene),
                 b => new ScenePart(b, ScenePartType.DoorFowardExit, 3, 9, scene)
                 );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
             scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
-            new ScenePartsHeader(builder,
+            header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene),
                 b => new ScenePart(b, ScenePartType.Pit, 30,10, scene),
                 b => new ScenePart(b, ScenePartType.Platform_UpDown, 35, 12, scene),
                 b => new ScenePart(b, ScenePartType.Platform_LeftRight, 12, 12, scene),
                 b => new ScenePart(b, ScenePartType.Pit, 10, 10, scene)
                 );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+
 
         }
     }
