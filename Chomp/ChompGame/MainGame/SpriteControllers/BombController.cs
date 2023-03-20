@@ -157,7 +157,8 @@ namespace ChompGame.MainGame.SpriteControllers
             Motion.TargetXSpeed = 0;
             Motion.TargetYSpeed = 0;
 
-            _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
+            if(DestructionBitOffset != 255)
+                _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
         }
     }
 }

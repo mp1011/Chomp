@@ -14,7 +14,7 @@ namespace ChompGame.MainGame.SceneModels
             _sceneOffset = memoryBuilder.AddByte();
 
             _partsDestroyed = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            memoryBuilder.AddByte(32); //todo, figure out how much we need
+            memoryBuilder.AddBytes(32); //todo, figure out how much we need
         }
 
         public void SetCurrentLevel(Level level, SystemMemory memory)

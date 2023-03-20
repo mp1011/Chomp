@@ -75,6 +75,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 if(isCarryingBomb.Value)
                 {
                     var bomb = _bombControllers.TryAddNew(0);
+                    bomb.DestructionBitOffset = 255;
                     bomb.SetCarried();
 
                     isCarryingBomb.Value = false;
@@ -173,6 +174,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 byte destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;
+
+                if (_gameModule.ScenePartsDestroyed.IsDestroyed(destructionBitOffset))
+                    continue;
 
                 if (header.IsPartActivated(i))
                     continue;
