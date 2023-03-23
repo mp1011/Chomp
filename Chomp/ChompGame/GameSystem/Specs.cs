@@ -37,6 +37,8 @@ namespace ChompGame.GameSystem
         public virtual int BytesPerPalette { get; } = 2;
         public virtual int NumPalettes { get; } = 1;
 
+        public virtual int BackgroundPalettes => 1;
+
         public virtual int BitsPerPixel => 2;
 
         public virtual int AudioROMBytes => 64;
@@ -185,6 +187,7 @@ namespace ChompGame.GameSystem
 
     public class ChompGameSpecs : Specs
     {
+        public override int AttributeTableBitsPerBlock => 2;
         public override int ScreenWidth => 64;
         public override int ScreenHeight => 64;
 
@@ -213,7 +216,8 @@ namespace ChompGame.GameSystem
         public override int AudioChannels => 2;
 
         public override int BytesPerPalette => 3;
-        public override int NumPalettes => 6;
+        public override int NumPalettes => 8;
+        public override int BackgroundPalettes => 4;
         public override int GameRAMSize => 1024;
         public override Color[] SystemColors { get; } = new Color[64];
 
@@ -249,6 +253,8 @@ namespace ChompGame.GameSystem
             SystemColors[BlueGray1] = new Color(93, 105, 156);
             SystemColors[BlueGray2] = new Color(120, 132, 201);
 
+            //FFD700
+            SystemColors[Gold] = new Color(0xFF, 0xD7, 0);
 
         }
 
@@ -281,6 +287,8 @@ namespace ChompGame.GameSystem
 
         public const int BlueGray1 = 20;
         public const int BlueGray2 = 21;
+
+        public const int Gold = 22;
 
 
 

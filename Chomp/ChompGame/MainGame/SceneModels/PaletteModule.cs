@@ -14,7 +14,8 @@ namespace ChompGame.MainGame.SceneModels
         Player,
         GreenEnemy,
         Bullet,
-        StatusBar
+        StatusBar,
+        DynamicBlocks
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -111,6 +112,13 @@ namespace ChompGame.MainGame.SceneModels
                 ChompGameSpecs.Blue1,
                 ChompGameSpecs.White,
                 ChompGameSpecs.Green2);
+
+            DefinePalette(PaletteKey.DynamicBlocks,
+              ChompGameSpecs.Black,
+              ChompGameSpecs.Gold,
+              ChompGameSpecs.DarkBrown,
+              ChompGameSpecs.LightYellow);
+
         }
 
         public void SetScene(SceneDefinition sceneDefinition)
@@ -118,7 +126,9 @@ namespace ChompGame.MainGame.SceneModels
             _currentScene = sceneDefinition;
 
             var backgroundPalette = _graphicsModule.GetBackgroundPalette(0);
-            var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);            
+            var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);   
+            var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(2);
+
             var bombPalette = _graphicsModule.GetSpritePalette(0);
             var playerPalette = _graphicsModule.GetSpritePalette(1);
             var enemyPallete = _graphicsModule.GetSpritePalette(2);
@@ -128,6 +138,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 case Theme.Plains:
 
+                    LoadPalette(PaletteKey.DynamicBlocks, dynamicBlockPalette);
                     LoadPalette(PaletteKey.PlainsGround, foregroundPalette);                   
                     LoadPalette(PaletteKey.PlainsSky, backgroundPalette);
                     _bgPalette1.Value = PaletteKey.PlainsSky;
@@ -138,6 +149,8 @@ namespace ChompGame.MainGame.SceneModels
                         foregroundPalette.SetColor(0, ChompGameSpecs.LightBlue);
                     else
                         foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
+
+                    dynamicBlockPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
 
                     if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                         _bgPalette2.Value = PaletteKey.PlainsSky2;

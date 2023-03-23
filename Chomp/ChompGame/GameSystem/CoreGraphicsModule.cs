@@ -23,7 +23,7 @@ namespace ChompGame.GameSystem
 
         public Palette GetBackgroundPalette(byte index) => GetPalette(index);
 
-        public Palette GetSpritePalette(byte index) => GetPalette((byte)(2 + index));
+        public Palette GetSpritePalette(byte index) => GetPalette((byte)(Specs.BackgroundPalettes + index));
 
         private Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
 
@@ -116,14 +116,14 @@ namespace ChompGame.GameSystem
 
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)
         {
+            var attributeTableBlockSize = Specs.AttributeTableBlockSize * Specs.TileWidth;
+            int nextAttributeBlock = attributeTableBlockSize - (_tileModule.Scroll.X % attributeTableBlockSize);
+
             ScreenPoint.Reset();
             GameSystem.OnHBlank();
             int scanlineColumn = 0;        
         
             var bgPalette = GetBackgroundPalette(ScreenPoint);
-
-            //todo-scroll
-            int nextAttributeBlock = (Specs.AttributeTableBlockSize * Specs.TileWidth);
 
             for (int i = 0; i < _screenData.Length; i++)
             {
@@ -146,9 +146,8 @@ namespace ChompGame.GameSystem
                     if (ScreenPoint.Y != 0)
                     {
                         GameSystem.OnHBlank();
-                       
-                        //todo-scroll
-                        nextAttributeBlock = (Specs.AttributeTableBlockSize * Specs.TileWidth);
+
+                        nextAttributeBlock = attributeTableBlockSize - (_tileModule.Scroll.X % attributeTableBlockSize);
                         bgPalette = GetBackgroundPalette(ScreenPoint);
                     }
                 }

@@ -108,7 +108,7 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
             }
-            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetParallaxLayerPixel(ParallaxLayer.Foreground, includeStatusBar: true))
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetParallaxLayerPixel(ParallaxLayer.ForegroundStart, includeStatusBar: true))
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
             }

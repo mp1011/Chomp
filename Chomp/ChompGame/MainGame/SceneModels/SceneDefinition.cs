@@ -31,6 +31,7 @@ namespace ChompGame.MainGame.SceneModels
         Begin,
         Back1,
         Back2,
+        ForegroundStart,
         Foreground
     }
 
@@ -172,7 +173,8 @@ namespace ChompGame.MainGame.SceneModels
                 ParallaxLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
                 ParallaxLayer.Back1 => GetParallaxLayerTile(ParallaxLayer.Begin, includeStatusBar) + _bgPosition1.Value,
                 ParallaxLayer.Back2 => GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar) + _bgPosition2.Value,
-                ParallaxLayer.Foreground => LevelTileHeight + (includeStatusBar? Constants.StatusBarTiles : 0) - BottomTiles,
+                ParallaxLayer.ForegroundStart => GetParallaxLayerTile(ParallaxLayer.Back2, includeStatusBar) + 2,
+                ParallaxLayer.Foreground => LevelTileHeight + (includeStatusBar? Constants.StatusBarTiles : 0) - BottomTiles,                
                 _ => 0
             };
 

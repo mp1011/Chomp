@@ -154,7 +154,7 @@ namespace ChompGame.MainGame
                 specs: _specs,
                 memory: _tileModule.GameSystem.Memory);
 
-            int bottomSectionBegin = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
+            int bottomSectionBegin = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.ForegroundStart, includeStatusBar: false);
             int bottomSectionHeight = _levelNameTable.Height - bottomSectionBegin;
 
             //bottom section
@@ -168,11 +168,6 @@ namespace ChompGame.MainGame
 
         private int AdjustWorldScrollX()
         {
-            if (CameraPixelX == 135)
-                System.Diagnostics.Debug.Write("!");
-
-            System.Diagnostics.Debug.WriteLine($"AdjustWorldScrollX CX={CameraPixelX}");
-
             int newWorldScroll = (CameraPixelX - (_specs.NameTablePixelWidth - _specs.ScreenWidth) / 2)
                 .Clamp(0, WorldScrollMaxX * _specs.TileWidth);
 
@@ -258,9 +253,9 @@ namespace ChompGame.MainGame
             return changed;
         }
 
-        public void ModifyTiles(Action<NBitPlane> modify)
+        public void ModifyTiles(Action<NBitPlane, NBitPlane> modify)
         {
-            modify(_levelNameTable);
+            modify(_levelNameTable, _levelAttributeTable);
             UpdateVram();
         }
 

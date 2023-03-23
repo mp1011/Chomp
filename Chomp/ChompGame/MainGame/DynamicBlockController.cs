@@ -87,6 +87,7 @@ namespace ChompGame.MainGame
             SceneDefinition scene, 
             SystemMemoryBuilder memoryBuilder, 
             NBitPlane levelTileMap,
+            NBitPlane levelAttributeTable,
             SpriteControllerPool<ExplosionController> explosionControllers)
         {
             _scene = scene;
@@ -138,7 +139,7 @@ namespace ChompGame.MainGame
 
                 RecallDestroyed(dynamicBlock);
 
-                SetTiles(dynamicBlock, levelTileMap);
+                SetTiles(dynamicBlock, levelTileMap, levelAttributeTable);
             }
         }
 
@@ -163,8 +164,13 @@ namespace ChompGame.MainGame
             }
         }
 
-        private void SetTiles(DynamicBlock block, NBitPlane tileMap)
+        private void SetTiles(DynamicBlock block, NBitPlane tileMap, NBitPlane attributeTable)
         {
+            var attrX = block.Location.TileX / _gameModule.Specs.AttributeTableBlockSize;
+            var attrY = block.Location.TileY / _gameModule.Specs.AttributeTableBlockSize;
+
+            attributeTable[attrX, attrY] = 2;
+
             byte tile = block.Type switch {
                 DynamicBlockType.DestructibleBlock => Constants.DestructibleBlockTile,
                 DynamicBlockType.Coin => Constants.CoinTile,
@@ -247,7 +253,7 @@ namespace ChompGame.MainGame
                     if (count > 0)
                     {
                         _gameModule.AudioService.PlaySound(ChompAudioService.Sound.PlayerHit);
-                        _gameModule.WorldScroller.ModifyTiles(t => SetTiles(block, t));
+                        _gameModule.WorldScroller.ModifyTiles((t,a) => SetTiles(block, t, a));
                         return count;
                     }
                 }
@@ -293,7 +299,7 @@ namespace ChompGame.MainGame
 
                     _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset);
 
-                    _gameModule.WorldScroller.ModifyTiles(t => SetTiles(block, t));
+                    _gameModule.WorldScroller.ModifyTiles((t,a) => SetTiles(block, t, a));
                 }
               
                 address += block.ByteLength;

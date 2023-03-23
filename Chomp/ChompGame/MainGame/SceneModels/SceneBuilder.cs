@@ -182,6 +182,8 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 8, y: 8, definition: scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 10, y: 10, definition: scene),
                 b => new ScenePart(b, ExitType.Left, -1, scene),
                 b => new ScenePart(b, ExitType.Right, 1, scene),
                 b => new ScenePart(b, ScenePartType.Bomb, 20, 8, scene),
