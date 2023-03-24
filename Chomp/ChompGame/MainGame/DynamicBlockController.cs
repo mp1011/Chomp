@@ -169,7 +169,10 @@ namespace ChompGame.MainGame
             var attrX = block.Location.TileX / _gameModule.Specs.AttributeTableBlockSize;
             var attrY = block.Location.TileY / _gameModule.Specs.AttributeTableBlockSize;
 
-            attributeTable[attrX, attrY] = 2;
+            attributeTable[attrX, attrY] = block.Type switch {
+                DynamicBlockType.Coin => 2,
+                _ => 3
+            };
 
             byte tile = block.Type switch {
                 DynamicBlockType.DestructibleBlock => Constants.DestructibleBlockTile,

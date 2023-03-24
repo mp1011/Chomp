@@ -15,6 +15,7 @@ namespace ChompGame.MainGame.SceneModels
         GreenEnemy,
         Bullet,
         StatusBar,
+        Coins,
         DynamicBlocks
     }
 
@@ -113,11 +114,17 @@ namespace ChompGame.MainGame.SceneModels
                 ChompGameSpecs.White,
                 ChompGameSpecs.Green2);
 
-            DefinePalette(PaletteKey.DynamicBlocks,
-              ChompGameSpecs.Black,
+            DefinePalette(PaletteKey.Coins,
               ChompGameSpecs.Gold,
               ChompGameSpecs.DarkBrown,
               ChompGameSpecs.LightYellow);
+
+            DefinePalette(PaletteKey.DynamicBlocks,
+             ChompGameSpecs.Black,
+             ChompGameSpecs.Gray2,
+             ChompGameSpecs.Gray1);
+
+
 
         }
 
@@ -127,7 +134,8 @@ namespace ChompGame.MainGame.SceneModels
 
             var backgroundPalette = _graphicsModule.GetBackgroundPalette(0);
             var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);   
-            var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(2);
+            var coinPalette = _graphicsModule.GetBackgroundPalette(2);
+            var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(3);
 
             var bombPalette = _graphicsModule.GetSpritePalette(0);
             var playerPalette = _graphicsModule.GetSpritePalette(1);
@@ -138,7 +146,9 @@ namespace ChompGame.MainGame.SceneModels
             {
                 case Theme.Plains:
 
+                    LoadPalette(PaletteKey.Coins, coinPalette);
                     LoadPalette(PaletteKey.DynamicBlocks, dynamicBlockPalette);
+
                     LoadPalette(PaletteKey.PlainsGround, foregroundPalette);                   
                     LoadPalette(PaletteKey.PlainsSky, backgroundPalette);
                     _bgPalette1.Value = PaletteKey.PlainsSky;
@@ -151,6 +161,7 @@ namespace ChompGame.MainGame.SceneModels
                         foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
 
                     dynamicBlockPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
+                    coinPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
 
                     if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                         _bgPalette2.Value = PaletteKey.PlainsSky2;
@@ -196,7 +207,7 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
-        public void CyclePalette3(Palette p)
+        public void CyclePalette(Palette p)
         {
             var c1 = p.GetColorIndex(1);
             p.SetColor(1,(byte)p.GetColorIndex(2));
@@ -204,12 +215,23 @@ namespace ChompGame.MainGame.SceneModels
             p.SetColor(3,(byte)c1);
         }
 
+        public void CyclePalette2(Palette p)
+        {
+            byte c1 = (byte)p.GetColorIndex(1);
+            p.SetColor(1, (byte)p.GetColorIndex(3));
+            p.SetColor(3, c1);
+        }
+
         public void Update()
         {
             if (_timer.Value % 8 == 0)
             {
                 var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(3);
-                CyclePalette3(bulletPallete);
+                CyclePalette(bulletPallete);
+
+                var coinPallete = GameSystem.CoreGraphicsModule.GetBackgroundPalette(2);
+                CyclePalette2(coinPallete);
+
             }
         }
     }

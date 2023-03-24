@@ -22,6 +22,7 @@ namespace ChompGame.MainGame.SceneModels
         DestructibleBlock=12,
         LockedDoor=13,
         Button=14,
+        Wall= 15,
         Max = 15
     }
 

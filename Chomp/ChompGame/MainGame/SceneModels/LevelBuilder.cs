@@ -620,6 +620,11 @@ namespace ChompGame.MainGame.SceneModels
                     AddPit(sp, levelMap);
                     header.MarkActive(i);
                 }
+                else if(sp.Type == ScenePartType.Wall)
+                {
+                    AddWall(sp, levelMap);
+                    header.MarkActive(i);
+                }
             }
         }
 
@@ -665,7 +670,39 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
-       
+        private void AddWall(ScenePart part, NBitPlane levelMap)
+        {
+            int xBegin = _sceneDefinition.ScrollStyle switch {
+                ScrollStyle.Horizontal => part.X,
+                ScrollStyle.NameTable => part.X,
+                _ => 0
+            };
+
+            int xEnd = _sceneDefinition.ScrollStyle switch {
+                ScrollStyle.Horizontal => part.X + part.Y,
+                ScrollStyle.NameTable => part.X + part.Y + 1,
+                _ => levelMap.Width
+            };
+
+            int yBegin = _sceneDefinition.ScrollStyle switch {
+                ScrollStyle.Vertical => part.Y,
+                _ => 0
+            };
+
+            int yEnd = _sceneDefinition.ScrollStyle switch {
+                ScrollStyle.Vertical => part.Y + part.X + 1,
+                _ => levelMap.Height
+            };
+
+            levelMap.ForEach((x, y, t) =>
+            {
+                if(x >= xBegin && x < xEnd
+                && y >= yBegin && y < yEnd)
+                {
+                    levelMap[x, y] = 1;
+                }
+            });
+        }
 
         public void SetupVRAMPatternTable(
            NBitPlane masterPatternTable,

@@ -443,7 +443,7 @@ namespace ChompGame.MainGame.SceneModels
         {
             return scenePartType switch {
                 ScenePartType.EnemyType1 => 2,
-                ScenePartType.EnemyType2 => 3,
+                ScenePartType.EnemyType2 => 1,
                 _ => 0
             };
         }

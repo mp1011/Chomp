@@ -43,7 +43,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
 
-            if (_levelTimer.IsMod(16))
+            if (_levelTimer.IsMod(8))
                 _state.Value++;
 
             if (_state.Value == 16 + SpriteIndex)
