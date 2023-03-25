@@ -82,6 +82,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
 
+
             GameDebug.Watch1 = new DebugWatch(
                 "Player X",
                 () => _playerController.WorldSprite.X);
@@ -94,6 +95,7 @@ namespace ChompGame.MainGame.SpriteControllers
                name: "Player Sprite Y",
                () => _playerController.GetSprite().Y);
 
+            _gameModule.WorldScroller.Update();
             CheckSpriteSpawn();
         }
 
@@ -233,6 +235,7 @@ namespace ChompGame.MainGame.SpriteControllers
                         header.MarkActive(i);
                         sprite.WorldSprite.X = spawnX;
                         sprite.WorldSprite.Y = spawnY;
+                        sprite.WorldSprite.UpdateSprite();   
                     }
                 }                
             }

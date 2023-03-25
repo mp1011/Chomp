@@ -10,6 +10,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     {
         protected readonly ChompAudioService _audioService;
         private ScenePartsDestroyed _scenePartsDestroyed;
+        private StatusBar _statusBar;
 
         protected EnemyController(SpriteType spriteType, 
             ChompGameModule gameModule,
@@ -17,6 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         {
             _audioService = gameModule.AudioService;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
+            _statusBar = gameModule.StatusBar;
         }
 
         public enum State
@@ -59,6 +61,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 GetSprite().Palette = 3;
             }
 
+            _statusBar.AddToScore(100); //todo - score per enemy type
             Motion.Stop();
 
             _audioService.PlaySound(ChompAudioService.Sound.Noise);

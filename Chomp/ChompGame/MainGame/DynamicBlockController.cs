@@ -218,8 +218,8 @@ namespace ChompGame.MainGame
                     int count = 0;
 
                     if(block.State.TopLeft 
-                        && collisionInfo.TileX == block.Location.TileX 
-                        && collisionInfo.TileY == block.Location.TileY)
+                        && collisionInfo.DynamicTileX == block.Location.TileX 
+                        && collisionInfo.DynamicTileY == block.Location.TileY)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset);
                         block.State.TopLeft = false;
@@ -227,8 +227,8 @@ namespace ChompGame.MainGame
                     }
 
                     if (block.State.TopRight
-                       && collisionInfo.TileX == block.Location.TileX + 1
-                       && collisionInfo.TileY == block.Location.TileY)
+                       && collisionInfo.DynamicTileX == block.Location.TileX + 1
+                       && collisionInfo.DynamicTileY == block.Location.TileY)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+1);
                         block.State.TopRight = false;
@@ -236,8 +236,8 @@ namespace ChompGame.MainGame
                     }
 
                     if (block.State.BottomLeft
-                       && collisionInfo.TileX == block.Location.TileX
-                       && collisionInfo.TileY == block.Location.TileY + 1)
+                       && collisionInfo.DynamicTileX == block.Location.TileX
+                       && collisionInfo.DynamicTileY == block.Location.TileY + 1)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+2);
                         block.State.BottomLeft = false;
@@ -245,8 +245,8 @@ namespace ChompGame.MainGame
                     }
 
                     if (block.State.BottomRight
-                       && collisionInfo.TileX == block.Location.TileX + 1
-                       && collisionInfo.TileY == block.Location.TileY + 1)
+                       && collisionInfo.DynamicTileX == block.Location.TileX + 1
+                       && collisionInfo.DynamicTileY == block.Location.TileY + 1)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+3);
                         block.State.BottomRight = false;
@@ -280,8 +280,8 @@ namespace ChompGame.MainGame
                     
                 if(block.Type == DynamicBlockType.DestructibleBlock 
                     && block.State.AnyOn
-                    && (block.Location.TileX == collisionInfo.TileX || block.Location.TileX + 1 == collisionInfo.TileX)
-                    && (block.Location.TileY == collisionInfo.TileY || block.Location.TileY + 1 == collisionInfo.TileY))
+                    && (block.Location.TileX == collisionInfo.DynamicTileX || block.Location.TileX + 1 == collisionInfo.DynamicTileX)
+                    && (block.Location.TileY == collisionInfo.DynamicTileY || block.Location.TileY + 1 == collisionInfo.DynamicTileY))
                 {
 
                     _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Noise);

@@ -24,6 +24,9 @@ namespace ChompGame.MainGame
 
         private SceneDefinition _sceneDefinition;
 
+        public NBitPlane LevelNameTable => _levelNameTable;
+        public NBitPlane LevelAttributeTable => _levelAttributeTable;
+         
         public WorldScroller(
             SystemMemoryBuilder memoryBuilder,
             Specs specs, 
@@ -82,6 +85,7 @@ namespace ChompGame.MainGame
             byte copyWidth = (byte)Math.Min(_specs.NameTableWidth / _specs.AttributeTableBlockSize, _levelAttributeTable.Width);
             byte copyHeight = (byte)Math.Min(_specs.NameTableHeight / _specs.AttributeTableBlockSize, _levelAttributeTable.Height);
 
+          //  System.Diagnostics.Debug.WriteLine($"Scroll WX={_worldScrollX.Value}, WXA={_worldScrollX.Value / _specs.AttributeTableBlockSize}");
             _levelAttributeTable.CopyTo(
                 destination: _tileModule.AttributeTable,
                 source: new InMemoryByteRectangle(
@@ -171,7 +175,10 @@ namespace ChompGame.MainGame
             int newWorldScroll = (CameraPixelX - (_specs.NameTablePixelWidth - _specs.ScreenWidth) / 2)
                 .Clamp(0, WorldScrollMaxX * _specs.TileWidth);
 
-            _worldScrollX.Value = (byte)(newWorldScroll / _specs.TileWidth);
+            newWorldScroll = newWorldScroll / _specs.TileWidth;
+            newWorldScroll = (newWorldScroll / _specs.AttributeTableBlockSize) * _specs.AttributeTableBlockSize;
+            
+            _worldScrollX.Value = (byte)newWorldScroll;
             UpdateVram();
 
             return CameraPixelX - WorldScrollPixelX;

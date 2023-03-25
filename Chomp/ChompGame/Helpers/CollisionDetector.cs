@@ -16,6 +16,8 @@ namespace ChompGame.Helpers
         public bool DynamicBlockCollision { get; set; }
         public int TileX { get; set; }
         public int TileY { get; set; }
+        public int DynamicTileX { get; set; }
+        public int DynamicTileY { get; set; }
     }
 
     /// <summary>
@@ -126,26 +128,36 @@ namespace ChompGame.Helpers
                         if (t == Constants.DestructibleBlockTile)
                         {
                             collisionInfo.DynamicBlockCollision = true;
+                            collisionInfo.DynamicTileX = x;
+                            collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
                         }
-                        if( t == Constants.CoinTile)
+                        else if( t == Constants.CoinTile)
                         {
                             collisionInfo.IsOnGround = false;
+                            collisionInfo.DynamicTileX = x;
+                            collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
                         }
-
-                        collisionInfo.TileX = x;
-                        collisionInfo.TileY = y - Constants.StatusBarTiles;
+                        else
+                        {
+                            collisionInfo.TileX = x;
+                            collisionInfo.TileY = y - Constants.StatusBarTiles;
+                        }
                     }
 
                     return;
                 }
 
-                if(t == Constants.DestructibleBlockTile || t == Constants.CoinTile)
+                if (t == Constants.DestructibleBlockTile || t == Constants.CoinTile)
                 {
                     collisionInfo.DynamicBlockCollision = true;
+                    collisionInfo.DynamicTileX = x;
+                    collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
                 }
-
-                collisionInfo.TileX = x;
-                collisionInfo.TileY = y - Constants.StatusBarTiles;
+                else
+                {
+                    collisionInfo.TileX = x;
+                    collisionInfo.TileY = y - Constants.StatusBarTiles;
+                }
 
                 if (t == Constants.CoinTile)
                     return;

@@ -123,6 +123,8 @@ namespace ChompGame
       
         private void WriteMouseTile(int x, int y)
         {
+            var tm = _gameSystem.GetModule<TileModule>();
+
             int screenX = x - _screenRenderSize.X;
             int screenY = y - _screenRenderSize.Y;
             
@@ -132,14 +134,32 @@ namespace ChompGame
             if (screenY < 0 || screenY >= _screenRenderSize.Height)
                 return;
 
-            int pixelX = (int)(screenX * ((double)_specs.ScreenWidth / _screenRenderSize.Width));
-            int pixelY = (int)(screenY * ((double)_specs.ScreenWidth / _screenRenderSize.Width));
+            screenX = (int)(screenX * ((double)_specs.ScreenWidth / _screenRenderSize.Width));
+            screenY = (int)(screenY * ((double)_specs.ScreenWidth / _screenRenderSize.Width));
+
+            int pixelX = screenX + tm.Scroll.X;
+            int pixelY = screenY + tm.Scroll.Y; 
+
+            var attrX = pixelX / (_specs.TileWidth * _specs.AttributeTableBlockSize);
+            var attrY = pixelY / (_specs.TileHeight * _specs.AttributeTableBlockSize);
+            var attr = tm.AttributeTable[attrX, attrY];
+            var tile = tm.NameTable[pixelX / _specs.TileWidth, pixelY / _specs.TileHeight];
+            Debug.WriteLine("VRAM:");
+            Debug.WriteLine($"X={pixelX} Y={pixelY} TileX={pixelX / _specs.TileWidth} TileY={pixelY / _specs.TileHeight} Tile={tile}");
+            Debug.WriteLine($"AttrX={attrX} AttrY={attrY} Attr={attr}");
 
             var cgm = _gameSystem.GetModule<ChompGameModule>();
-            var worldX = cgm.WorldScroller.CameraPixelX + pixelX;
-            var worldY = cgm.WorldScroller.CameraPixelY + pixelY;
-
-            Debug.WriteLine($"X={worldX} Y={worldY} TileX={worldX / _specs.TileWidth} TileY={worldY / _specs.TileHeight}");
+            var worldX = cgm.WorldScroller.CameraPixelX + screenX;
+            var worldY = cgm.WorldScroller.CameraPixelY + screenY;
+            tile = cgm.WorldScroller.LevelNameTable[worldX / _specs.TileWidth, worldY / _specs.TileHeight];
+            attrX = worldX / (_specs.TileWidth * _specs.AttributeTableBlockSize);
+            attrY = worldY / (_specs.TileHeight * _specs.AttributeTableBlockSize);
+            attr = cgm.WorldScroller.LevelAttributeTable[attrX, attrY];
+            Debug.WriteLine("");
+            Debug.WriteLine("World:");
+            Debug.WriteLine($"X={worldX} Y={worldY} TileX={worldX / _specs.TileWidth} TileY={worldY / _specs.TileHeight} Tile={tile}");
+            Debug.WriteLine($"AttrX={attrX} AttrY={attrY} Attr={attr}");
+            Debug.WriteLine("--------------------------------------");
         }
 
         protected override void Draw(GameTime gameTime)
