@@ -75,10 +75,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 if(isCarryingBomb.Value)
                 {
                     var bomb = _bombControllers.TryAddNew(0);
-                    bomb.DestructionBitOffset = 255;
-                    bomb.SetCarried();
+                    if (bomb != null)
+                    {
+                        bomb.DestructionBitOffset = 255;
+                        bomb.SetCarried();
 
-                    isCarryingBomb.Value = false;
+                        GameDebug.DebugLog($"Create carried bomb at Sprite {bomb.SpriteIndex}");
+                        isCarryingBomb.Value = false;
+                    }
                 }
             }
 
@@ -166,22 +170,29 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void CheckSpriteSpawn()
         {
+            GameDebug.DebugLog("Checking sprite spawn");
             byte nextDestructionBitOffset = 0;
 
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
-            for(int i = 0; i < header.PartsCount; i++)
+            for (int i = 0; i < header.PartsCount; i++)
             {
                 ScenePart sp = header.GetScenePart(i, _scene);
 
                 byte destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;
 
-                if (_gameModule.ScenePartsDestroyed.IsDestroyed(destructionBitOffset))
+                if (sp.DestroyBitsRequired > 0 && _gameModule.ScenePartsDestroyed.IsDestroyed(destructionBitOffset))
+                {
+                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has been destroyed");
                     continue;
+                }
 
                 if (header.IsPartActivated(i))
+                {
+                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has already been activated");
                     continue;
+                }
             
                 switch(sp.Type)
                 {
@@ -206,7 +217,12 @@ namespace ChompGame.MainGame.SpriteControllers
                     && spawnY <= _gameModule.WorldScroller.WorldScrollPixelY + Specs.NameTablePixelHeight)
                 {
                     var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
-                    
+                    if (sprite == null)
+                    {
+                        GameDebug.DebugLog($"Unable to spawn {sp.Type}");
+                        continue;
+                    }
+
                     if(sprite is DoorController dc)
                     {
                         if (sp.Type == ScenePartType.DoorBackExit)
@@ -225,19 +241,26 @@ namespace ChompGame.MainGame.SpriteControllers
                         };
                     }
 
-                    if(sp.DestroyBitsRequired > 0)
-                    {
-                        sprite.DestructionBitOffset = destructionBitOffset;
-                    }
-
+                    if(sp.DestroyBitsRequired > 0)                    
+                        sprite.DestructionBitOffset = destructionBitOffset;                    
+                    else
+                        sprite.DestructionBitOffset = 255;
+                    
                     if (sprite != null)
                     {
                         header.MarkActive(i);
                         sprite.WorldSprite.X = spawnX;
                         sprite.WorldSprite.Y = spawnY;
-                        sprite.WorldSprite.UpdateSprite();   
+                        sprite.WorldSprite.UpdateSprite();
+
+
+                        GameDebug.DebugLog($"Created sprite: Controller={sprite.GetType().Name} X={spawnX} Y={spawnY}");
                     }
-                }                
+                }      
+                else
+                {
+                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it is not in bounds");
+                }
             }
         }
 

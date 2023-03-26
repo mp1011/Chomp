@@ -35,8 +35,8 @@ namespace ChompGame.MainGame.SceneModels
                     _y = new MaskedByte(address, (Bit)224, memory, leftShift: 5);
                     break;
                 case ScrollStyle.Vertical:
-                    _x = new MaskedByte(address, (Bit)248, memory);
-                    _y = new MaskedByte(address, (Bit)7, memory, leftShift: 3);
+                    _x = new MaskedByte(address, (Bit)248, memory, leftShift: 3);
+                    _y = new MaskedByte(address, (Bit)7, memory);
                     break;
                 default:
                     _x = new MaskedByte(address, (Bit)15, memory);

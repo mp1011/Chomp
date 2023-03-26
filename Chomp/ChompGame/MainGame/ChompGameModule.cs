@@ -171,7 +171,7 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level1_3_Pit;
             _lastExitType.Value = ExitType.Right;
             // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
         }
@@ -285,6 +285,11 @@ namespace ChompGame.MainGame
                 _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
 
                 _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
+
+                if (_carryingBomb.Value)
+                    GameDebug.DebugLog("Player is carrying bomb");
+                else
+                    GameDebug.DebugLog("Player is NOT carrying bomb");
             }
         }
 

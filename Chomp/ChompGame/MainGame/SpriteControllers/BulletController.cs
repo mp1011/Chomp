@@ -45,7 +45,7 @@ namespace ChompGame.MainGame.SpriteControllers
             
             if (_state.Value == 40 || _state.Value == 60)
             {
-                WorldSprite.Destroy();
+                Destroy();
             }
             else  if (_state.Value > 40)
             {

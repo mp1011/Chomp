@@ -22,5 +22,33 @@ namespace ChompGame.Audio
                 _notes[index] = (byte)value;
             }
         }
+
+        public byte SetData(byte index, string[] data)
+        {
+            foreach(var token in data)
+            {
+                this[index++] = token switch
+                {
+                    "+" => AudioAction.OctaveUp,
+                    "-" => AudioAction.OctaveDown,
+                    "A" => AudioAction.PlayA,
+                    "A#" => AudioAction.PlayASharp,
+                    "B" => AudioAction.PlayB,
+                    "C" => AudioAction.PlayC,
+                    "C#" => AudioAction.PlayCSharp,
+                    "D" => AudioAction.PlayD,
+                    "D#" => AudioAction.PlayDSharp,
+                    "E" => AudioAction.PlayE,
+                    "F" => AudioAction.PlayF,
+                    "F#" => AudioAction.PlayFSharp,
+                    "G" => AudioAction.PlayG,
+                    "G#" => AudioAction.PlayGSharp,
+                    "*" => AudioAction.AddNoise,
+                    _ => AudioAction.Rest,
+                };
+            }
+
+            return index;
+        }
     }
 }

@@ -56,6 +56,9 @@ namespace ChompGame.GameSystem
 
         public override void OnHBlank()
         {
+            if (ScreenPoint.Y < Constants.StatusBarHeight)
+                return;
+
             int scanlineSpriteOffset = 0;
 
             _coreGraphicsModule.SpriteScanlineDrawBuffer.Clear(_coreGraphicsModule.GameSystem.Memory);

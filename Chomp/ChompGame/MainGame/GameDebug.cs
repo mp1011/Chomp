@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ChompGame.MainGame
 {
@@ -17,6 +18,8 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
+        private static List<string> _log = new List<string>();
+
         public static DebugWatch Watch1 { get; set; }
         public static DebugWatch Watch2 { get; set; }
         public static DebugWatch Watch3 { get; set; }
@@ -33,6 +36,14 @@ namespace ChompGame.MainGame
                 if (Watch3 != null) yield return Watch3;
                 if (Watch4 != null) yield return Watch4;
             }
+        }
+
+        public static void DebugLog(string message)
+        {
+#if DEBUG
+            _log.Add(message);
+            Debug.WriteLine("LOG: " + message);
+#endif
         }
     }
 }

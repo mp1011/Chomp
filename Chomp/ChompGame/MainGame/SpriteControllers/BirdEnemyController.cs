@@ -29,9 +29,11 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _state.Value++;
 
+                int hoverTarget = _player.Y - 16;
+
                 if (_state < 8)
                 {
-                    if ((_state % 2) == 0)
+                    if (WorldSprite.Y < hoverTarget)
                         Motion.TargetYSpeed = _hoverSpeed;
                     else
                         Motion.TargetYSpeed = -_hoverSpeed;
@@ -40,14 +42,17 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
                 else if(_state >= 8 && _state < 14)
                 {
-                    Motion.TargetTowards(WorldSprite, _player, _movingSpriteController.WalkSpeed);
+                    if (WorldSprite.Y < _player.Y)
+                        Motion.TargetTowards(WorldSprite, _player, _movingSpriteController.WalkSpeed);
+                    else
+                        _state.Value = 0;
                 }
                 else if (_state >= 14)
                 {
                     Motion.TargetXSpeed = 0;
                     Motion.TargetYSpeed = -_hoverSpeed;
 
-                    if (WorldSprite.Y <= 32) //todo avoid hard coding
+                    if (WorldSprite.Y <= hoverTarget)
                     {
                         _state.Value = 0;
                         Motion.TargetYSpeed = 0;

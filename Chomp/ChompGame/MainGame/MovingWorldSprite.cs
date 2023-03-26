@@ -86,7 +86,7 @@ namespace ChompGame.MainGame
             _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 6);
             _spriteDefinition = spriteDefinition;
 
-            _position = memoryBuilder.AddExtendedPoint();
+            _position = memoryBuilder.AddExtendedPoint(); // 6 bits free here
             _scroller = scroller;
             _specs = specs;
             _spritesModule = spritesModule;
@@ -110,19 +110,21 @@ namespace ChompGame.MainGame
 
         public BoundsCheck CheckInBounds()
         {
-            if (X >= _scroller.WorldScrollPixelX
-                && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth
-                && Y >= _scroller.WorldScrollPixelY
-                && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight)
+            int nearThreshold = 12;
+            int farThreshold = 32;
+
+            if (X >= _scroller.WorldScrollPixelX - nearThreshold
+                && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth + nearThreshold
+                && Y >= _scroller.WorldScrollPixelY - nearThreshold
+                && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight + nearThreshold)
             {
                 return BoundsCheck.InBounds;
             }
 
-            int threshold = 32;
-            if (X >= _scroller.WorldScrollPixelX - threshold
-              && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth + threshold
-              && Y >= _scroller.WorldScrollPixelY - threshold
-              && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight + threshold)
+            if (X >= _scroller.WorldScrollPixelX - farThreshold
+              && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth + farThreshold
+              && Y >= _scroller.WorldScrollPixelY - farThreshold
+              && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight + farThreshold)
             {
                 return BoundsCheck.OutOfBounds;
             }

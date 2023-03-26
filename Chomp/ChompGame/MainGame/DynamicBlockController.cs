@@ -255,7 +255,7 @@ namespace ChompGame.MainGame
 
                     if (count > 0)
                     {
-                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
                         _gameModule.WorldScroller.ModifyTiles((t,a) => SetTiles(block, t, a));
                         return count;
                     }
@@ -284,7 +284,7 @@ namespace ChompGame.MainGame
                     && (block.Location.TileY == collisionInfo.DynamicTileY || block.Location.TileY + 1 == collisionInfo.DynamicTileY))
                 {
 
-                    _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Noise);
+                    _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Break);
 
                     if (block.State.TopLeft)
                         SpawnExplosion(block, 0, 0);

@@ -152,6 +152,10 @@ namespace ChompGame.Data.Memory
             return b;
         }
 
+        /// <summary>
+        /// Note - leaves higher 6 bits of last byte free
+        /// </summary>
+        /// <returns></returns>
         public ExtendedPoint AddExtendedPoint()
         {
             return new ExtendedPoint(this);

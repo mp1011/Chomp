@@ -16,9 +16,9 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _movingSpriteController.Update();
             _state.Value++;
-            if(_state.Value >= 32)
+            if(_state.Value >= 16)
             {
-                WorldSprite.Destroy();
+                Destroy();
                 return;
             }
         }

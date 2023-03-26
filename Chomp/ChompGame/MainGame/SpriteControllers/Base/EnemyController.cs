@@ -35,7 +35,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
                 if (_state.Value == (int)State.Destroyed)
                 {
-                    WorldSprite.Destroy();
+                    Destroy();
                     _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
                 }
             }
@@ -64,7 +64,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _statusBar.AddToScore(100); //todo - score per enemy type
             Motion.Stop();
 
-            _audioService.PlaySound(ChompAudioService.Sound.Noise);
+            _audioService.PlaySound(ChompAudioService.Sound.Break);
             return true;
         }
     }

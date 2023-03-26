@@ -2,38 +2,39 @@
 
 namespace ChompGame.Data
 {
+    /// <summary>
+    /// Note, leaves higher 6 bits of last byte free
+    /// </summary>
     public class ExtendedPoint
     {
-        public int Address => _xByte.Address;
+        private const int NegativePad = 64;
+        public int Address => _x.Address;
 
-        private GameByte _xByte, _yByte;
-        private NibblePoint _extra;
+        private ExtendedByte _x;
+        private ExtendedByte _y;
 
         public ExtendedPoint(SystemMemoryBuilder memoryBuilder)
         {
-            _xByte = memoryBuilder.AddByte();
-            _yByte = memoryBuilder.AddByte();
-            _extra = memoryBuilder.AddNibblePoint();
+            var extraX = new GameBit(memoryBuilder.CurrentAddress + 2, Bit.Bit0, memoryBuilder.Memory);
+            var extraY = new GameBit(memoryBuilder.CurrentAddress + 2, Bit.Bit1, memoryBuilder.Memory);
+            _x = new ExtendedByte(memoryBuilder.AddByte(), extraX);
+            _y = new ExtendedByte(memoryBuilder.AddByte(), extraY);
+            memoryBuilder.AddByte();
+
+            X = 0;
+            Y = 0;
         }
 
         public int X
         {
-            get => _xByte.Value + (_extra.X * 256);
-            set
-            {
-                _extra.X = (byte)(value / 256);
-                _xByte.Value = (byte)(value % 256);
-            }
+            get => _x.Value - NegativePad;
+            set => _x.Value = value + NegativePad;
         }
 
         public int Y
         {
-            get => _yByte.Value + (_extra.Y * 256);
-            set
-            {
-                _extra.Y = (byte)(value / 256);
-                _yByte.Value = (byte)(value % 256);
-            }
+            get => _y.Value - NegativePad;
+            set => _y.Value = value + NegativePad;
         }
     }
 }

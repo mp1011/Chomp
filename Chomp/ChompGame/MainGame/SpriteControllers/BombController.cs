@@ -61,7 +61,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if(_bombState.Value >= BombState.Destroy)
                 {
-                    WorldSprite.Destroy();
+                    Destroy();
                 }
             }
             else if (_bombState.Value < BombState.RiseBegin)
@@ -104,6 +104,8 @@ namespace ChompGame.MainGame.SpriteControllers
         public void SetCarried()
         {
             _bombState.Value = BombState.RiseEnd;
+            WorldSprite.X = _playerController.WorldSprite.X;
+            WorldSprite.Y = _playerController.WorldSprite.Y - 5;
         }
 
         public void DoThrow()

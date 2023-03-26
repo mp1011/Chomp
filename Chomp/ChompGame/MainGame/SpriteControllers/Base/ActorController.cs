@@ -94,13 +94,13 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if(boundsCheck == BoundsCheck.FarOutOfBounds)
             {
                 if (DestroyWhenFarOutOfBounds)
-                    WorldSprite.Destroy();
+                    Destroy();
                 else
-                    WorldSprite.Hide();
+                    Hide();
             }
             else if(boundsCheck == BoundsCheck.OutOfBounds)
             {
-                WorldSprite.Hide();
+                Hide();
             }
             else if(Status != WorldSpriteStatus.Active)
             {
@@ -123,6 +123,24 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 UpdateActive();
                 WorldSprite.UpdateSprite();
             }
+        }
+
+        public void Hide()
+        {
+            if (Status != WorldSpriteStatus.Active)
+                return;
+          
+            GameDebug.DebugLog($"Sprite {SpriteIndex} hidden by {GetType().Name}");
+            WorldSprite.Hide();
+        }
+
+        public void Destroy()
+        {
+            if (Status != WorldSpriteStatus.Active)
+                return;
+
+            GameDebug.DebugLog($"Sprite {SpriteIndex} destroyed by {GetType().Name}");
+            WorldSprite.Destroy();
         }
 
         protected abstract void UpdateActive();
