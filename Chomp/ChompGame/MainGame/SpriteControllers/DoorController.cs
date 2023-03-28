@@ -51,6 +51,8 @@ namespace ChompGame.MainGame.SpriteControllers
             set { }
         }
 
+        public FallCheck FallCheck { get; set; }
+
         public DoorController(
             ChompGameModule gameModule,
             PlayerController playerController,

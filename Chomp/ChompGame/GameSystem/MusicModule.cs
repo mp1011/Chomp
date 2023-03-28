@@ -12,7 +12,8 @@ namespace ChompGame.GameSystem
         public enum SongName : byte 
         {
             None,
-            SeaDreams
+            SeaDreams,
+            Adventure
         }
 
         private GameByteEnum<SongName> _currentSong;

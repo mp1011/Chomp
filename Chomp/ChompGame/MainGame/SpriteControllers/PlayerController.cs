@@ -14,6 +14,8 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private readonly Specs _specs;
         private const byte _recoilSpeed = 30;
+        private const byte _fallSpringSpeed = 120;
+
         private readonly StatusBar _statusBar;
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
@@ -117,6 +119,15 @@ namespace ChompGame.MainGame.SpriteControllers
             _openingDoor.Value = true;
             var sprite = WorldSprite.GetSprite();
             sprite.Visible = false;
+        }
+
+        protected override void HandleFall()
+        {          
+            _afterHitInvincibility.Value = 15;
+            Motion.YSpeed = -_fallSpringSpeed;
+            WorldSprite.Y = _specs.ScreenHeight;
+            _audioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+            _statusBar.Health -= 2;
         }
 
         protected override void UpdateActive()

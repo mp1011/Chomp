@@ -113,11 +113,12 @@ namespace ChompGame.MainGame.SceneModels
             );
 
             //Level1_8_Door2,
-            SceneDefinition.NoScrollFlat(
+            SceneDefinition.NoScrollCornerStairs(
                specs: specs,
                theme: Theme.Plains,
                enemyGroup: EnemyGroup.Lizard_Bird,
                memoryBuilder: memoryBuilder,
+               cornerStairStyle: CornerStairStyle.TwoBlockDouble,
                top: 1,
                bottom: 1,
                left: 1,
@@ -197,7 +198,7 @@ namespace ChompGame.MainGame.SceneModels
                 ,b => new ScenePart(b, ScenePartType.Bomb, 47, 9, scene)
                 ,b => new ScenePart(b, ScenePartType.EnemyType1, 12, 12, scene)
                 ,b => new ScenePart(b, ScenePartType.EnemyType1, 33, 8, scene)
-                ,b => new ScenePart(b, ScenePartType.EnemyType1, 58, 10, scene)
+                ,b => new ScenePart(b, ScenePartType.EnemyType1, 58, 12, scene)
                 );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
@@ -236,6 +237,7 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene),
+                b => new ScenePart(b, ExitType.Left, exitOffset: 1, scene),
                 b => new ScenePart(b, ScenePartType.Pit, 30,10, scene),
                 b => new ScenePart(b, ScenePartType.Platform_UpDown, 35, 12, scene),
                 b => new ScenePart(b, ScenePartType.Platform_LeftRight, 12, 12, scene),
@@ -251,6 +253,19 @@ namespace ChompGame.MainGame.SceneModels
                 );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
+            scene = new SceneDefinition(Level.Level1_7_Door, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new ScenePart(b, ScenePartType.DoorFowardExit, 4, 12, scene),
+                b => new ScenePart(b, ExitType.Right, exitOffset: -1, scene)
+                );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+
+            scene = new SceneDefinition(Level.Level1_8_Door2, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new ScenePart(b, ScenePartType.DoorBackExit, 8, 12, scene),
+                b => new ScenePart(b, ExitType.Right, exitOffset: 1, scene)
+                );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
         }
     }

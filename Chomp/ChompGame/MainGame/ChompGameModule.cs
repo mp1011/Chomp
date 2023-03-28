@@ -171,9 +171,9 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.Level1_3_Pit;
+            _currentLevel.Value = Level.Level1_7_Door;
             _lastExitType.Value = ExitType.Right;
-            // _musicModule.CurrentSong = MusicModule.SongName.SeaDreams;
+           //  _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
 
         public void OnLogicUpdate()
@@ -280,8 +280,13 @@ namespace ChompGame.MainGame
             ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
             if(ExitsModule.ActiveExit.ExitType != ExitType.None)
             {
+                GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}");
+
                 _gameState.Value = GameState.LoadScene;
                 CurrentLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
+                GameDebug.DebugLog($"Entering level {CurrentLevel}");
+
+
                 _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
 
                 _sceneSpriteControllers.CheckBombCarry(_carryingBomb);

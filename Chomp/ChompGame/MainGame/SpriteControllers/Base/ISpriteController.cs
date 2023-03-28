@@ -18,6 +18,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         void Update();
 
         byte DestructionBitOffset { get; set; }
+
+        FallCheck FallCheck { get; set; }
     }
 
     interface IEnemyOrBulletSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb

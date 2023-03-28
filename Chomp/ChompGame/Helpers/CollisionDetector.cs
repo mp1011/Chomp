@@ -182,6 +182,18 @@ namespace ChompGame.Helpers
                     collisionInfo.YCorrection = downMove;
             });
 
+            int rightEdgeOverlap = (actor.X + actor.Bounds.Width) - _levelTileMap.Width * _specs.TileWidth;
+            if(rightEdgeOverlap > 0)
+            {
+                collisionInfo.XCorrection = -rightEdgeOverlap;
+            }
+
+            int leftEdgeOverlap = 0 - actor.X;
+            if(leftEdgeOverlap > 0)
+            {
+                collisionInfo.XCorrection = leftEdgeOverlap;
+            }
+
 
             if (collisionInfo.XCorrection != 0)
             {

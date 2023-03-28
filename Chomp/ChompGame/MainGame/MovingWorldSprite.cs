@@ -101,8 +101,14 @@ namespace ChompGame.MainGame
 
             var sprite = GetSprite();
 
-            int spriteX = (X - _scroller.WorldScrollPixelX).NMod(_specs.NameTablePixelWidth);
-            int spriteY = (Y - _scroller.WorldScrollPixelY).NMod(_specs.NameTablePixelHeight);
+            int spriteX = (X - _scroller.WorldScrollPixelX);
+            int spriteY = (Y - _scroller.WorldScrollPixelY);
+
+            //todo, how to handle out of bounds?
+            if (spriteX < 0)
+                spriteX = 0;
+            if (spriteY < 0)
+                spriteY = 0;
 
             sprite.X = (byte)spriteX;
             sprite.Y = (byte)spriteY;
@@ -196,20 +202,6 @@ namespace ChompGame.MainGame
             WorldScroller scroller) : base(memoryBuilder, specs,spriteDefinition, spritesModule, scroller)
         {           
             Motion = motion;
-        }
-
-        public override void UpdateSprite()
-        {
-            if (Status != WorldSpriteStatus.Active)
-                return;
-
-            var sprite = GetSprite();
-
-            int spriteX = (X - _scroller.WorldScrollPixelX).NMod(_specs.NameTablePixelWidth);
-            int spriteY = (Y - _scroller.WorldScrollPixelY).NMod(_specs.NameTablePixelHeight);
-
-            sprite.X = (byte)spriteX;
-            sprite.Y = (byte)spriteY;
         }
     }
 }

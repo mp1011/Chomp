@@ -14,6 +14,8 @@ namespace ChompGame.MainGame.SpriteControllers
         { 
         }
 
+        protected override bool DestroyWhenOutOfBounds => true;
+
         protected override void UpdateActive() 
         {
             if (WorldSprite.Status != WorldSpriteStatus.Active)

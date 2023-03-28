@@ -5,6 +5,7 @@ using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
+using System;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -12,15 +13,24 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private readonly CollisionDetector _collisionDetector;
         private readonly IEnemyOrBulletSpriteControllerPool _lizardBulletControllers;
+        private readonly MovingWorldSprite _player;
 
         public LizardEnemyController(
             IEnemyOrBulletSpriteControllerPool lizardBulletControllers,
             ChompGameModule chompGameModule,
+            MovingWorldSprite player,
             SystemMemoryBuilder memoryBuilder)
             : base(SpriteType.Lizard, chompGameModule, memoryBuilder)
         {
             _lizardBulletControllers = lizardBulletControllers;
+            _player = player;
             _collisionDetector = chompGameModule.CollissionDetector;
+        }
+
+        protected override void OnSpriteCreated(Sprite sprite)
+        {
+            Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
+            Motion.XSpeed = _movingSpriteController.WalkSpeed;
         }
 
         protected override void UpdateBehavior()
@@ -47,15 +57,21 @@ namespace ChompGame.MainGame.SpriteControllers
                 _state.Value++;
 
             if (_state.Value == 16 + SpriteIndex)
-            {
+            {                
                 _state.Value = 0;
-                var fireball = _lizardBulletControllers.TryAddNew(3);
-                if (fireball != null)
+
+                int distanceToPlayer = Math.Abs(WorldSprite.X - _player.X);
+                if (distanceToPlayer < 64)
                 {
-                    var thisSprite = _movingSpriteController.WorldSprite;
-                    fireball.WorldSprite.X = thisSprite.X;
-                    fireball.WorldSprite.Y = thisSprite.Y;
-                    fireball.WorldSprite.FlipX = thisSprite.FlipX;
+                    var fireball = _lizardBulletControllers.TryAddNew(3);
+                    if (fireball != null)
+                    {
+                        _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+                        var thisSprite = _movingSpriteController.WorldSprite;
+                        fireball.WorldSprite.X = thisSprite.X;
+                        fireball.WorldSprite.Y = thisSprite.Y;
+                        fireball.WorldSprite.FlipX = thisSprite.FlipX;
+                    }
                 }
             }
 

@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteControllers.Base;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
@@ -156,6 +157,12 @@ namespace ChompGame.MainGame.SceneModels
         public Theme Theme => _theme.Value;
 
         public CornerStairStyle CornerStairStyle => _cornerStairStyle.Value;
+
+        public FallCheck SpriteFallCheck => ScrollStyle switch {
+                    ScrollStyle.Horizontal => FallCheck.ScreenHeight,
+                    ScrollStyle.None => FallCheck.ScreenHeight,
+                    ScrollStyle.Vertical => FallCheck.None,
+                    _ => FallCheck.WrapAround };
 
         public bool HasSprite(SpriteLoadFlags flag)
         {

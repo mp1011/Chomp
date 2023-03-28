@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.MainGame.SpriteControllers;
+using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
@@ -189,11 +190,12 @@ namespace ChompGame.MainGame.SceneModels
 
                 if (sp.ExitType == ExitType.Right)
                     nameTable = AddRightExit(nameTable);
+               
                 else if (sp.ExitType == ExitType.Left)
                     nameTable = AddLeftExit(nameTable);
+           
                 else if (sp.ExitType == ExitType.Bottom)
                     nameTable = AddBottomExit(nameTable);
-
             }
 
             return nameTable;
@@ -539,6 +541,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
             {
                 playerController = new PlayerController(_gameModule, memoryBuilder);
+                playerController.FallCheck = _sceneDefinition.SpriteFallCheck;
 
                 bombControllers = new SpriteControllerPool<BombController>(
                      size: 2,
@@ -575,7 +578,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemyA = new EnemyOrBulletSpriteControllerPool<LizardEnemyController>(
                     2,
                     _gameModule.SpritesModule,
-                    () => new LizardEnemyController(extraA, _gameModule, memoryBuilder));
+                    () => new LizardEnemyController(extraA, _gameModule, playerController.WorldSprite, memoryBuilder));
             }
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Bird))

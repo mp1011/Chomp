@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
@@ -223,7 +224,9 @@ namespace ChompGame.MainGame.SpriteControllers
                         continue;
                     }
 
-                    if(sprite is DoorController dc)
+                    sprite.FallCheck = _scene.SpriteFallCheck;
+
+                    if (sprite is DoorController dc)
                     {
                         if (sp.Type == ScenePartType.DoorBackExit)
                             dc.DoorType = ExitType.DoorBack;

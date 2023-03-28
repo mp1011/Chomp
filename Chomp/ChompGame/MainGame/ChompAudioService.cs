@@ -12,6 +12,7 @@ namespace ChompGame.MainGame
             PlayerHit,
             DoorOpen,
             DoorClose,
+            Fireball,
             PlayerDie
         }
 
@@ -56,6 +57,11 @@ namespace ChompGame.MainGame
                 Sound.DoorClose,
                 noteDuration: 3,
                 soundData: "+ D C# C B A");
+
+            index = DefineSound(index,
+              Sound.Fireball,
+              noteDuration: 5,
+              soundData: "+ + D# D C A");
 
             //_audioModule.NoteSequence[0] = Audio.AudioAction.OctaveUp;
             //_audioModule.NoteSequence[1] = Audio.AudioAction.OctaveUp;

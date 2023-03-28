@@ -1,12 +1,17 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
-using ChompGame.Helpers;
-using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {
+    public enum FallCheck : byte
+    {
+        None,
+        ScreenHeight,
+        WrapAround
+    }
+
     abstract class ActorController : ISpriteController
     {
         protected readonly GameByte _state;
@@ -14,14 +19,23 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
-        private readonly MaskedByte _index;
+        private readonly GameByte _destructionBitOffset;
+        private readonly TwoBitEnum<FallCheck> _fallCheck;
+
+        public FallCheck FallCheck
+        {
+            get => _fallCheck.Value;
+            set => _fallCheck.Value = value;
+        }
+
         public byte DestructionBitOffset
         {
-            get => _index.Value;
-            set => _index.Value = value;
+            get => _destructionBitOffset.Value;
+            set => _destructionBitOffset.Value = value;
         }
 
         protected virtual bool DestroyWhenFarOutOfBounds => true;
+        protected virtual bool DestroyWhenOutOfBounds => false;
 
         WorldSprite ISpriteController.WorldSprite => WorldSprite;
 
@@ -45,8 +59,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _spritesModule = gameModule.SpritesModule;
             _state = memoryBuilder.AddByte();
 
-            _palette = new TwoBit(memoryBuilder.Memory,  memoryBuilder.CurrentAddress, 0);
-            _index = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left6, memoryBuilder.Memory, leftShift: 2);
+            _destructionBitOffset = memoryBuilder.AddByte();
             memoryBuilder.AddByte();
 
             _movingSpriteController = new MovingSpriteController(
@@ -56,6 +69,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                spriteIndex: 255,
                worldScroller: gameModule.WorldScroller,
                spriteDefinition: new SpriteDefinition(spriteType, memoryBuilder.Memory));
+
+            _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress-1, shift: 2);
+            _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress-1, shift: 4);
+            //note, left 2 bits still free
+
             _levelTimer = gameModule.LevelTimer;
         }
 
@@ -100,7 +118,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             }
             else if(boundsCheck == BoundsCheck.OutOfBounds)
             {
-                Hide();
+                if (DestroyWhenOutOfBounds)
+                    Destroy();
+                else
+                    Hide();
             }
             else if(Status != WorldSpriteStatus.Active)
             {
@@ -122,7 +143,32 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             {
                 UpdateActive();
                 WorldSprite.UpdateSprite();
+
+                CheckFall();
             }
+        }
+
+        private void CheckFall()
+        {
+            if (FallCheck == FallCheck.None)
+                return;
+
+            if(FallCheck == FallCheck.ScreenHeight && WorldSprite.Y > _spritesModule.Specs.ScreenHeight + 16)
+            {
+                HandleFall();
+                return;
+            }
+
+            if (FallCheck == FallCheck.WrapAround && WorldSprite.Y < _spritesModule.Specs.ScreenHeight + 4)
+            {
+                HandleFall();
+                return;
+            }
+        }
+
+        protected virtual void HandleFall()
+        {
+
         }
 
         public void Hide()
