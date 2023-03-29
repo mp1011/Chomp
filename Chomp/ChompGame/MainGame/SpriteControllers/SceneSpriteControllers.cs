@@ -28,6 +28,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public PlayerController Player => _playerController;
 
+        public SpriteControllerPool<BombController> BombControllers => _bombControllers;
+
         public SpriteControllerPool<ExplosionController> ExplosionControllers => _explosionControllers;
 
         public SceneSpriteControllers(ChompGameModule chompGameModule, 

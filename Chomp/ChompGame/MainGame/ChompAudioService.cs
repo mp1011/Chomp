@@ -1,8 +1,9 @@
-﻿using ChompGame.GameSystem;
+﻿using ChompGame.Data.Memory;
+using ChompGame.GameSystem;
 
 namespace ChompGame.MainGame
 {
-    class ChompAudioService
+    class ChompAudioService : IModule
     {
         public enum Sound : byte
         {
@@ -13,6 +14,7 @@ namespace ChompGame.MainGame
             DoorOpen,
             DoorClose,
             Fireball,
+            Reward,
             PlayerDie
         }
 
@@ -62,6 +64,11 @@ namespace ChompGame.MainGame
               Sound.Fireball,
               noteDuration: 5,
               soundData: "+ + D# D C A");
+
+            index = DefineSound(index,
+                Sound.Reward,
+                noteDuration: 5,
+                soundData: "+ + A C E B D F C E G");
 
             //_audioModule.NoteSequence[0] = Audio.AudioAction.OctaveUp;
             //_audioModule.NoteSequence[1] = Audio.AudioAction.OctaveUp;
@@ -174,5 +181,7 @@ namespace ChompGame.MainGame
         {
             _audioModule.GetChannel(0).Play((int)sound);
         }
+
+        public void BuildMemory(SystemMemoryBuilder memoryBuilder) { }
     }
 }

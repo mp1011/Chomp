@@ -9,6 +9,7 @@ namespace ChompGame.MainGame
     {
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
+       
         private GameInteger _score;
         private LowNibble _lives;
         private HighNibble _health;
@@ -21,6 +22,8 @@ namespace ChompGame.MainGame
         private readonly byte _tileHalf = 11;
         private readonly byte _tileFull = 12;
 
+        public int Score => (int)_score.Value;
+
         public byte Health
         {
             get => _health.Value;
@@ -30,11 +33,11 @@ namespace ChompGame.MainGame
             }
         }
 
-        public StatusBar(TileModule tileModule, GameRAM ram)
+        public StatusBar(ChompGameModule gameModule, GameRAM ram)
         {
             _ram = ram;
-            _tileModule = tileModule;
-            _specs = tileModule.Specs;
+            _tileModule = gameModule.TileModule;
+            _specs = _tileModule.Specs;
             _coreGraphicsModule = _tileModule.GameSystem.CoreGraphicsModule;
         }
 
@@ -132,7 +135,6 @@ namespace ChompGame.MainGame
         public void AddToScore(uint value)
         {
             _score.Value += value;
-
             DrawScore();
         }
 

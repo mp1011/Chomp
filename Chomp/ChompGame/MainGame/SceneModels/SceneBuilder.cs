@@ -194,7 +194,7 @@ namespace ChompGame.MainGame.SceneModels
                 ,b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 38, y: 8, definition: scene)
                 ,b => new ScenePart(b, ExitType.Left, -1, scene)
                 ,b => new ScenePart(b, ExitType.Right, 1, scene)
-                ,b => new ScenePart(b, ScenePartType.Bomb, 20, 8, scene)
+             //   ,b => new ScenePart(b, ScenePartType.Bomb, 20, 8, scene)
                 ,b => new ScenePart(b, ScenePartType.Bomb, 47, 9, scene)
                 ,b => new ScenePart(b, ScenePartType.EnemyType1, 12, 12, scene)
                 ,b => new ScenePart(b, ScenePartType.EnemyType1, 33, 8, scene)
@@ -206,7 +206,9 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ExitType.Left, -1, scene),
                 b => new ScenePart(b, ExitType.Right, 1, scene),
-                b => new ScenePart(b, ExitType.Bottom, 2, scene)
+                b => new ScenePart(b, ExitType.Bottom, 2, scene),
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true,true,false,false,8,10, scene),
+                b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, false, false, 6, 10, scene)
                 );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
@@ -216,6 +218,7 @@ namespace ChompGame.MainGame.SceneModels
                 , b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 4, y: 8, definition: scene)
                 , b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 6, y: 8, definition: scene)
                 , b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 8, y: 8, definition: scene)
+                , b => new ScenePart(b, ScenePartType.Bomb, 11, 9, scene)
                 );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 

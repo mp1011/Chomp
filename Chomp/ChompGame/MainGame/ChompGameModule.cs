@@ -71,6 +71,8 @@ namespace ChompGame.MainGame
 
         public ExitsModule ExitsModule { get; }
 
+        public RewardsModule RewardsModule { get; }
+
         public DynamicBlockController DynamicBlocksController => _dynamicBlockController;
 
         public DynamicScenePartHeader CurrentScenePartHeader { get; private set; }
@@ -82,20 +84,21 @@ namespace ChompGame.MainGame
         }
 
         public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
-           SpritesModule spritesModule, TileModule tileModule, MusicModule musicModule,
+           SpritesModule spritesModule, TileModule tileModule, MusicModule musicModule, RewardsModule rewardsModule,
            PaletteModule paletteModule)
            : base(mainSystem)
         {
-            _audioService = new ChompAudioService(audioModule);
+            _audioService = mainSystem.GetModule<ChompAudioService>();
             _inputModule = inputModule;
             _spritesModule = spritesModule;
             _tileModule = tileModule;
             _musicModule = musicModule;
+            RewardsModule = rewardsModule;
             _collisionDetector = new CollisionDetector(Specs);
 
             PaletteModule = paletteModule;
             ExitsModule = new ExitsModule(this);
-            _statusBar = new StatusBar(_tileModule, GameRAM);
+            _statusBar = new StatusBar(this, GameRAM);
             _dynamicBlockController = new DynamicBlockController(this);
         }
 
@@ -125,6 +128,7 @@ namespace ChompGame.MainGame
             _rasterInterrupts.BuildMemory(memoryBuilder);
 
             _statusBar.BuildMemory(memoryBuilder);
+            RewardsModule.BuildMemory(memoryBuilder);
 
             _scenePartsDestroyed = new ScenePartsDestroyed(memoryBuilder);
 
@@ -171,7 +175,7 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.LoadScene;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.Level1_7_Door;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
            //  _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
@@ -276,6 +280,8 @@ namespace ChompGame.MainGame
             _sceneSpriteControllers.CheckCollissions();
 
             PaletteModule.Update();
+
+            RewardsModule.GiveRewards(_statusBar.Score, _sceneSpriteControllers);
 
             ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
             if(ExitsModule.ActiveExit.ExitType != ExitType.None)
