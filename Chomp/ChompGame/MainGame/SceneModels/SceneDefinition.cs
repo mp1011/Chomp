@@ -154,6 +154,35 @@ namespace ChompGame.MainGame.SceneModels
             _ => _bottom.Value * 2
         };
 
+        public int LeftEdgeFloorTiles => _scrollStyle.Value switch 
+        {
+            ScrollStyle.None => _levelShape.Value switch 
+            {
+                LevelShape.CornerStairs => _cornerStairStyle.Value switch 
+                {
+                    CornerStairStyle.OneBlockDouble => BottomTiles - 2, 
+                    CornerStairStyle.TwoBlockDouble => BottomTiles - 4,
+                    CornerStairStyle.TwoBlockLeft => BottomTiles - 4, //todo, check stair generation
+                    _ => BottomTiles
+                },
+                _ => BottomTiles
+            },
+            _ => BottomTiles
+        };
+
+        public int RightEdgeFloorTiles => _scrollStyle.Value switch {
+            ScrollStyle.None => _levelShape.Value switch {
+                LevelShape.CornerStairs => _cornerStairStyle.Value switch {
+                    CornerStairStyle.OneBlockDouble => BottomTiles + 2,
+                    CornerStairStyle.TwoBlockDouble => BottomTiles + 4,
+                    CornerStairStyle.TwoBlockRight => BottomTiles + 4, //todo, check stair generation
+                    _ => BottomTiles
+                },
+                _ => BottomTiles
+            },
+            _ => BottomTiles
+        };
+
         public Theme Theme => _theme.Value;
 
         public CornerStairStyle CornerStairStyle => _cornerStairStyle.Value;

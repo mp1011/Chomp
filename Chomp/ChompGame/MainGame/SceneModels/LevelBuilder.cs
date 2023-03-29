@@ -205,8 +205,8 @@ namespace ChompGame.MainGame.SceneModels
         {
             nameTable.ForEach((x, y, b) =>
             {
-                if(y >= nameTable.Height - _sceneDefinition.BottomTiles - 4
-                    && y < nameTable.Height - _sceneDefinition.BottomTiles
+                if(y >= nameTable.Height - _sceneDefinition.RightEdgeFloorTiles - 4
+                    && y < nameTable.Height - _sceneDefinition.RightEdgeFloorTiles
                     && x >= nameTable.Width - _sceneDefinition.RightTiles)
                 {
                     nameTable[x, y] = 0;
@@ -218,17 +218,16 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddLeftExit(NBitPlane nameTable)
         {
-            //todo, needs to be fixed
-            //nameTable.ForEach((x, y, b) =>
-            //{
+            nameTable.ForEach((x, y, b) =>
+            {
 
-            //    if (y >= nameTable.Height - _sceneDefinition.BottomTiles - 4
-            //        && y < nameTable.Height - _sceneDefinition.BottomTiles
-            //        && x <= _sceneDefinition.LeftTiles)
-            //    {
-            //        nameTable[x, y] = 0;
-            //    }
-            //});
+                if (y >= nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles - 4
+                    && y < nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles
+                    && x <= _sceneDefinition.LeftTiles)
+                {
+                    nameTable[x, y] = 0;
+                }
+            });
 
             return nameTable;
         }
