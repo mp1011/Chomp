@@ -18,6 +18,9 @@ namespace ChompGame.Helpers
         public int TileY { get; set; }
         public int DynamicTileX { get; set; }
         public int DynamicTileY { get; set; }
+        public bool LeftLedge { get; set; }
+        public bool RightLedge { get; set; }
+        public byte LedgeHeight { get; set; }
     }
 
     /// <summary>
@@ -144,6 +147,9 @@ namespace ChompGame.Helpers
                         }
                     }
 
+                    if (collisionInfo.IsOnGround)
+                        CheckLedge(x, y, collisionInfo);
+
                     return;
                 }
 
@@ -180,6 +186,9 @@ namespace ChompGame.Helpers
                     collisionInfo.YCorrection = -upMove;
                 else if (downMove > 0 && checkBelow && actor.YSpeed < 0)
                     collisionInfo.YCorrection = downMove;
+
+                if(upMove > 0)
+                    CheckLedge(x, y, collisionInfo);
             });
 
             int rightEdgeOverlap = (actor.X + actor.Bounds.Width) - _levelTileMap.Width * _specs.TileWidth;
@@ -194,7 +203,6 @@ namespace ChompGame.Helpers
                 collisionInfo.XCorrection = leftEdgeOverlap;
             }
 
-
             if (collisionInfo.XCorrection != 0)
             {
                 actor.X += collisionInfo.XCorrection;
@@ -208,6 +216,49 @@ namespace ChompGame.Helpers
             return collisionInfo;
         }
 
+        public void CheckLedge(int x, int y, CollisionInfo collisionInfo)
+        {
+            var thisTile = _levelTileMap[x, y];
+            var leftTile = _levelTileMap[x - 1, y];
+            var rightTile = _levelTileMap[x + 1, y];
+
+            int ledgeX = x;
+            int ledgeY = y;
+
+            if (thisTile >= Constants.CollidableTileBeginIndex && leftTile < Constants.CollidableTileBeginIndex)
+            {
+                ledgeX = x - 1;
+                collisionInfo.LeftLedge = true;
+            }
+
+
+            if (thisTile >= Constants.CollidableTileBeginIndex && rightTile < Constants.CollidableTileBeginIndex)
+            {
+                ledgeX = x + 1;
+                collisionInfo.RightLedge = true;
+            }
+
+            if (!collisionInfo.LeftLedge && !collisionInfo.RightLedge)
+                collisionInfo.LedgeHeight = 0;
+            else
+            {
+                while (_levelTileMap[ledgeX, ledgeY] < Constants.CollidableTileBeginIndex
+                    && ledgeY < _levelTileMap.Height)
+                {
+                    ledgeY++;
+                }
+            }
+
+            if (ledgeY == _levelTileMap.Height)
+                collisionInfo.LedgeHeight = 255;
+            else 
+                collisionInfo.LedgeHeight = (byte)(ledgeY - y);
+
+            //if(collisionInfo.LeftLedge)            
+            //    GameDebug.DebugLog($"Left Edge Detected - Height = {collisionInfo.LedgeHeight}");
+            //else if (collisionInfo.RightLedge)
+            //    GameDebug.DebugLog($"Right Edge Detected - Height = {collisionInfo.LedgeHeight}");
+        }
 
         public CollisionInfo DetectCollisions2(MovingWorldSprite actor)
         {

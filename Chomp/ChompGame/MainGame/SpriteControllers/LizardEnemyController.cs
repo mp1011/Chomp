@@ -74,10 +74,6 @@ namespace ChompGame.MainGame.SpriteControllers
                     }
                 }
             }
-
-
-        }
-
-      
+        }      
     }
 }

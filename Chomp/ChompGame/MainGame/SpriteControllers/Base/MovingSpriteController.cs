@@ -135,6 +135,18 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             {
                 Motion.XSpeed = 0;
             }
+
+            if(_spriteDefinition.StopsAtLedges && collisionInfo.LedgeHeight > 2)
+            {
+                if(Motion.XSpeed < 0 && _spriteDefinition.StopsAtLedges)
+                {
+                    Motion.TargetXSpeed = WalkSpeed;
+                }
+                else if (Motion.XSpeed > 0 && _spriteDefinition.StopsAtLedges)
+                {
+                    Motion.TargetXSpeed = -WalkSpeed;
+                }
+            }
         }
 
         public void Update()

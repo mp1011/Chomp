@@ -56,6 +56,7 @@ namespace ChompGame.MainGame.SpriteModels
         private TwoBitEnum<MovementSpeed> _movementSpeed;
         private GameBit _collidesWithBackground;
         private GameBit _flipXWhenMovingLeft;
+        private GameBit _stopsAtLedges;
 
         public int SizeX => _sizeX.Value ? 2 : 1;
         public int SizeY => _sizeY.Value ? 2 : 1;
@@ -77,6 +78,8 @@ namespace ChompGame.MainGame.SpriteModels
         public MovementSpeed MovementSpeed => _movementSpeed.Value;
         public GravityStrength GravityStrength => _gravityStrength.Value;
         public AnimationStyle AnimationStyle => _animationStyle.Value;
+
+        public bool StopsAtLedges => _stopsAtLedges.Value;
 
         public SpriteDefinition(SystemMemoryBuilder memoryBuilder,
             byte tile,
@@ -101,7 +104,9 @@ namespace ChompGame.MainGame.SpriteModels
 
             _sizeX = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
             _sizeY = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit1, memoryBuilder.Memory);
-            //6 bits left 
+            _stopsAtLedges = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit2, memoryBuilder.Memory);
+
+            //5 bits left 
             memoryBuilder.AddByte();
 
             _tile.Value = tile;
@@ -130,6 +135,7 @@ namespace ChompGame.MainGame.SpriteModels
 
             _sizeX = new GameBit(address + 2, Bit.Bit0, memory);
             _sizeY = new GameBit(address + 2, Bit.Bit1, memory);
+            _stopsAtLedges = new GameBit(address + 2, Bit.Bit2, memory);
         }
 
         public SpriteDefinition(SpriteType spriteType, SystemMemory memory) :
