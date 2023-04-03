@@ -160,9 +160,9 @@ namespace ChompGame.MainGame.SceneModels
             {
                 LevelShape.CornerStairs => _cornerStairStyle.Value switch 
                 {
-                    CornerStairStyle.OneBlockDouble => BottomTiles - 2, 
-                    CornerStairStyle.TwoBlockDouble => BottomTiles - 4,
-                    CornerStairStyle.TwoBlockLeft => BottomTiles - 4, //todo, check stair generation
+                    CornerStairStyle.OneBlockDouble => BottomTiles + 2, 
+                    CornerStairStyle.TwoBlockDouble => BottomTiles + 4,
+                    CornerStairStyle.TwoBlockLeft => BottomTiles + 4, //todo, check stair generation
                     _ => BottomTiles
                 },
                 _ => BottomTiles

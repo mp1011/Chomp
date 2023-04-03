@@ -102,6 +102,18 @@ namespace ChompGame.MainGame.SpriteModels
               animationStyle: AnimationStyle.AlwaysAnimate,
               collidesWithBackground: false,
               flipXWhenMovingLeft: false);
+
+            //button
+            new SpriteDefinition(memoryBuilder,
+             tile: Constants.ButtonTile,
+             secondTileOffset: 0,
+             sizeX: 1,
+             sizeY: 1,
+             gravityStrength: GravityStrength.None,
+             movementSpeed: MovementSpeed.Fast,
+             animationStyle: AnimationStyle.NoAnimation,
+             collidesWithBackground: false,
+             flipXWhenMovingLeft: false);
         }
     }
 }

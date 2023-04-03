@@ -12,8 +12,7 @@ namespace ChompGame.MainGame
     {
         Coin,
         DestructibleBlock,
-        LockedDoor,
-        Button
+        SwitchBlock
     }
 
     class DynamicBlock
@@ -117,11 +116,8 @@ namespace ChompGame.MainGame
                     case ScenePartType.DestructibleBlock:
                         type = DynamicBlockType.DestructibleBlock;
                         break;
-                    case ScenePartType.LockedDoor:
-                        type = DynamicBlockType.LockedDoor;
-                        break;
-                    case ScenePartType.Button:
-                        type = DynamicBlockType.Button;
+                    case ScenePartType.SwitchBlock:
+                        type = DynamicBlockType.SwitchBlock;
                         break;
                     default:
                         continue;
@@ -135,7 +131,11 @@ namespace ChompGame.MainGame
                 dynamicBlock.State.TopRight = sp.DynamicBlockState.TopRight;
                 dynamicBlock.State.BottomLeft = sp.DynamicBlockState.BottomLeft;
                 dynamicBlock.State.BottomRight = sp.DynamicBlockState.BottomRight;
-                dynamicBlock.DestructionBitOffset = destructionBitOffset;
+
+                if (dynamicBlock.Type == DynamicBlockType.SwitchBlock)
+                    dynamicBlock.DestructionBitOffset = 0;
+                else 
+                    dynamicBlock.DestructionBitOffset = destructionBitOffset;
 
                 RecallDestroyed(dynamicBlock);
 
@@ -162,6 +162,16 @@ namespace ChompGame.MainGame
                     block.State.BottomRight = false;
                 }
             }
+            else if(block.Type == DynamicBlockType.SwitchBlock)
+            {
+                if (_gameModule.ScenePartsDestroyed.SwitchBlocksOff)
+                {
+                    block.State.TopLeft = false;
+                    block.State.TopRight = false;
+                    block.State.BottomLeft = false;
+                    block.State.BottomRight = false;
+                }
+            }
         }
 
         private void SetTiles(DynamicBlock block, NBitPlane tileMap, NBitPlane attributeTable)
@@ -171,11 +181,13 @@ namespace ChompGame.MainGame
 
             attributeTable[attrX, attrY] = block.Type switch {
                 DynamicBlockType.Coin => 2,
+                DynamicBlockType.SwitchBlock => 1,
                 _ => 3
             };
 
             byte tile = block.Type switch {
                 DynamicBlockType.DestructibleBlock => Constants.DestructibleBlockTile,
+                DynamicBlockType.SwitchBlock => Constants.DestructibleBlockTile,
                 DynamicBlockType.Coin => Constants.CoinTile,
                 _ => 0
             };
@@ -317,6 +329,28 @@ namespace ChompGame.MainGame
                 explosionController.WorldSprite.X = (block.Location.TileX + xMod) * _gameModule.Specs.TileWidth;
                 explosionController.WorldSprite.Y = (block.Location.TileY + yMod + Constants.StatusBarTiles) * _gameModule.Specs.TileHeight;
                 explosionController.SetMotion(xMod, yMod);
+            }
+        }
+
+        public void SwitchOffBlocks()
+        {
+            int address = _partCount.Address + 1;
+
+            for (int index = 0; index < _partCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type == DynamicBlockType.SwitchBlock)
+                {
+                    block.State.TopLeft = false;
+                    block.State.TopRight = false;
+                    block.State.BottomLeft = false;
+                    block.State.BottomRight = false;
+                    _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
+                    _gameModule.ScenePartsDestroyed.SwitchBlocksOff = true;
+                }
+
+                address += block.ByteLength;
             }
         }
     }

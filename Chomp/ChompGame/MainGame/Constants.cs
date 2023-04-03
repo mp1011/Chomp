@@ -18,6 +18,7 @@
         public static readonly byte ExplosionTile = 6;
         public static readonly byte DestructibleBlockTile = 14;
         public static readonly byte CoinTile = 15;
+        public static readonly byte ButtonTile = 21;
 
 
     }

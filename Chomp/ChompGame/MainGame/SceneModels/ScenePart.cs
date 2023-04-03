@@ -20,7 +20,7 @@ namespace ChompGame.MainGame.SceneModels
         Platform_Vanishing=10,
         Coin=11,
         DestructibleBlock=12,
-        LockedDoor=13,
+        SwitchBlock=13,
         Button=14,
         Wall= 15,
         Max = 15
@@ -198,8 +198,7 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     case ScenePartType.Coin:
                     case ScenePartType.DestructibleBlock:
-                    case ScenePartType.Button:
-                    case ScenePartType.LockedDoor:
+                    case ScenePartType.SwitchBlock:
                         return _dynamicBlockLocation.TileX;
                 }
 
@@ -216,8 +215,7 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     case ScenePartType.Coin:
                     case ScenePartType.DestructibleBlock:
-                    case ScenePartType.Button:
-                    case ScenePartType.LockedDoor:
+                    case ScenePartType.SwitchBlock:
                         _dynamicBlockLocation.TileX = value;
                         return;
                 }
@@ -253,8 +251,7 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     case ScenePartType.Coin:
                     case ScenePartType.DestructibleBlock:
-                    case ScenePartType.Button:
-                    case ScenePartType.LockedDoor:
+                    case ScenePartType.SwitchBlock:
                         return _dynamicBlockLocation.TileY;
                 }
 
@@ -271,8 +268,7 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     case ScenePartType.Coin:
                     case ScenePartType.DestructibleBlock:
-                    case ScenePartType.Button:
-                    case ScenePartType.LockedDoor:
+                    case ScenePartType.SwitchBlock:
                         _dynamicBlockLocation.TileY = value;
                         return;
                 }

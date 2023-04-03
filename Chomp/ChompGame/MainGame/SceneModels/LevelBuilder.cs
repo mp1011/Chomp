@@ -220,7 +220,6 @@ namespace ChompGame.MainGame.SceneModels
         {
             nameTable.ForEach((x, y, b) =>
             {
-
                 if (y >= nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles - 4
                     && y < nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles
                     && x <= _sceneDefinition.LeftTiles)
@@ -533,6 +532,7 @@ namespace ChompGame.MainGame.SceneModels
             PlayerController playerController = null;
             SpriteControllerPool<BombController> bombControllers = null;
             SpriteControllerPool<DoorController> doorControllers = null;
+            SpriteControllerPool<ButtonController> buttonControllers = null;
             SpriteControllerPool<PlatformController> platformControllers = null;
             SpriteControllerPool<ExplosionController> explosionControllers = null;
 
@@ -551,6 +551,11 @@ namespace ChompGame.MainGame.SceneModels
                     size: 2,
                     _gameModule.SpritesModule,
                     () => new DoorController(_gameModule, playerController, memoryBuilder));
+
+                buttonControllers = new SpriteControllerPool<ButtonController>(
+                    size: 2,
+                    _gameModule.SpritesModule,
+                    () => new ButtonController(_gameModule, playerController, memoryBuilder));
 
                 platformControllers = new SpriteControllerPool<PlatformController>(
                     size: 4,
@@ -601,6 +606,7 @@ namespace ChompGame.MainGame.SceneModels
             return new SceneSpriteControllers(_gameModule, playerController,
                 bombControllers,
                 doorControllers,
+                buttonControllers,
                 platformControllers,
                 explosionControllers,
                 enemyA, 
@@ -853,6 +859,14 @@ namespace ChompGame.MainGame.SceneModels
                 destinationPoint: new Point(6, 3),
                 _gameModule.Specs,
                 memory);
+
+            //button
+            masterPatternTable.CopyTilesTo(
+               destination: vramPatternTable,
+               source: new InMemoryByteRectangle(11, 6, 2, 1),
+               destinationPoint: new Point(4, 7),
+               _gameModule.Specs,
+               memory);
 
             //coin 
             masterPatternTable.CopyTilesTo(

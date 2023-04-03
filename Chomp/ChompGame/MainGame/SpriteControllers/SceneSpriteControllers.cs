@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private PlayerController _playerController;
         private SpriteControllerPool<BombController> _bombControllers;
         private SpriteControllerPool<DoorController> _doorControllers;
+        private SpriteControllerPool<ButtonController> _buttonControllers;
         private SpriteControllerPool<PlatformController> _platformControllers;
         private SpriteControllerPool<ExplosionController> _explosionControllers;
 
@@ -36,6 +37,7 @@ namespace ChompGame.MainGame.SpriteControllers
             PlayerController playerController, 
             SpriteControllerPool<BombController> bombControllers, 
             SpriteControllerPool<DoorController> doorControllers,
+            SpriteControllerPool<ButtonController> buttonControllers,
             SpriteControllerPool<PlatformController> platformControllers,
             SpriteControllerPool<ExplosionController> explosionControllers,
             IEnemyOrBulletSpriteControllerPool enemyAControllers, 
@@ -49,6 +51,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _explosionControllers = explosionControllers;
             _bombControllers = bombControllers;
             _doorControllers = doorControllers;
+            _buttonControllers = buttonControllers;
             _enemyAControllers = enemyAControllers;
             _enemyBControllers = enemyBControllers;
             _extra1Controllers = extra1Controllers;
@@ -113,6 +116,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.Update();
                 _bombControllers.Execute(c => c.Update());
                 _doorControllers.Execute(c => c.Update());
+                _buttonControllers.Execute(c => c.Update());
                 _platformControllers.Execute(c => c.Update());
             }
 
@@ -139,6 +143,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.WorldSprite.UpdateSprite();
                 _bombControllers.Execute(c => c.WorldSprite.UpdateSprite());
                 _doorControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                _buttonControllers.Execute(c => c.WorldSprite.UpdateSprite());
                 _platformControllers.Execute(c => c.WorldSprite.UpdateSprite());
             }
 
@@ -201,8 +206,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     case ScenePartType.Coin:
                     case ScenePartType.DestructibleBlock:
-                    case ScenePartType.LockedDoor:
-                    case ScenePartType.Button:
+                    case ScenePartType.SwitchBlock:
                     case ScenePartType.SideExit:
                         continue;
                 }
@@ -281,6 +285,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.Platform_LeftRight => _platformControllers,
                 ScenePartType.Platform_UpDown => _platformControllers,
                 ScenePartType.Platform_Vanishing=> _platformControllers,
+                ScenePartType.Button => _buttonControllers,
                 _ => throw new System.NotImplementedException()
             };
         

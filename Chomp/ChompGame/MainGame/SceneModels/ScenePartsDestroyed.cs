@@ -9,17 +9,26 @@ namespace ChompGame.MainGame.SceneModels
         private BitArray _partsDestroyed;
         private GameByte _sceneOffset;
 
+        private GameBit _switchBlocksOff;
+
+        public bool SwitchBlocksOff
+        {
+            get => _switchBlocksOff.Value;
+            set => _switchBlocksOff.Value = value;
+        }
+
         public ScenePartsDestroyed(SystemMemoryBuilder memoryBuilder)
         {
             _sceneOffset = memoryBuilder.AddByte();
 
+            _switchBlocksOff = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
             _partsDestroyed = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddBytes(32); //todo, figure out how much we need
         }
 
         public void SetCurrentLevel(Level level, SystemMemory memory)
         {
-            byte sceneOffset=0;
+            byte sceneOffset=1;
             for (Level l = (Level)0; l < level; l++)
             {
                 ScenePartsHeader header = new ScenePartsHeader(l, memory);

@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using Microsoft.Xna.Framework;
+using static ChompGame.MainGame.ChompAudioService;
 
 namespace ChompGame.GameSystem
 {
@@ -191,6 +192,7 @@ namespace ChompGame.GameSystem
         public override int ScreenWidth => 64;
         public override int ScreenHeight => 64;
 
+        public override int NumSounds => (int)(Sound.Max + 1);
         public override Bit ScreenPointMask => (Bit)63;
 
         public override int PatternTableWidth => 32;
