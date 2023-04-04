@@ -85,6 +85,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     {
                         bomb.DestructionBitOffset = 255;
                         bomb.SetCarried();
+                        bomb.FallCheck = _scene.SpriteFallCheck;
 
                         GameDebug.DebugLog($"Create carried bomb at Sprite {bomb.SpriteIndex}");
                         isCarryingBomb.Value = false;

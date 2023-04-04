@@ -49,6 +49,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         {
         }
 
+        protected override void HandleFall()
+        {
+            Destroy();
+        }
+
         public bool HandleBombCollision(MovingWorldSprite player)
         {
             if (_state.Value >= (int)State.Dying)

@@ -1,4 +1,5 @@
-﻿using ChompGame.Data.Memory;
+﻿using ChompGame.Audio;
+using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 
 namespace ChompGame.MainGame
@@ -102,7 +103,15 @@ namespace ChompGame.MainGame
 
         public void PlaySound(Sound sound)
         {
-            _audioModule.GetChannel(0).Play((int)sound);
+            GetChannel(sound).Play((int)sound);
+        }
+
+        private AudioChannel GetChannel(Sound sound)
+        {
+            return sound switch {
+                Sound.Break => _audioModule.GetChannel(1),
+                _ => _audioModule.GetChannel(0)
+            };
         }
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder) { }

@@ -101,6 +101,11 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        protected override void HandleFall()
+        {
+            Destroy();
+        }
+
         public void SetCarried()
         {
             _bombState.Value = BombState.RiseEnd;
