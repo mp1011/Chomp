@@ -29,7 +29,8 @@ namespace ChompGame.MainGame.SpriteModels
                 movementSpeed: MovementSpeed.Slow,
                 animationStyle: AnimationStyle.AnimateWhenMoving,
                 collidesWithBackground: true,
-                flipXWhenMovingLeft: true);
+                flipXWhenMovingLeft: true,
+                stopsAtLedges: true);
 
             //lizard fireball
             new SpriteDefinition(memoryBuilder,

@@ -21,6 +21,8 @@ namespace ChompGame.Helpers
         public bool LeftLedge { get; set; }
         public bool RightLedge { get; set; }
         public byte LedgeHeight { get; set; }
+        public bool HitLeftWall => XCorrection > 0;
+        public bool HitRightWall => XCorrection < 0;
     }
 
     /// <summary>
@@ -148,7 +150,7 @@ namespace ChompGame.Helpers
                     }
 
                     if (collisionInfo.IsOnGround)
-                        CheckLedge(x, y, collisionInfo);
+                        CheckLedge(x, y, collisionInfo, actorBounds, tileBounds);
 
                     return;
                 }
@@ -187,8 +189,8 @@ namespace ChompGame.Helpers
                 else if (downMove > 0 && checkBelow && actor.YSpeed < 0)
                     collisionInfo.YCorrection = downMove;
 
-                if(upMove > 0)
-                    CheckLedge(x, y, collisionInfo);
+                if(collisionInfo.YCorrection < 0)
+                    CheckLedge(x, y, collisionInfo, actorBounds, tileBounds);
             });
 
             int rightEdgeOverlap = (actor.X + actor.Bounds.Width) - _levelTileMap.Width * _specs.TileWidth;
@@ -216,7 +218,7 @@ namespace ChompGame.Helpers
             return collisionInfo;
         }
 
-        public void CheckLedge(int x, int y, CollisionInfo collisionInfo)
+        public void CheckLedge(int x, int y, CollisionInfo collisionInfo, Rectangle actorBounds, Rectangle tileBounds)
         {
             var thisTile = _levelTileMap[x, y];
             var leftTile = _levelTileMap[x - 1, y];
@@ -225,14 +227,18 @@ namespace ChompGame.Helpers
             int ledgeX = x;
             int ledgeY = y;
 
-            if (thisTile >= Constants.CollidableTileBeginIndex && leftTile < Constants.CollidableTileBeginIndex)
+            if (thisTile >= Constants.CollidableTileBeginIndex 
+                && leftTile < Constants.CollidableTileBeginIndex
+                && actorBounds.Left <= tileBounds.Left)
             {
                 ledgeX = x - 1;
                 collisionInfo.LeftLedge = true;
             }
 
 
-            if (thisTile >= Constants.CollidableTileBeginIndex && rightTile < Constants.CollidableTileBeginIndex)
+            if (thisTile >= Constants.CollidableTileBeginIndex 
+                && rightTile < Constants.CollidableTileBeginIndex
+                && actorBounds.Right >= tileBounds.Right)
             {
                 ledgeX = x + 1;
                 collisionInfo.RightLedge = true;
@@ -254,7 +260,7 @@ namespace ChompGame.Helpers
             else 
                 collisionInfo.LedgeHeight = (byte)(ledgeY - y);
 
-            //if(collisionInfo.LeftLedge)            
+            //if (collisionInfo.LeftLedge)
             //    GameDebug.DebugLog($"Left Edge Detected - Height = {collisionInfo.LedgeHeight}");
             //else if (collisionInfo.RightLedge)
             //    GameDebug.DebugLog($"Right Edge Detected - Height = {collisionInfo.LedgeHeight}");

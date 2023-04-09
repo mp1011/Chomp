@@ -91,7 +91,8 @@ namespace ChompGame.MainGame.SpriteModels
             MovementSpeed movementSpeed,
             AnimationStyle animationStyle,
             bool collidesWithBackground,
-            bool flipXWhenMovingLeft)
+            bool flipXWhenMovingLeft,
+            bool stopsAtLedges=false)
         {   
             _tile = memoryBuilder.AddMaskedByte(Bit.Right6);
             _secondTileOffset = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress - 1, 6);
@@ -121,6 +122,7 @@ namespace ChompGame.MainGame.SpriteModels
             _flipXWhenMovingLeft.Value = flipXWhenMovingLeft;
             _gravityStrength.Value = gravityStrength;
             _movementSpeed.Value = movementSpeed;
+            _stopsAtLedges.Value = stopsAtLedges;
         }
 
         public SpriteDefinition(SystemMemory memory, int address)

@@ -126,27 +126,45 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 }
             }
 
+            if(_spriteDefinition.StopsAtLedges && collisionInfo.LedgeHeight > 2)
+            {
+                if(Motion.XSpeed < 0 
+                    && collisionInfo.LeftLedge)
+                {
+                    Motion.XSpeed = 0;
+                    Motion.TargetXSpeed = WalkSpeed;
+                }
+                else if (Motion.XSpeed > 0 
+                    && collisionInfo.RightLedge)
+                {
+                    Motion.XSpeed = 0;
+                    Motion.TargetXSpeed = -WalkSpeed;
+                }
+            }
+
+            if (Motion.XSpeed < 0
+                   && collisionInfo.HitLeftWall)
+            {
+                Motion.XSpeed = 0;
+                Motion.TargetXSpeed = WalkSpeed;
+            }
+            else if (Motion.XSpeed > 0
+                && collisionInfo.HitRightWall)
+            {
+                Motion.XSpeed = 0;
+                Motion.TargetXSpeed = -WalkSpeed;
+            }
+
             if (collisionInfo.YCorrection > 0 || collisionInfo.IsOnGround)
             {
                 Motion.YSpeed = 0;
             }
 
-            if(collisionInfo.XCorrection != 0)
+            if (collisionInfo.XCorrection != 0)
             {
                 Motion.XSpeed = 0;
             }
 
-            if(_spriteDefinition.StopsAtLedges && collisionInfo.LedgeHeight > 2)
-            {
-                if(Motion.XSpeed < 0 && _spriteDefinition.StopsAtLedges)
-                {
-                    Motion.TargetXSpeed = WalkSpeed;
-                }
-                else if (Motion.XSpeed > 0 && _spriteDefinition.StopsAtLedges)
-                {
-                    Motion.TargetXSpeed = -WalkSpeed;
-                }
-            }
         }
 
         public void Update()

@@ -31,6 +31,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
             Motion.XSpeed = _movingSpriteController.WalkSpeed;
+            Motion.XAcceleration = _movingSpriteController.WalkAccel;
         }
 
         protected override void UpdateBehavior()
@@ -39,8 +40,10 @@ namespace ChompGame.MainGame.SpriteControllers
             var collision = _collisionDetector.DetectCollisions(_movingSpriteController.WorldSprite);
             _movingSpriteController.AfterCollision(collision);
 
-            if ((_levelTimer % 128) == SpriteIndex)
+           
+            if (_state.Value == SpriteIndex && !collision.LeftLedge && !collision.RightLedge)
             {
+                _state.Value++;
                 if (Motion.TargetXSpeed < 0)
                 {
                     Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
@@ -52,14 +55,9 @@ namespace ChompGame.MainGame.SpriteControllers
                     Motion.XSpeed = -_movingSpriteController.WalkSpeed;
                 }
             }
-
-            if (_levelTimer.IsMod(8))
+            else if (_state.Value == 16 + SpriteIndex)
+            {
                 _state.Value++;
-
-            if (_state.Value == 16 + SpriteIndex)
-            {                
-                _state.Value = 0;
-
                 int distanceToPlayer = Math.Abs(WorldSprite.X - _player.X);
                 if (distanceToPlayer < 64)
                 {
@@ -74,6 +72,13 @@ namespace ChompGame.MainGame.SpriteControllers
                     }
                 }
             }
-        }      
+            else if (_state.Value == 32)
+            {
+                _state.Value = 0;
+            }
+            else if (_levelTimer.IsMod(8))
+                _state.Value++;
+
+        }
     }
 }
