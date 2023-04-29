@@ -78,7 +78,9 @@ namespace ChompGame.GameSystem
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
                 byte row = (byte)(ScreenPoint.Y + Scroll.Y - sprite.Y);
 
-                //todo, avoid hard coding sprite start
+                if (sprite.FlipY)
+                    row = (byte)(sprite.Height - row - 1);
+
                 patternTableTilePoint.Index = Constants.SpriteStartIndex + sprite.Tile;
 
                 if (row >= Specs.TileHeight)

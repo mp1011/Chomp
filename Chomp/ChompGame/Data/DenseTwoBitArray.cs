@@ -28,7 +28,7 @@
             {
                 int byteIndex = _address + (index / 4);
                 int shift = (index % 4) * 2;
-                value = (byte)((value % 3) << shift);
+                value = (byte)((value % 4) << shift);
 
                 byte mask = (byte)(~(3 << shift));
 

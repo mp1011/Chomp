@@ -122,16 +122,27 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         protected override void HandleFall()
-        {          
-            _afterHitInvincibility.Value = 15;
+        {
+            if (_statusBar.Health == 0)
+                return;
+
             Motion.YSpeed = -_fallSpringSpeed;
             WorldSprite.Y = _specs.ScreenHeight;
-            _audioService.PlaySound(ChompAudioService.Sound.PlayerHit);
-            _statusBar.Health -= 2;
+            HarmPlayer(2);
         }
 
         protected override void UpdateActive()
         {
+            if(_statusBar.Health == 0)
+            {
+                GetSprite().FlipY = true;
+                Motion.TargetYSpeed = _movingSpriteController.FallSpeed;
+                Motion.XSpeed = 0;
+                Motion.TargetXSpeed = 0;
+                _movingSpriteController.Update();
+                return;
+            }
+
             if (_openingDoor.Value)
             {
                 _inputModule.OnLogicUpdate();
@@ -246,7 +257,6 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
-                    _afterHitInvincibility.Value = 15;
                     p.HandlePlayerCollision(WorldSprite);
 
                     if(WorldSprite.FlipX)
@@ -255,10 +265,34 @@ namespace ChompGame.MainGame.SpriteControllers
                         Motion.XSpeed = -_recoilSpeed;
 
                     Motion.YSpeed = -_recoilSpeed;
-                    _audioService.PlaySound(ChompAudioService.Sound.PlayerHit);
-                    _statusBar.Health--;
+
+                    HarmPlayer(1);
                 }
             });
+        }
+
+        public void HarmPlayer(byte damage)
+        {
+            if (_statusBar.Health == 0)
+                return;
+
+            _afterHitInvincibility.Value = 15;
+           
+            if (damage >= _statusBar.Health)
+            {
+                Motion.YSpeed = -_movingSpriteController.JumpSpeed;
+                
+                if(_statusBar.Health > 0)
+                {
+                    _statusBar.Health = 0;
+                    _statusBar.Lives--;
+                }
+            }
+            else
+            {
+                _audioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                _statusBar.Health -= damage;
+            }
         }
 
         public void OnPlatformCollision(CollisionInfo c)

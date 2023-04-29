@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.Graphics;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -26,10 +27,11 @@ namespace ChompGame.MainGame.SceneModels
         private readonly GameRAM _ram;
         private GameByte _timer;
         private SceneDefinition _currentScene;
+        private Specs Specs => _graphicsModule.Specs;
 
         private GameByteEnum<PaletteKey> _bgPalette1;
         private GameByteEnum<PaletteKey> _bgPalette2;
-
+        
 
         public PaletteModule(MainSystem mainSystem,
             CoreGraphicsModule coreGraphicsModule,
@@ -71,61 +73,58 @@ namespace ChompGame.MainGame.SceneModels
             _timer = new GameByte(GameSystem.Memory.GetAddress(AddressLabels.MainTimer), GameSystem.Memory);
 
             DefinePalette(PaletteKey.PlainsGround,
-                ChompGameSpecs.LightBlue,
-                ChompGameSpecs.Green1,
-                ChompGameSpecs.Green2,
-                ChompGameSpecs.Green3);
+                ColorIndex.LightBlue,
+                ColorIndex.Green1,
+                ColorIndex.Green2,
+                ColorIndex.Green3);
 
             DefinePalette(PaletteKey.PlainsSky,
-                ChompGameSpecs.LightBlue,
-                ChompGameSpecs.Gray1,
-                ChompGameSpecs.Gray2,
-                ChompGameSpecs.Gray3);
+                ColorIndex.LightBlue,
+                ColorIndex.Gray1,
+                ColorIndex.Gray2,
+                ColorIndex.Gray3);
 
             DefinePalette(PaletteKey.PlainsSky2,
-               ChompGameSpecs.Gray3,
-               ChompGameSpecs.Green1,
-               ChompGameSpecs.BlueGray1,
-               ChompGameSpecs.BlueGray2);
+               ColorIndex.Gray3,
+               ColorIndex.Green1,
+               ColorIndex.BlueGray1,
+               ColorIndex.BlueGray2);
 
             DefinePalette(PaletteKey.Bomb,
-                ChompGameSpecs.Black,
-                ChompGameSpecs.Gray1,
-                ChompGameSpecs.Gray2);
+                ColorIndex.Black,
+                ColorIndex.Gray1,
+                ColorIndex.Gray2);
 
             DefinePalette(PaletteKey.Player,
-                ChompGameSpecs.Orange,
-                ChompGameSpecs.DarkBrown,
-                ChompGameSpecs.LightTan);
+                ColorIndex.Orange,
+                ColorIndex.DarkBrown,
+                ColorIndex.LightTan);
 
             DefinePalette(PaletteKey.GreenEnemy,
-                ChompGameSpecs.Green1,
-                ChompGameSpecs.Green2,
-                ChompGameSpecs.Red3);
+                ColorIndex.Green1,
+                ColorIndex.Green2,
+                ColorIndex.Red3);
 
             DefinePalette(PaletteKey.Bullet,
-                ChompGameSpecs.Red2,
-                ChompGameSpecs.Red3,
-                ChompGameSpecs.LightYellow);
+                ColorIndex.Red2,
+                ColorIndex.Red3,
+                ColorIndex.LightYellow);
 
             DefinePalette(PaletteKey.StatusBar,
-                ChompGameSpecs.Black,
-                ChompGameSpecs.Blue1,
-                ChompGameSpecs.White,
-                ChompGameSpecs.Green2);
+                ColorIndex.Black,
+                ColorIndex.Blue1,
+                ColorIndex.White,
+                ColorIndex.Green2);
 
             DefinePalette(PaletteKey.Coins,
-              ChompGameSpecs.Gold,
-              ChompGameSpecs.DarkBrown,
-              ChompGameSpecs.LightYellow);
+              ColorIndex.Gold,
+              ColorIndex.DarkBrown,
+              ColorIndex.LightYellow);
 
             DefinePalette(PaletteKey.DynamicBlocks,
-             ChompGameSpecs.Black,
-             ChompGameSpecs.Gray2,
-             ChompGameSpecs.Gray1);
-
-
-
+             ColorIndex.Black,
+             ColorIndex.Gray2,
+             ColorIndex.Gray1);
         }
 
         public void SetScene(SceneDefinition sceneDefinition)
@@ -154,11 +153,11 @@ namespace ChompGame.MainGame.SceneModels
                     _bgPalette1.Value = PaletteKey.PlainsSky;
 
                     if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
-                        foregroundPalette.SetColor(0, ChompGameSpecs.BlueGray2);
+                        foregroundPalette.SetColor(0, ColorIndex.BlueGray2);
                     else if (sceneDefinition.GetBgPosition1() == 0)
-                        foregroundPalette.SetColor(0, ChompGameSpecs.LightBlue);
+                        foregroundPalette.SetColor(0, ColorIndex.LightBlue);
                     else
-                        foregroundPalette.SetColor(0, ChompGameSpecs.Gray3);
+                        foregroundPalette.SetColor(0, ColorIndex.Gray3);
 
                     dynamicBlockPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
                     coinPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
@@ -174,7 +173,6 @@ namespace ChompGame.MainGame.SceneModels
             LoadPalette(PaletteKey.Bullet, bulletPallete);
             LoadPalette(PaletteKey.GreenEnemy, enemyPallete);
             LoadPalette(PaletteKey.Bullet, bulletPallete);
-
         }
 
         private void DefinePalette(PaletteKey key, byte color1, byte color2, byte color3, byte color4)
@@ -192,6 +190,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public void OnHBlank()
         {
+            if (_currentScene == null)
+                return;
+
             if(_graphicsModule.ScreenPoint.Y == 0)
             {
                 LoadPalette(PaletteKey.StatusBar, _graphicsModule.GetBackgroundPalette(0));

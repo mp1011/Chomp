@@ -23,7 +23,7 @@ namespace ChompGame
         private RenderTarget2D _renderTarget;
         private Texture2D _canvas;
         private Texture2D _filter;
-
+      
         private SpriteFont _font;
         public MainSystem GameSystem => _gameSystem;
 
@@ -55,8 +55,10 @@ namespace ChompGame
             _canvas = new Texture2D(GraphicsDevice, _specs.ScreenWidth, _specs.ScreenHeight);
             _filter = new Texture2D(GraphicsDevice, _specs.ScreenWidth*3, _specs.ScreenHeight * 3);
             _filterPixels = new Color[_filter.Width * _filter.Height];
-
             _font = Content.Load<SpriteFont>("Font");
+
+            var colors = Content.Load<Texture2D>("SystemPalette");
+            _specs.SetColors(colors);
         }
 
         private bool _wasMouseDown;

@@ -72,6 +72,9 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
+            if (_sceneDefinition == null)
+                return;
+
             GameDebug.Watch4 = new DebugWatch("CameraPixelX", () => _worldScroller.CameraPixelX);
 
             if (_coreGraphicsModule.ScreenPoint.Y <= Constants.StatusBarHeight
@@ -84,17 +87,6 @@ namespace ChompGame.MainGame
             {
                 HandleParallax();
             }
-
-            var bgPalette = _coreGraphicsModule.GetBackgroundPalette(0);
-            //switch (_currentLevel.Value)
-            //{
-            //    case Level.TestSceneHorizontal:
-            //        OnHBlank_Stage0();
-            //        break;
-            //    default:
-            //        OnHBlank_Test();
-            //        break;
-            //}
         }
 
         private void HandleParallax()

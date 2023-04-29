@@ -7,6 +7,8 @@ namespace ChompGame.MainGame
 {
     class StatusBar
     {
+        public const int FullHealth = 2;
+
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
        
@@ -22,7 +24,11 @@ namespace ChompGame.MainGame
         private readonly byte _tileHalf = 11;
         private readonly byte _tileFull = 12;
 
-        public int Score => (int)_score.Value;
+        public int Score
+        {
+            get => (int)_score.Value;
+            set => _score.Value = (uint)value;
+        }
 
         public byte Health
         {
@@ -31,6 +37,12 @@ namespace ChompGame.MainGame
             {
                 SetHealth(value);
             }
+        }
+
+        public byte Lives
+        {
+            get => _lives.Value;
+            set => SetLives(value);
         }
 
         public StatusBar(ChompGameModule gameModule, GameRAM ram)

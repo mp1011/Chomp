@@ -1,4 +1,5 @@
 ﻿using ChompGame.GameSystem;
+using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace ChompGame.Data
@@ -26,12 +27,13 @@ namespace ChompGame.Data
             _colorsHi = new DenseTwoBitArray(address+2, systemMemory); //todo, avoid hard coding palette info 
         }
 
-        public Color this[byte index]
+        public Color GetColor(byte index, byte fade)
         {
-            get
-            {
-                return _specs.SystemColors[GetColorIndex(index)];
-            }
+            var colorIndex = new ColorIndex(GetColorIndex(index));
+            while (fade-- > 0)
+                colorIndex = colorIndex.Darker();
+
+            return _specs.SystemColors[colorIndex.Value];
         }
 
         public int GetColorIndex(int index)

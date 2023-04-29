@@ -92,6 +92,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _palette.Value = palette;
             Status = WorldSpriteStatus.Active;
             var sprite = GetSprite();
+            sprite.FlipY = false;
             WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = _palette.Value;
             _state.Value = 0;

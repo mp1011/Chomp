@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using static ChompGame.MainGame.ChompAudioService;
 
 namespace ChompGame.GameSystem
@@ -47,6 +48,9 @@ namespace ChompGame.GameSystem
         public virtual int NumSounds => 8;
 
         public virtual int GameRAMSize => 0;
+
+        public virtual void SetColors(Texture2D texture) { }
+
     };
 
     public class PongSpecs : Specs
@@ -221,80 +225,20 @@ namespace ChompGame.GameSystem
         public override int NumPalettes => 8;
         public override int BackgroundPalettes => 4;
         public override int GameRAMSize => 1024;
-        public override Color[] SystemColors { get; } = new Color[64];
+        public override Color[] SystemColors => _colors;
+
+        private Color[] _colors = new Color[64];
+
+        public override void SetColors(Texture2D texture)
+        {
+            texture.GetData(_colors);
+        }
 
         public ChompGameSpecs()
         {
-            SystemColors[Black] = new Color(0, 0, 0);
-            SystemColors[White] = new Color(255, 255, 255);
-
-            SystemColors[Blue1] = new Color(0, 78, 168);
-            SystemColors[Blue2] = new Color(0, 129, 192);
-            SystemColors[Blue3] = new Color(0, 198, 243);
-            SystemColors[Blue4] = new Color(72, 219, 255);
-
-            SystemColors[LightBlue] = new Color(183, 255, 255);
-            SystemColors[LightYellow] = new Color(255, 255, 129);
-            SystemColors[LightTan] = new Color(247, 193, 155);
-
-            SystemColors[Green1] = new Color(0, 120, 0);
-            SystemColors[Green2] = new Color(120, 220, 0);
-            SystemColors[Green3] = new Color(183, 240, 144);
-
-            SystemColors[Orange] = new Color(255, 108, 15);
-            SystemColors[DarkBrown] = new Color(117, 29, 15);
-
-            SystemColors[Red1] = new Color(99, 0, 0);
-            SystemColors[Red2] = new Color(207, 57, 57);
-            SystemColors[Red3] = new Color(255, 57, 57);
-
-            SystemColors[Gray1] = new Color(57, 66, 99);
-            SystemColors[Gray2] = new Color(132, 141, 150);
-            SystemColors[Gray3] = new Color(150, 180, 180);
-
-            SystemColors[BlueGray1] = new Color(93, 105, 156);
-            SystemColors[BlueGray2] = new Color(120, 132, 201);
-
-            //FFD700
-            SystemColors[Gold] = new Color(0xFF, 0xD7, 0);
+            
 
         }
-
-        public const int Black = 0;
-        public const int White = 1;
-        
-        public const int Blue1 = 2;
-        public const int Blue2 = 3;
-        public const int Blue3 = 4;
-        public const int Blue4 = 5;
-
-        public const int LightBlue = 6;
-        public const int LightYellow = 7;
-        public const int LightTan = 8;
-
-        public const int Green1 = 9;
-        public const int Green2 = 10;
-        public const int Green3 = 11;
-
-        public const int Orange = 12;
-        public const int DarkBrown = 13;
-
-        public const int Red1 = 14;
-        public const int Red2 = 15;
-        public const int Red3 = 16;
-
-        public const int Gray1 = 17;
-        public const int Gray2 = 18;
-        public const int Gray3 = 19;
-
-        public const int BlueGray1 = 20;
-        public const int BlueGray2 = 21;
-
-        public const int Gold = 22;
-
-
-
-
     }
 
 

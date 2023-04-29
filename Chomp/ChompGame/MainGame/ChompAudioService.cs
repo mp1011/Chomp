@@ -18,7 +18,7 @@ namespace ChompGame.MainGame
             Reward,
             ButtonPress,
             PlayerDie,
-            Max=ButtonPress
+            Max= PlayerDie
         }
 
         private readonly BankAudioModule _audioModule;
@@ -78,6 +78,12 @@ namespace ChompGame.MainGame
               noteDuration: 12,
               soundData: "+ + A G");
 
+            index = DefineSound(index,
+                Sound.PlayerDie,
+                noteDuration: 24,
+                soundData: "+ G F# E D# D C#");
+
+
             _audioModule.PrepareSounds();
         }
         
@@ -110,6 +116,7 @@ namespace ChompGame.MainGame
         {
             return sound switch {
                 Sound.Break => _audioModule.GetChannel(1),
+                Sound.PlayerDie => _audioModule.GetChannel(1),
                 _ => _audioModule.GetChannel(0)
             };
         }

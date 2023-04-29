@@ -23,6 +23,8 @@ namespace ChompGame.MainGame
     {
         enum GameState : byte
         {
+            NewGame,
+            RestartScene,
             LoadScene,
             PlayScene,
             Test
@@ -48,6 +50,7 @@ namespace ChompGame.MainGame
         private GameBit _carryingBomb;
 
         private GameByte _timer;
+        private GameByte _deathTimer;
         private SceneSpriteControllers _sceneSpriteControllers;
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
@@ -76,6 +79,8 @@ namespace ChompGame.MainGame
         public DynamicBlockController DynamicBlocksController => _dynamicBlockController;
 
         public DynamicScenePartHeader CurrentScenePartHeader { get; private set; }
+
+        public SceneDefinition CurrentScene => _currentScene;
 
         public Level CurrentLevel
         {
@@ -109,6 +114,7 @@ namespace ChompGame.MainGame
             memoryBuilder.Memory.AddLabel(AddressLabels.MainTimer, memoryBuilder.CurrentAddress);
 
             _timer = memoryBuilder.AddByte();
+            _deathTimer = memoryBuilder.AddByte();
             _currentLevel = new GameByteEnum<Level>(memoryBuilder.AddByte());
 
             //unused bits here
@@ -172,11 +178,11 @@ namespace ChompGame.MainGame
                 .Load(new DiskFile(ContentFolder.PatternTables, "master.pt"),
                     _masterPatternTable);
 
-            _gameState.Value = GameState.LoadScene;
+            _gameState.Value = GameState.NewGame;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.Level1_9_Platforms2;
-            _lastExitType.Value = ExitType.Left;
+            _currentLevel.Value = Level.Level1_2_Horizontal;
+            _lastExitType.Value = ExitType.Right;
           //  _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
 
@@ -188,6 +194,12 @@ namespace ChompGame.MainGame
           
             switch (_gameState.Value)
             {
+                case GameState.NewGame:
+                    InitGame();
+                    break;
+                case GameState.RestartScene:
+                    RestartScene();
+                    break;
                 case GameState.LoadScene:
                     LoadScene();
                     break;
@@ -197,6 +209,22 @@ namespace ChompGame.MainGame
                 case GameState.Test:
                     break;
             }
+        }
+
+        private void InitGame()
+        {
+            GameSystem.CoreGraphicsModule.FadeAmount = 0;
+            _statusBar.Score = 0;
+            _statusBar.SetLives(3);
+            _statusBar.Health = StatusBar.FullHealth;
+            _gameState.Value = GameState.LoadScene;
+        }
+
+        public void RestartScene()
+        {
+            GameSystem.CoreGraphicsModule.FadeAmount = 0;
+            _statusBar.Health = StatusBar.FullHealth;
+            _gameState.Value = GameState.LoadScene;
         }
 
         public void LoadScene()
@@ -227,10 +255,7 @@ namespace ChompGame.MainGame
             PaletteModule.SetScene(_currentScene);
 
             _gameState.Value = GameState.PlayScene;
-            _statusBar.AddToScore(0);
-            _statusBar.SetLives(3);
-            _statusBar.Health = 8;
-           
+                       
             var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
 
             CurrentScenePartHeader = new DynamicScenePartHeader(memoryBuilder, _currentLevel.Value);
@@ -253,6 +278,7 @@ namespace ChompGame.MainGame
 
             ExitsModule.BuildMemory(memoryBuilder, _currentScene);
 
+            GameSystem.CoreGraphicsModule.FadeAmount = 16;
         }
 
         private void ResetSprites()
@@ -267,14 +293,19 @@ namespace ChompGame.MainGame
 
         public void PlayScene()
         {
-            _sceneSpriteControllers.Update();
+            if(_deathTimer.Value == 0 && GameSystem.CoreGraphicsModule.FadeAmount > 0)
+            {
+                GameSystem.CoreGraphicsModule.FadeAmount--;
+            }
 
+            _sceneSpriteControllers.Update();
 
             if(_worldScroller.Update())
             {
                 _sceneSpriteControllers.OnWorldScrollerUpdate();
             }
 
+            HandlePlayerDeath();
             _rasterInterrupts.Update();
 
             _sceneSpriteControllers.CheckCollissions();
@@ -302,6 +333,30 @@ namespace ChompGame.MainGame
                 else
                     GameDebug.DebugLog("Player is NOT carrying bomb");
             }
+        }
+
+        private void HandlePlayerDeath()
+        {
+            if (_deathTimer.Value == 0 && _statusBar.Health == 0)
+            {
+                _audioService.PlaySound(ChompAudioService.Sound.PlayerDie);
+                _deathTimer.Value = 1;
+            }
+
+            if (_deathTimer.Value > 0)
+            {
+                _deathTimer.Value++;
+
+                if (_deathTimer > 64 && (_deathTimer.Value % 8)==0)
+                    GameSystem.CoreGraphicsModule.FadeAmount++;
+
+                if (_deathTimer.Value == 255)
+                {
+                    _gameState.Value = GameState.RestartScene;
+                    _deathTimer.Value = 0;
+                }
+            }
+
         }
 
         public void OnVBlank()

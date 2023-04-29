@@ -11,6 +11,13 @@ namespace ChompGame.GameSystem
 {
     public class CoreGraphicsModule : Module
     {
+        private GameByte _fade;
+
+        public byte FadeAmount
+        {
+            get => _fade.Value;
+            set => _fade.Value = value;
+        }
 
         private SpritesModule _spritesModule;
         private TileModule _tileModule;
@@ -51,6 +58,8 @@ namespace ChompGame.GameSystem
                 default:
                     throw new Exception("Unsupported bits per pixel");
             }
+
+            _fade = builder.AddByte();
         }
 
         public void WriteTileToScanlineBuffer(int startIndex, PatternTablePoint patternTablePoint)
@@ -84,7 +93,7 @@ namespace ChompGame.GameSystem
                 if (ScreenPoint.X < Specs.PatternTableWidth
                     && ScreenPoint.Y < Specs.PatternTableHeight)
                 {
-                    var color = palette[PatternTable[ScreenPoint.X, ScreenPoint.Y]];
+                    var color = palette.GetColor(PatternTable[ScreenPoint.X, ScreenPoint.Y], FadeAmount);
                     _screenData[i] = color;
                 }
                 else
@@ -133,7 +142,7 @@ namespace ChompGame.GameSystem
                     nextAttributeBlock += Specs.AttributeTableBlockSize * Specs.TileWidth;
                 }
 
-                _screenData[i] = bgPalette[BackgroundScanlineDrawBuffer[scanlineColumn]];
+                _screenData[i] = bgPalette.GetColor(BackgroundScanlineDrawBuffer[scanlineColumn], FadeAmount);
                                 
                 scanlineColumn++;
 
@@ -201,7 +210,7 @@ namespace ChompGame.GameSystem
                         if (!sprite.Priority && BackgroundScanlineDrawBuffer[scanlineColumn] != 0)
                             continue;
 
-                        _screenData[columnStart + scanlineColumn] = palette[colorIndex];
+                        _screenData[columnStart + scanlineColumn] = palette.GetColor(colorIndex, FadeAmount);
                     }
                 }
 
