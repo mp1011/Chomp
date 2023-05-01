@@ -7,7 +7,8 @@ namespace ChompGame.MainGame
 {
     class StatusBar
     {
-        public const int FullHealth = 2;
+        public const int FullHealth = 8;
+        public const int InitialLives = 3;
 
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;

@@ -130,6 +130,8 @@ namespace ChompGame.MainGame.SceneModels
         public void SetScene(SceneDefinition sceneDefinition)
         {
             _currentScene = sceneDefinition;
+            if (_currentScene == null)
+                return;
 
             var backgroundPalette = _graphicsModule.GetBackgroundPalette(0);
             var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);   

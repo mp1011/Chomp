@@ -43,6 +43,14 @@
                 return this;
         }
 
+        public ColorIndex LighterCycle()
+        {
+            if (ColorColumn < Cols - 1)
+                return new ColorIndex(Value + 1);
+            else
+                return new ColorIndex(ColorRow * Cols); 
+        }
+
         public ColorIndex Darker()
         {
             if (ColorColumn > 0)

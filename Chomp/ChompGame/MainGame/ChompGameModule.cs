@@ -1,11 +1,13 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.Graphics;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using ChompGame.ROM;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
 {
@@ -27,7 +29,8 @@ namespace ChompGame.MainGame
             RestartScene,
             LoadScene,
             PlayScene,
-            Test
+            Test,
+            GameOver
         }
 
        
@@ -181,8 +184,6 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.NewGame;
             _audioService.OnStartup();
 
-            _currentLevel.Value = Level.Level1_2_Horizontal;
-            _lastExitType.Value = ExitType.Right;
           //  _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
 
@@ -208,14 +209,94 @@ namespace ChompGame.MainGame
                     break;
                 case GameState.Test:
                     break;
+                case GameState.GameOver:
+                    GameOver();
+                    break;
+            }
+        }
+
+        private void GameOver()
+        {
+            if(_deathTimer.Value == 0)
+            {
+                GameSystem.CoreGraphicsModule.PatternTable.Reset();
+                TileModule.NameTable.Reset();
+                TileModule.AttributeTable.Reset();
+
+                _rasterInterrupts.SetScene(null);
+                PaletteModule.SetScene(null);
+
+                var palette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
+                palette.SetColor(0, ColorIndex.Black);
+                palette.SetColor(2, ColorIndex.Red1);
+
+                _masterPatternTable.CopyTilesTo(
+                    destination: GameSystem.CoreGraphicsModule.PatternTable,
+                    source: new InMemoryByteRectangle(4, 3, 7, 1),
+                    destinationPoint: new Point(1, 0),
+                    Specs,
+                    GameSystem.Memory);
+
+                _masterPatternTable.CopyTilesTo(
+                   destination: GameSystem.CoreGraphicsModule.PatternTable,
+                   source: new InMemoryByteRectangle(11, 3, 5, 1),
+                   destinationPoint: new Point(0, 1),
+                   Specs,
+                   GameSystem.Memory);
+
+                TileModule.TileStartX = 0;
+                TileModule.TileStartY = 0;
+                TileModule.Scroll.X = 0;
+                TileModule.Scroll.Y = 0;
+
+                int wordX = 4;
+                int wordY = 16;
+
+                TileModule.NameTable[wordX++, wordY] = 8;
+                TileModule.NameTable[wordX++, wordY] = 6;
+                TileModule.NameTable[wordX++, wordY] = 9;
+                wordX++;
+                TileModule.NameTable[wordX++, wordY] = 1;
+                TileModule.NameTable[wordX++, wordY] = 10;
+                TileModule.NameTable[wordX++, wordY] = 11;
+                TileModule.NameTable[wordX++, wordY] = 12;
+
+                _deathTimer.Value = 1;
+            }
+
+            if (GameSystem.CoreGraphicsModule.FadeAmount > 0)
+                GameSystem.CoreGraphicsModule.FadeAmount--;
+
+            if((_timer.Value % 16) == 0)
+            {
+                var palette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
+
+                ColorIndex textColor = new ColorIndex(palette.GetColorIndex(2));
+                palette.SetColor(2, textColor.LighterCycle().Value);
+            }
+
+            if ((_timer.Value % 2) == 0 
+                && TileModule.Scroll.Y < 36)
+            { 
+                TileModule.Scroll.Y++;
+            }
+
+            _inputModule.OnLogicUpdate();
+            if (_inputModule.Player1.StartKey == GameKeyState.Pressed)
+            {
+                _gameState.Value = GameState.NewGame;
+                _deathTimer.Value = 0;
             }
         }
 
         private void InitGame()
         {
+            _currentLevel.Value = Level.Level1_1_Start;
+            _lastExitType.Value = ExitType.Right;
+
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
-            _statusBar.SetLives(3);
+            _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LoadScene;
         }
@@ -352,7 +433,10 @@ namespace ChompGame.MainGame
 
                 if (_deathTimer.Value == 255)
                 {
-                    _gameState.Value = GameState.RestartScene;
+                    if(_statusBar.Lives > 0)
+                        _gameState.Value = GameState.RestartScene;
+                    else
+                        _gameState.Value = GameState.GameOver;
                     _deathTimer.Value = 0;
                 }
             }
