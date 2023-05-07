@@ -1,7 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.MainGame.SpriteControllers;
-using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
@@ -202,7 +201,7 @@ namespace ChompGame.MainGame.SceneModels
         }
 
         private NBitPlane AddRightExit(NBitPlane nameTable)
-        {
+        {      
             nameTable.ForEach((x, y, b) =>
             {
                 if(y >= nameTable.Height - _sceneDefinition.RightEdgeFloorTiles - 4
@@ -385,32 +384,34 @@ namespace ChompGame.MainGame.SceneModels
                 stairSize,
                 stairSize);
 
+            bool bigStep = _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble;
+
             switch (_sceneDefinition.CornerStairStyle)
             {
                 case CornerStairStyle.OneBlockDouble:
                 case CornerStairStyle.TwoBlockDouble:
                     AddStairs(nameTable,
                         leftStair,
-                        riseRight: false,
-                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+                        changeX: bigStep ?  2 : 1,
+                        changeY: bigStep ? -2 : -1);
 
                     AddStairs(nameTable,
                         rightStair,
-                        riseRight: true,
-                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+                        changeX: bigStep ? -2 : -1,
+                        changeY: bigStep ? -2 : -1);
 
                     break;
                 case CornerStairStyle.TwoBlockLeft:
                     AddStairs(nameTable,
                         leftStair,
-                        riseRight: false,
-                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+                        changeX: -2,
+                        changeY: -2);
                     break;
                 case CornerStairStyle.TwoBlockRight:
                     AddStairs(nameTable,
                         rightStair,
-                        riseRight: true,
-                        bigStep: _sceneDefinition.CornerStairStyle == CornerStairStyle.TwoBlockDouble);
+                        changeX: 2,
+                        changeY: -2);
                     break;
             }
             
@@ -419,45 +420,45 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddBigStair(NBitPlane nameTable)
         {
-            int stairSize = 10;
-            AddStairs(nameTable, new Rectangle(
-              nameTable.Width - _sceneDefinition.RightTiles*2 - stairSize,
-              nameTable.Height - _sceneDefinition.BottomTiles*2 - stairSize,
-              stairSize,
-              stairSize),
-              riseRight: true,
-              bigStep: false);
+            AddStairs(nameTable, 
+                region: new Rectangle(
+                    4,
+                    2,
+                    nameTable.Width - 4,
+                    nameTable.Height - _sceneDefinition.BottomTiles - 2),
+              changeX: 2,
+              changeY: 2);
 
             return nameTable;
         }
 
-        private NBitPlane AddStairs(NBitPlane nameTable, Rectangle region, bool riseRight, bool bigStep )
+        private NBitPlane AddStairs(NBitPlane nameTable, Rectangle region, int changeX, int changeY)
         {
-            nameTable.ForEach(new Point(region.X, region.Y), new Point(region.Right, region.Bottom), (x, y, b) =>
+            int stepHeight = 0;
+            if (changeY < 0)
             {
-                int stairY = y - region.Y;
-                int stairX = x - region.X;
+                stepHeight = region.Height;
+            }
 
-                if (riseRight && stairX >= region.Width - stairY - 1)
-                    nameTable[x, y] = 1;
-                else if (!riseRight && stairX <= stairY)
-                    nameTable[x, y] = 1;
+            int stepColumnsRemaining = changeX;
 
-                if(riseRight 
-                    && stairX % 2 == 0
-                    && stairX+1 >= region.Width - stairY - 1)
+            for(int x = region.X; x < region.Right; x++)
+            {
+                int stairTop = region.Bottom - stepHeight;
+                if (stairTop < region.Y)
+                    stairTop = region.Y;
+
+                for(int y = stairTop; y < region.Bottom; y++)
                 {
                     nameTable[x, y] = 1;
                 }
 
-                if (!riseRight
-                   && stairX % 2 == 1
-                   && stairX -1 <= stairY)
+                if (--stepColumnsRemaining == 0)
                 {
-                    nameTable[x, y] = 1;
+                    stepColumnsRemaining = changeX;
+                    stepHeight += changeY;
                 }
-
-            });
+            }
 
             return nameTable;
         }
@@ -603,6 +604,11 @@ namespace ChompGame.MainGame.SceneModels
                 }
             }
 
+            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            {
+                enemyA = GetBossController(playerController, memoryBuilder);
+            }
+
             return new SceneSpriteControllers(_gameModule, playerController,
                 bombControllers,
                 doorControllers,
@@ -613,6 +619,19 @@ namespace ChompGame.MainGame.SceneModels
                 enemyB, 
                 extraA, 
                 extraB);
+        }
+
+        private IEnemyOrBulletSpriteControllerPool GetBossController(PlayerController playerController, 
+            SystemMemoryBuilder memoryBuilder)
+        {
+            return _gameModule.CurrentLevel switch {
+                Level.Level1_11_Boss => 
+                    new EnemyOrBulletSpriteControllerPool<ChompBoss1Controller>(
+                        size: 1,
+                        spritesModule: _gameModule.SpritesModule,
+                        () => new ChompBoss1Controller(playerController.WorldSprite, _gameModule, memoryBuilder)),
+                _ => throw new Exception("invalid level for boss")
+            };
         }
 
         public void ApplyLevelAlterations(NBitPlane levelMap)
@@ -836,21 +855,41 @@ namespace ChompGame.MainGame.SceneModels
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
 
-            //platform
-            masterPatternTable.CopyTilesTo(
+            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            {
+                AddBossSprites(masterPatternTable, vramPatternTable, memory, spriteDestination);
+            }
+
+            if (!_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            {
+                //platform
+                masterPatternTable.CopyTilesTo(
                destination: vramPatternTable,
                source: new InMemoryByteRectangle(12, 5, 2, 1),
                destinationPoint: new Point(4, 6),
                _gameModule.Specs,
                memory);
 
-            //door
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(14, 5, 2, 2),
-                destinationPoint: new Point(6, 6),
-                _gameModule.Specs,
-                memory);
+                //door
+                masterPatternTable.CopyTilesTo(
+                    destination: vramPatternTable,
+                    source: new InMemoryByteRectangle(14, 5, 2, 2),
+                    destinationPoint: new Point(6, 6),
+                    _gameModule.Specs,
+                    memory);
+
+                
+
+                //button
+                masterPatternTable.CopyTilesTo(
+                   destination: vramPatternTable,
+                   source: new InMemoryByteRectangle(11, 6, 2, 1),
+                   destinationPoint: new Point(4, 7),
+                   _gameModule.Specs,
+                   memory);
+
+
+            }
 
             //block 
             masterPatternTable.CopyTilesTo(
@@ -860,14 +899,6 @@ namespace ChompGame.MainGame.SceneModels
                 _gameModule.Specs,
                 memory);
 
-            //button
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(11, 6, 2, 1),
-               destinationPoint: new Point(4, 7),
-               _gameModule.Specs,
-               memory);
-
             //coin 
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
@@ -875,6 +906,43 @@ namespace ChompGame.MainGame.SceneModels
                 destinationPoint: new Point(7, 3),
                 _gameModule.Specs,
                 memory);
+        }
+    
+        private void AddBossSprites(
+            NBitPlane masterPatternTable,
+            NBitPlane vramPatternTable,
+            SystemMemory memory,
+            GridPoint spriteDestination)
+        {
+            if(_gameModule.CurrentLevel == Level.Level1_11_Boss)
+            {
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(8, 1, 4, 2),
+                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
+                  _gameModule.Specs,
+                  memory);
+
+                spriteDestination.Advance(4, extraRowSkip: 0);
+
+                masterPatternTable.CopyTilesTo(
+                    destination: vramPatternTable,
+                    source: new InMemoryByteRectangle(7, 1, 1, 1),
+                    destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
+                    _gameModule.Specs,
+                    memory);
+
+                spriteDestination.Advance(1, extraRowSkip: 0);
+
+                masterPatternTable.CopyTilesTo(
+                    destination: vramPatternTable,
+                    source: new InMemoryByteRectangle(12, 2, 1, 1),
+                    destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
+                    _gameModule.Specs,
+                    memory);
+            }
+           
+
         }
     }
 }

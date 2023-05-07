@@ -15,7 +15,7 @@ namespace ChompGame.MainGame.SceneModels
         Level1_8_Door2,
         Level1_9_Platforms2,
         Level1_10_Stair,
-        Level1_11_Pillars,
+        Level1_11_Boss,
     }
 
     class SceneBuilder
@@ -148,22 +148,22 @@ namespace ChompGame.MainGame.SceneModels
              top: 0,
              bottom: 2,
              left: 0,
-             right: 2,
+             right: 0,
              bgPosition: 2
           );
 
-            //Level1_11_Pillars
-            SceneDefinition.HorizontalScroll(
+            //Level1_11_Boss
+            SceneDefinition.NoScrollFlat(
                  specs: specs,
-                 variance: LevelShape.Flat,
                  theme: Theme.Plains,
-                 enemyGroup: EnemyGroup.Lizard_Bird,
+                 enemyGroup: EnemyGroup.Boss,
                  memoryBuilder: memoryBuilder,
-                 top: 0,
-                 bottom: 2,
-                 bgPosition1: 3,
-                 bgPosition2: 2
-         );
+                 top: 1,
+                 left: 0,
+                 right: 0,
+                 bottom: 1,
+                 bgPosition: 2);
+
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -298,11 +298,19 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 56, y: 12, definition: scene),
                // b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 58, y: 12, definition: scene),
                 b => new ScenePart(b, ScenePartType.Button, x: 60, y: 11, definition: scene)
-
-
-
                 );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+
+            scene = new SceneDefinition(Level.Level1_10_Stair, builder.Memory, specs);
+                header = new ScenePartsHeader(builder,
+                    b => new ScenePart(b, ExitType.Right, exitOffset: 1, scene));
+                destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+
+            scene = new SceneDefinition(Level.Level1_11_Boss, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new ScenePart(b, ScenePartType.EnemyType1, 12, 9, scene),
+                b => new ScenePart(b, ExitType.Left, exitOffset: -1, scene));
+                destroyBitsNeeded += header.DestroyBitsNeeded(scene);
 
         }
     }

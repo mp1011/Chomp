@@ -38,7 +38,8 @@ namespace ChompGame.MainGame.SceneModels
 
     public enum EnemyGroup : byte
     {
-        Lizard_Bird
+        Lizard_Bird,
+        Boss
     }
 
 
@@ -55,7 +56,8 @@ namespace ChompGame.MainGame.SceneModels
     {
         Player = 1,
         Lizard = 2,
-        Bird = 4
+        Bird = 4,
+        Boss = 8
     }
 
     public enum LevelShape : byte
@@ -200,6 +202,7 @@ namespace ChompGame.MainGame.SceneModels
 
             return _enemies.Value switch {
                 EnemyGroup.Lizard_Bird => flag.HasFlag(SpriteLoadFlags.Bird) || flag.HasFlag(SpriteLoadFlags.Lizard),
+                EnemyGroup.Boss => flag.HasFlag(SpriteLoadFlags.Boss),
                 _ => false
             };
         }

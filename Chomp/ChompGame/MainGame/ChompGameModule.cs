@@ -79,6 +79,8 @@ namespace ChompGame.MainGame
 
         public RewardsModule RewardsModule { get; }
 
+        public MusicModule MusicModule => _musicModule;
+
         public DynamicBlockController DynamicBlocksController => _dynamicBlockController;
 
         public DynamicScenePartHeader CurrentScenePartHeader { get; private set; }
@@ -291,7 +293,7 @@ namespace ChompGame.MainGame
 
         private void InitGame()
         {
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level1_11_Boss;
             _lastExitType.Value = ExitType.Right;
 
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
