@@ -44,7 +44,7 @@ namespace ChompGame.MainGame
             State = new DynamicBlockState(memoryBuilder.Memory, memoryBuilder.CurrentAddress);
             memoryBuilder.AddByte();
 
-            Location = new DynamicBlockLocation(memoryBuilder.Memory, memoryBuilder.CurrentAddress, scene);
+            Location = new DynamicBlockLocation(memoryBuilder.Memory, memoryBuilder.CurrentAddress, scene, _specs);
             memoryBuilder.AddByte();
 
             _type.Value = type;
@@ -60,7 +60,7 @@ namespace ChompGame.MainGame
             _type = new TwoBitEnum<DynamicBlockType>(memory, address, 0);
             State = new DynamicBlockState(memory, address);
            
-            Location = new DynamicBlockLocation(memory, address+1, scene);
+            Location = new DynamicBlockLocation(memory, address+1, scene, _specs);
 
             _destructionBitOffset = new GameByte(address + 2, memory);
         }
@@ -101,7 +101,7 @@ namespace ChompGame.MainGame
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = header.GetScenePart(i, scene);
+                ScenePart sp = header.GetScenePart(i, scene, _gameModule.Specs);
 
                 destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;
@@ -141,6 +141,50 @@ namespace ChompGame.MainGame
 
                 SetTiles(dynamicBlock, levelTileMap, levelAttributeTable);
             }
+        }
+
+        public void SpawnCoins(Rectangle region)
+        {
+            int address = _partCount.Address + 1;
+
+            for (int index = 0; index < _partCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type != DynamicBlockType.Coin)
+                    continue;
+
+                bool anyChanged = false;
+
+                if(region.Intersects(block.Location.TopLeftRegion))
+                {
+                    block.State.TopLeft = true;
+                    anyChanged = true;
+                }
+                else if (region.Intersects(block.Location.TopRightRegion))
+                {
+                    block.State.TopRight = true;
+                    anyChanged = true;
+                }
+                else if (region.Intersects(block.Location.BottomLeftRegion))
+                {
+                    block.State.BottomLeft = true;
+                    anyChanged = true;
+                }
+                else if (region.Intersects(block.Location.BottomRightRegion))
+                {
+                    block.State.BottomRight = true;
+                    anyChanged = true;
+                }
+
+                if(anyChanged)
+                {
+                    _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
+                }
+
+                address += block.ByteLength;
+            }
+
         }
 
         private void RecallDestroyed(DynamicBlock block)

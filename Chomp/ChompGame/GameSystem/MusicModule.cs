@@ -13,7 +13,8 @@ namespace ChompGame.GameSystem
         {
             None,
             SeaDreams,
-            Adventure
+            Adventure,
+            Threat
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -25,8 +26,11 @@ namespace ChompGame.GameSystem
             get => _currentSong.Value;
             set
             {
-                _newSong.Value = true;
-                _currentSong.Value = value;
+                if (_currentSong.Value != value)
+                {
+                    _newSong.Value = true;
+                    _currentSong.Value = value;
+                }
             }
         }
 

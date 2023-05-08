@@ -14,6 +14,8 @@ namespace ChompGame.Data.Memory
 
         public int CurrentAddress => Bytes.CurrentAddress;
 
+        public Specs Specs => _specs;
+
         public SystemMemory Memory => _systemMemory;
 
         public SystemMemoryBuilder(SystemMemory systemMemory, Specs specs, GameRAM gameRAM)

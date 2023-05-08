@@ -32,6 +32,12 @@
 /processorParam:Quality=Best
 /build:Music/Sea Dreams.ogg;Music/SeaDreams.ogg
 
+#begin Music/Threat.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Threat.ogg
+
 #begin SystemPalette.png
 /importer:TextureImporter
 /processor:TextureProcessor

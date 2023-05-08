@@ -62,7 +62,7 @@ namespace ChompGame.MainGame.SceneModels
                 if (header.IsPartActivated(i))
                     continue;
 
-                ScenePart sp = header.GetScenePart(i, sceneDefinition);
+                ScenePart sp = header.GetScenePart(i, sceneDefinition, _gameModule.Specs);
 
                 if (sp.Type != ScenePartType.SideExit)
                     continue;

@@ -17,5 +17,6 @@ namespace ChompGame.Helpers
         {
             return choices[_rng.Next(choices.Length)];
         }
+
     }
 }

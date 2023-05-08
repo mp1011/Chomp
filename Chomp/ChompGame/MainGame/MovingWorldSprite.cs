@@ -75,6 +75,18 @@ namespace ChompGame.MainGame
                 return new Rectangle(X, Y, sprite.Width, sprite.Height);
             }
         }
+
+        public Point Center
+        {
+            get => Bounds.Center;
+            set
+            {
+                var sprite = GetSprite();
+                X = value.X - sprite.Width / 2;
+                Y = value.Y - sprite.Height / 2;
+            }
+        }
+
         public WorldSprite(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,

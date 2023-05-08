@@ -128,6 +128,17 @@ namespace ChompGame.MainGame.SpriteModels
              collidesWithBackground: false,
              flipXWhenMovingLeft: false);
 
+            //boss fireball
+            new SpriteDefinition(memoryBuilder,
+                tile: 8,
+                secondTileOffset: 0,
+                sizeX: 1,
+                sizeY: 1,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.Fast,
+                animationStyle: AnimationStyle.NoAnimation,
+                collidesWithBackground: false,
+                flipXWhenMovingLeft: false);
         }
     }
 }

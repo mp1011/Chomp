@@ -181,7 +181,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 6, y: 8, definition: scene),
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: false, x: 8, y: 8, definition: scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -200,7 +200,7 @@ namespace ChompGame.MainGame.SceneModels
                 ,b => new ScenePart(b, ScenePartType.EnemyType1, 33, 8, scene)
                 ,b => new ScenePart(b, ScenePartType.EnemyType1, 58, 12, scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_3_Pit, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -210,7 +210,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true,true,false,false,8,10, scene),
                 b => new ScenePart(b, DynamicBlockType.DestructibleBlock, true, true, false, false, 6, 10, scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_4_DeadEnd, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -220,7 +220,7 @@ namespace ChompGame.MainGame.SceneModels
                 , b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 8, y: 8, definition: scene)
                 , b => new ScenePart(b, ScenePartType.Bomb, 11, 9, scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_5_Vertical, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -238,7 +238,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 14, y: 32, definition: scene)
 
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -257,7 +257,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 52, y: 8, definition: scene)
 
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_7_Door, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -267,7 +267,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 8, definition: scene),
                 b => new ScenePart(b, ExitType.Right, exitOffset: -1, scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_8_Door2, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -276,7 +276,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, ScenePartType.EnemyType1, 12, 7, scene),
                 b => new ScenePart(b, ScenePartType.EnemyType2, 4, 7, scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_9_Platforms2, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -299,18 +299,25 @@ namespace ChompGame.MainGame.SceneModels
                // b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 58, y: 12, definition: scene),
                 b => new ScenePart(b, ScenePartType.Button, x: 60, y: 11, definition: scene)
                 );
-            destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_10_Stair, builder.Memory, specs);
                 header = new ScenePartsHeader(builder,
                     b => new ScenePart(b, ExitType.Right, exitOffset: 1, scene));
-                destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+                destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level1_11_Boss, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new ScenePart(b, ScenePartType.EnemyType1, 12, 9, scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 2, y: 11, definition: scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 4, y: 11, definition: scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 6, y: 11, definition: scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 8, y: 11, definition: scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 10, y: 11, definition: scene),
+                b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 12, y: 11, definition: scene),
+
                 b => new ScenePart(b, ExitType.Left, exitOffset: -1, scene));
-                destroyBitsNeeded += header.DestroyBitsNeeded(scene);
+                destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
         }
     }

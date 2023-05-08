@@ -1,10 +1,13 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SceneModels
 {
     class DynamicBlockLocation
     {
         private SceneDefinition _sceneDefinition;
+        private Specs _specs;
         private MaskedByte _x;
         private MaskedByte _y;
 
@@ -20,9 +23,35 @@ namespace ChompGame.MainGame.SceneModels
             set => _y.Value = (byte)(value / 2);
         }
 
-        public DynamicBlockLocation(SystemMemory memory, int address, SceneDefinition sceneDefinition)
+        public Rectangle TopLeftRegion => new Rectangle(
+                    TileX * _specs.TileWidth,
+                    (TileY + Constants.StatusBarTiles) * _specs.TileHeight,
+                    _specs.TileWidth,
+                    _specs.TileHeight);
+
+        public Rectangle TopRightRegion => new Rectangle(
+            (TileX + 1) * _specs.TileWidth,
+            (TileY + Constants.StatusBarTiles) * _specs.TileHeight,
+            _specs.TileWidth,
+            _specs.TileHeight);
+
+        public Rectangle BottomLeftRegion => new Rectangle(
+                  TileX * _specs.TileWidth,
+                  (TileY + Constants.StatusBarTiles + 1) * _specs.TileHeight,
+                  _specs.TileWidth,
+                  _specs.TileHeight);
+
+        public Rectangle BottomRightRegion => new Rectangle(
+            (TileX + 1) * _specs.TileWidth,
+            (TileY + Constants.StatusBarTiles + 1) * _specs.TileHeight,
+            _specs.TileWidth,
+            _specs.TileHeight);
+
+
+        public DynamicBlockLocation(SystemMemory memory, int address, SceneDefinition sceneDefinition, Specs specs)
         {
             _sceneDefinition = sceneDefinition;
+            _specs = specs;
 
             switch (sceneDefinition.ScrollStyle)
             {

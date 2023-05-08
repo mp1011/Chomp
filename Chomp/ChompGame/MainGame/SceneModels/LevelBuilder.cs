@@ -182,7 +182,7 @@ namespace ChompGame.MainGame.SceneModels
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition);
+                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition, _gameModule.Specs);
 
                 if (sp.Type != ScenePartType.SideExit)
                     continue;
@@ -606,7 +606,19 @@ namespace ChompGame.MainGame.SceneModels
 
             if(_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
             {
-                enemyA = GetBossController(playerController, memoryBuilder);
+                if(_gameModule.CurrentLevel == Level.Level1_11_Boss)
+                {
+                    var bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                          3,
+                          _gameModule.SpritesModule,
+                          () => new BossBulletController(_gameModule, memoryBuilder));
+
+                    extraA = bullets;
+                    enemyA = new EnemyOrBulletSpriteControllerPool<ChompBoss1Controller>(
+                            size: 1,
+                            spritesModule: _gameModule.SpritesModule,
+                            () => new ChompBoss1Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+                }               
             }
 
             return new SceneSpriteControllers(_gameModule, playerController,
@@ -621,18 +633,6 @@ namespace ChompGame.MainGame.SceneModels
                 extraB);
         }
 
-        private IEnemyOrBulletSpriteControllerPool GetBossController(PlayerController playerController, 
-            SystemMemoryBuilder memoryBuilder)
-        {
-            return _gameModule.CurrentLevel switch {
-                Level.Level1_11_Boss => 
-                    new EnemyOrBulletSpriteControllerPool<ChompBoss1Controller>(
-                        size: 1,
-                        spritesModule: _gameModule.SpritesModule,
-                        () => new ChompBoss1Controller(playerController.WorldSprite, _gameModule, memoryBuilder)),
-                _ => throw new Exception("invalid level for boss")
-            };
-        }
 
         public void ApplyLevelAlterations(NBitPlane levelMap)
         {
@@ -640,7 +640,7 @@ namespace ChompGame.MainGame.SceneModels
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = header.GetScenePart(i, _sceneDefinition);
+                ScenePart sp = header.GetScenePart(i, _sceneDefinition, _gameModule.Specs);
 
                 if (sp.Type == ScenePartType.Pit)
                 {
@@ -940,6 +940,14 @@ namespace ChompGame.MainGame.SceneModels
                     destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
                     _gameModule.Specs,
                     memory);
+
+                //explosion
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(5, 0, 3, 1),
+                  destinationPoint: new Point(0, 7),
+                  _gameModule.Specs,
+                  memory);
             }
            
 

@@ -111,13 +111,44 @@ namespace ChompGame.MainGame
         /// <param name="destination"></param>
         public void TargetTowards(MovingWorldSprite source, MovingWorldSprite destination, int speed)
         {
-            var src = source.Bounds.Center;
-            var dest = destination.Bounds.Center;
+            TargetTowards(source, destination.Bounds.Center, speed);
+        }
 
-            Point targetAngle = src.GetVectorTo(dest, speed);
+        /// <summary>
+        /// Adjust target x and y speed such that object will move toward target
+        /// </summary>
+        /// <param name="destination"></param>
+        public void TargetTowards(MovingWorldSprite source, Point destination, int speed)
+        {
+            var src = source.Bounds.Center;         
+            Point targetAngle = src.GetVectorTo(destination, speed);
 
             TargetXSpeed = targetAngle.X;
             TargetYSpeed = targetAngle.Y;
+        }
+
+        /// <summary>
+        /// Adjust target x and y speed such that object will exactly land on the target and then stop
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="speed"></param>
+        /// <returns>true when the object is at the destination</returns>
+        public bool TargetTowardsExact(MovingWorldSprite source, Point destination, int speed)
+        {
+            TargetTowards(source, destination, speed);
+
+            if (source.Center.DistanceSquared(destination) < 4)
+            {
+                TargetXSpeed = 0;
+                TargetYSpeed = 0;
+                XSpeed = 0;
+                YSpeed = 0;
+                source.Center = destination;
+                return true;
+            }
+
+            return false;
         }
 
         public void Stop()

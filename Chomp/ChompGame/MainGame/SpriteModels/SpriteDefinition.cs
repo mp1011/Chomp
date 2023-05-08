@@ -15,6 +15,7 @@ namespace ChompGame.MainGame.SpriteModels
         Explosion,
         Button,
         Chomp,
+        BossBullet,
         Max=31
     }
 

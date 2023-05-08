@@ -163,7 +163,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             for (int i = 0; i < header.PartsCount; i++)
             {               
-                ScenePart sp = header.GetScenePart(i, _scene);
+                ScenePart sp = header.GetScenePart(i, _scene, _gameModule.Specs);
 
                 if(!(sp.Type == ScenePartType.DoorBackExit && doorType == ExitType.DoorBack)
                     && !(sp.Type == ScenePartType.DoorFowardExit && doorType == ExitType.DoorForward))
@@ -186,7 +186,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = header.GetScenePart(i, _scene);
+                ScenePart sp = header.GetScenePart(i, _scene, _gameModule.Specs);
 
                 byte destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;

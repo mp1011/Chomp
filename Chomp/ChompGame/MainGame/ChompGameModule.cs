@@ -186,7 +186,6 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.NewGame;
             _audioService.OnStartup();
 
-          //  _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
 
         public void OnLogicUpdate()
@@ -301,6 +300,9 @@ namespace ChompGame.MainGame
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LoadScene;
+
+            //todo, make this level based
+            _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
 
         public void RestartScene()

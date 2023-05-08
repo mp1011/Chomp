@@ -18,7 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly TwoBit _palette;
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
-        private readonly SpritesModule _spritesModule;
+        protected readonly SpritesModule _spritesModule;
         private readonly GameByte _destructionBitOffset;
         private readonly TwoBitEnum<FallCheck> _fallCheck;
 
@@ -87,8 +87,14 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _movingSpriteController.SpriteIndex = value;
         }
 
+        protected virtual void BeforeInitializeSprite()
+        {
+
+        }
+
         public void InitializeSprite(byte palette)
         {
+            BeforeInitializeSprite();
             _palette.Value = palette;
             Status = WorldSpriteStatus.Active;
             var sprite = GetSprite();

@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.GameSystem;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
@@ -63,9 +64,9 @@ namespace ChompGame.MainGame.SceneModels
             _memory = memory;
         }
 
-        public ScenePart GetScenePart(int index, SceneDefinition sceneDefinition)
+        public ScenePart GetScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
         {
-            return new ScenePart(_memory, FirstPartAddress + (ScenePart.Bytes * index), sceneDefinition);
+            return new ScenePart(_memory, FirstPartAddress + (ScenePart.Bytes * index), sceneDefinition, specs);
         }
 
         public byte GetScenePartDestroyBitsRequired(int index)
@@ -91,13 +92,13 @@ namespace ChompGame.MainGame.SceneModels
             return address;
         }
 
-        public int DestroyBitsNeeded(SceneDefinition scene)
+        public int DestroyBitsNeeded(SceneDefinition scene, Specs specs)
         {
             int destroyBitsNeeded = 0;
 
             for (int p = 0; p < PartsCount; p++)
             {
-                destroyBitsNeeded += GetScenePart(p, scene).DestroyBitsRequired;
+                destroyBitsNeeded += GetScenePart(p, scene, specs).DestroyBitsRequired;
             }
 
             return destroyBitsNeeded;
@@ -320,7 +321,7 @@ namespace ChompGame.MainGame.SceneModels
             _xExtra2 = new TwoBit(builder.Memory, _positionExtra.Address, 4);
             _yExtra2 = new TwoBit(builder.Memory, _positionExtra.Address, 6);
 
-            _dynamicBlockLocation = new DynamicBlockLocation(builder.Memory, _yBase.Address, definition);
+            _dynamicBlockLocation = new DynamicBlockLocation(builder.Memory, _yBase.Address, definition, builder.Specs);
 
             _type.Value = type;
             X = x;
@@ -363,7 +364,7 @@ namespace ChompGame.MainGame.SceneModels
         }
 
 
-        public ScenePart(SystemMemory memory, int address, SceneDefinition definition)
+        public ScenePart(SystemMemory memory, int address, SceneDefinition definition, Specs specs)
         {
             _definition = definition;
 
@@ -382,7 +383,7 @@ namespace ChompGame.MainGame.SceneModels
 
 
             DynamicBlockState = new DynamicBlockState(memory, address);
-            _dynamicBlockLocation = new DynamicBlockLocation(memory, _yBase.Address, definition);
+            _dynamicBlockLocation = new DynamicBlockLocation(memory, _yBase.Address, definition, specs);
 
         }
     }
