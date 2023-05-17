@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SceneModels
         Bomb,
         Player,
         GreenEnemy,
+        ChompBoss,
         Bullet,
         StatusBar,
         Coins,
@@ -105,6 +106,11 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.Green2,
                 ColorIndex.Red3);
 
+            DefinePalette(PaletteKey.ChompBoss,
+                ColorIndex.Red1,
+                ColorIndex.Red3,
+                ColorIndex.White);
+
             DefinePalette(PaletteKey.Bullet,
                 ColorIndex.Red2,
                 ColorIndex.Red3,
@@ -173,7 +179,13 @@ namespace ChompGame.MainGame.SceneModels
             LoadPalette(PaletteKey.Bomb, bombPalette);
             LoadPalette(PaletteKey.Player, playerPalette);
             LoadPalette(PaletteKey.Bullet, bulletPallete);
-            LoadPalette(PaletteKey.GreenEnemy, enemyPallete);
+
+            //todo, need a better way to define enemy palettes
+            if(_currentScene.HasSprite(SpriteLoadFlags.Boss))
+                LoadPalette(PaletteKey.ChompBoss, enemyPallete);
+            else
+                LoadPalette(PaletteKey.GreenEnemy, enemyPallete);
+
             LoadPalette(PaletteKey.Bullet, bulletPallete);
         }
 

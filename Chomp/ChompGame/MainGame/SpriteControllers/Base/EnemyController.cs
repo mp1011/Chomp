@@ -31,17 +31,33 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         {      
             if (_state.Value >= (int)State.Dying)
             {
-                 _state.Value++;
-
+                
                 if (_state.Value == (int)State.Destroyed)
                 {
-                    Destroy();
-                    _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
+                    if (_hitPoints.Value == 0)
+                    {
+                        if (HandleDestroy())
+                        {
+                            Destroy();
+                            _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
+                        }
+                    }
+                    else
+                    {
+                        _state.Value = 0;
+                        GetSprite().Palette = _palette.Value;
+                    }
+                }
+                else
+                {
+                    _state.Value++;
                 }
             }
             else
                 UpdateBehavior();
         }
+
+        protected virtual bool HandleDestroy() => true;
 
         protected abstract void UpdateBehavior();
 
@@ -66,10 +82,18 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 GetSprite().Palette = 3;
             }
 
-            _statusBar.AddToScore(100); //todo - score per enemy type
-            Motion.Stop();
+            if (_hitPoints.Value == 0)
+            {
+                _statusBar.AddToScore(100); //todo - score per enemy type
+                Motion.Stop();
+                _audioService.PlaySound(ChompAudioService.Sound.Break);
+            }
+            else
+            {
+                _hitPoints.Value--;
+                _audioService.PlaySound(ChompAudioService.Sound.Break);
+            }
 
-            _audioService.PlaySound(ChompAudioService.Sound.Break);
             return true;
         }
     }

@@ -161,17 +161,17 @@ namespace ChompGame.MainGame
                     block.State.TopLeft = true;
                     anyChanged = true;
                 }
-                else if (region.Intersects(block.Location.TopRightRegion))
+                if (region.Intersects(block.Location.TopRightRegion))
                 {
                     block.State.TopRight = true;
                     anyChanged = true;
                 }
-                else if (region.Intersects(block.Location.BottomLeftRegion))
+                if (region.Intersects(block.Location.BottomLeftRegion))
                 {
                     block.State.BottomLeft = true;
                     anyChanged = true;
                 }
-                else if (region.Intersects(block.Location.BottomRightRegion))
+                if (region.Intersects(block.Location.BottomRightRegion))
                 {
                     block.State.BottomRight = true;
                     anyChanged = true;

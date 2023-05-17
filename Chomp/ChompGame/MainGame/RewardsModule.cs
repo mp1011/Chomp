@@ -43,11 +43,8 @@ namespace ChompGame.MainGame
                 _timer.Value--;
                 if(_timer.Value == 0)
                 {
-                    if (_nextBomb.Value < 2000)
-                        _nextBomb.Value += 500;
-                    else
-                        _nextBomb.Value += 1000;
-
+                    _nextBomb.Value += 500;
+                   
                     var bomb = spriteControllers.BombControllers.TryAddNew(0);
                     if(bomb != null)
                     {

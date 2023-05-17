@@ -38,7 +38,9 @@ namespace ChompGame.MainGame.SpriteControllers
             BeforeAttack=16,
             PrepareAttack=20,
             AttackStart=24,
-            Attack=25
+            Attack=25,
+            DestroyBegin=26,
+            DestroyEnd=30
         }
 
         private GameByte _phaseByte;
@@ -64,6 +66,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionTarget = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddByte();
+        }
+
+        private void HideTail()
+        {
+            for (int i = 0; i < TailSections; i++)
+            {
+                var sprite = _spritesModule.GetSprite(_tailSprites[i]);
+                sprite.Y = 0;
+            }
         }
 
         private void UpdateTail()
@@ -94,12 +105,20 @@ namespace ChompGame.MainGame.SpriteControllers
                 sprite.SizeY = 1;
                 sprite.Palette = 2;
                 sprite.Visible = true;
+                sprite.X = 0;
+                sprite.Y = 0;
             }
 
             SpriteIndex = _spritesModule.GetFreeSpriteIndex();
 
             GameDebug.Watch1 = new DebugWatch("Boss Phase", () => _phaseByte.Value);
 
+        }
+
+        protected override void OnSpriteCreated(Sprite sprite)
+        {
+            _hitPoints.Value = 2;
+            HideTail();
         }
 
         protected override void UpdateBehavior()
@@ -185,7 +204,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 Motion.TargetTowards(WorldSprite, Target, _movingSpriteController.WalkSpeed);
 
-                if ((_levelTimer.Value % 250) == 0)
+                if ((_levelTimer.Value % 32) == 0)
                     _phaseByte.Value++;
             }
             else if (_phase.Value.Between(Phase.PrepareAttack, Phase.AttackStart))
@@ -222,8 +241,63 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
         }
-    
-    
+
+        private void OpenPath()
+        {
+            _scroller.ModifyTiles((tilemap, attr) =>
+            {
+                for (int y = 8; y < 12; y++)
+                {
+                    tilemap[tilemap.Width - 1, y] = 0;
+                    tilemap[tilemap.Width - 2, y] = 0;
+                    attr[(tilemap.Width / 2) - 1, y / 2] = 1;
+                }
+
+            });
+        }
+
+        protected override bool HandleDestroy()
+        {
+            if (_phase.Value < Phase.DestroyBegin)
+            {
+                _phase.Value = Phase.DestroyBegin;
+                _music.CurrentSong = MusicModule.SongName.None;
+            }
+            else if (_phase.Value >= Phase.DestroyEnd)
+            {
+                HideTail();
+                OpenPath();
+                return true;
+            }
+
+            GetSprite().Visible = _levelTimer.IsMod(2);
+
+            if (_levelTimer.Value.IsMod(64))
+                _phase.Value++;
+
+            if (_levelTimer.Value.IsMod(16))
+            {
+                _audioService.PlaySound(ChompAudioService.Sound.Break);
+
+                var bullet = _bullets.TryAddNew(3);
+                if (bullet != null)
+                {
+                    var rng = new RandomHelper(_levelTimer.Value);
+                    bullet.WorldSprite.Center = WorldSprite.Center.Add(
+                        rng.RandomItem(-4, -2, 0, 2, 4),
+                        rng.RandomItem(-4, 2, 0, 2, 4));
+
+                    bullet.Motion.SetYSpeed(0);
+                    bullet.Motion.SetXSpeed(0);
+                    bullet.Explode();
+                }
+            }
+
+            return false;
+
+        }
+
+
         private void FireBullet(int xSpeed)
         {
             var bullet = _bullets.TryAddNew(3);

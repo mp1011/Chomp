@@ -4,6 +4,7 @@ using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -44,8 +45,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_state.Value == 60)
             {
+                var spriteBounds = WorldSprite.Bounds;
+
                 _dynamicBlockController.SpawnCoins(
-                    WorldSprite.Bounds);
+                    new Rectangle(
+                        spriteBounds.X,
+                        spriteBounds.Y - _specs.TileHeight,
+                        spriteBounds.Width,
+                        spriteBounds.Height * 2));
 
                 Destroy();
             }
@@ -55,7 +62,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        private void Explode()
+        public void Explode()
         {
             if (_state.Value >= 40)
                 return;

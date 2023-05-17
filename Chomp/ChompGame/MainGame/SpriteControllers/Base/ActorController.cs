@@ -51,6 +51,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _palette.Value = value;
         }
 
+        protected MaskedByte _hitPoints;
+
         protected ActorController(
             SpriteType spriteType,
             ChompGameModule gameModule,
@@ -72,7 +74,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress-1, shift: 2);
             _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress-1, shift: 4);
-            //note, left 2 bits still free
+            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress - 1, (Bit)192, memoryBuilder.Memory, 6);
 
             _levelTimer = gameModule.LevelTimer;
         }
@@ -104,7 +106,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _state.Value = 0;
 
             _movingSpriteController.Motion.Stop();
-            OnSpriteCreated(sprite);
+            _hitPoints.Value = 0;
+            OnSpriteCreated(sprite);            
         }
 
         protected virtual void OnSpriteCreated(Sprite sprite)
