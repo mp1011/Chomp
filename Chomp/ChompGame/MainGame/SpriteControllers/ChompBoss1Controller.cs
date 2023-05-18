@@ -117,7 +117,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _hitPoints.Value = 2;
+            _hitPoints.Value = 3;
             HideTail();
         }
 

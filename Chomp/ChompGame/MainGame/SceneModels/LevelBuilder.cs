@@ -774,6 +774,7 @@ namespace ChompGame.MainGame.SceneModels
             switch (_sceneDefinition.Theme)
             {
                 case Theme.Plains:
+                case Theme.PlainsEvening:
                     //tile row 1
                     masterPatternTable.CopyTilesTo(
                         destination: vramPatternTable,

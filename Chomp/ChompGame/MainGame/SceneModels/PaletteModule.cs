@@ -11,6 +11,8 @@ namespace ChompGame.MainGame.SceneModels
         PlainsGround,
         PlainsSky,
         PlainsSky2,
+        PlainsSky3,
+        PlainsSky4,
         Bomb,
         Player,
         GreenEnemy,
@@ -91,6 +93,19 @@ namespace ChompGame.MainGame.SceneModels
                ColorIndex.BlueGray1,
                ColorIndex.BlueGray2);
 
+            DefinePalette(PaletteKey.PlainsSky3,
+               ColorIndex.Blue1,
+               ColorIndex.Green2,
+               ColorIndex.Gray3,
+               ColorIndex.Black);
+
+            DefinePalette(PaletteKey.PlainsSky4,
+             ColorIndex.Black,
+             ColorIndex.Green1,
+             ColorIndex.BlueGray2,
+             ColorIndex.BlueGray1);
+
+
             DefinePalette(PaletteKey.Bomb,
                 ColorIndex.Black,
                 ColorIndex.Gray1,
@@ -149,12 +164,12 @@ namespace ChompGame.MainGame.SceneModels
             var enemyPallete = _graphicsModule.GetSpritePalette(2);
             var bulletPallete = _graphicsModule.GetSpritePalette(3);
 
+            LoadPalette(PaletteKey.Coins, coinPalette);
+            LoadPalette(PaletteKey.DynamicBlocks, dynamicBlockPalette);
+
             switch (sceneDefinition.Theme)
             {
                 case Theme.Plains:
-
-                    LoadPalette(PaletteKey.Coins, coinPalette);
-                    LoadPalette(PaletteKey.DynamicBlocks, dynamicBlockPalette);
 
                     LoadPalette(PaletteKey.PlainsGround, foregroundPalette);                   
                     LoadPalette(PaletteKey.PlainsSky, backgroundPalette);
@@ -174,6 +189,28 @@ namespace ChompGame.MainGame.SceneModels
                         _bgPalette2.Value = PaletteKey.PlainsSky2;
  
                     break;
+
+                case Theme.PlainsEvening:
+
+                    LoadPalette(PaletteKey.PlainsGround, foregroundPalette);
+                    LoadPalette(PaletteKey.PlainsSky, backgroundPalette);
+                    _bgPalette1.Value = PaletteKey.PlainsSky3;
+
+                    if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+                        foregroundPalette.SetColor(0, ColorIndex.BlueGray1);
+                    else if (sceneDefinition.GetBgPosition1() == 0)
+                        foregroundPalette.SetColor(0, ColorIndex.Green1);
+                    else
+                        foregroundPalette.SetColor(0, ColorIndex.Blue4);
+
+                    dynamicBlockPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
+                    coinPalette.SetColor(0, (byte)foregroundPalette.GetColorIndex(0));
+
+                    if (sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+                        _bgPalette2.Value = PaletteKey.PlainsSky4;
+
+                    break;
+
             }
 
             LoadPalette(PaletteKey.Bomb, bombPalette);

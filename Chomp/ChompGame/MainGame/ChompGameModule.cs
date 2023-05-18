@@ -292,7 +292,7 @@ namespace ChompGame.MainGame
 
         private void InitGame()
         {
-            _currentLevel.Value = Level.Level1_11_Boss;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
 
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
@@ -300,9 +300,6 @@ namespace ChompGame.MainGame
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LoadScene;
-
-            //todo, make this level based
-            _musicModule.CurrentSong = MusicModule.SongName.Adventure;
         }
 
         public void RestartScene()
@@ -364,6 +361,8 @@ namespace ChompGame.MainGame
             ExitsModule.BuildMemory(memoryBuilder, _currentScene);
 
             GameSystem.CoreGraphicsModule.FadeAmount = 16;
+
+            _musicModule.PlaySongForLevel(_currentLevel.Value);
         }
 
         private void ResetSprites()

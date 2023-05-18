@@ -16,6 +16,8 @@ namespace ChompGame.MainGame.SceneModels
         Level1_9_Platforms2,
         Level1_10_Stair,
         Level1_11_Boss,
+        Level1_12_Horizontal2
+
     }
 
     class SceneBuilder
@@ -154,17 +156,30 @@ namespace ChompGame.MainGame.SceneModels
 
             //Level1_11_Boss
             SceneDefinition.NoScrollFlat(
-                 specs: specs,
-                 theme: Theme.Plains,
-                 enemyGroup: EnemyGroup.Boss,
-                 memoryBuilder: memoryBuilder,
-                 top: 1,
-                 left: 0,
-                 right: 0,
-                 bottom: 1,
-                 bgPosition: 2);
+                    specs: specs,
+                    theme: Theme.Plains,
+                    enemyGroup: EnemyGroup.Boss,
+                    memoryBuilder: memoryBuilder,
+                    top: 1,
+                    left: 0,
+                    right: 0,
+                    bottom: 1,
+                    bgPosition: 2);
 
-        }
+            //Level1_12_Horizontal2,
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.HighVariance,
+                theme: Theme.PlainsEvening,
+                enemyGroup: EnemyGroup.Lizard_Bird,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 1,
+                bgPosition1: 3,
+                bgPosition2: 2
+            );
+
+    }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
         {
@@ -315,9 +330,29 @@ namespace ChompGame.MainGame.SceneModels
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 11, definition: scene),
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 11, definition: scene),
                 b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 11, definition: scene),
+                b => new ScenePart(b, ExitType.Left, exitOffset: -1, scene),
+                b => new ScenePart(b, ExitType.Right, exitOffset: 1, scene));
 
-                b => new ScenePart(b, ExitType.Left, exitOffset: -1, scene));
-                destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
+            scene = new SceneDefinition(Level.Level1_12_Horizontal2, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                  b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 10, definition: scene),
+                  b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 8, definition: scene),
+                  b => new ScenePart(b, ScenePartType.EnemyType2, 12, 9, scene),
+                  b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 10, definition: scene),
+                  b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 8, definition: scene),
+                  b => new ScenePart(b, ScenePartType.EnemyType1, 20, 9, scene),
+                  b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 36, y: 10, definition: scene),
+                  b => new ScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 36, y: 8, definition: scene),
+                  b => new ScenePart(b, ScenePartType.EnemyType1, 50, 8, scene)
+
+
+
+
+              );
+
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
         }
     }

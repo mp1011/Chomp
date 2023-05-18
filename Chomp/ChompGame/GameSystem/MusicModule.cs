@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 
@@ -14,6 +15,7 @@ namespace ChompGame.GameSystem
             None,
             SeaDreams,
             Adventure,
+            Adventure2,
             Threat
         }
 
@@ -38,6 +40,17 @@ namespace ChompGame.GameSystem
             : base(mainSystem)
         {
             _contentManager = contentManager;
+        }
+
+
+        public void PlaySongForLevel(Level level)
+        {
+            if (level >= Level.Level1_1_Start && level <= Level.Level1_10_Stair)
+                CurrentSong = SongName.Adventure;
+            else if (level >= Level.Level1_12_Horizontal2)
+                CurrentSong = SongName.Adventure2;
+            else
+                CurrentSong = SongName.None;
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)

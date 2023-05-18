@@ -98,8 +98,16 @@
 
         public static byte BlueGray1 => BlueGray(0).Value;
         public static byte BlueGray2 => BlueGray(2).Value;
+        public static byte BlueGray3 => BlueGray(3).Value;
+
+        public static byte BlueGray4 => BlueGray(4).Value;
 
         public static byte Blue1 => Blue(0).Value;
+        public static byte Blue2 => Blue(1).Value;
+        public static byte Blue3 => Blue(2).Value;
+        public static byte Blue4 => Blue(3).Value;
+
+
         public static byte LightTan => Brown(7).Value;
         public static byte LightYellow => Red(7).Value;
 

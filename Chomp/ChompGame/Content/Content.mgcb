@@ -26,6 +26,12 @@
 /processorParam:Quality=Best
 /build:Music/Adventure.ogg
 
+#begin Music/Adventure2.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Adventure2.ogg
+
 #begin Music/Sea Dreams.ogg
 /importer:OggImporter
 /processor:SongProcessor

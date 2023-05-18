@@ -9,13 +9,14 @@ namespace ChompGame.MainGame.SceneModels
     public enum Theme : byte
     {
         Plains = 0,
-        Ocean = 1,
-        Forest = 2,
-        Desert = 3,
-        City = 4,
-        Space = 5,
-        TechBase = 6,
-        GlitchCore = 7,
+        PlainsEvening=1,
+        Ocean = 2,
+        Forest = 3,
+        Desert = 4,
+        City = 5,
+        Space = 6,
+        TechBase = 7,
+        GlitchCore = 8,
         Max =15
     }
 
