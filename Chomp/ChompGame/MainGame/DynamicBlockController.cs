@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using Microsoft.Xna.Framework;
 
@@ -101,7 +102,7 @@ namespace ChompGame.MainGame
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = header.GetScenePart(i, scene, _gameModule.Specs);
+                var sp = header.GetDynamicScenePart(i, scene, _gameModule.Specs);
 
                 destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;

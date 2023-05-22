@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 
 namespace ChompGame.MainGame.SceneModels
@@ -18,21 +19,21 @@ namespace ChompGame.MainGame.SceneModels
     {
         private readonly ChompGameModule _gameModule;
 
-        public ScenePart ActiveExit { get; private set; }
+        public ExitScenePart ActiveExit { get; private set; }
 
         public ExitsModule(ChompGameModule module)
         {
             _gameModule = module;
         }
 
-        private void SetActiveExit(ScenePart exit)
+        private void SetActiveExit(ExitScenePart exit)
         {
-            _gameModule.GameSystem.Memory.BlockCopy(exit.Address, ActiveExit.Address, ScenePart.Bytes);
+            _gameModule.GameSystem.Memory.BlockCopy(exit.Address, ActiveExit.Address, ScenePartsHeader.ScenePartBytes);
         }
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder, SceneDefinition sceneDefinition)
         {
-            ActiveExit = new ScenePart(memoryBuilder, ExitType.None, 1, sceneDefinition);                               
+            ActiveExit = new ExitScenePart(memoryBuilder, ExitType.None, 1, sceneDefinition);                               
         }
 
         public void OnDoorEntered(ExitType exitType)
@@ -62,24 +63,24 @@ namespace ChompGame.MainGame.SceneModels
                 if (header.IsPartActivated(i))
                     continue;
 
-                ScenePart sp = header.GetScenePart(i, sceneDefinition, _gameModule.Specs);
+                var sp = header.GetExitScenePart(i, sceneDefinition, _gameModule.Specs);
 
                 if (sp.Type != ScenePartType.SideExit)
                     continue;
 
-                if(player.WorldSprite.X == rightEdge
+                if (player.WorldSprite.X == rightEdge
                     && sp.ExitType == ExitType.Right)
                 {
                     SetActiveExit(sp);
                     return;
                 }
-                else if(player.WorldSprite.X == 0
+                else if (player.WorldSprite.X == 0
                     && sp.ExitType == ExitType.Left)
                 {
                     SetActiveExit(sp);
                     return;
                 }
-                else if(player.WorldSprite.Y == bottomEdge
+                else if (player.WorldSprite.Y == bottomEdge
                     && sp.ExitType == ExitType.Bottom)
                 {
                     SetActiveExit(sp);

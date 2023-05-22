@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels.SceneParts;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
@@ -23,12 +24,14 @@ namespace ChompGame.MainGame.SceneModels
         DestructibleBlock=12,
         SwitchBlock=13,
         Button=14,
-        Wall= 15,
+        Prefab= 15,
         Max = 15
     }
 
     class ScenePartsHeader
     {
+        public const int ScenePartBytes = 2;
+
         protected SystemMemory _memory;
         protected GameByte _partCount;
 
@@ -46,7 +49,7 @@ namespace ChompGame.MainGame.SceneModels
 
         }
 
-        public ScenePartsHeader(SystemMemoryBuilder memoryBuilder, params Func<SystemMemoryBuilder, ScenePart>[] parts)
+        public ScenePartsHeader(SystemMemoryBuilder memoryBuilder, params Func<SystemMemoryBuilder, IScenePart>[] parts)
         {
             _memory = memoryBuilder.Memory;
             _partCount = memoryBuilder.AddByte();
@@ -64,14 +67,42 @@ namespace ChompGame.MainGame.SceneModels
             _memory = memory;
         }
 
-        public ScenePart GetScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        public IScenePart GetScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
         {
-            return new ScenePart(_memory, FirstPartAddress + (ScenePart.Bytes * index), sceneDefinition, specs);
+            int address = FirstPartAddress + (BaseScenePart.Bytes * index);
+            var basePart = new BaseScenePart(_memory, address, sceneDefinition, specs);
+            return basePart.Type switch {
+                ScenePartType.DestructibleBlock => new DynamicScenePart(_memory, address, sceneDefinition, specs),
+                ScenePartType.Coin => new DynamicScenePart(_memory, address, sceneDefinition, specs),
+                ScenePartType.SideExit => new ExitScenePart(_memory, address, sceneDefinition, specs),
+                ScenePartType.Pit => new PitScenePart(_memory, address, sceneDefinition, specs),
+                ScenePartType.Prefab => new PrefabScenePart(_memory, address, sceneDefinition, specs),
+                _ => new SpriteScenePart(_memory, address, sceneDefinition, specs),
+            };
+        }
+
+        public DynamicScenePart GetDynamicScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            return new DynamicScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+        }
+
+        public ExitScenePart GetExitScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            return new ExitScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+        }
+
+        public SpriteScenePart GetSpriteScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            return new SpriteScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+        }
+        public PrefabScenePart GetPrefabScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            return new PrefabScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
         }
 
         public byte GetScenePartDestroyBitsRequired(int index)
         {
-            int address = FirstPartAddress + (ScenePart.Bytes * index);
+            int address = FirstPartAddress + (ScenePartBytes * index);
             var partType = new FourBitEnum<ScenePartType>(_memory, address, true);
             return partType.Value.DestroyBitsRequired();
         }
@@ -84,7 +115,7 @@ namespace ChompGame.MainGame.SceneModels
             while(index < (int)level)
             {
                 var header = new ScenePartsHeader(address, memory);
-                address = header.FirstPartAddress + (header.PartsCount * ScenePart.Bytes);
+                address = header.FirstPartAddress + (header.PartsCount * ScenePartsHeader.ScenePartBytes);
 
                 index++;
             }
@@ -126,9 +157,9 @@ namespace ChompGame.MainGame.SceneModels
 
             _partCount = memoryBuilder.AddByte((byte)header.PartsCount);
 
-            memoryBuilder.AddBytes(ScenePart.Bytes * header.PartsCount);
+            memoryBuilder.AddBytes(ScenePartBytes * header.PartsCount);
 
-            memoryBuilder.Memory.BlockCopy(header.FirstPartAddress, FirstPartAddress, ScenePart.Bytes * header.PartsCount);
+            memoryBuilder.Memory.BlockCopy(header.FirstPartAddress, FirstPartAddress, ScenePartBytes * header.PartsCount);
         }
 
         public DynamicScenePartHeader(int address, SystemMemory memory)
@@ -138,8 +169,8 @@ namespace ChompGame.MainGame.SceneModels
         }
     }
 
-
-    class ScenePart
+ 
+    class ScenePartX    
     {
         public const int Bytes = 2;
 
@@ -168,28 +199,8 @@ namespace ChompGame.MainGame.SceneModels
 
         public ScenePartType Type => _type.Value;
 
-        private NibbleEnum<ExitType> _exitType;
-
-        public ExitType ExitType
-        {
-            get => _exitType.Value;
-            set => _exitType.Value = value;
-        }
-
-        public int ExitLevelOffset
-        {
-            get
-            {
-                if (ExitType == ExitType.DoorForward)
-                    return 1;
-                else if (ExitType == ExitType.DoorBack)
-                    return -1;
-                else if (_yBase.Value < 8)
-                    return _yBase.Value + 1;
-                else
-                    return -((_yBase.Value & 7) + 1);
-            }
-        }
+       
+       
 
         public byte X
         {
@@ -297,8 +308,7 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
-
-        public ScenePart(SystemMemoryBuilder builder, 
+        public ScenePartX(SystemMemoryBuilder builder, 
             ScenePartType type,
             byte x,
             byte y,
@@ -308,7 +318,7 @@ namespace ChompGame.MainGame.SceneModels
 
             _type = new FourBitEnum<ScenePartType>(builder.Memory, builder.CurrentAddress, true);
             _xBase = new HighNibble(builder);
-            _exitType = new NibbleEnum<ExitType>(_xBase);
+            //_exitType = new NibbleEnum<ExitType>(_xBase);
             DynamicBlockState = new DynamicBlockState(builder.Memory, builder.CurrentAddress);
 
             builder.AddByte();
@@ -327,44 +337,8 @@ namespace ChompGame.MainGame.SceneModels
             X = x;
             Y = y;
         }
-
-        public ScenePart(SystemMemoryBuilder builder,
-           ExitType exitType,
-           int exitOffset,
-           SceneDefinition definition) : this(builder, ScenePartType.SideExit, (byte)exitType, GetExitOffset(exitOffset), definition)
-        {
-        }
-
-        public ScenePart(SystemMemoryBuilder builder,
-           DynamicBlockType blockType,
-           bool topLeft,
-           bool topRight,
-           bool bottomLeft,
-           bool bottomRight,
-           byte x,
-           byte y,
-           SceneDefinition definition) : this(builder, 
-               (ScenePartType)((int)ScenePartType.Coin + blockType),
-               x,
-               y,
-               definition)
-        {
-            DynamicBlockState.TopLeft = topLeft;
-            DynamicBlockState.TopRight = topRight;
-            DynamicBlockState.BottomLeft = bottomLeft;
-            DynamicBlockState.BottomRight = bottomRight;
-        }
  
-        private static byte GetExitOffset(int offset)
-        {
-            if (offset > 0)
-                return (byte)(offset - 1);
-            else
-                return (byte)((-offset - 1) | 8);
-        }
-
-
-        public ScenePart(SystemMemory memory, int address, SceneDefinition definition, Specs specs)
+        public ScenePartX(SystemMemory memory, int address, SceneDefinition definition, Specs specs)
         {
             _definition = definition;
 
@@ -379,7 +353,7 @@ namespace ChompGame.MainGame.SceneModels
             _xExtra2 = new TwoBit(memory, _positionExtra.Address, 4);
             _yExtra2 = new TwoBit(memory, _positionExtra.Address, 6);
 
-            _exitType = new NibbleEnum<ExitType>(_xBase);
+          //  _exitType = new NibbleEnum<ExitType>(_xBase);
 
 
             DynamicBlockState = new DynamicBlockState(memory, address);

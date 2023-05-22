@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -67,7 +68,8 @@ namespace ChompGame.MainGame.SceneModels
                     {
                         if (y >= mountain2Pos + 2 && y < groundPos)
                         {
-                            nameTable[x, y] = 5;
+                            if(nameTable[x,y] == 0)
+                                nameTable[x, y] = 5;
                         }
                     });
 
@@ -138,7 +140,7 @@ namespace ChompGame.MainGame.SceneModels
             
             attributeTable.ForEach((x, y, b) =>
             {
-                if (y >= groundPosition)
+                if (y >= groundPosition || nameTable[x*_gameModule.Specs.AttributeTableBlockSize,y* _gameModule.Specs.AttributeTableBlockSize] != 0)
                     attributeTable[x, y] = 1;
                 else
                     attributeTable[x, y] = 0;
@@ -182,17 +184,17 @@ namespace ChompGame.MainGame.SceneModels
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = new ScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (ScenePart.Bytes * i), _sceneDefinition, _gameModule.Specs);
+                var sp = new ExitScenePart(_gameModule.GameSystem.Memory, header.FirstPartAddress + (BaseScenePart.Bytes * i), _sceneDefinition, _gameModule.Specs);
 
                 if (sp.Type != ScenePartType.SideExit)
                     continue;
 
                 if (sp.ExitType == ExitType.Right)
                     nameTable = AddRightExit(nameTable);
-               
+
                 else if (sp.ExitType == ExitType.Left)
                     nameTable = AddLeftExit(nameTable);
-           
+
                 else if (sp.ExitType == ExitType.Bottom)
                     nameTable = AddBottomExit(nameTable);
             }
@@ -640,16 +642,16 @@ namespace ChompGame.MainGame.SceneModels
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                ScenePart sp = header.GetScenePart(i, _sceneDefinition, _gameModule.Specs);
+                IScenePart sp = header.GetScenePart(i, _sceneDefinition, _gameModule.Specs);
 
                 if (sp.Type == ScenePartType.Pit)
                 {
-                    AddPit(sp, levelMap);
+                    AddPit(sp as PitScenePart, levelMap);
                     header.MarkActive(i);
                 }
-                else if(sp.Type == ScenePartType.Wall)
+                else if(sp.Type == ScenePartType.Prefab)
                 {
-                    AddWall(sp, levelMap);
+                    AddPrefab(sp as PrefabScenePart, levelMap);                   
                     header.MarkActive(i);
                 }
             }
@@ -683,9 +685,9 @@ namespace ChompGame.MainGame.SceneModels
             });
         }
 
-        private void AddPit(ScenePart part, NBitPlane levelMap)
+        private void AddPit(PitScenePart part, NBitPlane levelMap)
         {
-            for(int x = part.X; x <= part.X + part.Y; x++)
+            for(int x = part.X; x <= part.X + part.Width; x++)
             {
                 for(int y = levelMap.Height-1; y > 0; y--)
                 {
@@ -697,38 +699,16 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
-        private void AddWall(ScenePart part, NBitPlane levelMap)
+        private void AddPrefab(PrefabScenePart part, NBitPlane levelMap)
         {
-            int xBegin = _sceneDefinition.ScrollStyle switch {
-                ScrollStyle.Horizontal => part.X,
-                ScrollStyle.NameTable => part.X,
-                _ => 0
-            };
-
-            int xEnd = _sceneDefinition.ScrollStyle switch {
-                ScrollStyle.Horizontal => part.X + part.Y,
-                ScrollStyle.NameTable => part.X + part.Y + 1,
-                _ => levelMap.Width
-            };
-
-            int yBegin = _sceneDefinition.ScrollStyle switch {
-                ScrollStyle.Vertical => part.Y,
-                _ => 0
-            };
-
-            int yEnd = _sceneDefinition.ScrollStyle switch {
-                ScrollStyle.Vertical => part.Y + part.X + 1,
-                _ => levelMap.Height
-            };
-
-            levelMap.ForEach((x, y, t) =>
+            levelMap.ForEach((x, y, _) =>
             {
-                if(x >= xBegin && x < xEnd
-                && y >= yBegin && y < yEnd)
+                if (x >= part.X && x < part.XEnd
+                    && y >= part.Y && y < part.YEnd)
                 {
                     levelMap[x, y] = 1;
                 }
-            });
+            });            
         }
 
         public void SetupVRAMPatternTable(
