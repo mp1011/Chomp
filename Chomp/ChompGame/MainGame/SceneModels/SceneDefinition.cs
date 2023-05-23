@@ -349,6 +349,29 @@ namespace ChompGame.MainGame.SceneModels
                 0);
         }
 
+        public static SceneDefinition NametableScroll(
+            SystemMemoryBuilder memoryBuilder, 
+            Specs specs,
+            Theme theme,
+            LevelShape shape,
+            EnemyGroup enemyGroup,
+            byte left,
+            byte top, 
+            byte right,
+            byte bottom)
+        {
+            return new SceneDefinition(memoryBuilder,
+                specs,
+                ScrollStyle.NameTable,
+                shape, 
+                theme,
+                enemyGroup,
+                left,
+                top,
+                right,
+                bottom);
+        }
+
         private SceneDefinition(SystemMemoryBuilder memoryBuilder, 
             Specs specs,
             ScrollStyle scrollStyle,

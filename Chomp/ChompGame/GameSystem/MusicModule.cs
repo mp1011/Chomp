@@ -8,6 +8,8 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
+        public const bool Enabled = false;
+
         private readonly ContentManager _contentManager;
 
         public enum SongName : byte 
@@ -68,6 +70,9 @@ namespace ChompGame.GameSystem
 
         public void Update()
         {
+            if (!Enabled)
+                return;
+
             if (!_newSong.Value)
                 return;
             

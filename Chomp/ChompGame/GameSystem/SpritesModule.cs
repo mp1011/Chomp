@@ -1,7 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
-using ChompGame.Extensions;
-using ChompGame.Graphics;
 using ChompGame.MainGame;
 using System.Collections.Generic;
 using System.Linq;

@@ -18,7 +18,8 @@ namespace ChompGame.MainGame.SceneModels
         Level1_10_Stair,
         Level1_11_Boss,
         Level1_12_Horizontal2,
-        Level1_13_Column
+        Level1_13_Column,
+        Level1_14_BigRoom
 
     }
 
@@ -194,6 +195,17 @@ namespace ChompGame.MainGame.SceneModels
                 bgPosition2: 2
             );
 
+            //Level1_14_BigRoom
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: Theme.PlainsEvening,
+                enemyGroup: EnemyGroup.Lizard_Bird,
+                shape: LevelShape.Flat,
+                top: 0,
+                bottom: 2,
+                left: 0,
+                right: 0);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -258,7 +270,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 8, 34, scene),
                 b => new ExitScenePart(b, ExitType.Right, exitOffset:5, scene),
                 b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 3, 36, scene),
-                b => new PrefabScenePart(b, scene, position:36, PrefabSize.Full, PrefabSize.Full, PrefabOrigin.BottomOrLeft),
+                b => new PrefabScenePart(b, scene, position:36, PrefabSize.Full, PrefabSize.Full, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 4, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 6, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 34, definition: scene),
@@ -366,13 +378,39 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level1_13_Column, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                   b => new ExitScenePart(b, ExitType.Left, exitOffset: -1, scene),
-                  b => new PrefabScenePart(b, scene, 14, PrefabSize.Full, PrefabSize.ThreeQuarter, PrefabOrigin.BottomOrLeft),
+                  b => new ExitScenePart(b, ExitType.Right, exitOffset: 1, scene),
+                  b => new PrefabScenePart(b, scene, 14, PrefabSize.Full, PrefabSize.ThreeQuarter, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
                   b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 8, 8, scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType1, 16, 4, scene),
-                  b => new PrefabScenePart(b, scene, 50, PrefabSize.Quarter, PrefabSize.Full, PrefabOrigin.BottomOrLeft),
+                  b => new SpriteScenePart(b, ScenePartType.EnemyType2, 40, 8, scene),
+                  b => new SpriteScenePart(b, ScenePartType.Bomb, 30, 8, scene),
+                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 18, y: 4, definition: scene),
+                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 20, y: 4, definition: scene),
+                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 22, y: 4, definition: scene),
+                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 24, y: 4, definition: scene),
+
+                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 54, y: 9, definition: scene),
+                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 54, y: 11, definition: scene),
+
+                  b => new PrefabScenePart(b, scene, 50, PrefabSize.Quarter, PrefabSize.Full, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
                   b => new PitScenePart(b, 40,8, scene),
                   b => new SpriteScenePart(b, ScenePartType.Platform_LeftRight, 42, 10, scene)
               );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
+            scene = new SceneDefinition(Level.Level1_14_BigRoom, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                  b => new ExitScenePart(b, ExitType.Left, exitOffset: -1, scene),
+                  b => new PrefabScenePart(b, scene, 12, PrefabSize.Full, PrefabSize.Quarter, PrefabOrigin.BottomOrLeft, PrefabShape.StairLeft),
+                  b => new PrefabScenePart(b, scene, 28, PrefabSize.Quarter, PrefabSize.ThreeQuarter, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
+                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 20, 15, scene),
+                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 24, 12, scene),
+                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, 16, 16, scene),
+                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, 24, 16, scene)
+
+
+
+                  );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
         }

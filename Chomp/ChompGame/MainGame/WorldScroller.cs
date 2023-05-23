@@ -58,7 +58,7 @@ namespace ChompGame.MainGame
         {
             get
             {
-                int cameraYMax = (_levelNameTable.Height * _specs.TileHeight) - _specs.ScreenHeight;
+                int cameraYMax = (_levelNameTable.Height * _specs.TileHeight) - _specs.ScreenHeight+8;
 
                 return (_focusSprite.Y - (_specs.ScreenHeight / 2))
                     .Clamp(0, cameraYMax);
@@ -143,7 +143,7 @@ namespace ChompGame.MainGame
 
         private void UpdateVram_XY()
         {
-            throw new NotImplementedException();
+            UpdateVram_NoScroll();
         }
 
         private void UpdateVram_Horizontal()
@@ -206,6 +206,8 @@ namespace ChompGame.MainGame
                     return Update_Vertical();
                 case ScrollStyle.Horizontal:
                     return Update_Horizontal();
+                case ScrollStyle.NameTable:
+                    return Update_XY();
                 default:
                     return false;
             }
@@ -258,6 +260,20 @@ namespace ChompGame.MainGame
             _spritesModule.Scroll.Y = (byte)scrollY;
 
             return changed;
+        }
+
+        private bool Update_XY()
+        {
+            int scrollX = CameraPixelX - WorldScrollPixelX;
+            int scrollY = CameraPixelY - WorldScrollPixelY;
+
+            _tileModule.Scroll.X = (byte)scrollX;
+            _spritesModule.Scroll.X = (byte)scrollX;
+
+            _tileModule.Scroll.Y = (byte)scrollY;
+            _spritesModule.Scroll.Y = (byte)scrollY;
+
+            return false;
         }
 
         public void ModifyTiles(Action<NBitPlane, NBitPlane> modify)

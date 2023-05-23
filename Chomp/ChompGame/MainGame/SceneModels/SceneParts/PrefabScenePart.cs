@@ -19,6 +19,13 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         TopOrRight=1,
     }
 
+    enum PrefabShape : byte
+    {
+        Block,
+        StairLeft,
+        StairRight,
+        StairBoth
+    }
 
     class PrefabScenePart : BaseScenePart
     {
@@ -26,17 +33,22 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
 
         private MaskedByte _position; //5
         private GameBit _origin; //1
-        private TwoBit _style; //todo
+        private TwoBitEnum<PrefabShape> _shape;
 
         public PrefabOrigin Origin => _origin.Value ? PrefabOrigin.TopOrRight : PrefabOrigin.BottomOrLeft;
 
         public override byte X => _scene.ScrollStyle switch {
             ScrollStyle.Horizontal => (byte)(_position.Value * 2),
-             _ => 0 };
+            ScrollStyle.NameTable => (byte)(_position.Value * 2),
+            _ => 0 };
 
         public override byte Y => _scene.ScrollStyle switch {
             ScrollStyle.Vertical => (byte)(_position.Value * 2),
-            ScrollStyle.Horizontal => 
+            ScrollStyle.NameTable =>
+                Origin == PrefabOrigin.TopOrRight
+                    ? (byte)_scene.TopTiles
+                    : (byte)(_scene.LevelTileHeight - _scene.BottomTiles - Height),
+            ScrollStyle.Horizontal =>
                 Origin == PrefabOrigin.TopOrRight
                     ? (byte)_scene.GetParallaxLayerTile(ParallaxLayer.ForegroundStart, false)
                     : (byte)(_scene.LevelTileHeight - _scene.BottomTiles - Height),
@@ -46,18 +58,28 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         public byte XEnd => (byte)(X + Width);
         public byte YEnd => (byte)(Y + Height);
 
-        private int HeightIncrement => (_scene.LevelTileHeight - _scene.GetParallaxLayerTile(ParallaxLayer.ForegroundStart, false)) / 4;
+        private int HeightIncrement  
+        {
+            get
+            {
+                var h = (_scene.LevelTileHeight - _scene.GetParallaxLayerTile(ParallaxLayer.ForegroundStart, false)) / 4;
+                return (h / 2) * 2;
+            }
+        }
 
-        //todo, more options
+        public PrefabShape Shape => _shape.Value;
+
         public byte Width => _scene.ScrollStyle switch {
             ScrollStyle.Vertical => (byte)_scene.LevelTileWidth,
             ScrollStyle.Horizontal => (byte)(4 * ((byte)_width.Value + 1)),
+            ScrollStyle.NameTable => (byte)(4 * ((byte)_width.Value + 1)),
             _ => 0 };
 
     
         public byte Height => _scene.ScrollStyle switch {
             ScrollStyle.Vertical => (byte)(4 * ((byte)_width.Value + 1)),
             ScrollStyle.Horizontal => (byte)(HeightIncrement + (HeightIncrement * (byte)_height.Value)),
+            ScrollStyle.NameTable => (byte)(HeightIncrement + (HeightIncrement * (byte)_height.Value)),
             _ => 0
         };
 
@@ -66,18 +88,20 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
             byte position,  
             PrefabSize width,
             PrefabSize height,
-            PrefabOrigin origin)
+            PrefabOrigin origin,
+            PrefabShape shape)
             : base(builder, ScenePartType.Prefab, scene)
         {
             _position = new MaskedByte(Address + 1, Bit.Right5, builder.Memory);           
             _width = new TwoBitEnum<PrefabSize>(builder.Memory, Address, 4);
             _height = new TwoBitEnum<PrefabSize>(builder.Memory, Address, 6);
             _origin = new GameBit(Address + 1, Bit.Bit5, builder.Memory);
-
+            _shape = new TwoBitEnum<PrefabShape>(builder.Memory, Address + 1, 6);
             _position.Value = (byte)(position / 2);
             _width.Value = width;
             _height.Value = height;
             _origin.Value = origin == PrefabOrigin.TopOrRight;
+            _shape.Value = shape;
         }
 
         public PrefabScenePart(SystemMemory memory, int address, SceneDefinition scene, Specs specs)
@@ -87,6 +111,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
             _width = new TwoBitEnum<PrefabSize>(memory, Address, 4);
             _height = new TwoBitEnum<PrefabSize>(memory, Address, 6);
             _origin = new GameBit(Address + 1, Bit.Bit5, memory);
+            _shape = new TwoBitEnum<PrefabShape>(memory, Address + 1, 6);
         }
     }
 }

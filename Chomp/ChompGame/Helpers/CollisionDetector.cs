@@ -170,10 +170,10 @@ namespace ChompGame.Helpers
                 if (t == Constants.CoinTile)
                     return;
 
-                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < collidableTileBeginIndex;
-                bool checkRightCollision = actor.XSpeed < 0 && tileRight < collidableTileBeginIndex;
-                bool checkAbove = actor.YSpeed >= 0 && tileAbove < collidableTileBeginIndex;
-                bool checkBelow = actor.YSpeed < 0 && tileBelow < collidableTileBeginIndex;
+                bool checkLeftCollision = actor.XSpeed > 0 && (tileLeft < collidableTileBeginIndex || tileLeft == Constants.CoinTile);
+                bool checkRightCollision = actor.XSpeed < 0 && (tileRight < collidableTileBeginIndex || tileRight == Constants.CoinTile);
+                bool checkAbove = actor.YSpeed >= 0 && (tileAbove < collidableTileBeginIndex || tileAbove == Constants.CoinTile);
+                bool checkBelow = actor.YSpeed < 0 && (tileBelow < collidableTileBeginIndex || tileBelow == Constants.CoinTile);
 
                 int leftMove = actorBounds.Right - tileBounds.Left;
                 int rightMove = tileBounds.Right - actorBounds.Left;

@@ -169,11 +169,12 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 return;
             }
 
-            if (FallCheck == FallCheck.WrapAround && WorldSprite.Y < _spritesModule.Specs.ScreenHeight + 4)
-            {
-                HandleFall();
-                return;
-            }
+            //todo, not sure how this was supposed to work
+            //if (FallCheck == FallCheck.WrapAround && WorldSprite.Y < _spritesModule.Specs.ScreenHeight + 4)
+            //{
+            //    HandleFall();
+            //    return;
+            //}
         }
 
         protected virtual void HandleFall()

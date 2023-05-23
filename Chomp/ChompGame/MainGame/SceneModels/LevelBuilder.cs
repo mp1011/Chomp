@@ -259,6 +259,7 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.Horizontal => AddEdgeTiles(nameTable,
                                                    top: _sceneDefinition.TopTiles,
                                                    bottom: _sceneDefinition.BottomTiles),
+
                 ScrollStyle.Vertical => AddEdgeTiles(nameTable,
                                                     left: _sceneDefinition.LeftTiles,
                                                     right: _sceneDefinition.RightTiles,
@@ -269,6 +270,13 @@ namespace ChompGame.MainGame.SceneModels
                                                     left: _sceneDefinition.LeftTiles,
                                                     bottom: _sceneDefinition.BottomTiles,
                                                     right: _sceneDefinition.RightTiles),
+
+                ScrollStyle.NameTable => AddEdgeTiles(nameTable,
+                                                    top: _sceneDefinition.TopTiles,
+                                                    left: _sceneDefinition.LeftTiles,
+                                                    bottom: _sceneDefinition.BottomTiles,
+                                                    right: _sceneDefinition.RightTiles),
+
                 _ => throw new NotImplementedException(),
             };
         }
@@ -287,6 +295,9 @@ namespace ChompGame.MainGame.SceneModels
                     LevelShape.ZigZag => AddZigZagTiles(nameTable),
                     LevelShape.Ladder => nameTable, //todo
                     _ => nameTable 
+                },
+                ScrollStyle.NameTable => _sceneDefinition.LevelShape switch {
+                    _ => nameTable
                 },
                 ScrollStyle.None => _sceneDefinition.LevelShape switch {
                     LevelShape.Flat => nameTable,
@@ -708,7 +719,23 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     levelMap[x, y] = 1;
                 }
-            });            
+            });   
+            
+            if(part.Shape == PrefabShape.StairLeft || part.Shape == PrefabShape.StairBoth)
+            {
+                int stepSize = 2;
+                int steps = ((part.YEnd - part.Y) / stepSize);
+                AddStairs(levelMap, new Rectangle(part.X - steps * stepSize, part.Y, steps * stepSize, steps * stepSize),
+                    stepSize, stepSize);
+            }
+
+            if (part.Shape == PrefabShape.StairRight || part.Shape == PrefabShape.StairBoth)
+            {
+                int stepSize = 2;
+                int steps = ((part.YEnd - part.Y) / stepSize) + 1;
+                AddStairs(levelMap, new Rectangle(part.XEnd, part.Y, steps * stepSize, steps * stepSize),
+                    stepSize, -stepSize);
+            }
         }
 
         public void SetupVRAMPatternTable(
