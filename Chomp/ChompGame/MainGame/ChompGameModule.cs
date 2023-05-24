@@ -292,7 +292,7 @@ namespace ChompGame.MainGame
 
         private void InitGame()
         {
-            _currentLevel.Value = Level.Level1_14_BigRoom;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

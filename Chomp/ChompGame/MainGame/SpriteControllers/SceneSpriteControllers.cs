@@ -250,6 +250,8 @@ namespace ChompGame.MainGame.SpriteControllers
                             ScenePartType.Platform_UpDown => PlatformType.UpDown,
                             _ =>  PlatformType.Falling
                         };
+
+                        pc.Dephase(spawnY);
                     }
 
                     if(sp.DestroyBitsRequired > 0)                    

@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
@@ -80,7 +81,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _timer.Value++;
             }
 
-            if ((_levelTimer.Value % 32) == 0)
+            if ((_levelTimer.Value % 64) == 0)
             {
                 _timer.Value++;
             }
@@ -105,10 +106,15 @@ namespace ChompGame.MainGame.SpriteControllers
                 _timer.Value++;
             }
 
-            if ((_levelTimer.Value % 32) == 0)
+            if (_levelTimer.Value.IsMod(64))
             {
                 _timer.Value++;
             }
+        }
+
+        public void Dephase(int y)
+        {
+            _direction.Value = ((y/4) % 2) == 0;
         }
 
         private void Update_Vanishing()

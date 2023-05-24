@@ -332,7 +332,7 @@ namespace ChompGame.MainGame.SceneModels
             SystemMemoryBuilder memoryBuilder,
             Specs specs,
             Theme theme,
-            LevelShape variance,
+            LevelShape shape,
             EnemyGroup enemyGroup,
             byte left,
             byte right)
@@ -340,7 +340,7 @@ namespace ChompGame.MainGame.SceneModels
             return new SceneDefinition(memoryBuilder,
                 specs,
                 ScrollStyle.Vertical,
-                variance,
+                shape,
                 theme,
                 enemyGroup,
                 left,
