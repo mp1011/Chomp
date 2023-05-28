@@ -12,7 +12,8 @@ namespace ChompGame.MainGame
 
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
-       
+        private readonly ChompGameModule _gameModule;
+
         private GameInteger _score;
         private LowNibble _lives;
         private HighNibble _health;
@@ -48,6 +49,7 @@ namespace ChompGame.MainGame
 
         public StatusBar(ChompGameModule gameModule, GameRAM ram)
         {
+            _gameModule = gameModule;
             _ram = ram;
             _tileModule = gameModule.TileModule;
             _specs = _tileModule.Specs;
@@ -95,7 +97,7 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.Y = realScrollY.Value;
 
                 _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = Constants.BgRow;
+                _tileModule.TileStartY = _gameModule.CurrentScene.BgRow;
             }
 
             if (_tileModule.ScreenPoint.Y == 4)

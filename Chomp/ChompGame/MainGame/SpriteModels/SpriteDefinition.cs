@@ -16,6 +16,8 @@ namespace ChompGame.MainGame.SpriteModels
         Button,
         Chomp,
         BossBullet,
+        LevelBoss,
+        BossJaw,
         Max=31
     }
 

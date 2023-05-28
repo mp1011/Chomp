@@ -8,6 +8,14 @@ namespace ChompGame.GameSystem
 {
     public class SpritesModule : ScanlineGraphicsModule
     {
+
+        private GameByte _spriteStartIndex;
+
+        public byte SpriteStartIndex
+        {
+            get => _spriteStartIndex.Value;
+            set => _spriteStartIndex.Value = value;
+        }
         public SpritesModule(MainSystem mainSystem) : base(mainSystem)
         {
         }
@@ -44,7 +52,8 @@ namespace ChompGame.GameSystem
         public override void BuildMemory(SystemMemoryBuilder builder)
         {
             base.BuildMemory(builder);
-           
+
+            _spriteStartIndex = builder.AddByte();
             _sprite0Address = builder.CurrentAddress;
             builder.AddSprite(Specs.MaxSprites, this);
             ScanlineSprites = new GameByteArray(builder.CurrentAddress, builder.Memory);
@@ -79,7 +88,7 @@ namespace ChompGame.GameSystem
                 if (sprite.FlipY)
                     row = (byte)(sprite.Height - row - 1);
 
-                patternTableTilePoint.Index = Constants.SpriteStartIndex + sprite.Tile;
+                patternTableTilePoint.Index = SpriteStartIndex + sprite.Tile;
 
                 if (row >= Specs.TileHeight)
                 {

@@ -139,6 +139,30 @@ namespace ChompGame.MainGame.SpriteModels
                 animationStyle: AnimationStyle.NoAnimation,
                 collidesWithBackground: false,
                 flipXWhenMovingLeft: false);
+
+            //boss eye 
+            new SpriteDefinition(memoryBuilder,
+               tile: 17,
+               secondTileOffset: 1,
+               sizeX: 2,
+               sizeY: 2,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.Slow,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: true);
+
+            //boss jaw 
+            new SpriteDefinition(memoryBuilder,
+               tile: 27,
+               secondTileOffset: 0,
+               sizeX: 2,
+               sizeY: 1,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.Slow,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: true);
         }
     }
 }

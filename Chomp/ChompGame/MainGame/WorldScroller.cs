@@ -58,6 +58,9 @@ namespace ChompGame.MainGame
         {
             get
             {
+                if (_sceneDefinition.IsLevelBossScene)
+                    return _specs.ScreenHeight;
+
                 int cameraYMax = (_levelNameTable.Height * _specs.TileHeight) - _specs.ScreenHeight+8;
 
                 return (_focusSprite.Y - (_specs.ScreenHeight / 2))

@@ -164,7 +164,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                     specs: specs,
                     theme: Theme.Plains,
-                    enemyGroup: EnemyGroup.Boss,
+                    enemyGroup: EnemyGroup.MidBoss,
                     memoryBuilder: memoryBuilder,
                     top: 1,
                     left: 0,
@@ -232,6 +232,9 @@ namespace ChompGame.MainGame.SceneModels
                 right:1,
                 bottom:1,
                 bgPosition:2);
+
+            //Level1_17_Boss
+            SceneDefinition.BossScene(memoryBuilder, specs, Theme.PlainsEvening);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -462,6 +465,12 @@ namespace ChompGame.MainGame.SceneModels
                   b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 8, 12, scene),
                   b => new ExitScenePart(b, ExitType.Right, 1, scene)
                   );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
+            scene = new SceneDefinition(Level.Level1_17_Boss, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 16, definition: scene)
+            );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
         }

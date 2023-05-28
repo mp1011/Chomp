@@ -12,6 +12,9 @@ namespace ChompGame.MainGame
         private readonly CoreGraphicsModule _coreGraphicsModule;
         private readonly WorldScroller _worldScroller;
         private readonly StatusBar _statusBar;
+        private readonly ChompGameModule _gameModule;
+
+        private GameByteGridPoint _bossPosition;
 
         private GameByte _realScrollX;
         private GameByte _realScrollY;
@@ -21,17 +24,15 @@ namespace ChompGame.MainGame
         private SceneDefinition _sceneDefinition;
 
         public RasterInterrupts(
-            Specs specs, 
-            CoreGraphicsModule coreGraphicsModule,
-            WorldScroller scroller,
-            TileModule tileModule, 
-            StatusBar statusBar)
+            ChompGameModule gameModule,
+            CoreGraphicsModule coreGraphicsModule)
         {
-            _specs = specs;
-            _statusBar = statusBar;
-            _tileModule = tileModule;
+            _specs = gameModule.Specs;
+            _statusBar = gameModule.StatusBar;
+            _tileModule = gameModule.TileModule;
             _coreGraphicsModule = coreGraphicsModule;
-            _worldScroller = scroller;
+            _worldScroller = gameModule.WorldScroller;
+            _gameModule = gameModule;
         }
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -42,32 +43,10 @@ namespace ChompGame.MainGame
             _paletteCycleIndex = memoryBuilder.AddMaskedByte(Bit.Right2);
         }
 
-        public void SetScene(SceneDefinition scene)
+        public void SetScene(SceneDefinition scene, GameByteGridPoint bossPosition)
         {
             _sceneDefinition = scene;
-        }
-
-        public void Update()
-        {
-            //switch(_currentLevel.Value)
-            //{
-            //    case 1:
-
-            //        if ((_levelTimer.Value % 16) == 0)
-            //        {
-            //            _autoScroll.Value++;
-            //            if (_autoScroll.Value > _specs.NameTablePixelWidth)
-            //                _autoScroll.Value = 0;
-            //        }
-
-            //        if ((_levelTimer.Value % 4) == 0)
-            //        {
-            //            _paletteCycleIndex.Value++;
-            //        }
-
-            //        break;
-            //}
-           
+            _bossPosition = bossPosition;
         }
 
         public void OnHBlank()
@@ -87,7 +66,13 @@ namespace ChompGame.MainGame
             {
                 HandleParallax();
             }
+            else if(IsBossScene)
+            {
+                HandleBossBG();
+            }
         }
+
+        private bool IsBossScene => _sceneDefinition.HasSprite(SpriteLoadFlags.Boss) && _sceneDefinition.ScrollStyle == ScrollStyle.NameTable;
 
         private void HandleParallax()
         {
@@ -104,33 +89,37 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
             }
+        }
 
+        private void HandleBossBG()
+        {
+            if(_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            {
+                _tileModule.TileStartX = 2;
+                _tileModule.TileStartY = 4;
+            }
 
-            //int layerABegin = (2+_sceneDefinition.ParallaxLayerABeginTile) * _specs.TileHeight;
-            //int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
-            //int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerBTiles * _specs.TileHeight;
-            //int parallaxEnd = layerCBegin + _sceneDefinition.ParallaxLayerATiles * _specs.TileHeight;
+            if(_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight
+                && _coreGraphicsModule.ScreenPoint.Y < _specs.ScreenHeight - (_specs.TileHeight * 2))
+            {
+                // WHEN Y=8, SCROLLY = 32
+                // WHEN Y=12, SCROLLY = 28
+                _tileModule.Scroll.X = (byte)(255 - _bossPosition.X);
+                _tileModule.Scroll.Y = (byte)((4*15) - _bossPosition.Y);
+            }
 
+            if(_coreGraphicsModule.ScreenPoint.Y == _specs.ScreenHeight - (_specs.TileHeight*2))
+            {
+                _tileModule.TileStartX = 0;
+                _tileModule.TileStartY = _gameModule.CurrentScene.BgRow;
+                _tileModule.Scroll.X = _realScrollX.Value;
+                _tileModule.Scroll.Y = (byte)_specs.ScreenHeight;
+            }
+        }
 
-            //if (_tileModule.ScreenPoint.Y == layerABegin && _sceneDefinition.ParallaxLayerATiles > 0)
-            //{
-            //    _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
-            //}
+        public void Update()
+        {
 
-            //if (_tileModule.ScreenPoint.Y == layerBBegin && _sceneDefinition.ParallaxLayerBTiles > 0)
-            //{
-            //    _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
-            //}
-
-            //if (_tileModule.ScreenPoint.Y == layerCBegin && _sceneDefinition.ParallaxLayerATiles > 0)
-            //{
-            //    _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
-            //}
-
-            //if (_tileModule.ScreenPoint.Y == parallaxEnd)
-            //{
-            //    _tileModule.Scroll.X = _realScroll.Value;
-            //}
         }
 
         public void OnStartup()

@@ -57,6 +57,7 @@ namespace ChompGame.Helpers
     {
         private readonly Specs _specs;
         private BitPlaneForCollision _levelTileMap;
+        private SceneDefinition _currentScene;
        
         public CollisionDetector(Specs specs)
         {
@@ -66,6 +67,7 @@ namespace ChompGame.Helpers
         public void Initialize(SceneDefinition sceneDefinition, NBitPlane levelTileMap)
         {
             _levelTileMap = new BitPlaneForCollision(levelTileMap);
+            _currentScene = sceneDefinition;
         }
 
         public bool CheckCollision(MovingSprite s1, MovingSprite s2)
@@ -75,7 +77,7 @@ namespace ChompGame.Helpers
 
         public CollisionInfo DetectCollisions(MovingWorldSprite actor)
         {
-            int collidableTileBeginIndex = Constants.CollidableTileBeginIndex;
+            int collidableTileBeginIndex = _currentScene.CollidableTileBeginIndex;
             var collisionInfo = new CollisionInfo();
 
             var topLeftTile = actor.TopLeft
@@ -227,8 +229,8 @@ namespace ChompGame.Helpers
             int ledgeX = x;
             int ledgeY = y;
 
-            if (thisTile >= Constants.CollidableTileBeginIndex 
-                && leftTile < Constants.CollidableTileBeginIndex
+            if (thisTile >= _currentScene.CollidableTileBeginIndex 
+                && leftTile < _currentScene.CollidableTileBeginIndex
                 && actorBounds.Left <= tileBounds.Left)
             {
                 ledgeX = x - 1;
@@ -236,8 +238,8 @@ namespace ChompGame.Helpers
             }
 
 
-            if (thisTile >= Constants.CollidableTileBeginIndex 
-                && rightTile < Constants.CollidableTileBeginIndex
+            if (thisTile >= _currentScene.CollidableTileBeginIndex 
+                && rightTile < _currentScene.CollidableTileBeginIndex
                 && actorBounds.Right >= tileBounds.Right)
             {
                 ledgeX = x + 1;
@@ -248,7 +250,7 @@ namespace ChompGame.Helpers
                 collisionInfo.LedgeHeight = 0;
             else
             {
-                while (_levelTileMap[ledgeX, ledgeY] < Constants.CollidableTileBeginIndex
+                while (_levelTileMap[ledgeX, ledgeY] < _currentScene.CollidableTileBeginIndex
                     && ledgeY < _levelTileMap.Height)
                 {
                     ledgeY++;

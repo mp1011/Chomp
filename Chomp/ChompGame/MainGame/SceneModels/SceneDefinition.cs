@@ -40,7 +40,8 @@ namespace ChompGame.MainGame.SceneModels
     public enum EnemyGroup : byte
     {
         Lizard_Bird,
-        Boss
+        MidBoss,
+        LevelBoss
     }
 
 
@@ -115,8 +116,10 @@ namespace ChompGame.MainGame.SceneModels
         private Nibble _end;
 
         public int Address => _scrollStyle.Address;
+
+        public bool IsLevelBossScene => _enemies.Value == EnemyGroup.LevelBoss;
         
-        public int GroundFillStart => 16;
+        public int GroundFillStart => _enemies.Value == EnemyGroup.LevelBoss ? 8 : 16;
 
         public int GroundFillEnd => GroundFillStart + 1;
 
@@ -203,10 +206,15 @@ namespace ChompGame.MainGame.SceneModels
 
             return _enemies.Value switch {
                 EnemyGroup.Lizard_Bird => flag.HasFlag(SpriteLoadFlags.Bird) || flag.HasFlag(SpriteLoadFlags.Lizard),
-                EnemyGroup.Boss => flag.HasFlag(SpriteLoadFlags.Boss),
+                EnemyGroup.MidBoss => flag.HasFlag(SpriteLoadFlags.Boss),
+                EnemyGroup.LevelBoss => flag.HasFlag(SpriteLoadFlags.Boss),
                 _ => false
             };
         }
+
+        public byte BgRow => 2;
+
+        public byte CollidableTileBeginIndex => (byte)(IsLevelBossScene ? 7 : 14);
 
         public int GetParallaxLayerTile(ParallaxLayer layer, bool includeStatusBar) =>
             layer switch {
@@ -347,6 +355,23 @@ namespace ChompGame.MainGame.SceneModels
                 0,
                 right,
                 0);
+        }
+
+        public static SceneDefinition BossScene(
+            SystemMemoryBuilder memoryBuilder,
+            Specs specs,
+            Theme theme)
+        {
+            return new SceneDefinition(memoryBuilder,
+               specs,
+               ScrollStyle.NameTable,
+               LevelShape.Flat,
+               theme,
+               EnemyGroup.LevelBoss,
+               0,
+               0,
+               0,
+               1);
         }
 
         public static SceneDefinition NametableScroll(

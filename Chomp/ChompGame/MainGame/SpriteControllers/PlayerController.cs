@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController : ActorController
     {
+        private SceneDefinition _scene;
         private readonly Specs _specs;
         private const byte _recoilSpeed = 30;
         private const byte _fallSpringSpeed = 120;
@@ -35,6 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Player, gameModule, memoryBuilder)
         {
+            _scene = gameModule.CurrentScene;
             _specs = gameModule.Specs;
             _statusBar = gameModule.StatusBar;
             _audioService = gameModule.AudioService;
@@ -88,7 +90,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Point pt = startPoint;
 
-            while(levelMap[pt.X,pt.Y] >= Constants.CollidableTileBeginIndex)
+            while(levelMap[pt.X,pt.Y] >= _scene.CollidableTileBeginIndex)
             {
                 pt = new Point(pt.X, pt.Y - 1);
                 if(pt.Y == 0)

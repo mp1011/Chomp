@@ -617,9 +617,9 @@ namespace ChompGame.MainGame.SceneModels
                 }
             }
 
-            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
             {
-                if(_gameModule.CurrentLevel == Level.Level1_11_Boss)
+                if (_gameModule.CurrentLevel == Level.Level1_11_Boss)
                 {
                     var bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                           3,
@@ -631,7 +631,15 @@ namespace ChompGame.MainGame.SceneModels
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
                             () => new ChompBoss1Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
-                }               
+                }
+                else if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
+                {
+                    enemyA = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
+                          size: 1,
+                          spritesModule: _gameModule.SpritesModule,
+                          () => new LevelBossController(_gameModule, playerController.WorldSprite, memoryBuilder));
+
+                }
             }
 
             return new SceneSpriteControllers(_gameModule, playerController,
@@ -782,26 +790,45 @@ namespace ChompGame.MainGame.SceneModels
             {
                 case Theme.Plains:
                 case Theme.PlainsEvening:
-                    //tile row 1
-                    masterPatternTable.CopyTilesTo(
-                        destination: vramPatternTable,
-                        source: new InMemoryByteRectangle(0, 5, 8, 1),
-                        destinationPoint: new Point(0, 3),
-                        _gameModule.Specs,
-                        memory);
 
-                    //tile row 2
-                    masterPatternTable.CopyTilesTo(
-                        destination: vramPatternTable,
-                        source: new InMemoryByteRectangle(0, 12, 8, 1),
-                        destinationPoint: new Point(0, 4),
-                        _gameModule.Specs,
-                        memory);
+                    //need a better way to identify level bosses
+                    if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
+                    {
+                        masterPatternTable.CopyTilesTo(
+                              destination: vramPatternTable,
+                              source: new InMemoryByteRectangle(0, 12, 6, 1),
+                              destinationPoint: new Point(0, 3),
+                              _gameModule.Specs,
+                              memory);
+                    }
+                    else
+                    {
+                        //tile row 1
+                        masterPatternTable.CopyTilesTo(
+                            destination: vramPatternTable,
+                            source: new InMemoryByteRectangle(0, 5, 8, 1),
+                            destinationPoint: new Point(0, 3),
+                            _gameModule.Specs,
+                            memory);
+
+                        //tile row 2
+                        masterPatternTable.CopyTilesTo(
+                            destination: vramPatternTable,
+                            source: new InMemoryByteRectangle(0, 12, 8, 1),
+                            destinationPoint: new Point(0, 4),
+                            _gameModule.Specs,
+                            memory);
+                    }
+
                     break;
             }
 
             GridPoint spriteDestination = new ByteGridPoint(_gameModule.Specs.PatternTableTilesAcross, _gameModule.Specs.PatternTableTilesDown);
             spriteDestination.Y = 5;
+
+            //really need to fix this
+            if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
+                spriteDestination.Y = 4;
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
             {
@@ -825,7 +852,6 @@ namespace ChompGame.MainGame.SceneModels
 
                
             }
-
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Lizard))
             {
@@ -956,6 +982,32 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(0, 7),
                   _gameModule.Specs,
                   memory);
+            }
+            else if(_gameModule.CurrentLevel == Level.Level1_17_Boss)
+            {
+                //body
+                masterPatternTable.CopyTilesTo(
+                 destination: vramPatternTable,
+                 source: new InMemoryByteRectangle(10, 9, 5, 3),
+                 destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
+                 _gameModule.Specs,
+                 memory);
+
+                //eye
+                masterPatternTable.CopyTilesTo(
+                    destination: vramPatternTable,
+                    source: new InMemoryByteRectangle(9, 12, 2, 2),
+                    destinationPoint: new Point(spriteDestination.X - 2, spriteDestination.Y + 2),
+                    _gameModule.Specs,
+                    memory);
+
+                //jaw 
+                masterPatternTable.CopyTilesTo(
+                   destination: vramPatternTable,
+                   source: new InMemoryByteRectangle(11, 13, 2, 1),
+                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 3),
+                   _gameModule.Specs,
+                   memory);
             }
            
 
