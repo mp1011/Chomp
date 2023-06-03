@@ -469,6 +469,7 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_17_Boss, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
+                b => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 16, definition: scene)
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);

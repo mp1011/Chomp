@@ -988,7 +988,7 @@ namespace ChompGame.MainGame.SceneModels
                 //body
                 masterPatternTable.CopyTilesTo(
                  destination: vramPatternTable,
-                 source: new InMemoryByteRectangle(10, 9, 5, 3),
+                 source: new InMemoryByteRectangle(11, 9, 5, 3),
                  destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
                  _gameModule.Specs,
                  memory);
@@ -996,18 +996,10 @@ namespace ChompGame.MainGame.SceneModels
                 //eye
                 masterPatternTable.CopyTilesTo(
                     destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(9, 12, 2, 2),
+                    source: new InMemoryByteRectangle(11, 12, 2, 2),
                     destinationPoint: new Point(spriteDestination.X - 2, spriteDestination.Y + 2),
                     _gameModule.Specs,
                     memory);
-
-                //jaw 
-                masterPatternTable.CopyTilesTo(
-                   destination: vramPatternTable,
-                   source: new InMemoryByteRectangle(11, 13, 2, 1),
-                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 3),
-                   _gameModule.Specs,
-                   memory);
             }
            
 

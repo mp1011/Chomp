@@ -105,7 +105,7 @@ namespace ChompGame.Data
 
         public byte ValueFromChar(char s)
         {
-            var value = byte.Parse(s.ToString(), NumberStyles.HexNumber);
+            var value = s.ParseByteSpecial();
             return value;
         }
 

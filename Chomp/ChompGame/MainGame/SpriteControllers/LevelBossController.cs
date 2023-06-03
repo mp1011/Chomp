@@ -45,18 +45,22 @@ namespace ChompGame.MainGame.SpriteControllers
 
             WorldSprite.Y = 80;
             WorldSprite.X = 16;
+            _hitPoints.Value = 4;
         }
 
         protected override void UpdateBehavior()
         {
             if (_phase.Value == Phase.Init)
             {
-                _tileModule.NameTable[0, 15] = 1;
-                _tileModule.NameTable[1, 15] = 2;
-                _tileModule.NameTable[2, 15] = 3;
-                _tileModule.NameTable[0, 16] = 9;
-                _tileModule.NameTable[1, 16] = 10;
-                _tileModule.NameTable[2, 16] = 11;
+                //F = 15
+                //16 = ~
+
+                _tileModule.NameTable.SetFromString(0, 15,
+                    @"13335
+                            9$BBD
+                            @#BBA
+                            00$D0");
+
 
                 WorldSprite.X = 24;
                 WorldSprite.Y = 80;
@@ -77,15 +81,15 @@ namespace ChompGame.MainGame.SpriteControllers
                 _movingSpriteController.Update();
                 if (_levelTimer.IsMod(32))
                 {
-                    Motion.TargetTowardsExact(WorldSprite, new Point(32 + (_levelTimer.Value/4), 150 - (_levelTimer.Value/4)), 10);
+                    Motion.TargetTowardsExact(WorldSprite, new Point(64, 90), 10);
                 }
 
                 _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
-                _position.Y = (byte)(WorldSprite.Y - 64 - 8);
+                _position.Y = (byte)(WorldSprite.Y - 66);
 
                 var sprite = GetSprite();
                 var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
-                jawSprite.X = sprite.X;
+                jawSprite.X = (byte)(sprite.X - 7);
                 jawSprite.Y = (byte)(sprite.Y + 8);
             }
         }

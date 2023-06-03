@@ -154,7 +154,7 @@ namespace ChompGame.MainGame.SpriteModels
 
             //boss jaw 
             new SpriteDefinition(memoryBuilder,
-               tile: 27,
+               tile: 23,
                secondTileOffset: 0,
                sizeX: 2,
                sizeY: 1,
