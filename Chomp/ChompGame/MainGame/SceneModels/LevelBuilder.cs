@@ -597,10 +597,15 @@ namespace ChompGame.MainGame.SceneModels
                 }
                 else if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
                 {
+                   extraA = new EnemyOrBulletSpriteControllerPool<BulletController>(
+                       6,
+                       _gameModule.SpritesModule,
+                       () => new BulletController(_gameModule, memoryBuilder, SpriteType.LevelBossBullet));
+
                     enemyA = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
                           size: 1,
                           spritesModule: _gameModule.SpritesModule,
-                          () => new LevelBossController(_gameModule, playerController.WorldSprite, memoryBuilder));
+                          () => new LevelBossController(_gameModule, playerController.WorldSprite, extraA, memoryBuilder));
 
                 }
             }
@@ -966,6 +971,14 @@ namespace ChompGame.MainGame.SceneModels
                     destinationPoint: new Point(spriteDestination.X - 2, spriteDestination.Y + 2),
                     _gameModule.Specs,
                     memory);
+
+                //bullet
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(4, 0, 4, 1),
+                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 3),
+                  _gameModule.Specs,
+                  memory);
             }
            
 

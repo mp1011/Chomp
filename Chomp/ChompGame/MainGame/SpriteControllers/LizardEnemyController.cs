@@ -2,7 +2,6 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
-using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using System;

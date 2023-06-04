@@ -18,12 +18,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private SpriteDefinition _jawSpriteDefinition;
         private CoreGraphicsModule _graphicsModule;
+        private IEnemyOrBulletSpriteControllerPool _bulletControllers;
         private TileModule _tileModule;
         private PaletteModule _paletteModule;
         private GameByteGridPoint _position;
         private WorldSprite _player;
         private GameByte _jawSpriteIndex;
-        private GameByte _lightningValue;
+        private GameByte _jawPosition;
+        private GameByte _internalTimer;
         private MusicModule _musicModule;
 
         private enum Phase : byte
@@ -32,16 +34,21 @@ namespace ChompGame.MainGame.SpriteControllers
             Lightning,
             BossAppear,
             Float,
+            BeforeFireballAttack,
+            FireballAttack,
+            Rush
         }
 
         private GameByteEnum<Phase> _phase;
 
         public LevelBossController(ChompGameModule gameModule,
             WorldSprite player,
+            IEnemyOrBulletSpriteControllerPool bulletControllers,
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.LevelBoss, gameModule, memoryBuilder)
         {
             _player = player;
+            _bulletControllers = bulletControllers;
             _musicModule = gameModule.MusicModule;
             _graphicsModule = gameModule.GameSystem.CoreGraphicsModule;
             _tileModule = gameModule.TileModule;
@@ -50,7 +57,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
             _jawSpriteIndex = memoryBuilder.AddByte();
             _jawSpriteDefinition = new SpriteDefinition(SpriteType.BossJaw, memoryBuilder.Memory);
-            _lightningValue = memoryBuilder.AddByte();
+            _internalTimer = memoryBuilder.AddByte();
+            _jawPosition = memoryBuilder.AddByte();
         }
 
         protected override void BeforeInitializeSprite()
@@ -130,20 +138,35 @@ namespace ChompGame.MainGame.SpriteControllers
             bossPalette.SetColor(3, (byte)targetBossPalette.GetColorIndex(3));
         }
 
+        private void FireBullet()
+        {
+            var bullet = _bulletControllers.TryAddNew(3);
+            if (bullet != null)
+            {
+                bullet.WorldSprite.X = WorldSprite.X;
+                bullet.WorldSprite.Y = WorldSprite.Y + 8;
+                bullet.WorldSprite.FlipX = true;
+                _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+            }
+        }
+
         protected override void UpdateBehavior()
         {
-            if (_phase.Value >= Phase.BossAppear || _lightningValue.Value >= BossLightningAppearValue)
+            if (_phase.Value >= Phase.BossAppear || _internalTimer.Value >= BossLightningAppearValue)
             {
                 if (WorldSprite.Y < 64)
                     WorldSprite.Y = 64;
-                
+
+                if (WorldSprite.X > 128)
+                    WorldSprite.X = 128;
+
                 _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
                 _position.Y = (byte)(WorldSprite.Y - 66);
 
                 var sprite = GetSprite();
                 var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
                 jawSprite.X = (byte)(sprite.X - 7);
-                jawSprite.Y = (byte)(sprite.Y + 8);
+                jawSprite.Y = (byte)(sprite.Y + 8 + _jawPosition.Value);
             }
 
             if (_phase.Value == Phase.Init)
@@ -160,42 +183,42 @@ namespace ChompGame.MainGame.SpriteControllers
 
                // BossTest();
             }
-            else if(_phase.Value == Phase.Lightning)
+            else if (_phase.Value == Phase.Lightning)
             {
-                byte strikeValue = (byte)(_lightningValue.Value % 96);
+                byte strikeValue = (byte)(_internalTimer.Value % 96);
 
                 if (strikeValue == 0)
                 {
-                    if(_lightningValue.Value >= BossLightningAppearValue)
+                    if (_internalTimer.Value >= BossLightningAppearValue)
                     {
                         PositionBossAbovePlayer();
                     }
 
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                 }
-                
+
                 if (strikeValue <= 7)
                     _paletteModule.BgColor = ColorIndex.LightGray(7 - strikeValue).Value;
                 else if (strikeValue <= 14)
                     _paletteModule.BgColor = ColorIndex.LightGray(14 - strikeValue).Value;
-                else 
+                else
                     _paletteModule.BgColor = ColorIndex.Black;
 
                 if (_levelTimer.IsMod(2))
                 {
-                    _lightningValue.Value++;
+                    _internalTimer.Value++;
 
-                    if (_lightningValue.Value == BossLightningAppearValue)
+                    if (_internalTimer.Value == BossLightningAppearValue)
                     {
                         CreateBoss();
                         PositionBossAbovePlayer();
                     }
 
-                    if (_lightningValue.Value == 0)
+                    if (_internalTimer.Value == 0)
                     {
                         _musicModule.CurrentSong = MusicModule.SongName.Nemesis;
                         _phase.Value = Phase.BossAppear;
-                        _lightningValue.Value = 0;
+                        _internalTimer.Value = 0;
                     }
                 }
             }
@@ -220,17 +243,21 @@ namespace ChompGame.MainGame.SpriteControllers
                     _paletteModule.FadeColor(bossPalette, targetBossPalette, 2);
                     _paletteModule.FadeColor(bossPalette, targetBossPalette, 3);
 
-                    _lightningValue.Value++;
+                    _internalTimer.Value++;
                 }
 
-                if (_lightningValue.Value == 16)
+                if (_internalTimer.Value == 8)
                 {
                     _phase.Value = Phase.Float;
+                    _internalTimer.Value = 0;
                 }
 
             }
             else if (_phase.Value == Phase.Float)
             {
+                if (_jawPosition.Value > 0)
+                    _jawPosition.Value--;
+
                 int targetX = _player.X + 16;
 
                 int maxX = (_tileModule.NameTable.Width - 4) * _spritesModule.Specs.TileWidth;
@@ -240,7 +267,90 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (_levelTimer.IsMod(8))
                     Motion.TurnTowards(WorldSprite, new Point(targetX, 80), FloatTurnAngle, FloatSpeed);
 
-                _movingSpriteController.Update();               
+                _movingSpriteController.Update();
+
+                if (_levelTimer.IsMod(8))
+                {
+                    _internalTimer.Value++;
+                    if (_internalTimer.Value == 50)
+                    {
+                        _phase.Value = Phase.BeforeFireballAttack;
+                        _internalTimer.Value = 0;
+                    }
+                }
+            }
+            else if (_phase.Value == Phase.BeforeFireballAttack)
+            {
+                Motion.TargetXSpeed = 0;
+                Motion.TargetYSpeed = 0;
+                Motion.XAcceleration = 1;
+                Motion.YAcceleration = 1;
+
+                if (_jawPosition.Value < 4 && _levelTimer.IsMod(8))
+                    _jawPosition.Value++;
+
+                _movingSpriteController.Update();
+
+                if (Motion.XSpeed == 0 && Motion.YSpeed == 0)
+                {
+                    _internalTimer.Value++;
+                    if (_internalTimer.Value == 50)
+                        _phase.Value = Phase.FireballAttack;
+                }
+            }
+            else if (_phase.Value == Phase.FireballAttack)
+            {
+                if (_jawPosition.Value < 4)
+                    _jawPosition.Value++;
+
+                Motion.SetYSpeed(20);
+
+                if (WorldSprite.X < _player.X)
+                    Motion.SetXSpeed(20);
+
+                _movingSpriteController.Update();
+
+                if (_levelTimer.IsMod(32))
+                    FireBullet();
+
+                if (WorldSprite.Y >= ((_tileModule.NameTable.Height - 6) * _tileModule.Specs.TileHeight))
+                {
+                    _internalTimer.Value = 0;
+                    _phase.Value = Phase.Rush;
+                }
+            }
+            else if (_phase.Value == Phase.Rush)
+            {
+                _movingSpriteController.Update();
+
+                if (_internalTimer.Value < 25 && _levelTimer.IsMod(32))
+                    FireBullet();
+
+                if (_internalTimer.Value < 100)
+                {                   
+                    Motion.TargetXSpeed = 0;
+                    Motion.TargetYSpeed = 0;
+                    Motion.XAcceleration = 8;
+                    Motion.YAcceleration = 8;
+
+                    _internalTimer.Value++;
+                }
+                else
+                {
+                    if(_jawPosition.Value > 0 && _levelTimer.IsMod(16))
+                    {
+                        _jawPosition.Value--;
+                    }
+
+                    Motion.TargetXSpeed = -50;
+                    Motion.XAcceleration = 8;
+
+                    if(WorldSprite.X < 8)
+                    {
+                        _internalTimer.Value = 0;
+                        _phase.Value = Phase.Float;
+                    }
+                }
             }
         }
     }

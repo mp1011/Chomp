@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder, 
             SpriteType spriteType) : base(spriteType, gameModule, memoryBuilder)
         { 
+            
         }
 
         protected override bool DestroyWhenOutOfBounds => true;

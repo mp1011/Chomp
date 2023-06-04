@@ -163,6 +163,18 @@ namespace ChompGame.MainGame.SpriteModels
                animationStyle: AnimationStyle.NoAnimation,
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
+
+            //level boss fireball
+            new SpriteDefinition(memoryBuilder,
+                tile: 29,
+                secondTileOffset: 0,
+                sizeX: 1,
+                sizeY: 1,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.Fast,
+                animationStyle: AnimationStyle.NoAnimation,
+                collidesWithBackground: false,
+                flipXWhenMovingLeft: true);
         }
     }
 }
