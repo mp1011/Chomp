@@ -167,7 +167,7 @@ namespace ChompGame
                 s => new TileModule(s),
                 s => new RewardsModule(s),
                 s => new MusicModule(s, cm),
-                s => new PaletteModule(s, s.CoreGraphicsModule, s.GameRAM),
+                s => new PaletteModule(s, s.CoreGraphicsModule, s.GetModule<TileModule>(), s.GameRAM),
                 s => new ChompGameModule(s, s.GetModule<InputModule>(),
                                        s.GetModule<BankAudioModule>(),
                                        s.GetModule<SpritesModule>(),

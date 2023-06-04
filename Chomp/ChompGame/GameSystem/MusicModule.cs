@@ -8,7 +8,7 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
-        public const bool Enabled = false;
+        public const bool Enabled = true;
 
         private readonly ContentManager _contentManager;
 
@@ -18,7 +18,8 @@ namespace ChompGame.GameSystem
             SeaDreams,
             Adventure,
             Adventure2,
-            Threat
+            Threat,
+            Nemesis
         }
 
         private GameByteEnum<SongName> _currentSong;

@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ChompGame.Extensions
 {
@@ -33,6 +34,13 @@ namespace ChompGame.Extensions
                 (int)(vector.Y * (speed / 1.0)));
 
             return p;            
+        }
+
+        public static int Degrees(this Point pt)
+        {
+            var rad = Math.Atan2(pt.X, pt.Y);
+            var deg = (int)MathHelper.ToDegrees((float)rad);
+            return deg.NMod(360);
         }
     }
 }

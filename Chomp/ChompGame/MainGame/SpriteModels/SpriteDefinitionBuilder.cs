@@ -150,7 +150,7 @@ namespace ChompGame.MainGame.SpriteModels
                movementSpeed: MovementSpeed.Slow,
                animationStyle: AnimationStyle.NoAnimation,
                collidesWithBackground: false,
-               flipXWhenMovingLeft: true);
+               flipXWhenMovingLeft: false);
 
             //boss jaw 
             new SpriteDefinition(memoryBuilder,
@@ -162,7 +162,7 @@ namespace ChompGame.MainGame.SpriteModels
                movementSpeed: MovementSpeed.Slow,
                animationStyle: AnimationStyle.NoAnimation,
                collidesWithBackground: false,
-               flipXWhenMovingLeft: true);
+               flipXWhenMovingLeft: false);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace ChompGame.MainGame
         SpriteDefinitions,
         SceneParts,
         FreeRAM,
+        Themes
     }
 
     class ChompGameModule : Module, IMasterModule
@@ -171,6 +172,8 @@ namespace ChompGame.MainGame
             memoryBuilder.AddLabel(AddressLabels.SceneParts);
             SceneBuilder.AddSceneParts(memoryBuilder, Specs);
 
+            ThemeBuilder.BuildThemes(memoryBuilder);
+
             _levelBossPosition = new GameByteGridPoint(memoryBuilder.AddByte(), memoryBuilder.AddByte(), 255, 255);
         }
 
@@ -227,7 +230,7 @@ namespace ChompGame.MainGame
                 TileModule.AttributeTable.Reset();
 
                 _rasterInterrupts.SetScene(null, _levelBossPosition);
-                PaletteModule.SetScene(null);
+                PaletteModule.SetScene(null, Level.Level1_1_Start, GameSystem.Memory);
 
                 var palette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
                 palette.SetColor(0, ColorIndex.Black);
@@ -294,7 +297,7 @@ namespace ChompGame.MainGame
 
         private void InitGame()
         {
-            _currentLevel.Value = Level.Level1_17_Boss;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -335,7 +338,7 @@ namespace ChompGame.MainGame
                 GameSystem.GraphicsDevice, 
                 GameSystem.CoreGraphicsModule.PatternTable);
 
-            PaletteModule.SetScene(_currentScene);
+            PaletteModule.SetScene(_currentScene, _currentLevel.Value, GameSystem.Memory);
 
             _gameState.Value = GameState.PlayScene;
                        

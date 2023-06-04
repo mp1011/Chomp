@@ -45,8 +45,16 @@ namespace ChompGame.Data
             string block,
             Func<T, bool> shouldReplace = null)
         {
+            int maxLineLength = grid.Width - startX;
+
             var lines = block.Split(Environment.NewLine)
-                                .Select(p => p.Trim().Replace(" ",""))
+                                .Select(p =>
+                                {
+                                    var line = p.Trim().Replace(" ", "");
+                                    if (line.Length > maxLineLength)
+                                        line = line.Substring(0, maxLineLength);
+                                    return line;
+                                })
                                 .Where(p=>!string.IsNullOrEmpty(p))
                                 .ToArray();
 

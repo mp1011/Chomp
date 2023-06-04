@@ -1,7 +1,9 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.Helpers;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ChompGame.MainGame
 {
@@ -112,6 +114,43 @@ namespace ChompGame.MainGame
         public void TargetTowards(MovingWorldSprite source, MovingWorldSprite destination, int speed)
         {
             TargetTowards(source, destination.Bounds.Center, speed);
+        }
+
+        public void TurnTowards(MovingWorldSprite source, Point destination, int turnAngle, int speed)
+        {
+            var targetAngle = source.Bounds.Center
+                .GetVectorTo(destination, speed);
+
+            var currentAngle = new Point(XSpeed, YSpeed);
+
+            var angleDifference = targetAngle.Degrees() - currentAngle.Degrees();
+
+            Point newAngle = Point.Zero;
+            if (angleDifference < turnAngle)
+            {
+                if (targetAngle.X != 0 || targetAngle.Y != 0)
+                {
+                    SetXSpeed(targetAngle.X);
+                    SetYSpeed(targetAngle.Y);
+                }
+            }
+            else if(angleDifference > 0)
+            {
+                var newAngleDegrees = (currentAngle.Degrees() + turnAngle).NMod(360);
+                newAngle = GameMathHelper.PointFromAngle(newAngleDegrees, speed);
+              
+            }
+            else
+            {
+                var newAngleDegrees = (currentAngle.Degrees() - turnAngle).NMod(360);
+                newAngle = GameMathHelper.PointFromAngle(newAngleDegrees, speed);
+            }
+
+            if (newAngle.X != 0 || newAngle.Y != 0)
+            {
+                SetXSpeed(newAngle.X);
+                SetYSpeed(newAngle.Y);
+            }
         }
 
         /// <summary>

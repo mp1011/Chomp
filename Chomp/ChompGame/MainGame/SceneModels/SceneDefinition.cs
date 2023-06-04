@@ -6,19 +6,7 @@ using System;
 
 namespace ChompGame.MainGame.SceneModels
 {
-    public enum Theme : byte
-    {
-        Plains = 0,
-        PlainsEvening=1,
-        Ocean = 2,
-        Forest = 3,
-        Desert = 4,
-        City = 5,
-        Space = 6,
-        TechBase = 7,
-        GlitchCore = 8,
-        Max =15
-    }
+   
 
     public enum CornerStairStyle : byte
     {
@@ -28,7 +16,7 @@ namespace ChompGame.MainGame.SceneModels
         TwoBlockRight
     }
 
-    public enum ParallaxLayer
+    public enum BackgroundLayer
     {
         Begin,
         Back1,
@@ -104,7 +92,7 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle; //shared with bg2
 
         //byte 1
-        private NibbleEnum<Theme> _theme;          
+        private NibbleEnum<ThemeType> _theme;          
         private NibbleEnum<EnemyGroup> _enemies;   
 
         //byte 2 (four TwoBits or two Nibbles)
@@ -189,7 +177,7 @@ namespace ChompGame.MainGame.SceneModels
             _ => BottomTiles
         };
 
-        public Theme Theme => _theme.Value;
+        public ThemeType Theme => _theme.Value;
 
         public CornerStairStyle CornerStairStyle => _cornerStairStyle.Value;
 
@@ -216,32 +204,23 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte CollidableTileBeginIndex => (byte)(IsLevelBossScene ? 7 : 14);
 
-        public int GetParallaxLayerTile(ParallaxLayer layer, bool includeStatusBar) =>
+        public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar) =>
             layer switch {
-                ParallaxLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
-                ParallaxLayer.Back1 => GetParallaxLayerTile(ParallaxLayer.Begin, includeStatusBar) + _bgPosition1.Value,
-                ParallaxLayer.Back2 => GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar) + _bgPosition2.Value,
-                ParallaxLayer.ForegroundStart => GetParallaxLayerTile(ParallaxLayer.Back2, includeStatusBar) + 2,
-                ParallaxLayer.Foreground => LevelTileHeight + (includeStatusBar? Constants.StatusBarTiles : 0) - BottomTiles,                
+                BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
+                BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + (_bgPosition1.Value*2),
+                BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + 2,
+                BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + 2,
+                BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar? Constants.StatusBarTiles : 0) - BottomTiles,                
                 _ => 0
             };
 
-        public int GetParallaxLayerPixel(ParallaxLayer layer, bool includeStatusBar) =>
-            GetParallaxLayerTile(layer, includeStatusBar) * _specs.TileHeight;
-
-        public byte GetBgPosition1()
-        {
-            //todo, may depend on scroll style
-            if (_bgPosition1.Value == 0)
-                return 0;
-            else
-                return (byte)(2 + _bgPosition1.Value*2);
-        }
+        public int GetBackgroundLayerPixel(BackgroundLayer layer, bool includeStatusBar) =>
+            GetBackgroundLayerTile(layer, includeStatusBar) * _specs.TileHeight;
 
         public static SceneDefinition NoScrollFlat(
             SystemMemoryBuilder memoryBuilder,
             Specs specs, 
-            Theme theme, 
+            ThemeType theme, 
             EnemyGroup enemyGroup,
             byte left, 
             byte top, 
@@ -265,7 +244,7 @@ namespace ChompGame.MainGame.SceneModels
         public static SceneDefinition NoScrollCornerStairs(
            SystemMemoryBuilder memoryBuilder,
            Specs specs,
-           Theme theme,
+           ThemeType theme,
            EnemyGroup enemyGroup,
            byte left,
            byte top,
@@ -291,7 +270,7 @@ namespace ChompGame.MainGame.SceneModels
         public static SceneDefinition NoScrollBigStairs(
            SystemMemoryBuilder memoryBuilder,
            Specs specs,
-           Theme theme,
+           ThemeType theme,
            EnemyGroup enemyGroup,
            byte left,
            byte top,
@@ -315,13 +294,12 @@ namespace ChompGame.MainGame.SceneModels
         public static SceneDefinition HorizontalScroll(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,
-            Theme theme,
+            ThemeType theme,
             LevelShape variance,
             EnemyGroup enemyGroup,
             byte top,
             byte bottom,
-            byte bgPosition1,
-            byte bgPosition2)
+            byte bgPosition1)
         {
             return new SceneDefinition(memoryBuilder,
                 specs,
@@ -333,13 +311,12 @@ namespace ChompGame.MainGame.SceneModels
                 top,
                 0,
                 bottom,
-                bgPosition1,
-                bgPosition2);
+                bgPosition1);
         }
         public static SceneDefinition VerticalScroll(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,
-            Theme theme,
+            ThemeType theme,
             LevelShape shape,
             EnemyGroup enemyGroup,
             byte left,
@@ -360,7 +337,7 @@ namespace ChompGame.MainGame.SceneModels
         public static SceneDefinition BossScene(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,
-            Theme theme)
+            ThemeType theme)
         {
             return new SceneDefinition(memoryBuilder,
                specs,
@@ -377,7 +354,7 @@ namespace ChompGame.MainGame.SceneModels
         public static SceneDefinition NametableScroll(
             SystemMemoryBuilder memoryBuilder, 
             Specs specs,
-            Theme theme,
+            ThemeType theme,
             LevelShape shape,
             EnemyGroup enemyGroup,
             byte left,
@@ -401,7 +378,7 @@ namespace ChompGame.MainGame.SceneModels
             Specs specs,
             ScrollStyle scrollStyle,
             LevelShape levelShape,
-            Theme theme,
+            ThemeType theme,
             EnemyGroup enemyGroup,
             byte left=0,
             byte top=0,
@@ -421,7 +398,7 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddByte();
 
-            _theme = new NibbleEnum<Theme>(new LowNibble(memoryBuilder));
+            _theme = new NibbleEnum<ThemeType>(new LowNibble(memoryBuilder));
             _enemies = new NibbleEnum<EnemyGroup>(new HighNibble(memoryBuilder));
             memoryBuilder.AddByte();
 
@@ -472,7 +449,7 @@ namespace ChompGame.MainGame.SceneModels
             _bgPosition2 = new TwoBit(systemMemory, address, 6);
             _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(systemMemory, address, 6);
 
-            _theme = new NibbleEnum<Theme>(new LowNibble(address + 1, systemMemory));
+            _theme = new NibbleEnum<ThemeType>(new LowNibble(address + 1, systemMemory));
             _enemies = new NibbleEnum<EnemyGroup>(new HighNibble(address + 1, systemMemory));
       
             _begin = new LowNibble(address + 2, systemMemory);

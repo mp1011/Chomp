@@ -86,8 +86,9 @@
         public static byte Gold => Red(4).Value;
 
         public static byte Green1 => Green(1).Value;
-        public static byte Green2 => Green(3).Value;
-        public static byte Green3 => Green(4).Value;
+        public static byte Green2 => Green(2).Value;
+        public static byte Green3 => Green(3).Value;
+        public static byte Green4 => Green(4).Value;
 
         public static byte Red1 => Red(0).Value;
         public static byte Red2 => Red(1).Value;

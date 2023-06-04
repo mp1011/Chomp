@@ -10,7 +10,8 @@ namespace ChompGame.MainGame
         {
             Jump,
             CollectCoin,
-            Break,            
+            Break,    
+            Lightning,
             PlayerHit,
             DoorOpen,
             DoorClose,
@@ -46,6 +47,11 @@ namespace ChompGame.MainGame
                Sound.Break,
                noteDuration: 4,
                soundData: "* * * * * * * G F E D C B A");
+
+            index = DefineSound(index,
+             Sound.Lightning,
+             noteDuration: 6,
+             soundData: "+ * * G C A D C A");
 
             index = DefineSound(index,
               Sound.PlayerHit,

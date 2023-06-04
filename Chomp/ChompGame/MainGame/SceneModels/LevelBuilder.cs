@@ -24,73 +24,45 @@ namespace ChompGame.MainGame.SceneModels
             _gameModule.TileModule.NameTable.Reset();
             _gameModule.StatusBar.InitializeTiles(); 
           
-            //todo, handle theme bg's diferently
-
-            switch(_sceneDefinition.ScrollStyle)
+            switch(_sceneDefinition.Theme)
             {
-                case ScrollStyle.None:
+                case ThemeType.Plains:
+                case ThemeType.PlainsEvening:
 
-                    int mountain1Pos = _sceneDefinition.GetBgPosition1();
-
-                    if (mountain1Pos != 0)
-                    {
-                        //mountain layer 1
-                        nameTable.SetFromString(0, mountain1Pos - Constants.StatusBarTiles,
-                            @"00000C0000000C00
-                                    AB89859CAB89859C",
-                            shouldReplace: b => b == 0);
-
-                        
-                    }
-
-                    break;
-
-                case ScrollStyle.Horizontal:
-
-                    mountain1Pos = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Back1, includeStatusBar:false);
-                    int mountain2Pos = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Back2, includeStatusBar: false);
-                    int groundPos = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
-
-                    //mountain layer 1
-                    nameTable.SetFromString(0, mountain1Pos,
-                        @"00000C0000000C0000000C0000000C00
-                                AB89859CAB89859CAB89859CAB89859C",
-                        shouldReplace: b => b == 0);
-
-
-                    //mountain layer 2
-                    nameTable.SetFromString(0, mountain2Pos,
-                      @"00000C000089000000C0000890000000
-                              89AB859AB855989AB859AB855989ABAB",
-                        shouldReplace: b => b == 0);
-
-                    nameTable.ForEach((x, y, b) =>
-                    {
-                        if (y >= mountain2Pos + 2 && y < groundPos)
-                        {
-                            if(nameTable[x,y] == 0)
-                                nameTable[x, y] = 5;
-                        }
-                    });
-
-                    var vramNametable = _gameModule.TileModule.NameTable;
-
-                    nameTable.CopyTo(
-                        destination: vramNametable,
-                        source: new InMemoryByteRectangle(0, 0, vramNametable.Width, vramNametable.Height-2),
-                        destinationPoint: new Point(0, 2),
-                        specs: _gameModule.Specs,
-                        memory: _gameModule.GameSystem.Memory);
+                    byte mountain1Pos, mountain2Pos, groundPos;
+                  
+                    mountain1Pos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);
+                    mountain2Pos = (byte)(_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar: false));
+                    groundPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, includeStatusBar: false);
+                   
+                    AddPlainsMountainTiles(nameTable, mountain1Pos, mountain2Pos, groundPos);
 
                     break;
             }
-            //int layerABegin = 2 + _sceneDefinition.BeginTiles + _sceneDefinition.ParallaxLayerABeginTile;
-            //int layerBBegin = layerABegin + _sceneDefinition.ParallaxLayerBTiles;
-            //int layerCBegin = layerBBegin + _sceneDefinition.ParallaxLayerATiles;
 
+            var vramNametable = _gameModule.TileModule.NameTable;
 
+            nameTable.CopyTo(
+                destination: vramNametable,
+                source: new InMemoryByteRectangle(0, 0, vramNametable.Width, vramNametable.Height - 2),
+                destinationPoint: new Point(0, 2),
+                specs: _gameModule.Specs,
+                memory: _gameModule.GameSystem.Memory);
+        }
 
+        private void AddPlainsMountainTiles(NBitPlane nameTable, byte mountain1Pos, byte mountain2Pos, byte groundPos)
+        {
+            //mountain layer 1
+            nameTable.SetFromString(0, mountain1Pos,
+                @"00000C0000000C0000000C0000000C00
+                        AB89859CAB89859CAB89859CAB89859C",
+                shouldReplace: b => b == 0);
 
+            //mountain layer 2
+            nameTable.SetFromString(0, mountain2Pos,
+              @"000C000089000000C000089000000000
+                      AB859AB855989AB859AB855989ABAB89",
+                shouldReplace: b => b == 0);
         }
 
         public NBitPlane BuildAttributeTable(
@@ -106,25 +78,22 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
-            return _sceneDefinition.ScrollStyle switch {
-                ScrollStyle.Horizontal => BuildAttributeTable_Horizontal(attributeTable, nameTable),
-                ScrollStyle.Vertical => BuildAttributeTable_Vertical(attributeTable, nameTable),
-                _ => BuildAttributeTable_Default(attributeTable, nameTable)
-            };          
+            if (_sceneDefinition.IsLevelBossScene)
+                return BuildAttributeTable_LevelBoss(attributeTable);
+
+            return BuildAttributeTable_Default(attributeTable, nameTable);
         }
 
         private NBitPlane BuildAttributeTable_Default(NBitPlane attributeTable, NBitPlane nameTable)
         {
-            int mountainAttributePos = _sceneDefinition.GetBgPosition1() / _gameModule.Specs.AttributeTableBlockSize;
-            if (mountainAttributePos == 0)
-                mountainAttributePos = 255;
-
+            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) / _gameModule.Specs.AttributeTableBlockSize;
+            
             attributeTable.ForEach((x, y, b) =>
             {
                 bool isSolid = nameTable[x * 2, y * 2] != 0
                     || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
 
-                if (isSolid || y >= mountainAttributePos)
+                if (isSolid || y >= foreGroundAttributePosition)
                     attributeTable[x, y] = 1;
                 else
                     attributeTable[x, y] = 0;
@@ -134,31 +103,19 @@ namespace ChompGame.MainGame.SceneModels
             return attributeTable;
         }
 
-        private NBitPlane BuildAttributeTable_Horizontal(NBitPlane attributeTable, NBitPlane nameTable)
+        private NBitPlane BuildAttributeTable_LevelBoss(NBitPlane attributeTable)
         {
-            int groundPosition = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false) / _gameModule.Specs.AttributeTableBlockSize;
-            
+            int floorPos = attributeTable.Height - 1;
             attributeTable.ForEach((x, y, b) =>
             {
-                if (y >= groundPosition || nameTable[x*_gameModule.Specs.AttributeTableBlockSize,y* _gameModule.Specs.AttributeTableBlockSize] != 0)
+                if(y == floorPos)
                     attributeTable[x, y] = 1;
-                else
+                else 
                     attributeTable[x, y] = 0;
             });
 
             return attributeTable;
         }
-
-        private NBitPlane BuildAttributeTable_Vertical(NBitPlane attributeTable, NBitPlane nameTable)
-        {
-            attributeTable.ForEach((x, y, b) =>
-            {
-                attributeTable[x, y] = 1;
-            });
-
-            return attributeTable;
-        }
-
 
         public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, int seed)
         {
@@ -330,8 +287,11 @@ namespace ChompGame.MainGame.SceneModels
                         p.Y += sectionHeight;
                     }
 
-                    nameTable[p.X, p.Y] = 1;
-                    nameTable[p.X, p.Y+1] = 1;
+                    if (p.Y < nameTable.Height - 1)
+                    {
+                        nameTable[p.X, p.Y] = 1;
+                        nameTable[p.X, p.Y + 1] = 1;
+                    }
 
                 }
                 else
@@ -344,8 +304,11 @@ namespace ChompGame.MainGame.SceneModels
                         p.Y += sectionHeight;
                     }
 
-                    nameTable[p.X, p.Y] = 1;
-                    nameTable[p.X, p.Y + 1] = 1;
+                    if (p.Y < nameTable.Height - 1)
+                    {
+                        nameTable[p.X, p.Y] = 1;
+                        nameTable[p.X, p.Y + 1] = 1;
+                    }
                 }
             }
 
@@ -498,7 +461,7 @@ namespace ChompGame.MainGame.SceneModels
             var rng = new Random(seed);
             int nextSectionBegin = 0;
 
-            int groundUpper = _sceneDefinition.GetParallaxLayerTile(ParallaxLayer.Foreground, includeStatusBar: false);
+            int groundUpper = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, includeStatusBar: false);
             int groundLower = nameTable.Height;
 
             int groundPosition = rng.Next(groundUpper, groundLower);
@@ -751,6 +714,8 @@ namespace ChompGame.MainGame.SceneModels
            NBitPlane vramPatternTable,
            SystemMemory memory)
         {
+            vramPatternTable.Reset();
+
             //row 0 - top status bar text
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
@@ -788,8 +753,9 @@ namespace ChompGame.MainGame.SceneModels
             //todo- store theme definition separately
             switch (_sceneDefinition.Theme)
             {
-                case Theme.Plains:
-                case Theme.PlainsEvening:
+                case ThemeType.Plains:
+                case ThemeType.PlainsEvening:
+                case ThemeType.PlainsBoss:
 
                     //need a better way to identify level bosses
                     if (_gameModule.CurrentLevel == Level.Level1_17_Boss)

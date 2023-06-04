@@ -50,7 +50,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
                     : (byte)(_scene.LevelTileHeight - _scene.BottomTiles - Height),
             ScrollStyle.Horizontal =>
                 Origin == PrefabOrigin.TopOrRight
-                    ? (byte)_scene.GetParallaxLayerTile(ParallaxLayer.ForegroundStart, false)
+                    ? (byte)_scene.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false)
                     : (byte)(_scene.LevelTileHeight - _scene.BottomTiles - Height),
             _ => 0
         };
@@ -62,7 +62,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         {
             get
             {
-                var h = (_scene.LevelTileHeight - _scene.GetParallaxLayerTile(ParallaxLayer.ForegroundStart, false)) / 4;
+                var h = (_scene.LevelTileHeight - _scene.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false)) / 4;
                 return (h / 2) * 2;
             }
         }
