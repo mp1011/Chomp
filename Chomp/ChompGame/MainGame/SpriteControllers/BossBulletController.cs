@@ -17,7 +17,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public BossBulletController(
             ChompGameModule gameModule,
-            SystemMemoryBuilder memoryBuilder) : base(SpriteType.BossBullet, gameModule, memoryBuilder)
+            SystemMemoryBuilder memoryBuilder,
+            SpriteType spriteType = SpriteType.BossBullet) : base(spriteType, gameModule, memoryBuilder, SpriteTileIndex.Extra1)
         {
             _collisionDetector = gameModule.CollissionDetector;
             _audioService = gameModule.AudioService;

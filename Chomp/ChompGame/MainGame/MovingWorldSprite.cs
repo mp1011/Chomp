@@ -23,13 +23,22 @@ namespace ChompGame.MainGame
 
     class WorldSprite 
     {
+        private SpriteTileTable _spriteTileTable;
         protected readonly Specs _specs;
         protected SpriteDefinition _spriteDefinition;
         protected readonly SpritesModule _spritesModule;
         protected readonly WorldScroller _scroller;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
-
+        private GameByteEnum<SpriteTileIndex> _tileIndex;
+        public SpriteTileIndex TileIndex => _tileIndex.Value;
+      
         public GameByte SpriteIndex { get; }
+
+        public byte Tile
+        {
+            get => GetSprite().Tile;
+            set => GetSprite().Tile = value;
+        }
 
         public WorldSpriteStatus Status
         {
@@ -89,19 +98,27 @@ namespace ChompGame.MainGame
 
         public WorldSprite(
             SystemMemoryBuilder memoryBuilder,
+            SpriteTileTable spriteTileTable,
             Specs specs,
             SpriteDefinition spriteDefinition,
             SpritesModule spritesModule,
-            WorldScroller scroller)
+            WorldScroller scroller,
+            SpriteTileIndex index)
         {
+            _spriteTileTable = spriteTileTable;
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
             _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 6);
             _spriteDefinition = spriteDefinition;
 
             _position = memoryBuilder.AddExtendedPoint(); // 6 bits free here
+            _tileIndex = new GameByteEnum<SpriteTileIndex>(
+                new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left6, memoryBuilder.Memory, 2));
+            memoryBuilder.AddByte();
             _scroller = scroller;
             _specs = specs;
             _spritesModule = spritesModule;
+
+            _tileIndex.Value = index;
         }
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
@@ -152,7 +169,7 @@ namespace ChompGame.MainGame
 
         public void ConfigureSprite(Sprite sprite)
         {
-            sprite.Tile = _spriteDefinition.Tile;
+            sprite.Tile = _spriteTileTable.GetTile(_tileIndex.Value);
             sprite.Tile2Offset = _spriteDefinition.SecondTileOffset;
             sprite.SizeX = _spriteDefinition.SizeX;
             sprite.SizeY = _spriteDefinition.SizeY;
@@ -207,11 +224,13 @@ namespace ChompGame.MainGame
 
         public MovingWorldSprite(
             SystemMemoryBuilder memoryBuilder,
+            SpriteTileTable spriteTileTable,
             Specs specs,
             SpriteDefinition spriteDefinition,
             SpritesModule spritesModule,
             PrecisionMotion motion, 
-            WorldScroller scroller) : base(memoryBuilder, specs,spriteDefinition, spritesModule, scroller)
+            WorldScroller scroller,
+            SpriteTileIndex tileIndex) : base(memoryBuilder,spriteTileTable,specs,spriteDefinition, spritesModule, scroller, tileIndex)
         {           
             Motion = motion;
         }

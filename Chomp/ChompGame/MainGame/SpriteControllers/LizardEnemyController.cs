@@ -16,10 +16,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public LizardEnemyController(
             IEnemyOrBulletSpriteControllerPool lizardBulletControllers,
+            SpriteTileIndex tileIndex,
             ChompGameModule chompGameModule,
             MovingWorldSprite player,
             SystemMemoryBuilder memoryBuilder)
-            : base(SpriteType.Lizard, chompGameModule, memoryBuilder)
+            : base(SpriteType.Lizard, tileIndex, chompGameModule, memoryBuilder)
         {
             _lizardBulletControllers = lizardBulletControllers;
             _player = player;

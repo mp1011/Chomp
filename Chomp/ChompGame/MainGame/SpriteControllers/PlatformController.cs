@@ -36,7 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override bool DestroyWhenFarOutOfBounds => false;
 
         public PlatformController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Platform, gameModule, memoryBuilder)
+            : base(SpriteType.Platform, gameModule, memoryBuilder, SpriteTileIndex.Platform)
         {
             _timer = new MaskedByte(_state.Address, Bit.Right2, memoryBuilder.Memory);
             _playerOnPlatform = new GameBit(_state.Address, Bit.Bit2, memoryBuilder.Memory);

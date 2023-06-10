@@ -48,14 +48,12 @@ namespace ChompGame.MainGame.SpriteModels
 
     class SpriteDefinition
     {
-        public const int ByteLength = 3;
+        public const int ByteLength = 2;
 
         private GameBit _sizeX;
         private GameBit _sizeY;
 
         private TwoBit _secondTileOffset;
-
-        private MaskedByte _tile;
 
         private TwoBitEnum<GravityStrength> _gravityStrength;
         private TwoBitEnum<AnimationStyle> _animationStyle;
@@ -66,11 +64,6 @@ namespace ChompGame.MainGame.SpriteModels
 
         public int SizeX => _sizeX.Value ? 2 : 1;
         public int SizeY => _sizeY.Value ? 2 : 1;
-
-        public byte Tile
-        {
-            get => _tile.Value;
-        }
 
         public byte SecondTileOffset
         {
@@ -88,7 +81,6 @@ namespace ChompGame.MainGame.SpriteModels
         public bool StopsAtLedges => _stopsAtLedges.Value;
 
         public SpriteDefinition(SystemMemoryBuilder memoryBuilder,
-            byte tile,
             byte secondTileOffset,
             int sizeX,
             int sizeY,
@@ -99,24 +91,23 @@ namespace ChompGame.MainGame.SpriteModels
             bool flipXWhenMovingLeft,
             bool stopsAtLedges=false)
         {   
-            _tile = memoryBuilder.AddMaskedByte(Bit.Right6);
-            _secondTileOffset = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress - 1, 6);
-
-            _gravityStrength = new TwoBitEnum<GravityStrength>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
-            _movementSpeed = new TwoBitEnum<MovementSpeed>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
-            _animationStyle = new TwoBitEnum<AnimationStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
-            _collidesWithBackground = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit6, memoryBuilder.Memory);
-            _flipXWhenMovingLeft = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
+            //byte 1
+            _secondTileOffset = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
+            _gravityStrength = new TwoBitEnum<GravityStrength>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
+            _movementSpeed = new TwoBitEnum<MovementSpeed>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
+            _animationStyle = new TwoBitEnum<AnimationStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
             memoryBuilder.AddByte();
 
-            _sizeX = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
-            _sizeY = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit1, memoryBuilder.Memory);
-            _stopsAtLedges = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit2, memoryBuilder.Memory);
-
-            //5 bits left 
+            //byte 2
+            _collidesWithBackground = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
+            _flipXWhenMovingLeft = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit1, memoryBuilder.Memory);
+            _sizeX = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit2, memoryBuilder.Memory);
+            _sizeY = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit3, memoryBuilder.Memory);
+            _stopsAtLedges = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
             memoryBuilder.AddByte();
 
-            _tile.Value = tile;
+            //3 bits free
+
             _secondTileOffset.Value = secondTileOffset;
 
             _sizeX.Value = (sizeX == 2);
@@ -132,18 +123,16 @@ namespace ChompGame.MainGame.SpriteModels
 
         public SpriteDefinition(SystemMemory memory, int address)
         {
-            _tile = new MaskedByte(address, Bit.Right6, memory);
-            _secondTileOffset = new TwoBit(memory, address, 6);
+            _secondTileOffset = new TwoBit(memory, address, 0);
+            _gravityStrength = new TwoBitEnum<GravityStrength>(memory, address, 2);
+            _movementSpeed = new TwoBitEnum<MovementSpeed>(memory, address, 4);
+            _animationStyle = new TwoBitEnum<AnimationStyle>(memory, address, 6);
 
-            _gravityStrength = new TwoBitEnum<GravityStrength>(memory, address + 1, 0);
-            _movementSpeed = new TwoBitEnum<MovementSpeed>(memory, address + 1, 2);
-            _animationStyle = new TwoBitEnum<AnimationStyle>(memory, address + 1, 4);
-            _collidesWithBackground = new GameBit(address + 1, Bit.Bit6, memory);
-            _flipXWhenMovingLeft = new GameBit(address + 1, Bit.Bit7, memory);
-
-            _sizeX = new GameBit(address + 2, Bit.Bit0, memory);
-            _sizeY = new GameBit(address + 2, Bit.Bit1, memory);
-            _stopsAtLedges = new GameBit(address + 2, Bit.Bit2, memory);
+            _collidesWithBackground = new GameBit(address + 1, Bit.Bit0, memory);
+            _flipXWhenMovingLeft = new GameBit(address + 1, Bit.Bit1, memory);
+            _sizeX = new GameBit(address + 1, Bit.Bit2, memory);
+            _sizeY = new GameBit(address + 1, Bit.Bit3, memory);
+            _stopsAtLedges = new GameBit(address + 1, Bit.Bit4, memory);
         }
 
         public SpriteDefinition(SpriteType spriteType, SystemMemory memory) :

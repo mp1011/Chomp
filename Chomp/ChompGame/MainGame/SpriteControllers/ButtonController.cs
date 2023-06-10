@@ -7,7 +7,8 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ButtonController : ISpriteController
     {
-        private SpriteDefinition _spriteDefinition;        
+        private SpriteDefinition _spriteDefinition;
+        private SpriteTileTable _spriteTileTable;
         private PlayerController _playerController;
         private DynamicBlockController _dynamicBlockController;
         private ChompAudioService _audio;
@@ -41,6 +42,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder)
         {
             _spriteDefinition = new SpriteDefinition(SpriteType.Button, memoryBuilder.Memory);
+            _spriteTileTable = gameModule.SpriteTileTable;
             _playerController = playerController;
             _audio = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
@@ -49,10 +51,12 @@ namespace ChompGame.MainGame.SpriteControllers
             
             WorldSprite = new WorldSprite(
                 specs: gameModule.Specs,
+                spriteTileTable: _spriteTileTable,
                 spriteDefinition: _spriteDefinition,
                 memoryBuilder: memoryBuilder,
                 spritesModule: gameModule.SpritesModule,
-                scroller: gameModule.WorldScroller);
+                scroller: gameModule.WorldScroller,
+                index: SpriteTileIndex.Button);
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();
@@ -76,7 +80,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 && player.Bounds.Intersects(this.WorldSprite.Bounds))
             {
                 player.Motion.YSpeed = -10;
-                GetSprite().Tile = (byte)(Constants.ButtonTile + 1);
+                WorldSprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Button) + 1);
                 _audio.PlaySound(ChompAudioService.Sound.ButtonPress);
                 _dynamicBlockController.SwitchOffBlocks();
                 _state.Value = 1;

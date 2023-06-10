@@ -8,7 +8,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class ExplosionController : ActorController
     {
         public ExplosionController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Explosion, gameModule, memoryBuilder)
+            : base(SpriteType.Explosion, gameModule, memoryBuilder, tileIndex: SpriteTileIndex.Explosion)
         {
         }
 

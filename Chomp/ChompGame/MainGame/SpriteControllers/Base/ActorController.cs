@@ -19,6 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
         protected readonly SpritesModule _spritesModule;
+        protected readonly SpriteTileTable _spriteTileTable;
         private readonly GameByte _destructionBitOffset;
         private readonly TwoBitEnum<FallCheck> _fallCheck;
 
@@ -56,26 +57,28 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected ActorController(
             SpriteType spriteType,
             ChompGameModule gameModule,
-            SystemMemoryBuilder memoryBuilder)
+            SystemMemoryBuilder memoryBuilder,
+            SpriteTileIndex tileIndex)
         {
             _spritesModule = gameModule.SpritesModule;
+            _spriteTileTable = gameModule.SpriteTileTable;
             _state = memoryBuilder.AddByte();
 
             _destructionBitOffset = memoryBuilder.AddByte();
             memoryBuilder.AddByte();
-
             _movingSpriteController = new MovingSpriteController(
                gameModule.SpritesModule,
+               _spriteTileTable,
                gameModule.LevelTimer,
                memoryBuilder,
-               spriteIndex: 255,
+               spriteIndex: tileIndex,
                worldScroller: gameModule.WorldScroller,
                spriteDefinition: new SpriteDefinition(spriteType, memoryBuilder.Memory));
 
-            _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress-1, shift: 2);
-            _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress-1, shift: 4);
-            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress - 1, (Bit)192, memoryBuilder.Memory, 6);
-
+            _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 0);
+            _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 2);
+            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)240, memoryBuilder.Memory, 4);
+            memoryBuilder.AddByte();
             _levelTimer = gameModule.LevelTimer;
         }
 
@@ -107,7 +110,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             _movingSpriteController.Motion.Stop();
             _hitPoints.Value = 0;
-            OnSpriteCreated(sprite);            
+            OnSpriteCreated(sprite);    
         }
 
         protected virtual void OnSpriteCreated(Sprite sprite)
@@ -147,7 +150,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void Update()
         {
-            HideOrDestroyIfOutOfBounds();
+             HideOrDestroyIfOutOfBounds();
 
             if (WorldSprite.Status == WorldSpriteStatus.Active)
             {

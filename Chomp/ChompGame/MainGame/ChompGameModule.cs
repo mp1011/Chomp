@@ -71,6 +71,7 @@ namespace ChompGame.MainGame
 
         public TileModule TileModule => _tileModule;
         public SpritesModule SpritesModule => _spritesModule;
+        public SpriteTileTable SpriteTileTable { get; private set; }
         public GameByte LevelTimer => _timer;
         public WorldScroller WorldScroller => _worldScroller;
         public CollisionDetector CollissionDetector => _collisionDetector;
@@ -114,7 +115,8 @@ namespace ChompGame.MainGame
             PaletteModule = paletteModule;
             ExitsModule = new ExitsModule(this);
             _statusBar = new StatusBar(this, GameRAM);
-            _dynamicBlockController = new DynamicBlockController(this);
+            SpriteTileTable = new SpriteTileTable();
+            _dynamicBlockController = new DynamicBlockController(this, SpriteTileTable);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -143,6 +145,8 @@ namespace ChompGame.MainGame
             RewardsModule.BuildMemory(memoryBuilder);
 
             _scenePartsDestroyed = new ScenePartsDestroyed(memoryBuilder);
+
+            SpriteTileTable.BuildMemory(memoryBuilder);
 
             //note, have unused bits here
             var freeRamOffset = new ExtendedByte2(
@@ -359,7 +363,7 @@ namespace ChompGame.MainGame
             _dynamicBlockController.InitializeDynamicBlocks(_currentScene, memoryBuilder, levelMap, levelAttributeTable, _sceneSpriteControllers.ExplosionControllers);
             _worldScroller.UpdateVram();
 
-            _collisionDetector.Initialize(_currentScene, levelMap);
+            _collisionDetector.Initialize(_currentScene, levelMap, SpriteTileTable);
             _rasterInterrupts.SetScene(_currentScene, _levelBossPosition);
 
             ExitsModule.BuildMemory(memoryBuilder, _currentScene);

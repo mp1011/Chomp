@@ -10,6 +10,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class DoorController : ISpriteController
     {
         private SpriteDefinition _spriteDefinition;
+        private SpriteTileTable _spriteTileTable;
         private SpritesModule _spritesModule;
         private GameByte _levelTimer;
         private readonly InputModule _inputModule;
@@ -60,6 +61,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _spriteDefinition = new SpriteDefinition(SpriteType.Door, memoryBuilder.Memory);
             _spritesModule = gameModule.SpritesModule;
+            _spriteTileTable = gameModule.SpriteTileTable;
             _levelTimer = gameModule.LevelTimer;
             _inputModule = gameModule.InputModule;
             _playerController = playerController;
@@ -71,10 +73,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
+                spriteTileTable: gameModule.SpriteTileTable,
                 spriteDefinition: _spriteDefinition,
                 memoryBuilder: memoryBuilder,
                 spritesModule: _spritesModule,
-                scroller: gameModule.WorldScroller);
+                scroller: gameModule.WorldScroller,
+                index: SpriteTileIndex.Door);
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();
@@ -92,6 +96,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             HideIfOutOfBounds();
 
+            byte baseTile = _spriteTileTable.DoorTile; 
             if (WorldSprite.Status != WorldSpriteStatus.Active)
                 return;
 
@@ -102,7 +107,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if(_openState == 1)
             {
                 var sprite = GetSprite();
-                sprite.Tile = (byte)(_spriteDefinition.Tile + 1);
+                sprite.Tile = (byte)(baseTile + 1);
             }
             else if (_openState == 10)
             {
@@ -115,12 +120,12 @@ namespace ChompGame.MainGame.SpriteControllers
                
                 var sprite = GetSprite();
                 sprite.Visible = true;
-                sprite.Tile = (byte)(_spriteDefinition.Tile + 1);
+                sprite.Tile = (byte)(baseTile + 1);
             }
             else if (_openState == 30)
             {
                 var sprite = GetSprite();
-                sprite.Tile = (byte)(_spriteDefinition.Tile);
+                sprite.Tile = baseTile;
             }
             else if (_openState == 40)
             {

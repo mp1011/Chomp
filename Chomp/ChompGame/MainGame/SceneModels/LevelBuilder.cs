@@ -12,10 +12,12 @@ namespace ChompGame.MainGame.SceneModels
     {
         private SceneDefinition _sceneDefinition;
         private ChompGameModule _gameModule;
+        private SpriteTileTable _spriteTileTable;
 
         public LevelBuilder(ChompGameModule chompGameModule, SceneDefinition sceneDefinition)
         {
             _gameModule = chompGameModule;
+            _spriteTileTable = chompGameModule.SpriteTileTable;
             _sceneDefinition = sceneDefinition;
         }
 
@@ -559,7 +561,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemyA = new EnemyOrBulletSpriteControllerPool<LizardEnemyController>(
                     2,
                     _gameModule.SpritesModule,
-                    () => new LizardEnemyController(extraA, _gameModule, playerController.WorldSprite, memoryBuilder));
+                    () => new LizardEnemyController(extraA, SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, memoryBuilder));
             }
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Bird))
@@ -569,14 +571,14 @@ namespace ChompGame.MainGame.SceneModels
                     enemyA = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
                         2,
                         _gameModule.SpritesModule,
-                        () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder));
+                        () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, SpriteTileIndex.Enemy1));
                 }
                 else
                 {
                     enemyB = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
                        2,
                        _gameModule.SpritesModule,
-                       () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder));
+                       () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, SpriteTileIndex.Enemy2));
                 }
             }
 
@@ -597,15 +599,16 @@ namespace ChompGame.MainGame.SceneModels
                 }
                 else if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
                 {
-                   extraA = new EnemyOrBulletSpriteControllerPool<BulletController>(
+                   var bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                        6,
                        _gameModule.SpritesModule,
-                       () => new BulletController(_gameModule, memoryBuilder, SpriteType.LevelBossBullet));
+                       () => new BossBulletController(_gameModule, memoryBuilder, SpriteType.LevelBossBullet));
 
+                    extraA = bossBulletControllers;
                     enemyA = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
                           size: 1,
                           spritesModule: _gameModule.SpritesModule,
-                          () => new LevelBossController(_gameModule, playerController.WorldSprite, extraA, memoryBuilder));
+                          () => new LevelBossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
 
                 }
             }
@@ -818,6 +821,7 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
                   _gameModule.Specs,
                   memory);
+                _spriteTileTable.SetTile(SpriteTileIndex.Bomb,2);
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
 
@@ -833,6 +837,7 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
                   _gameModule.Specs,
                   memory);
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
 
@@ -843,6 +848,9 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
                   _gameModule.Specs,
                   memory);
+
+                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 5);
+                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 6);
 
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
@@ -856,7 +864,7 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
                   _gameModule.Specs,
                   memory);
-
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy2, 17);
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
 
@@ -869,11 +877,12 @@ namespace ChompGame.MainGame.SceneModels
             {
                 //platform
                 masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(12, 5, 2, 1),
-               destinationPoint: new Point(4, 6),
-               _gameModule.Specs,
-               memory);
+                   destination: vramPatternTable,
+                   source: new InMemoryByteRectangle(12, 5, 2, 1),
+                   destinationPoint: new Point(4, 6),
+                   _gameModule.Specs,
+                   memory);
+                _spriteTileTable.SetTile(SpriteTileIndex.Platform, 13);
 
                 //door
                 masterPatternTable.CopyTilesTo(
@@ -883,8 +892,6 @@ namespace ChompGame.MainGame.SceneModels
                     _gameModule.Specs,
                     memory);
 
-                
-
                 //button
                 masterPatternTable.CopyTilesTo(
                    destination: vramPatternTable,
@@ -892,8 +899,7 @@ namespace ChompGame.MainGame.SceneModels
                    destinationPoint: new Point(4, 7),
                    _gameModule.Specs,
                    memory);
-
-
+                _spriteTileTable.SetTile(SpriteTileIndex.Button, 21); 
             }
 
             //block 
@@ -903,6 +909,7 @@ namespace ChompGame.MainGame.SceneModels
                 destinationPoint: new Point(6, 3),
                 _gameModule.Specs,
                 memory);
+            _spriteTileTable.SetTile(SpriteTileIndex.Block, 14);
 
             //coin 
             masterPatternTable.CopyTilesTo(
@@ -911,6 +918,7 @@ namespace ChompGame.MainGame.SceneModels
                 destinationPoint: new Point(7, 3),
                 _gameModule.Specs,
                 memory);
+            _spriteTileTable.SetTile(SpriteTileIndex.Coin, 15);
         }
     
         private void AddBossSprites(
@@ -946,6 +954,11 @@ namespace ChompGame.MainGame.SceneModels
                     _gameModule.Specs,
                     memory);
 
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy2, 7);
+                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 8);
+                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 17);
+
                 //explosion
                 masterPatternTable.CopyTilesTo(
                   destination: vramPatternTable,
@@ -979,8 +992,17 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 3),
                   _gameModule.Specs,
                   memory);
+
+                //bullet2
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(10, 7, 1, 1),
+                  destinationPoint: new Point(spriteDestination.X+5, spriteDestination.Y + 3),
+                  _gameModule.Specs,
+                  memory);
+
             }
-           
+
 
         }
     }

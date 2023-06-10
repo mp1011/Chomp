@@ -13,8 +13,10 @@ namespace ChompGame.MainGame.SpriteControllers
         public BirdEnemyController(
             MovingWorldSprite player,
             ChompGameModule gameModule,
-            SystemMemoryBuilder memoryBuilder) 
+            SystemMemoryBuilder memoryBuilder,
+            SpriteTileIndex tileIndex) 
             : base(SpriteType.Bird,
+                    tileIndex,
                     gameModule,                  
                     memoryBuilder)
         {

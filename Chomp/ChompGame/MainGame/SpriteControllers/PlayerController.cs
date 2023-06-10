@@ -34,7 +34,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public PlayerController(
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Player, gameModule, memoryBuilder)
+            : base(SpriteType.Player, gameModule, memoryBuilder, SpriteTileIndex.Player)
         {
             _scene = gameModule.CurrentScene;
             _specs = gameModule.Specs;

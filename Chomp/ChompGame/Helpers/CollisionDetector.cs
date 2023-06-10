@@ -3,6 +3,7 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -58,14 +59,16 @@ namespace ChompGame.Helpers
         private readonly Specs _specs;
         private BitPlaneForCollision _levelTileMap;
         private SceneDefinition _currentScene;
-       
+        private SpriteTileTable _spriteTileTable;
+
         public CollisionDetector(Specs specs)
         {
             _specs = specs;
         }
 
-        public void Initialize(SceneDefinition sceneDefinition, NBitPlane levelTileMap)
+        public void Initialize(SceneDefinition sceneDefinition, NBitPlane levelTileMap, SpriteTileTable spriteTileTable)
         {
+            _spriteTileTable = spriteTileTable;
             _levelTileMap = new BitPlaneForCollision(levelTileMap);
             _currentScene = sceneDefinition;
         }
@@ -132,13 +135,13 @@ namespace ChompGame.Helpers
                         && actor.YSpeed >= 0)
                     {
                         collisionInfo.IsOnGround = true;
-                        if (t == Constants.DestructibleBlockTile)
+                        if (t == _spriteTileTable.DestructibleBlockTile)
                         {
                             collisionInfo.DynamicBlockCollision = true;
                             collisionInfo.DynamicTileX = x;
                             collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
                         }
-                        else if( t == Constants.CoinTile)
+                        else if( t == _spriteTileTable.CoinTile)
                         {
                             collisionInfo.IsOnGround = false;
                             collisionInfo.DynamicTileX = x;
@@ -157,7 +160,7 @@ namespace ChompGame.Helpers
                     return;
                 }
 
-                if (t == Constants.DestructibleBlockTile || t == Constants.CoinTile)
+                if (t == _spriteTileTable.DestructibleBlockTile || t == _spriteTileTable.CoinTile)
                 {
                     collisionInfo.DynamicBlockCollision = true;
                     collisionInfo.DynamicTileX = x;
@@ -169,13 +172,13 @@ namespace ChompGame.Helpers
                     collisionInfo.TileY = y - Constants.StatusBarTiles;
                 }
 
-                if (t == Constants.CoinTile)
+                if (t == _spriteTileTable.CoinTile)
                     return;
 
-                bool checkLeftCollision = actor.XSpeed > 0 && (tileLeft < collidableTileBeginIndex || tileLeft == Constants.CoinTile);
-                bool checkRightCollision = actor.XSpeed < 0 && (tileRight < collidableTileBeginIndex || tileRight == Constants.CoinTile);
-                bool checkAbove = actor.YSpeed >= 0 && (tileAbove < collidableTileBeginIndex || tileAbove == Constants.CoinTile);
-                bool checkBelow = actor.YSpeed < 0 && (tileBelow < collidableTileBeginIndex || tileBelow == Constants.CoinTile);
+                bool checkLeftCollision = actor.XSpeed > 0 && (tileLeft < collidableTileBeginIndex || tileLeft == _spriteTileTable.CoinTile);
+                bool checkRightCollision = actor.XSpeed < 0 && (tileRight < collidableTileBeginIndex || tileRight == _spriteTileTable.CoinTile);
+                bool checkAbove = actor.YSpeed >= 0 && (tileAbove < collidableTileBeginIndex || tileAbove == _spriteTileTable.CoinTile);
+                bool checkBelow = actor.YSpeed < 0 && (tileBelow < collidableTileBeginIndex || tileBelow == _spriteTileTable.CoinTile);
 
                 int leftMove = actorBounds.Right - tileBounds.Left;
                 int rightMove = tileBounds.Right - actorBounds.Left;

@@ -7,12 +7,5 @@
         public static readonly byte StatusBarHeight = 8;
         public static readonly byte StatusBarTiles = 2;
         public static readonly byte DoorTile = 15;
-        public static readonly byte PlatformTile = 13;
-        public static readonly byte ExplosionTile = 6;
-        public static readonly byte DestructibleBlockTile = 14;
-        public static readonly byte CoinTile = 15;
-        public static readonly byte ButtonTile = 21;
-
-
     }
 }

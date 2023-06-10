@@ -9,7 +9,6 @@ namespace ChompGame.MainGame.SpriteModels
             
             //player
             new SpriteDefinition(memoryBuilder,
-                tile: 1,
                 secondTileOffset: 1,
                 sizeX: 1,
                 sizeY: 2,
@@ -21,7 +20,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //lizard
             new SpriteDefinition(memoryBuilder,
-                tile: 3,
                 secondTileOffset: 1,
                 sizeX: 1,
                 sizeY: 2,
@@ -34,7 +32,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //lizard fireball
             new SpriteDefinition(memoryBuilder,
-                tile: 5,
                 secondTileOffset: 0,
                 sizeX: 1,
                 sizeY: 1,
@@ -46,7 +43,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //bird
             new SpriteDefinition(memoryBuilder,
-                tile: 17,
                 secondTileOffset: 0,
                 sizeX: 2,
                 sizeY: 1,
@@ -58,7 +54,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //bomb
             new SpriteDefinition(memoryBuilder,
-                tile: 2,
                 secondTileOffset: 0,
                 sizeX: 1,
                 sizeY: 1,
@@ -70,7 +65,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //door 
             new SpriteDefinition(memoryBuilder,
-               tile: Constants.DoorTile,
                secondTileOffset: 1,
                sizeX: 1,
                sizeY: 2,
@@ -82,7 +76,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //platform
             new SpriteDefinition(memoryBuilder,
-              tile: Constants.PlatformTile,
               secondTileOffset: 0,
               sizeX: 2,
               sizeY: 1,
@@ -94,7 +87,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //explosion
             new SpriteDefinition(memoryBuilder,
-              tile: Constants.ExplosionTile,
               secondTileOffset: 0,
               sizeX: 1,
               sizeY: 1,
@@ -106,7 +98,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //button
             new SpriteDefinition(memoryBuilder,
-             tile: Constants.ButtonTile,
              secondTileOffset: 0,
              sizeX: 1,
              sizeY: 1,
@@ -118,7 +109,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //chomp
             new SpriteDefinition(memoryBuilder,
-             tile: 3,
              secondTileOffset: 1,
              sizeX: 2,
              sizeY: 2,
@@ -130,7 +120,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //boss fireball
             new SpriteDefinition(memoryBuilder,
-                tile: 8,
                 secondTileOffset: 0,
                 sizeX: 1,
                 sizeY: 1,
@@ -142,7 +131,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //boss eye 
             new SpriteDefinition(memoryBuilder,
-               tile: 17,
                secondTileOffset: 1,
                sizeX: 2,
                sizeY: 2,
@@ -154,7 +142,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //boss jaw 
             new SpriteDefinition(memoryBuilder,
-               tile: 23,
                secondTileOffset: 0,
                sizeX: 2,
                sizeY: 1,
@@ -166,7 +153,6 @@ namespace ChompGame.MainGame.SpriteModels
 
             //level boss fireball
             new SpriteDefinition(memoryBuilder,
-                tile: 29,
                 secondTileOffset: 0,
                 sizeX: 1,
                 sizeY: 1,

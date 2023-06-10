@@ -50,7 +50,7 @@ namespace ChompGame.MainGame.SpriteControllers
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Chomp, gameModule, memoryBuilder)
+            : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _player = player;
             _audioService = gameModule.AudioService;
@@ -150,11 +150,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     _scroller.ModifyTiles((tilemap, attr) =>
                     {
-                        tilemap[0, y] = Constants.DestructibleBlockTile;
-                        tilemap[1, y] = Constants.DestructibleBlockTile;
+                        tilemap[0, y] = _spriteTileTable.DestructibleBlockTile;
+                        tilemap[1, y] = _spriteTileTable.DestructibleBlockTile;
 
-                        tilemap[tilemap.Width - 1, y] = Constants.DestructibleBlockTile;
-                        tilemap[tilemap.Width - 2, y] = Constants.DestructibleBlockTile;
+                        tilemap[tilemap.Width - 1, y] = _spriteTileTable.DestructibleBlockTile;
+                        tilemap[tilemap.Width - 2, y] = _spriteTileTable.DestructibleBlockTile;
 
                         attr[0, y / 2] = 1;
                         attr[(tilemap.Width / 2) - 1, y / 2] = 1;

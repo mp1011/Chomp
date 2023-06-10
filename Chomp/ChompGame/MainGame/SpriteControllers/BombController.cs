@@ -32,7 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 ChompGameModule gameModule,
                 PlayerController playerController,
                 SystemMemoryBuilder memoryBuilder)
-            : base(SpriteType.Bomb, gameModule, memoryBuilder)
+            : base(SpriteType.Bomb, gameModule, memoryBuilder, SpriteTileIndex.Bomb)
         {
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _collisionDetector = gameModule.CollissionDetector;
@@ -148,7 +148,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 }                
             });
         }
-
 
         protected override void OnSpriteCreated(Sprite sprite)
         {

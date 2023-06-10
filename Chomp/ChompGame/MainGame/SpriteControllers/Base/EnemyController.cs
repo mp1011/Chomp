@@ -12,9 +12,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         private ScenePartsDestroyed _scenePartsDestroyed;
         private StatusBar _statusBar;
 
-        protected EnemyController(SpriteType spriteType, 
+        protected EnemyController(SpriteType spriteType,
+            SpriteTileIndex index,
             ChompGameModule gameModule,
-            SystemMemoryBuilder memoryBuilder) : base(spriteType, gameModule, memoryBuilder)
+            SystemMemoryBuilder memoryBuilder) : base(spriteType, gameModule, memoryBuilder,index)
         {
             _audioService = gameModule.AudioService;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;

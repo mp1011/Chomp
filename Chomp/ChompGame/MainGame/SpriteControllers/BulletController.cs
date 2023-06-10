@@ -10,7 +10,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public BulletController(
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder, 
-            SpriteType spriteType) : base(spriteType, gameModule, memoryBuilder)
+            SpriteType spriteType) : base(spriteType, gameModule, memoryBuilder, SpriteTileIndex.Extra1)
         { 
             
         }

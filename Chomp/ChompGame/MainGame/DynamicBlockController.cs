@@ -5,6 +5,7 @@ using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
+using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame
@@ -77,10 +78,12 @@ namespace ChompGame.MainGame
         private GameByte _partCount;
         private SceneDefinition _scene;
         private SpriteControllerPool<ExplosionController> _explosionControllers;
+        private SpriteTileTable _spriteTileTable;
 
-        public DynamicBlockController(ChompGameModule gameModule)
+        public DynamicBlockController(ChompGameModule gameModule, SpriteTileTable spriteTileTable)
         {
             _gameModule = gameModule;
+            _spriteTileTable = spriteTileTable;
         }
 
         public void InitializeDynamicBlocks(
@@ -231,9 +234,9 @@ namespace ChompGame.MainGame
             };
 
             byte tile = block.Type switch {
-                DynamicBlockType.DestructibleBlock => Constants.DestructibleBlockTile,
-                DynamicBlockType.SwitchBlock => Constants.DestructibleBlockTile,
-                DynamicBlockType.Coin => Constants.CoinTile,
+                DynamicBlockType.DestructibleBlock => _spriteTileTable.DestructibleBlockTile,
+                DynamicBlockType.SwitchBlock => _spriteTileTable.DestructibleBlockTile,
+                DynamicBlockType.Coin => _spriteTileTable.CoinTile,
                 _ => 0
             };
 

@@ -7,9 +7,10 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {
-    class MovingSpriteController// : ISpriteController
+    class MovingSpriteController
     {
         private SpriteDefinition _spriteDefinition;
+        private SpriteTileTable _spriteTileTable;
 
         public WorldSpriteStatus Status
         {
@@ -89,25 +90,29 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public MovingSpriteController(
             SpritesModule spritesModule,
+            SpriteTileTable spriteTileTable,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder,
-            byte spriteIndex,
+            SpriteTileIndex spriteIndex,
             SpriteDefinition spriteDefinition,
             WorldScroller worldScroller)
         {
             _spriteDefinition = spriteDefinition;
             _spritesModule = spritesModule;
             _levelTimer = levelTimer;
+            _spriteTileTable = spriteTileTable;
 
             Motion = new AcceleratedMotion(levelTimer, memoryBuilder);
 
             WorldSprite = new MovingWorldSprite(
                 specs: _spritesModule.Specs,
+                spriteTileTable: spriteTileTable,
                 spriteDefinition: spriteDefinition,
                 memoryBuilder: memoryBuilder,
                 spritesModule: _spritesModule,
                 motion: Motion.CurrentMotion,
-                scroller: worldScroller);          
+                scroller: worldScroller,
+                tileIndex: spriteIndex);          
         }
 
         public void AfterCollision(CollisionInfo collisionInfo)
@@ -194,9 +199,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 _ => false
             };
 
-            if(!shouldAnimate)
+            byte spriteTile = _spriteTileTable.GetTile(WorldSprite.TileIndex); 
+            if (!shouldAnimate)
             {
-                sprite.Tile = _spriteDefinition.Tile;
+                sprite.Tile = spriteTile;
                 sprite.Tile2Offset = 1;
             }
             else if ((_levelTimer.Value % 16) == 0)
@@ -204,10 +210,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 if(_spriteDefinition.AnimationStyle == AnimationStyle.AnimateLowerTileOnly)
                     sprite.Tile2Offset = sprite.Tile2Offset.Toggle(1,2);
                 else
-                    sprite.Tile = sprite.Tile.Toggle(_spriteDefinition.Tile, (byte)(_spriteDefinition.Tile + sprite.SizeX));
+                    sprite.Tile = sprite.Tile.Toggle(spriteTile, (byte)(spriteTile + sprite.SizeX));
             }
         }
-
-       
     }
 }

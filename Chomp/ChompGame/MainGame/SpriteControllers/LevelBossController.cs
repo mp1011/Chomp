@@ -18,7 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private SpriteDefinition _jawSpriteDefinition;
         private CoreGraphicsModule _graphicsModule;
-        private IEnemyOrBulletSpriteControllerPool _bulletControllers;
+        private EnemyOrBulletSpriteControllerPool<BossBulletController> _bulletControllers;
         private TileModule _tileModule;
         private PaletteModule _paletteModule;
         private GameByteGridPoint _position;
@@ -36,16 +36,17 @@ namespace ChompGame.MainGame.SpriteControllers
             Float,
             BeforeFireballAttack,
             FireballAttack,
-            Rush
+            Rush,
+            FireRain
         }
 
         private GameByteEnum<Phase> _phase;
 
         public LevelBossController(ChompGameModule gameModule,
             WorldSprite player,
-            IEnemyOrBulletSpriteControllerPool bulletControllers,
+            EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers,
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.LevelBoss, gameModule, memoryBuilder)
+            : base(SpriteType.LevelBoss, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _player = player;
             _bulletControllers = bulletControllers;
@@ -87,13 +88,21 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _jawSpriteIndex.Value = _spritesModule.GetFreeSpriteIndex();
             var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
-            jawSprite.Tile = _jawSpriteDefinition.Tile;
+           // jawSprite.Tile = _jawSpriteDefinition.Tile;
             jawSprite.SizeX = _jawSpriteDefinition.SizeX;
             jawSprite.SizeY = _jawSpriteDefinition.SizeY;
             jawSprite.Tile2Offset = 0;
             jawSprite.Visible = true;
             jawSprite.Palette = 2;
+            jawSprite.FlipX = false;
 
+            HideBoss();
+
+            WorldSprite.FlipX = false;
+        }
+
+        private void HideBoss()
+        {
             var spritePalette = _graphicsModule.GetSpritePalette(2);
             spritePalette.SetColor(1, 0);
             spritePalette.SetColor(2, 0);
@@ -103,6 +112,9 @@ namespace ChompGame.MainGame.SpriteControllers
             bossPalette.SetColor(1, 0);
             bossPalette.SetColor(2, 0);
             bossPalette.SetColor(3, 0);
+
+            WorldSprite.X = 0;
+            WorldSprite.Y = 0;
         }
 
         private void PositionBossAbovePlayer()
@@ -120,7 +132,9 @@ namespace ChompGame.MainGame.SpriteControllers
             CreateBoss();
             PositionBossAbovePlayer();
             Motion.SetXSpeed(20);
-            _phase.Value = Phase.Float;
+
+            _internalTimer.Value = 0;
+            _phase.Value = Phase.FireRain;
 
             Theme theme = new Theme(_graphicsModule.GameSystem.Memory, ThemeType.PlainsBoss);
             var targetSpritePalette = _paletteModule.GetPalette(theme.Enemy1);
@@ -150,12 +164,35 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        private ISpriteController CreateFirebomb()
+        {
+            var bullet = _bulletControllers.TryAddNew(3);
+            if (bullet != null)
+            {
+                bullet.GetSprite().Tile = 39;
+                bullet.WorldSprite.X = WorldSprite.X + 16;
+                bullet.WorldSprite.Y = WorldSprite.Y + 8;
+                _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+                bullet.WorldSprite.Y = 64;
+                bullet.WorldSprite.X = _player.X;
+                bullet.Motion.SetYSpeed(20);
+                
+            }
+
+            return bullet;
+        }
+
+
         protected override void UpdateBehavior()
         {
             if (_phase.Value >= Phase.BossAppear || _internalTimer.Value >= BossLightningAppearValue)
             {
-                if (WorldSprite.Y < 64)
-                    WorldSprite.Y = 64;
+                if (_phase.Value != Phase.FireRain)
+                {
+                    if (WorldSprite.Y < 64)
+                        WorldSprite.Y = 64;
+                }
 
                 if (WorldSprite.X > 128)
                     WorldSprite.X = 128;
@@ -181,7 +218,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _phase.Value = Phase.Lightning;
                 }
 
-               // BossTest();
+                BossTest();
             }
             else if (_phase.Value == Phase.Lightning)
             {
@@ -348,7 +385,43 @@ namespace ChompGame.MainGame.SpriteControllers
                     if(WorldSprite.X < 8)
                     {
                         _internalTimer.Value = 0;
-                        _phase.Value = Phase.Float;
+                        _phase.Value = Phase.FireRain;
+                    }
+                }
+            }
+            else if(_phase.Value == Phase.FireRain)
+            {
+                if(_internalTimer.Value == 0)
+                {
+                    _audioService.PlaySound(ChompAudioService.Sound.Lightning);
+                    _internalTimer.Value++;
+                    Motion.SetXSpeed(0);
+                    Motion.SetYSpeed(0);
+                    HideBoss();
+                }
+ 
+                if (_internalTimer.Value <= 7)
+                    _paletteModule.BgColor = ColorIndex.LightGray(7 - _internalTimer.Value).Value;
+                else if (_internalTimer <= 14)
+                    _paletteModule.BgColor = ColorIndex.LightGray(14 - _internalTimer.Value).Value;
+                else
+                    _paletteModule.BgColor = ColorIndex.Black;
+
+                if (_internalTimer < 15)
+                {
+                    if (_levelTimer.IsMod(8))
+                        _internalTimer.Value++;
+                }
+                else
+                {
+                    if (_levelTimer.IsMod(32))
+                    {
+                        _internalTimer.Value++;
+
+                        if(_internalTimer.Value >= 20)
+                        {
+                            CreateFirebomb();
+                        }
                     }
                 }
             }
