@@ -15,6 +15,8 @@ namespace ChompGame.Extensions
 
             return number % mod;
         }
+        public static bool IsMod(this int i, int mod)
+          => (i % mod) == 0;
 
         public static byte NModByte(this int number, int mod)
         {

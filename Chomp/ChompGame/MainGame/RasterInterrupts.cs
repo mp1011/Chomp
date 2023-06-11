@@ -14,14 +14,14 @@ namespace ChompGame.MainGame
         private readonly StatusBar _statusBar;
         private readonly ChompGameModule _gameModule;
 
-        private GameByteGridPoint _bossPosition;
-
         private GameByte _realScrollX;
         private GameByte _realScrollY;
 
         private GameByte _autoScroll;
         private MaskedByte _paletteCycleIndex;
         private SceneDefinition _sceneDefinition;
+
+        public byte RealScrollX => _realScrollX;
 
         public RasterInterrupts(
             ChompGameModule gameModule,
@@ -43,10 +43,9 @@ namespace ChompGame.MainGame
             _paletteCycleIndex = memoryBuilder.AddMaskedByte(Bit.Right2);
         }
 
-        public void SetScene(SceneDefinition scene, GameByteGridPoint bossPosition)
+        public void SetScene(SceneDefinition scene)
         {
             _sceneDefinition = scene;
-            _bossPosition = bossPosition;
         }
 
         public void OnHBlank()
@@ -66,10 +65,6 @@ namespace ChompGame.MainGame
             {
                 HandleParallax();
             }
-            else if(IsBossScene)
-            {
-                HandleBossBG();
-            }
         }
 
         private bool IsBossScene => _sceneDefinition.HasSprite(SpriteLoadFlags.Boss) && _sceneDefinition.ScrollStyle == ScrollStyle.NameTable;
@@ -88,32 +83,6 @@ namespace ChompGame.MainGame
             else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
-            }
-        }
-
-        private void HandleBossBG()
-        {
-            if(_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
-            {
-                _tileModule.TileStartX = 2;
-                _tileModule.TileStartY = 4;
-            }
-
-            if(_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight
-                && _coreGraphicsModule.ScreenPoint.Y < _specs.ScreenHeight - (_specs.TileHeight * 2))
-            {
-                // WHEN Y=8, SCROLLY = 32
-                // WHEN Y=12, SCROLLY = 28
-                _tileModule.Scroll.X = (byte)(255 - _bossPosition.X);
-                _tileModule.Scroll.Y = (byte)((4*15) - _bossPosition.Y);
-            }
-
-            if(_coreGraphicsModule.ScreenPoint.Y == _specs.ScreenHeight - (_specs.TileHeight*2))
-            {
-                _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = _gameModule.CurrentScene.BgRow;
-                _tileModule.Scroll.X = _realScrollX.Value;
-                _tileModule.Scroll.Y = (byte)_specs.ScreenHeight;
             }
         }
 

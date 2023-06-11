@@ -602,7 +602,7 @@ namespace ChompGame.MainGame.SceneModels
                    var bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                        6,
                        _gameModule.SpritesModule,
-                       () => new BossBulletController(_gameModule, memoryBuilder, SpriteType.LevelBossBullet));
+                       () => new BossBulletController(_gameModule, memoryBuilder));
 
                     extraA = bossBulletControllers;
                     enemyA = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
@@ -1000,6 +1000,12 @@ namespace ChompGame.MainGame.SceneModels
                   destinationPoint: new Point(spriteDestination.X+5, spriteDestination.Y + 3),
                   _gameModule.Specs,
                   memory);
+
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 17);
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy2, 23);
+                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 27);
+                _spriteTileTable.SetTile(SpriteTileIndex.Extra2, 32);
+                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 28);
 
             }
 

@@ -44,7 +44,16 @@ namespace ChompGame.MainGame.SceneModels
         public byte BgColor
         {
             get => _bgColor.Value;
-            set => _bgColor.Value = value;
+            set
+            {
+                _bgColor.Value = value; 
+                var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);
+                var coinPalette = _graphicsModule.GetBackgroundPalette(2);
+                var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(3);
+                dynamicBlockPalette.SetColor(0, _bgColor.Value);
+                coinPalette.SetColor(0, _bgColor.Value);
+                foregroundPalette.SetColor(0, _bgColor.Value);
+            }
         }
 
         public PaletteModule(MainSystem mainSystem,

@@ -147,6 +147,64 @@ namespace ChompGame.MainGame
             }
         }
 
+        public void ResetCoinsForLevelBoss()
+        {
+            int address = _partCount.Address + 1;
+            int coinIndex = 0;
+
+            for (int index = 0; index < _partCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type != DynamicBlockType.Coin)
+                    continue;
+
+                block.State.TopLeft = false;
+                block.State.TopRight = false;
+                block.State.BottomLeft = false;
+                block.State.BottomRight = false;
+                _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
+
+                block.Location.TileY = 0;
+                block.Location.TileX = (byte)(coinIndex * 2);
+                coinIndex++;
+               
+                address += block.ByteLength;
+            }
+        }
+
+        public void PositionFreeCoinBlocksNearPlayer(byte tileX, byte tileY)
+        {
+            int address = _partCount.Address + 1;
+            int freeIndex = 0;
+
+            for (int index = 0; index < _partCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type != DynamicBlockType.Coin)
+                    continue;
+
+                if (block.State.AnyOn)
+                    continue;
+
+                if((freeIndex % 2)==0)
+                {
+                    block.Location.TileY = tileY;
+                    block.Location.TileX = (byte)(tileX + index);
+                }
+                else
+                {
+                    block.Location.TileY = tileY;
+                    block.Location.TileX = (byte)(tileX - (index + 1));
+                }
+
+                freeIndex++;
+
+                address += block.ByteLength;
+            }
+        }
+
         public void SpawnCoins(Rectangle region)
         {
             int address = _partCount.Address + 1;

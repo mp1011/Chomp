@@ -30,7 +30,11 @@ namespace ChompGame.MainGame
         protected readonly WorldScroller _scroller;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
         private GameByteEnum<SpriteTileIndex> _tileIndex;
-        public SpriteTileIndex TileIndex => _tileIndex.Value;
+        public SpriteTileIndex TileIndex
+        {
+            get => _tileIndex.Value;
+            set => _tileIndex.Value = value;
+        }
       
         public GameByte SpriteIndex { get; }
 

@@ -290,7 +290,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.Platform_UpDown => _platformControllers,
                 ScenePartType.Platform_Vanishing=> _platformControllers,
                 ScenePartType.Button => _buttonControllers,
-                _ => throw new System.NotImplementedException()
+                _ => _bombControllers
             };
         
         public void CheckCollissions()

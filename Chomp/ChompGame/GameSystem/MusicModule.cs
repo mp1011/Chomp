@@ -84,9 +84,16 @@ namespace ChompGame.GameSystem
                 return;
             }
 
-            var song = _contentManager.Load<Song>(@"Music\" + _currentSong.Value.ToString());
-            MediaPlayer.IsRepeating = true;
-            MediaPlayer.Play(song);
+            try
+            {
+                var song = _contentManager.Load<Song>(@"Music\" + _currentSong.Value.ToString());
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(song);
+            }
+            catch
+            {
+                MediaPlayer.Stop();
+            }
         }
     }
 }

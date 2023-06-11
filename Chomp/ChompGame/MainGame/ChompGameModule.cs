@@ -58,13 +58,11 @@ namespace ChompGame.MainGame
         private SceneSpriteControllers _sceneSpriteControllers;
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
+        private BossBackgroundHandler _bossBackgroundHandler;
         private SceneDefinition _currentScene;
         private ScenePartsDestroyed _scenePartsDestroyed;
 
-        private GameByteGridPoint _levelBossPosition;
-
-        public GameByteGridPoint LevelBossPosition => _levelBossPosition;
-
+        public BossBackgroundHandler BossBackgroundHandler => _bossBackgroundHandler;
         public ScenePartsDestroyed ScenePartsDestroyed => _scenePartsDestroyed;
 
         public GameRAM GameRAM => GameSystem.GameRAM;
@@ -138,9 +136,10 @@ namespace ChompGame.MainGame
             _worldScroller = new WorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
 
             _rasterInterrupts = new RasterInterrupts(this, GameSystem.CoreGraphicsModule);
+            _bossBackgroundHandler = new BossBackgroundHandler(this, _rasterInterrupts);
 
             _rasterInterrupts.BuildMemory(memoryBuilder);
-
+            _bossBackgroundHandler.BuildMemory(memoryBuilder);
             _statusBar.BuildMemory(memoryBuilder);
             RewardsModule.BuildMemory(memoryBuilder);
 
@@ -178,7 +177,6 @@ namespace ChompGame.MainGame
 
             ThemeBuilder.BuildThemes(memoryBuilder);
 
-            _levelBossPosition = new GameByteGridPoint(memoryBuilder.AddByte(), memoryBuilder.AddByte(), 255, 255);
         }
 
         public override void OnStartup()
@@ -233,7 +231,7 @@ namespace ChompGame.MainGame
                 TileModule.NameTable.Reset();
                 TileModule.AttributeTable.Reset();
 
-                _rasterInterrupts.SetScene(null, _levelBossPosition);
+                _rasterInterrupts.SetScene(null);
                 PaletteModule.SetScene(null, Level.Level1_1_Start, GameSystem.Memory);
 
                 var palette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
@@ -301,7 +299,8 @@ namespace ChompGame.MainGame
 
         private void InitGame()
         {
-            _currentLevel.Value = Level.Level1_17_Boss;
+            _bossBackgroundHandler.BossDeathTimer.Value = 255;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -364,7 +363,7 @@ namespace ChompGame.MainGame
             _worldScroller.UpdateVram();
 
             _collisionDetector.Initialize(_currentScene, levelMap, SpriteTileTable);
-            _rasterInterrupts.SetScene(_currentScene, _levelBossPosition);
+            _rasterInterrupts.SetScene(_currentScene);
 
             ExitsModule.BuildMemory(memoryBuilder, _currentScene);
 
@@ -465,6 +464,7 @@ namespace ChompGame.MainGame
         public void OnHBlank()
         {
             _rasterInterrupts.OnHBlank();
+            _bossBackgroundHandler.OnHBlank();
             PaletteModule.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();

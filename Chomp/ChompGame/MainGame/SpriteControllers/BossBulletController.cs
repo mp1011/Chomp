@@ -59,7 +59,8 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_state.Value > 40)
             {
-                sprite.Tile = (byte)(16 + (_levelTimer.Value % 3));
+                var baseTile = _spriteTileTable.GetTile(SpriteTileIndex.Explosion);
+                sprite.Tile = (byte)(baseTile + (_levelTimer.Value % 3));
             }
         }
 

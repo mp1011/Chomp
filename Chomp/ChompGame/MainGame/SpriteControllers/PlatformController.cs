@@ -124,7 +124,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void Update_Falling()
         {
-            throw new System.NotImplementedException();
         }
 
         public void CheckPlayerCollision(PlayerController playerController)
