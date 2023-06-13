@@ -99,6 +99,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_phase.Value == Phase.Dying)
             {
+                CollisionEnabled = false;
+
                 if (_internalTimer.Value == 0)
                 {
                     _musicModule.CurrentSong = MusicModule.SongName.None;
@@ -350,6 +352,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_phase.Value == Phase.Init)
             {
+                CollisionEnabled = false;
                 _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 2));
 
                 _musicModule.CurrentSong = MusicModule.SongName.None;
@@ -436,6 +439,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.Float)
             {
+                CollisionEnabled = true;
                 if (_jawPosition.Value > 0)
                     _jawPosition.Value--;
 
@@ -541,6 +545,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if(_internalTimer.Value == 0)
                 {
+                    CollisionEnabled = false;
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                     _internalTimer.Value++;
                     Motion.SetXSpeed(0);
@@ -549,13 +554,17 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 4));
                 }
- 
+
+
                 if (_internalTimer.Value <= 7)
                     _paletteModule.BgColor = ColorIndex.LightGray(7 - _internalTimer.Value).Value;
                 else if (_internalTimer <= 14)
                     _paletteModule.BgColor = ColorIndex.LightGray(14 - _internalTimer.Value).Value;
                 else
+                {
                     _paletteModule.BgColor = ColorIndex.Black;
+                    PositionBossAbovePlayer();
+                }
 
                 if (_internalTimer < 15)
                 {

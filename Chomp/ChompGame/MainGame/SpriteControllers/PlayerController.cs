@@ -257,7 +257,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             sprites.Execute(p =>
             {
-                if(p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
+                if(p.CollisionEnabled && p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
                     p.HandlePlayerCollision(WorldSprite);
 

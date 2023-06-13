@@ -52,6 +52,13 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _palette.Value = value;
         }
 
+        private GameBit _collisionEnabled;
+        public bool CollisionEnabled
+        {
+            get => _collisionEnabled.Value;
+            set => _collisionEnabled.Value = value;
+        }
+
         protected MaskedByte _hitPoints;
 
         protected ActorController(
@@ -77,7 +84,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 0);
             _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 2);
-            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)240, memoryBuilder.Memory, 4);
+            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)112, memoryBuilder.Memory, 4);
+            _collisionEnabled = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             memoryBuilder.AddByte();
             _levelTimer = gameModule.LevelTimer;
         }
@@ -99,6 +107,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void InitializeSprite(byte palette)
         {
+            _collisionEnabled.Value = true;
             BeforeInitializeSprite();
             _palette.Value = palette;
             Status = WorldSpriteStatus.Active;

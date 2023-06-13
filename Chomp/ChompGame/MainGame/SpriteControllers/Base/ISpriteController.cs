@@ -24,6 +24,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
     interface IEnemyOrBulletSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb
     {
-
+        bool CollisionEnabled { get; }
     }
 }
