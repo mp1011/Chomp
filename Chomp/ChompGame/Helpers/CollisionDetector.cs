@@ -126,6 +126,12 @@ namespace ChompGame.Helpers
                     if (collisionInfo.IsOnGround
                         || tileAbove >= collidableTileBeginIndex)
                     {
+                        if (t == _spriteTileTable.DestructibleBlockTile)
+                        {
+                            collisionInfo.DynamicBlockCollision = true;
+                            collisionInfo.DynamicTileX = x;
+                            collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
+                        }
                         return;
                     }
 

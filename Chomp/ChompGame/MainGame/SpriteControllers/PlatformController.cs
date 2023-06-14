@@ -134,7 +134,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 || collisionInfo.XCorrection != 0 
                 || collisionInfo.YCorrection != 0)
             {
-                _playerOnPlatform.Value = true;
+                _playerOnPlatform.Value = collisionInfo.XCorrection == 0 
+                    && (collisionInfo.YCorrection <= 0 || collisionInfo.IsOnGround);
                 playerController.OnPlatformCollision(collisionInfo);
             }    
             else
@@ -145,7 +146,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private CollisionInfo GetPlayerCollisionInfo(PlayerController playerController)
         {
-            if(_playerOnPlatform.Value)
+            if (_playerOnPlatform.Value)
             {
                 if (_platformType.Value == PlatformType.LeftRight)
                 {
@@ -177,22 +178,56 @@ namespace ChompGame.MainGame.SpriteControllers
                 && playerBounds.Bottom == platformBounds.Top
                 && playerBounds.Right >= platformBounds.Left
                 && playerBounds.Left <= platformBounds.Right)
-            {               
-                return new CollisionInfo { IsOnGround = true };
-            }
-
-            if(playerController.Motion.YSpeed >= 0
-                && playerBounds.Intersects(platformBounds))
             {
-                int yOverlap = playerBounds.Bottom - platformBounds.Top;
-                if(yOverlap > 0)
-                {
-                    playerController.WorldSprite.Y -= yOverlap;
-                }
-
                 return new CollisionInfo { IsOnGround = true };
             }
 
+            if (!playerBounds.Intersects(platformBounds))
+                return new CollisionInfo();
+            
+            int leftXOverlap = playerBounds.Right - platformBounds.Left;
+            int rightXOverlap = platformBounds.Right - playerBounds.Left;
+            int topYOverlap = playerBounds.Bottom - platformBounds.Top;
+            int bottomYOverlap = platformBounds.Bottom - playerBounds.Top;
+
+            if (leftXOverlap > 3)
+                leftXOverlap = -1;
+            if ( rightXOverlap > 3)
+                rightXOverlap = -1;
+            if (topYOverlap > 3)
+                topYOverlap = -1;
+            if (bottomYOverlap > 3)
+                bottomYOverlap = -1;
+
+            if (topYOverlap > 0)
+            {
+                leftXOverlap = -1;
+                rightXOverlap = -1;
+            }
+
+            if(topYOverlap >= 0 && playerController.Motion.YSpeed >= 0)
+            {
+                playerController.WorldSprite.Y -= topYOverlap;
+                return new CollisionInfo { IsOnGround = true };
+            }
+
+            if (bottomYOverlap > 0 && playerController.Motion.YSpeed <= 0)
+            {
+                playerController.WorldSprite.Y += bottomYOverlap;
+                return new CollisionInfo { IsOnGround = true, YCorrection = bottomYOverlap };
+            }
+
+            if (leftXOverlap > 0 && playerController.Motion.XSpeed >= 0)
+            {
+                playerController.WorldSprite.X -= leftXOverlap;
+                return new CollisionInfo { XCorrection = leftXOverlap };
+            }
+
+            if (rightXOverlap > 0 && playerController.Motion.XSpeed <= 0)
+            {
+                playerController.WorldSprite.X += rightXOverlap;
+                return new CollisionInfo { XCorrection = rightXOverlap };
+            }
 
             return new CollisionInfo();
         }
