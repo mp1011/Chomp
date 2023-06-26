@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.MainGame;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,7 +84,7 @@ namespace ChompGame.GameSystem
             for (int i = 0; ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
-                byte row = (byte)(ScreenPoint.Y + Scroll.Y - sprite.Y);
+                byte row = (byte)((ScreenPoint.Y + Scroll.Y).NModByte(Specs.NameTablePixelHeight) - sprite.Y);
 
                 if (sprite.FlipY)
                     row = (byte)(sprite.Height - row - 1);
@@ -121,14 +122,14 @@ namespace ChompGame.GameSystem
         private void FillScanlineSprites()
         {
             int scanlineSpriteIndex = 0;
-
+            byte yCheck = (ScreenPoint.Y + Scroll.Y).NModByte(Specs.NameTablePixelHeight);
             List<Sprite> scanlineSprites = new List<Sprite>();
 
             for (byte spriteIndex = 0; spriteIndex < Specs.MaxSprites; spriteIndex++)
             {
                 var sprite = GetSprite(spriteIndex);
                 if (!sprite.Visible
-                    || !sprite.IntersectsScanline((byte)(ScreenPoint.Y + Scroll.Y)))
+                    || !sprite.IntersectsScanline(yCheck))
                 {
                     continue;
                 }

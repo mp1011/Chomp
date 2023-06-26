@@ -127,48 +127,38 @@ namespace ChompGame.MainGame
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
 
-        public virtual void UpdateSprite()
+        public void UpdateSprite()
         {
             if (Status != WorldSpriteStatus.Active)
                 return;
 
             var sprite = GetSprite();
 
-            int spriteX = (X - _scroller.WorldScrollPixelX);
-            int spriteY = (Y - _scroller.WorldScrollPixelY);
-
-            //todo, how to handle out of bounds?
-            if (spriteX < 0)
-                spriteX = 0;
-            if (spriteY < 0)
-                spriteY = 0;
-
-            sprite.X = (byte)spriteX;
-            sprite.Y = (byte)spriteY;
+            if (_scroller.DistanceFromViewpane(Bounds) == 0)
+            {
+                sprite.Visible = true;
+                sprite.X = (byte)(X % _specs.NameTablePixelWidth);
+                sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
+            }
+            else
+            {
+                sprite.Visible = false;
+            }
         }
 
         public BoundsCheck CheckInBounds()
         {
+            int distanceFromViewpane = _scroller.DistanceFromViewpane(Bounds);
+
             int nearThreshold = 12;
             int farThreshold = 32;
 
-            if (X >= _scroller.WorldScrollPixelX - nearThreshold
-                && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth + nearThreshold
-                && Y >= _scroller.WorldScrollPixelY - nearThreshold
-                && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight + nearThreshold)
-            {
+            if (distanceFromViewpane <= nearThreshold)
                 return BoundsCheck.InBounds;
-            }
-
-            if (X >= _scroller.WorldScrollPixelX - farThreshold
-              && X < _scroller.WorldScrollPixelX + _specs.NameTablePixelWidth + farThreshold
-              && Y >= _scroller.WorldScrollPixelY - farThreshold
-              && Y < _scroller.WorldScrollPixelY + _specs.NameTablePixelHeight + farThreshold)
-            {
+            else if (distanceFromViewpane <= farThreshold)
                 return BoundsCheck.OutOfBounds;
-            }
-
-            return BoundsCheck.FarOutOfBounds;
+            else
+                return BoundsCheck.FarOutOfBounds;
         }
 
         public void ConfigureSprite(Sprite sprite)

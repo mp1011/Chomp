@@ -88,24 +88,11 @@ namespace ChompGame.MainGame.SpriteControllers
                         bomb.SetCarried();
                         bomb.FallCheck = _scene.SpriteFallCheck;
 
-                        GameDebug.DebugLog($"Create carried bomb at Sprite {bomb.SpriteIndex}");
+                        GameDebug.DebugLog($"Create carried bomb at Sprite {bomb.SpriteIndex}", DebugLogFlags.SpriteSpawn);
                         isCarryingBomb.Value = false;
                     }
                 }
             }
-
-
-            GameDebug.Watch1 = new DebugWatch(
-                "Player X",
-                () => _playerController.WorldSprite.X);
-
-            GameDebug.Watch2 = new DebugWatch(
-                name: "Player Sprite X",
-                () => _playerController.GetSprite().X);
-
-            GameDebug.Watch3 = new DebugWatch(
-               name: "Player Sprite Y",
-               () => _playerController.GetSprite().Y);
 
             _gameModule.WorldScroller.Update();
             CheckSpriteSpawn();
@@ -180,7 +167,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void CheckSpriteSpawn()
         {
-            GameDebug.DebugLog("Checking sprite spawn");
+            GameDebug.DebugLog("Checking sprite spawn", DebugLogFlags.SpriteSpawn);
             byte nextDestructionBitOffset = 0;
 
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
@@ -194,13 +181,13 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if (sp.DestroyBitsRequired > 0 && _gameModule.ScenePartsDestroyed.IsDestroyed(destructionBitOffset))
                 {
-                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has been destroyed");
+                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has been destroyed", DebugLogFlags.SpriteSpawn);
                     continue;
                 }
 
                 if (header.IsPartActivated(i))
                 {
-                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has already been activated");
+                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has already been activated", DebugLogFlags.SpriteSpawn);
                     continue;
                 }
             
@@ -220,15 +207,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 int spawnX = sp.X * Specs.TileWidth;
                 int spawnY = sp.Y * Specs.TileHeight;
 
-                if (spawnX >= _gameModule.WorldScroller.WorldScrollPixelX
-                    && spawnY >= _gameModule.WorldScroller.WorldScrollPixelY
-                    && spawnX <= _gameModule.WorldScroller.WorldScrollPixelX + Specs.NameTablePixelWidth
-                    && spawnY <= _gameModule.WorldScroller.WorldScrollPixelY + Specs.NameTablePixelHeight)
+                var spawnBounds = new Rectangle(spawnX, spawnY, Specs.TileWidth * 2, Specs.TileHeight * 2);
+
+                if(_gameModule.WorldScroller.DistanceFromViewpane(spawnBounds) < 12)
                 {
                     var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
                     if (sprite == null)
                     {
-                        GameDebug.DebugLog($"Unable to spawn {sp.Type}");
+                        GameDebug.DebugLog($"Unable to spawn {sp.Type}", DebugLogFlags.SpriteSpawn);
                         continue;
                     }
 
@@ -267,12 +253,12 @@ namespace ChompGame.MainGame.SpriteControllers
                         sprite.WorldSprite.UpdateSprite();
 
 
-                        GameDebug.DebugLog($"Created sprite: Controller={sprite.GetType().Name} X={spawnX} Y={spawnY}");
+                        GameDebug.DebugLog($"Created sprite: Controller={sprite.GetType().Name} X={spawnX} Y={spawnY}", DebugLogFlags.SpriteSpawn);
                     }
                 }      
                 else
                 {
-                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it is not in bounds");
+                    GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it is not in bounds", DebugLogFlags.SpriteSpawn);
                 }
             }
         }

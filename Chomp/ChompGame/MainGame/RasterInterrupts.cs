@@ -10,7 +10,7 @@ namespace ChompGame.MainGame
         private readonly Specs _specs;
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
-        private readonly WorldScroller _worldScroller;
+        private WorldScroller _worldScroller => _gameModule.WorldScroller;
         private readonly StatusBar _statusBar;
         private readonly ChompGameModule _gameModule;
 
@@ -31,7 +31,6 @@ namespace ChompGame.MainGame
             _statusBar = gameModule.StatusBar;
             _tileModule = gameModule.TileModule;
             _coreGraphicsModule = coreGraphicsModule;
-            _worldScroller = gameModule.WorldScroller;
             _gameModule = gameModule;
         }
 
@@ -53,8 +52,6 @@ namespace ChompGame.MainGame
             if (_sceneDefinition == null)
                 return;
 
-            GameDebug.Watch4 = new DebugWatch("CameraPixelX", () => _worldScroller.CameraPixelX);
-
             if (_coreGraphicsModule.ScreenPoint.Y <= Constants.StatusBarHeight
                 && _sceneDefinition.HasSprite(SpriteLoadFlags.Player))
             {
@@ -74,11 +71,11 @@ namespace ChompGame.MainGame
 
             if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 4);
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
             }
             else if(_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar:true))
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.CameraPixelX / 2);
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
             }
             else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
             {

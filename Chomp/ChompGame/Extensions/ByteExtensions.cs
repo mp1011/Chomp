@@ -4,6 +4,9 @@ namespace ChompGame.Extensions
 {
     public static class ByteExtensions
     {
+        public static byte Mod(this byte b, byte mod) => (byte)(b % mod);
+        public static byte Mod(this byte b, int mod) => (byte)(b % mod);
+
         public static bool IsMod(this byte b, byte mod)
             => (b % mod) == 0;
 

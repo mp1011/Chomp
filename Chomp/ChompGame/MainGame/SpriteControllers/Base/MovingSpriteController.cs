@@ -199,7 +199,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 _ => false
             };
 
-            byte spriteTile = _spriteTileTable.GetTile(WorldSprite.TileIndex); 
+            byte spriteTile = _spriteTileTable.GetTile(WorldSprite.TileIndex);
+          
             if (!shouldAnimate)
             {
                 sprite.Tile = spriteTile;

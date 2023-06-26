@@ -143,7 +143,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (boundsCheck == BoundsCheck.FarOutOfBounds || boundsCheck == BoundsCheck.OutOfBounds)
             {
-                GameDebug.DebugLog("Door hidden");
+                GameDebug.DebugLog("Door hidden", DebugLogFlags.SpriteSpawn);
                 WorldSprite.Hide();
             }
             else if (Status != WorldSpriteStatus.Active)

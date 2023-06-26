@@ -110,9 +110,6 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             SpriteIndex = _spritesModule.GetFreeSpriteIndex();
-
-            GameDebug.Watch1 = new DebugWatch("Boss Phase", () => _phaseByte.Value);
-
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

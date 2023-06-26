@@ -277,12 +277,12 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_graphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
-                if(_graphicsModule.ScreenPoint.Y >= back2Pixel)
+                if (_graphicsModule.ScreenPoint.Y >= back2Pixel)
                     LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
-                else 
+                else
                     LoadPalette(BgPalette1.Address, _graphicsModule.GetBackgroundPalette(0));
             }
-            else if(_graphicsModule.ScreenPoint.Y == back2Pixel)
+            else if (_graphicsModule.ScreenPoint.Y == back2Pixel)
             {
                 LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
             }

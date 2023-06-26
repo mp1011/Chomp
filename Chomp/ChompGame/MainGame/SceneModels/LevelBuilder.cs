@@ -54,16 +54,23 @@ namespace ChompGame.MainGame.SceneModels
 
         private void AddPlainsMountainTiles(NBitPlane nameTable, byte mountain1Pos, byte mountain2Pos, byte groundPos)
         {
+            string layer1Row1 = "00000C00";
+            string layer1Row2 = "AB89859C";
+
             //mountain layer 1
             nameTable.SetFromString(0, mountain1Pos,
-                @"00000C0000000C0000000C0000000C00
-                        AB89859CAB89859CAB89859CAB89859C",
+                $@"{layer1Row1}{layer1Row1}{layer1Row1}{layer1Row1}
+                         {layer1Row2}{layer1Row2}{layer1Row2}{layer1Row2}",
                 shouldReplace: b => b == 0);
+
+            string layer2Row1 = "000C000089000000";
+            string layer2Row2 = "AB859AB855989AB0";
+
 
             //mountain layer 2
             nameTable.SetFromString(0, mountain2Pos,
-              @"000C000089000000C000089000000000
-                      AB859AB855989AB859AB855989ABAB89",
+              $@"{layer2Row1}{layer2Row1}
+                       {layer2Row2}{layer2Row2}",
                 shouldReplace: b => b == 0);
         }
 

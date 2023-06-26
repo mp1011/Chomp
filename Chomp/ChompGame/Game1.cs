@@ -150,18 +150,18 @@ namespace ChompGame
             Debug.WriteLine($"X={pixelX} Y={pixelY} TileX={pixelX / _specs.TileWidth} TileY={pixelY / _specs.TileHeight} Tile={tile}");
             Debug.WriteLine($"AttrX={attrX} AttrY={attrY} Attr={attr}");
 
-            var cgm = _gameSystem.GetModule<ChompGameModule>();
-            var worldX = cgm.WorldScroller.CameraPixelX + screenX;
-            var worldY = cgm.WorldScroller.CameraPixelY + screenY;
-            tile = cgm.WorldScroller.LevelNameTable[worldX / _specs.TileWidth, worldY / _specs.TileHeight];
-            attrX = worldX / (_specs.TileWidth * _specs.AttributeTableBlockSize);
-            attrY = worldY / (_specs.TileHeight * _specs.AttributeTableBlockSize);
-            attr = cgm.WorldScroller.LevelAttributeTable[attrX, attrY];
-            Debug.WriteLine("");
-            Debug.WriteLine("World:");
-            Debug.WriteLine($"X={worldX} Y={worldY} TileX={worldX / _specs.TileWidth} TileY={worldY / _specs.TileHeight} Tile={tile}");
-            Debug.WriteLine($"AttrX={attrX} AttrY={attrY} Attr={attr}");
-            Debug.WriteLine("--------------------------------------");
+            //var cgm = _gameSystem.GetModule<ChompGameModule>();
+            //var worldX = cgm.WorldScroller.CameraPixelX + screenX;
+            //var worldY = cgm.WorldScroller.CameraPixelY + screenY;
+            //tile = cgm.WorldScroller.LevelNameTable[worldX / _specs.TileWidth, worldY / _specs.TileHeight];
+            //attrX = worldX / (_specs.TileWidth * _specs.AttributeTableBlockSize);
+            //attrY = worldY / (_specs.TileHeight * _specs.AttributeTableBlockSize);
+            //attr = cgm.WorldScroller.LevelAttributeTable[attrX, attrY];
+            //Debug.WriteLine("");
+            //Debug.WriteLine("World:");
+            //Debug.WriteLine($"X={worldX} Y={worldY} TileX={worldX / _specs.TileWidth} TileY={worldY / _specs.TileHeight} Tile={tile}");
+            //Debug.WriteLine($"AttrX={attrX} AttrY={attrY} Attr={attr}");
+            //Debug.WriteLine("--------------------------------------");
         }
 
         protected override void Draw(GameTime gameTime)

@@ -199,7 +199,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (Status != WorldSpriteStatus.Active)
                 return;
           
-            GameDebug.DebugLog($"Sprite {SpriteIndex} hidden by {GetType().Name}");
+            GameDebug.DebugLog($"Sprite {SpriteIndex} hidden by {GetType().Name}", DebugLogFlags.SpriteSpawn);
             WorldSprite.Hide();
         }
 
@@ -208,7 +208,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (Status != WorldSpriteStatus.Active)
                 return;
 
-            GameDebug.DebugLog($"Sprite {SpriteIndex} destroyed by {GetType().Name}");
+            GameDebug.DebugLog($"Sprite {SpriteIndex} destroyed by {GetType().Name}", DebugLogFlags.SpriteSpawn);
             WorldSprite.Destroy();
         }
 

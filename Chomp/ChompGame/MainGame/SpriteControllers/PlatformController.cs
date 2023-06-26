@@ -38,14 +38,16 @@ namespace ChompGame.MainGame.SpriteControllers
         public PlatformController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Platform, gameModule, memoryBuilder, SpriteTileIndex.Platform)
         {
-            _timer = new MaskedByte(_state.Address, Bit.Right2, memoryBuilder.Memory);
-            _playerOnPlatform = new GameBit(_state.Address, Bit.Bit2, memoryBuilder.Memory);
-            _direction = new GameBit(_state.Address, Bit.Bit3, memoryBuilder.Memory);
-            _movedBack = new GameBit(_state.Address, Bit.Bit4, memoryBuilder.Memory);
-            _movedForward = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
+            int address = memoryBuilder.CurrentAddress;
+            memoryBuilder.AddByte();
+            _timer = new MaskedByte(address, Bit.Right2, memoryBuilder.Memory);
+            _playerOnPlatform = new GameBit(address, Bit.Bit2, memoryBuilder.Memory);
+            _direction = new GameBit(address, Bit.Bit3, memoryBuilder.Memory);
+            _movedBack = new GameBit(address, Bit.Bit4, memoryBuilder.Memory);
+            _movedForward = new GameBit(address, Bit.Bit5, memoryBuilder.Memory);
 
             _platformType = new TwoBitEnum<PlatformType>(memoryBuilder.Memory,
-                    _state.Address,
+                    address,
                     6);
         }
 

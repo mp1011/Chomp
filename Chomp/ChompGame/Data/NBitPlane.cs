@@ -1,5 +1,6 @@
 ﻿using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -83,7 +84,12 @@ namespace ChompGame.Data
         public byte this[int x, int y]
         {
             get => this[(y * Width) + x];
-            set => this[(y * Width) + x] = value;
+            set
+            {
+                if (y < 2)
+                    GameDebug.NoOp();
+                this[(y * Width) + x] = value;
+            }
         }
 
 

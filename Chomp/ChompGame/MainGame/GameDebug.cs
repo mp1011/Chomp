@@ -16,8 +16,19 @@ namespace ChompGame.MainGame
         }
     }
 
+    public enum DebugLogFlags : byte
+    {
+        Misc = 1,
+        SpriteSpawn = 2,
+        WorldScroller = 4,
+        LevelTransition = 8,
+        All = 255
+    }
+
     public static class GameDebug
     {
+        private const DebugLogFlags _debugLogFlags = DebugLogFlags.WorldScroller;
+
         private static List<string> _log = new List<string>();
 
         public static DebugWatch Watch1 { get; set; }
@@ -38,11 +49,14 @@ namespace ChompGame.MainGame
             }
         }
 
-        public static void DebugLog(string message)
+        public static void DebugLog(string message, DebugLogFlags flag)
         {
 #if DEBUG
-            _log.Add(message);
-            Debug.WriteLine("LOG: " + message);
+            if ((flag & _debugLogFlags) != 0)
+            {
+                _log.Add(message);
+                Debug.WriteLine("LOG: " + message);
+            }
 #endif
         }
     }

@@ -6,6 +6,7 @@ using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
+using ChompGame.MainGame.WorldScrollers;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
 
@@ -132,8 +133,6 @@ namespace ChompGame.MainGame
             _carryingBomb = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
 
             memoryBuilder.AddByte();
-
-            _worldScroller = new WorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
 
             _rasterInterrupts = new RasterInterrupts(this, GameSystem.CoreGraphicsModule);
             _bossBackgroundHandler = new BossBackgroundHandler(this, _rasterInterrupts);
@@ -300,8 +299,8 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level1_13_Column;
-            _lastExitType.Value = ExitType.Right;
+            _currentLevel.Value = Level.Level1_5_Vertical;
+            _lastExitType.Value = ExitType.Bottom;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
@@ -318,6 +317,9 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
+            _tileModule.NameTable.Reset();
+            _tileModule.AttributeTable.Reset();
+
             ResetSprites();
 
             _scenePartsDestroyed.SetCurrentLevel(_currentLevel.Value, GameSystem.Memory);
@@ -329,6 +331,12 @@ namespace ChompGame.MainGame
             SystemMemoryBuilder memoryBuilder = new SystemMemoryBuilder(GameSystem.Memory, 
                 Specs,
                 GameRAM);
+
+            _worldScroller = _currentScene.ScrollStyle switch {
+                ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
+                ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
+                _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
+            };
 
             _sceneSpriteControllers = _levelBuilder.CreateSpriteControllers(memoryBuilder);
 
@@ -360,7 +368,8 @@ namespace ChompGame.MainGame
             _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value, _carryingBomb);
 
             _dynamicBlockController.InitializeDynamicBlocks(_currentScene, memoryBuilder, levelMap, levelAttributeTable, _sceneSpriteControllers.ExplosionControllers);
-            _worldScroller.UpdateVram();
+
+            _worldScroller.RefreshNametable();
 
             _collisionDetector.Initialize(_currentScene, levelMap, SpriteTileTable);
             _rasterInterrupts.SetScene(_currentScene);
@@ -410,11 +419,11 @@ namespace ChompGame.MainGame
             ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
             if(ExitsModule.ActiveExit.ExitType != ExitType.None)
             {
-                GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}");
+                GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}", DebugLogFlags.LevelTransition);
 
                 _gameState.Value = GameState.LoadScene;
                 CurrentLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
-                GameDebug.DebugLog($"Entering level {CurrentLevel}");
+                GameDebug.DebugLog($"Entering level {CurrentLevel}", DebugLogFlags.LevelTransition);
 
 
                 _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
@@ -422,9 +431,9 @@ namespace ChompGame.MainGame
                 _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
 
                 if (_carryingBomb.Value)
-                    GameDebug.DebugLog("Player is carrying bomb");
+                    GameDebug.DebugLog("Player is carrying bomb", DebugLogFlags.LevelTransition);
                 else
-                    GameDebug.DebugLog("Player is NOT carrying bomb");
+                    GameDebug.DebugLog("Player is NOT carrying bomb", DebugLogFlags.LevelTransition);
             }
         }
 
