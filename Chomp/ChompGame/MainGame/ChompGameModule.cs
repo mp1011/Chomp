@@ -299,8 +299,8 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level1_5_Vertical;
-            _lastExitType.Value = ExitType.Bottom;
+            _currentLevel.Value = Level.Level1_1_Start;
+            _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
@@ -335,6 +335,7 @@ namespace ChompGame.MainGame
             _worldScroller = _currentScene.ScrollStyle switch {
                 ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
                 ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
+                ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule), 
                 _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
             };
 

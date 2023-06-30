@@ -38,7 +38,7 @@ namespace ChompGame.GameSystem
             _tileStartIndex = builder.AddNibblePoint();
             NameTable = builder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
             AttributeTable = builder.AddNBitPlane(Specs.AttributeTableBitsPerBlock, Specs.NameTableWidth / Specs.AttributeTableBlockSize,
-                Specs.NameTablePixelHeight / Specs.AttributeTableBlockSize);
+                Specs.NameTableHeight / Specs.AttributeTableBlockSize);
         }
 
         public override void OnHBlank()

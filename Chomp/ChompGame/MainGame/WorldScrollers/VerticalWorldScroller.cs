@@ -46,6 +46,8 @@ namespace ChompGame.MainGame.WorldScrollers
 
         public override void RefreshNametable()
         {
+            _tileModule.Scroll.X = (byte)_specs.ScreenWidth;
+
             int worldScrollBegin = (_focusSprite.Y - _halfWindowSize ).Clamp(0, ScrollYMax);
             int worldScrollBeginTile = worldScrollBegin / _specs.TileHeight;
             byte ntScrollBegin = (worldScrollBegin).NModByte(_specs.NameTablePixelHeight);
@@ -65,7 +67,7 @@ namespace ChompGame.MainGame.WorldScrollers
 
             seamTile = (ntScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableHeight);
             ntRow = (ntScrollBeginTile - 1).NModByte(_specs.NameTableHeight);
-            worldRow = (worldScrollBeginTile - 1).NModByte(_specs.NameTableHeight);
+            worldRow = (worldScrollBeginTile - 1).NModByte(_levelNameTable.Height);
 
             while (ntRow != seamTile)
             {
@@ -88,6 +90,7 @@ namespace ChompGame.MainGame.WorldScrollers
             var addDifference = (ntScrollBegin - _scrollWindowBegin.Value).NModByte(_specs.NameTablePixelHeight);
             var subDifference = (_scrollWindowBegin.Value - ntScrollBegin).NModByte(_specs.NameTablePixelHeight);
 
+            _tileModule.Scroll.X = (byte)_specs.ScreenWidth;            
             _tileModule.Scroll.Y = ntScrollBegin;
             _spritesModule.Scroll.Y = ntScrollBegin;
             _scrollWindowBegin.Value = ntScrollBegin;
@@ -119,17 +122,17 @@ namespace ChompGame.MainGame.WorldScrollers
 
         protected void CopyTileRow(byte worldRow, byte ntRow)
         {
+           
             ntRow = (ntRow + 2).NModByte(_tileModule.NameTable.Height);
 
             for (int col = 0; col < _levelNameTable.Width; col++)
             {
-                _tileModule.NameTable[col, ntRow] = _levelNameTable[col, worldRow];
-                _tileModule.AttributeTable[col / _specs.AttributeTableBlockSize,
-                    ntRow / _specs.AttributeTableBlockSize] = _levelAttributeTable[col / _specs.AttributeTableBlockSize, worldRow / _specs.AttributeTableBlockSize];
-            }
+                _tileModule.NameTable[col + _tilesPerScreen, ntRow] = _levelNameTable[col, worldRow];
 
-            if (ntRow <= Constants.StatusBarTiles)
-                _statusBar.InitializeTiles();
+                var attrX = (col + _tilesPerScreen) / _specs.AttributeTableBlockSize;
+                var attrY = ntRow / _specs.AttributeTableBlockSize;
+                _tileModule.AttributeTable[attrX, attrY] = _levelAttributeTable[col / _specs.AttributeTableBlockSize, worldRow / _specs.AttributeTableBlockSize];
+            }
 
             GameDebug.DebugLog($"Seam Update: W{worldRow}->N{ntRow}", DebugLogFlags.WorldScroller);
         }

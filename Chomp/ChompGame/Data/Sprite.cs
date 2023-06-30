@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 
 namespace ChompGame.Data
@@ -112,7 +113,13 @@ namespace ChompGame.Data
 
         public bool IntersectsScanline(byte scanLine)
         {
-            return scanLine >= Y && scanLine < Bottom;
+            var bottomMod = Bottom.NModByte(_specs.NameTablePixelHeight);
+            if(bottomMod < Y)
+            {
+                return scanLine >= Y || scanLine < bottomMod;
+            }
+            else 
+                return scanLine >= Y && scanLine < Bottom;
         }
 
         public byte X

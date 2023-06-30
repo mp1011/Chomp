@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
@@ -142,8 +143,9 @@ namespace ChompGame
             int pixelX = screenX + tm.Scroll.X;
             int pixelY = screenY + tm.Scroll.Y; 
 
-            var attrX = pixelX / (_specs.TileWidth * _specs.AttributeTableBlockSize);
-            var attrY = pixelY / (_specs.TileHeight * _specs.AttributeTableBlockSize);
+            var attrX = (pixelX / (_specs.TileWidth * _specs.AttributeTableBlockSize)).NModByte(tm.AttributeTable.Width);
+            var attrY = (pixelY / (_specs.TileHeight * _specs.AttributeTableBlockSize)).NModByte(tm.AttributeTable.Height);
+
             var attr = tm.AttributeTable[attrX, attrY];
             var tile = tm.NameTable[pixelX / _specs.TileWidth, pixelY / _specs.TileHeight];
             Debug.WriteLine("VRAM:");

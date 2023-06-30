@@ -133,17 +133,8 @@ namespace ChompGame.MainGame
                 return;
 
             var sprite = GetSprite();
-
-            if (_scroller.DistanceFromViewpane(Bounds) == 0)
-            {
-                sprite.Visible = true;
-                sprite.X = (byte)(X % _specs.NameTablePixelWidth);
-                sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
-            }
-            else
-            {
-                sprite.Visible = false;
-            }
+            sprite.X = (byte)(X % _specs.NameTablePixelWidth);
+            sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
         }
 
         public BoundsCheck CheckInBounds()

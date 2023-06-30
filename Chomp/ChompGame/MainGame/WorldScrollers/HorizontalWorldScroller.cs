@@ -62,10 +62,11 @@ namespace ChompGame.MainGame.WorldScrollers
                 ntCol = (ntCol + 1).NModByte(_specs.NameTableWidth);
                 worldCol = (worldCol + 1).NModByte(_levelNameTable.Width);
             }
+            CopyTileColumn(worldCol, ntCol);
 
             seamTile = (ntScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableWidth);
             ntCol = (ntScrollBeginTile - 1).NModByte(_specs.NameTableWidth);
-            worldCol = (worldScrollBeginTile - 1).NModByte(_specs.NameTableWidth);
+            worldCol = (worldScrollBeginTile - 1).NModByte(_levelNameTable.Width);
 
             while (ntCol != seamTile)
             {
@@ -73,6 +74,7 @@ namespace ChompGame.MainGame.WorldScrollers
                 ntCol = (ntCol - 1).NModByte(_specs.NameTableWidth);
                 worldCol = (worldCol - 1).NModByte(_levelNameTable.Width);
             }
+            CopyTileColumn(worldCol, ntCol);
         }
 
         public override bool Update()
@@ -105,7 +107,7 @@ namespace ChompGame.MainGame.WorldScrollers
             }
             else
             {
-                var worldSeamColumn = (byte)(worldScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableWidth);
+                var worldSeamColumn = (byte)(worldScrollBeginTile - _backwardSeamOffset).NModByte(_levelNameTable.Width);
                 if (worldSeamColumn == _seamTile.Value)
                     return false;
 
