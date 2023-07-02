@@ -159,12 +159,16 @@ namespace ChompGame.MainGame
             sprite.SizeX = _spriteDefinition.SizeX;
             sprite.SizeY = _spriteDefinition.SizeY;
             sprite.Visible = true;
+
+            GameDebug.DebugLog($"Configure sprite #{SpriteIndex} Tile={sprite.Tile}", DebugLogFlags.SpriteSpawn);
         }
 
         public void Show()
         {
             if (Status == WorldSpriteStatus.Active)
                 return;
+
+            GameDebug.DebugLog($"Showing Sprite {SpriteIndex}", DebugLogFlags.SpriteSpawn);
 
             var newSpriteIndex = _spritesModule.GetFreeSpriteIndex();
             if (newSpriteIndex == 255)
@@ -181,6 +185,8 @@ namespace ChompGame.MainGame
 
         public void Hide()
         {
+            GameDebug.DebugLog($"Hiding Sprite {SpriteIndex}", DebugLogFlags.SpriteSpawn);
+
             if (Status == WorldSpriteStatus.Active)
             {
                 GetSprite().Tile = 0;
@@ -194,30 +200,11 @@ namespace ChompGame.MainGame
             if (Status == WorldSpriteStatus.Active)
             {
                 GetSprite().Tile = 0;
+                GameDebug.DebugLog($"Sprite {SpriteIndex} erased", DebugLogFlags.SpriteSpawn);
             }
 
             Status = WorldSpriteStatus.Inactive;
         }
 
-    }
-
-    class MovingWorldSprite : WorldSprite
-    {
-        public PrecisionMotion Motion { get; }
-        public int XSpeed => Motion.XSpeed;
-        public int YSpeed => Motion.YSpeed;
-
-        public MovingWorldSprite(
-            SystemMemoryBuilder memoryBuilder,
-            SpriteTileTable spriteTileTable,
-            Specs specs,
-            SpriteDefinition spriteDefinition,
-            SpritesModule spritesModule,
-            PrecisionMotion motion, 
-            WorldScroller scroller,
-            SpriteTileIndex tileIndex) : base(memoryBuilder,spriteTileTable,specs,spriteDefinition, spritesModule, scroller, tileIndex)
-        {           
-            Motion = motion;
-        }
     }
 }

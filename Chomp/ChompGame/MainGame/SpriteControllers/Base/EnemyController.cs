@@ -1,16 +1,22 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
-using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {
     abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, IEnemyOrBulletSpriteController
     {
+        protected GameByte _state;
         protected readonly ChompAudioService _audioService;
         private ScenePartsDestroyed _scenePartsDestroyed;
         private StatusBar _statusBar;
+
+        protected MaskedByte _hitPoints;
+        protected ActorMotionController _motionController;
+        protected AcceleratedMotion _motion;
+        public override IMotion Motion => _motion;
 
         protected EnemyController(SpriteType spriteType,
             SpriteTileIndex index,
@@ -20,6 +26,14 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _audioService = gameModule.AudioService;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _statusBar = gameModule.StatusBar;
+            _state = memoryBuilder.AddByte();
+
+            //todo, unused bits
+            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right3, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
+
+            _motionController = new ActorMotionController(gameModule, memoryBuilder, spriteType, WorldSprite);
+            _motion = _motionController.Motion;
         }
 
         public enum State
@@ -62,7 +76,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         protected abstract void UpdateBehavior();
 
-        public void HandlePlayerCollision(MovingWorldSprite player)
+        public void HandlePlayerCollision(WorldSprite player)
         {
         }
 
@@ -71,7 +85,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             Destroy();
         }
 
-        public bool HandleBombCollision(MovingWorldSprite player)
+        public bool HandleBombCollision(WorldSprite player)
         {
             if (_state.Value >= (int)State.Dying)
                 return false;

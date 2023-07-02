@@ -5,6 +5,7 @@ using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
@@ -12,6 +13,12 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController : ActorController
     {
+        private ActorMotionController _motionController;
+
+        public override IMotion Motion => AcceleratedMotion;
+        public AcceleratedMotion AcceleratedMotion => _motionController.Motion;
+
+        private GameByte _state;
         private SceneDefinition _scene;
         private readonly Specs _specs;
         private const byte _recoilSpeed = 30;
@@ -36,6 +43,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Player, gameModule, memoryBuilder, SpriteTileIndex.Player)
         {
+            _state = memoryBuilder.AddByte();
             _scene = gameModule.CurrentScene;
             _specs = gameModule.Specs;
             _statusBar = gameModule.StatusBar;
@@ -50,6 +58,14 @@ namespace ChompGame.MainGame.SpriteControllers
             _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
 
             _afterHitInvincibility = new MaskedByte(_state.Address, Bit.Right4, memoryBuilder.Memory);
+
+            _motionController = new ActorMotionController(
+                gameModule.SpritesModule, 
+                gameModule.SpriteTileTable, 
+                gameModule.LevelTimer, 
+                memoryBuilder, 
+                new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory),
+                WorldSprite);
             SpriteIndex = 0;
         }
 
@@ -138,10 +154,10 @@ namespace ChompGame.MainGame.SpriteControllers
             if(_statusBar.Health == 0)
             {
                 GetSprite().FlipY = true;
-                Motion.TargetYSpeed = _movingSpriteController.FallSpeed;
+                AcceleratedMotion.TargetYSpeed = _motionController.FallSpeed;
                 Motion.XSpeed = 0;
-                Motion.TargetXSpeed = 0;
-                _movingSpriteController.Update();
+                AcceleratedMotion.TargetXSpeed = 0;
+                _motionController.Update();
                 return;
             }
 
@@ -171,9 +187,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
 
-            _movingSpriteController.Update();
-            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
-            _movingSpriteController.AfterCollision(collisionInfo);
+            _motionController.Update();
+            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, Motion);
+            _motionController.AfterCollision(collisionInfo);
 
             if (collisionInfo.DynamicBlockCollision)
             {
@@ -196,25 +212,25 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_inputModule.Player1.RightKey.IsDown())
             {
-                Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
-                Motion.XAcceleration = _movingSpriteController.WalkAccel;
+                AcceleratedMotion.TargetXSpeed = _motionController.WalkSpeed;
+                AcceleratedMotion.XAcceleration = _motionController.WalkAccel;
             }
             else if (_inputModule.Player1.LeftKey.IsDown())
             {
-                Motion.TargetXSpeed = -_movingSpriteController.WalkSpeed;
-                Motion.XAcceleration = _movingSpriteController.WalkAccel;
+                AcceleratedMotion.TargetXSpeed = -_motionController.WalkSpeed;
+                AcceleratedMotion.XAcceleration = _motionController.WalkAccel;
             }
             else
             {
-                Motion.TargetXSpeed = 0;
-                Motion.XAcceleration = _movingSpriteController.BrakeAccel;
+                AcceleratedMotion.TargetXSpeed = 0;
+                AcceleratedMotion.XAcceleration = _motionController.BrakeAccel;
             }
 
             if ((collisionInfo.IsOnGround || _onPlatform.Value) 
                 && _inputModule.Player1.AKey == GameKeyState.Pressed)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
-                Motion.YSpeed = -_movingSpriteController.JumpSpeed;
+                Motion.YSpeed = -_motionController.JumpSpeed;
             }
 
             _onPlatform.Value = false;
@@ -282,7 +298,7 @@ namespace ChompGame.MainGame.SpriteControllers
            
             if (damage >= _statusBar.Health)
             {
-                Motion.YSpeed = -_movingSpriteController.JumpSpeed;
+                Motion.YSpeed = -_motionController.JumpSpeed;
                 
                 if(_statusBar.Health > 0)
                 {
@@ -299,7 +315,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void OnPlatformCollision(CollisionInfo c)
         {
-            _movingSpriteController.AfterCollision(c);
+            _motionController.AfterCollision(c);
             _onPlatform.Value = c.IsOnGround;
         }
     }

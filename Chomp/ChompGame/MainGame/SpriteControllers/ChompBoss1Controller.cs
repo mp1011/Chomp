@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss1Controller : EnemyController
     {
-        private readonly MovingWorldSprite _player;
+        private readonly WorldSprite _player;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
         private readonly ChompAudioService _audioService;
         private readonly MusicModule _music;
@@ -46,7 +46,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameByte _phaseByte;
         private GameByteEnum<Phase> _phase;
 
-        public ChompBoss1Controller(MovingWorldSprite player,
+        public ChompBoss1Controller(WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
@@ -120,7 +120,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateBehavior()
         {
-            _movingSpriteController.Update();
+            _motionController.Update();
             if (_phase.Value >= Phase.Appear)
             {
                 UpdateTail();
@@ -174,17 +174,18 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _music.CurrentSong = MusicModule.SongName.Threat;
 
-                Motion.SetYSpeed(10);
+                _motion.SetYSpeed(10);
 
                 if (WorldSprite.Y >= MaxY)
                 {
-                    Motion.SetYSpeed(0);
+                    _motion.SetYSpeed(0);
                     _phase.Value = Phase.BeforeAttack;
 
-                    Motion.XAcceleration = _movingSpriteController.WalkAccel;
-                    Motion.YAcceleration = _movingSpriteController.WalkAccel;
-                    Motion.XSpeed = _movingSpriteController.WalkSpeed;
-                    Motion.YSpeed = _movingSpriteController.WalkSpeed;
+                    throw new System.NotImplementedException();
+                    //_motion.XAcceleration = _movingSpriteController.WalkAccel;
+                    //_motion.YAcceleration = _movingSpriteController.WalkAccel;
+                    //_motion.XSpeed = _movingSpriteController.WalkSpeed;
+                    //_motion.YSpeed = _movingSpriteController.WalkSpeed;
                 }
             }
             else if (_phase.Value.Between(Phase.BeforeAttack, Phase.PrepareAttack))
@@ -199,7 +200,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motionTarget.Y = (byte)rng.Next(15);
                 }
 
-                Motion.TargetTowards(WorldSprite, Target, _movingSpriteController.WalkSpeed);
+                _motion.TargetTowards(WorldSprite, Target, _motionController.WalkSpeed);
 
                 if ((_levelTimer.Value % 32) == 0)
                     _phaseByte.Value++;
@@ -209,7 +210,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _motionTarget.Y = 6;
                 _motionTarget.X = 6;
 
-                if(Motion.TargetTowardsExact(WorldSprite, Target, _movingSpriteController.WalkSpeed))
+                if(_motion.TargetTowardsExact(WorldSprite, Target, _motionController.WalkSpeed))
                 {
                     if (_levelTimer.IsMod(32))
                         _phaseByte.Value++;
@@ -221,12 +222,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 _motionTarget.Y = 10;
                 _motionTarget.X = (byte)rng.RandomItem(2, 6, 10);
 
-                Motion.TargetTowards(WorldSprite, Target, _movingSpriteController.WalkSpeed);
+                _motion.TargetTowards(WorldSprite, Target, _motionController.WalkSpeed);
                 _phaseByte.Value++;
             }
             else if (_phase.Value == Phase.Attack)
             {
-                if(Motion.TargetTowardsExact(WorldSprite, Target, _movingSpriteController.WalkSpeed))
+                if(_motion.TargetTowardsExact(WorldSprite, Target, _motionController.WalkSpeed))
                 {
                     _phase.Value = Phase.BeforeAttack;
 
@@ -284,8 +285,9 @@ namespace ChompGame.MainGame.SpriteControllers
                         rng.RandomItem(-4, -2, 0, 2, 4),
                         rng.RandomItem(-4, 2, 0, 2, 4));
 
-                    bullet.Motion.SetYSpeed(0);
-                    bullet.Motion.SetXSpeed(0);
+                    throw new System.NotImplementedException();
+                 //   bullet.Motion.SetYSpeed(0);
+                   // bullet.Motion.SetXSpeed(0);
                     bullet.Explode();
                 }
             }
@@ -302,8 +304,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             bullet.WorldSprite.Center = WorldSprite.Center;
-            bullet.Motion.SetYSpeed(15);
-            bullet.Motion.SetXSpeed(xSpeed);
+            throw new NotImplementedException();
+            //bullet.Motion.SetYSpeed(15);
+            //bullet.Motion.SetXSpeed(xSpeed);
         }
     }
 }

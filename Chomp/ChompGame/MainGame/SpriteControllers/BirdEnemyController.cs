@@ -8,10 +8,10 @@ namespace ChompGame.MainGame.SpriteControllers
     class BirdEnemyController : EnemyController
     {
         private const int _hoverSpeed = 20;
-        private readonly MovingWorldSprite _player;
+        private readonly WorldSprite _player;
 
         public BirdEnemyController(
-            MovingWorldSprite player,
+            WorldSprite player,
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder,
             SpriteTileIndex tileIndex) 
@@ -25,7 +25,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateBehavior() 
         {
-            _movingSpriteController.Update();
+            _motionController.Update();
 
             if((_levelTimer % 32) == 0)
             {
@@ -36,28 +36,28 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (_state < 8)
                 {
                     if (WorldSprite.Y < hoverTarget)
-                        Motion.TargetYSpeed = _hoverSpeed;
+                        _motion.TargetYSpeed = _hoverSpeed;
                     else
-                        Motion.TargetYSpeed = -_hoverSpeed;
+                        _motion.TargetYSpeed = -_hoverSpeed;
 
                     WorldSprite.FlipX = _player.X < WorldSprite.X;
                 }
                 else if(_state >= 8 && _state < 14)
                 {
                     if (WorldSprite.Y < _player.Y)
-                        Motion.TargetTowards(WorldSprite, _player, _movingSpriteController.WalkSpeed);
+                        _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
                     else
                         _state.Value = 0;
                 }
                 else if (_state >= 14)
                 {
-                    Motion.TargetXSpeed = 0;
-                    Motion.TargetYSpeed = -_hoverSpeed;
+                    _motion.TargetXSpeed = 0;
+                    _motion.TargetYSpeed = -_hoverSpeed;
 
                     if (WorldSprite.Y <= hoverTarget)
                     {
                         _state.Value = 0;
-                        Motion.TargetYSpeed = 0;
+                        _motion.TargetYSpeed = 0;
                     }
                 }
             }
@@ -65,13 +65,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            Motion.TargetXSpeed = 0;
-            Motion.TargetYSpeed = 0;
-            Motion.XSpeed = 0;
-            Motion.YSpeed = 0;
+            _motion.TargetXSpeed = 0;
+            _motion.TargetYSpeed = 0;
+            _motion.XSpeed = 0;
+            _motion.YSpeed = 0;           
+            _motion.XAcceleration = _motionController.WalkAccel;
+            _motion.YAcceleration = _motionController.WalkAccel;
 
-            Motion.XAcceleration = _movingSpriteController.WalkAccel;
-            Motion.YAcceleration = _movingSpriteController.WalkAccel;
+            _hitPoints.Value = 0;
+            _state.Value = 0;
         }
     }
 

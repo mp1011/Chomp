@@ -22,7 +22,7 @@ namespace ChompGame.MainGame
         protected TileModule _tileModule;
         protected SpritesModule _spritesModule;
 
-        protected MovingWorldSprite _focusSprite;
+        protected WorldSprite _focusSprite;
         protected NBitPlane _levelNameTable;
         protected NBitPlane _levelAttributeTable;
 
@@ -105,7 +105,7 @@ namespace ChompGame.MainGame
 
         protected virtual byte ScrollableSectionBegin => 0;
 
-        public void Initialize(SceneDefinition scene, MovingWorldSprite focusSprite, NBitPlane levelNameTable, NBitPlane levelAttributeTable)
+        public void Initialize(SceneDefinition scene, WorldSprite focusSprite, NBitPlane levelNameTable, NBitPlane levelAttributeTable)
         {
             _sceneDefinition = scene;
             _focusSprite = focusSprite;

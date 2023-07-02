@@ -78,7 +78,7 @@ namespace ChompGame.Helpers
             return s1.Bounds.Intersects(s2.Bounds);
         }
 
-        public CollisionInfo DetectCollisions(MovingWorldSprite actor)
+        public CollisionInfo DetectCollisions(WorldSprite actor, IMotion motion)
         {
             int collidableTileBeginIndex = _currentScene.CollidableTileBeginIndex;
             var collisionInfo = new CollisionInfo();
@@ -138,7 +138,7 @@ namespace ChompGame.Helpers
                     if(actorBounds.Bottom == tileBounds.Top
                         && actorBounds.Right >= tileBounds.X 
                         && actorBounds.X <= tileBounds.Right 
-                        && actor.YSpeed >= 0)
+                        && motion.YSpeed >= 0)
                     {
                         collisionInfo.IsOnGround = true;
                         if (t == _spriteTileTable.DestructibleBlockTile)
@@ -181,23 +181,23 @@ namespace ChompGame.Helpers
                 if (t == _spriteTileTable.CoinTile)
                     return;
 
-                bool checkLeftCollision = actor.XSpeed > 0 && (tileLeft < collidableTileBeginIndex || tileLeft == _spriteTileTable.CoinTile);
-                bool checkRightCollision = actor.XSpeed < 0 && (tileRight < collidableTileBeginIndex || tileRight == _spriteTileTable.CoinTile);
-                bool checkAbove = actor.YSpeed >= 0 && (tileAbove < collidableTileBeginIndex || tileAbove == _spriteTileTable.CoinTile);
-                bool checkBelow = actor.YSpeed < 0 && (tileBelow < collidableTileBeginIndex || tileBelow == _spriteTileTable.CoinTile);
+                bool checkLeftCollision = motion.XSpeed > 0 && (tileLeft < collidableTileBeginIndex || tileLeft == _spriteTileTable.CoinTile);
+                bool checkRightCollision = motion.XSpeed < 0 && (tileRight < collidableTileBeginIndex || tileRight == _spriteTileTable.CoinTile);
+                bool checkAbove = motion.YSpeed >= 0 && (tileAbove < collidableTileBeginIndex || tileAbove == _spriteTileTable.CoinTile);
+                bool checkBelow = motion.YSpeed < 0 && (tileBelow < collidableTileBeginIndex || tileBelow == _spriteTileTable.CoinTile);
 
                 int leftMove = actorBounds.Right - tileBounds.Left;
                 int rightMove = tileBounds.Right - actorBounds.Left;
                 int upMove = actorBounds.Bottom - tileBounds.Top;
                 int downMove = tileBounds.Bottom - actorBounds.Top;
 
-                if (leftMove > 0 && checkLeftCollision && actor.XSpeed > 0)
+                if (leftMove > 0 && checkLeftCollision && motion.XSpeed > 0)
                     collisionInfo.XCorrection = -(leftMove);
-                else if (rightMove > 0 && checkRightCollision && actor.XSpeed < 0)
+                else if (rightMove > 0 && checkRightCollision && motion.XSpeed < 0)
                     collisionInfo.XCorrection = rightMove;
-                else if (upMove > 0 && checkAbove && actor.YSpeed > 0)
+                else if (upMove > 0 && checkAbove && motion.YSpeed > 0)
                     collisionInfo.YCorrection = -upMove;
-                else if (downMove > 0 && checkBelow && actor.YSpeed < 0)
+                else if (downMove > 0 && checkBelow && motion.YSpeed < 0)
                     collisionInfo.YCorrection = downMove;
 
                 if(collisionInfo.YCorrection < 0)
@@ -276,227 +276,12 @@ namespace ChompGame.Helpers
             //else if (collisionInfo.RightLedge)
             //    GameDebug.DebugLog($"Right Edge Detected - Height = {collisionInfo.LedgeHeight}");
         }
-
-        public CollisionInfo DetectCollisions2(MovingWorldSprite actor)
-        {
-            int solidTileBeginIndex = 8;
-            var collisionInfo = new CollisionInfo();
-
-            var topLeftTile = actor.TopLeft
-                .Divide(_specs.TileWidth)
-                .Add(-2, -2);
-
-
-            var bottomRightTile = actor.BottomRight
-                                        .Divide(_specs.TileWidth)
-                                        .Add(2, 2);
-
-            _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
-            {
-                if (t < solidTileBeginIndex)
-                    return;
-
-                var tileBounds = new Rectangle(
-                    x * _specs.TileWidth, 
-                    y * _specs.TileHeight, 
-                    _specs.TileWidth, 
-                    _specs.TileHeight);
-
-                var tileLeft = _levelTileMap[
-                    (x - 1).NMod(_levelTileMap.Width), 
-                    y.NMod(_levelTileMap.Height)];
-                
-                var tileRight = _levelTileMap[
-                    (x + 1).NMod(_levelTileMap.Width), 
-                    y.NMod(_levelTileMap.Height)];
-
-                bool checkLeftCollision = actor.XSpeed > 0 && tileLeft < solidTileBeginIndex;
-                bool checkRightCollision = actor.XSpeed < 0 && tileRight < solidTileBeginIndex;
-
-                CheckCollisionCorrectionX(actor, collisionInfo, tileBounds, checkLeftCollision, checkRightCollision);
-            });
-
-            //foreach (var block in _actorManager.GetActors(ActorType.Gizmo))
-            //{
-            //    if (!block.Visible)
-            //        continue;
-
-            //    bool checkLeftCollision = actor.MotionVector.X > 0;
-            //    bool checkRightCollision = actor.MotionVector.X < 0;
-            //    CheckCollisionCorrectionX(actor, correction, block.WorldPosition, checkLeftCollision, checkRightCollision);
-            //}
-
-            if (collisionInfo.XCorrection != 0)
-            {
-                actor.X += collisionInfo.XCorrection;
-               // collisionInfo += new CollisionInfo(XCorrection: correction.X);
-            }
-
-            _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
-            {
-                if (t < solidTileBeginIndex)
-                    return;
-
-                var tileBounds = new Rectangle(
-                   x * _specs.TileWidth,
-                   y * _specs.TileHeight,
-                   _specs.TileWidth,
-                   _specs.TileHeight);
-
-                if (actor.Bounds.Intersects(tileBounds))
-                    return;
-
-                var tileAbove = _levelTileMap[
-                    x.NMod(_levelTileMap.Width), 
-                    (y - 1).NMod(_levelTileMap.Height)];
-
-                var tileBelow = _levelTileMap[
-                    x.NMod(_levelTileMap.Width), 
-                    (y + 1).NMod(_levelTileMap.Height)];
-
-                var tileLeft = _levelTileMap[
-                    (x - 1).NMod(_levelTileMap.Width), 
-                    y.NMod(_levelTileMap.Height)];
-
-                var tileRight = _levelTileMap[
-                    (x + 1).NMod(_levelTileMap.Width), 
-                    y.NMod(_levelTileMap.Height)];
-
-                bool checkAbove = actor.YSpeed >= 0 && tileAbove < solidTileBeginIndex;
-                bool checkBelow = actor.YSpeed < 0 && tileBelow < solidTileBeginIndex;
-
-         
-            });
-
-            //foreach (var block in _actorManager.GetActors(ActorType.Gizmo))
-            //{
-            //    if (!block.Visible)
-            //        continue;
-
-            //    bool checkAbove = actor.MotionVector.Y >= 0;
-            //    bool checkBelow = actor.MotionVector.Y < 0;
-
-            //    collisionInfo = CheckCollisionCorrectionY(actor, correction, collisionInfo, block.WorldPosition,
-            //    false, false, checkAbove, checkBelow);
-
-            //    var correctedBottom = actor.WorldPosition.BottomPixel + correction.Y;
-
-            //    if (collisionInfo.IsOnGround && correctedBottom == block.WorldPosition.TopPixel)
-            //    {
-            //        correction.CarryMotion = block.MotionVector;
-            //    }
-            //}
-
-            if (collisionInfo.YCorrection != 0)
-            {
-                actor.Y = actor.Y + collisionInfo.YCorrection;
-            }
-
-            //if (correction.CarryMotion != null)
-            //{
-            //    actor.WorldPosition.X.Add(correction.CarryMotion.X);
-            //    actor.WorldPosition.Y.Add(correction.CarryMotion.Y);
-            //}
-            if (actor.Y > 32)
-                actor.Y += 0;
-
-            return collisionInfo;
-        }
-
-        private void CheckCollisionCorrectionX(MovingWorldSprite actor, CollisionInfo correction,
-            Rectangle bounds, bool checkLeftCollision, bool checkRightCollision)
-        {
-            var xTemp = 0;
-            if (bounds.Intersects(actor.Bounds))
-            {
-                var leftDifference = bounds.X - actor.BottomRight.X;
-                var rightDifference = bounds.Right - actor.X;
-
-                if (checkLeftCollision && Math.Abs(leftDifference) <= Math.Abs(rightDifference))
-                {
-                    xTemp = leftDifference;
-                    if (xTemp > 0)
-                        xTemp = 0;
-                    if (xTemp < correction.XCorrection)
-                        correction.XCorrection = xTemp;
-                }
-                else if (checkRightCollision && Math.Abs(leftDifference) >= Math.Abs(rightDifference))
-                {
-                    xTemp = rightDifference;
-                    if (xTemp < 0)
-                        xTemp = 0;
-                    if (xTemp > correction.XCorrection)
-                        correction.XCorrection = xTemp;
-                }
-            }
-        }
-
-        private void CheckCollisionCorrectionY(MovingWorldSprite actor, CollisionInfo correction, CollisionInfo collisionInfo,
-            Rectangle bounds, bool leftSolid, bool rightSolid, bool checkAbove, bool checkBelow)
-        {
-
-            var yTemp = 0;
-
-            if (bounds.Intersects(actor.Bounds))
-            {
-                var topDifference = bounds.Y - actor.BottomRight.Y;
-                var bottomDifference = bounds.Bottom - actor.Y;
-
-                if (checkAbove && (Math.Abs(topDifference) <= Math.Abs(bottomDifference)))
-                {
-                    yTemp = topDifference;
-
-                    if (yTemp > 0)
-                        yTemp = 0;
-                    if (yTemp < correction.YCorrection)
-                    {
-                        correction.YCorrection = yTemp;
-                        CheckTouchingGround(actor, bounds, correction);
-                    }
-                }
-                else if (checkBelow && (Math.Abs(topDifference) >= Math.Abs(bottomDifference)))
-                {
-                    yTemp = bottomDifference;
-                    if (yTemp < 0)
-                        yTemp = 0;
-                    if (yTemp > correction.YCorrection)
-                        correction.YCorrection = yTemp;
-                }
-            }
-
-            if (checkAbove)
-            {
-                CheckTouchingGround(actor, bounds, correction);                
-                //if (groundCollision.IsOnGround && (!leftSolid || !rightSolid))
-                //    collisionInfo += CheckOnLedge(actor, bounds, leftSolid, rightSolid);
-            }
-        }
-
-        //private CollisionInfo CheckOnLedge(Actor actor, Rectangle tile, bool leftTileSolid, bool rightTileSolid)
-        //{
-        //    if (actor.MotionVector.X > 0
-        //        && !rightTileSolid
-        //        && tile.Bottom > actor.WorldPosition.Bottom()
-        //        && actor.WorldPosition.Right() > tile.Center.X)
-        //    {
-        //        return new CollisionInfo(IsFacingLedge: true);
-        //    }
-        //    else if (actor.MotionVector.X < 0
-        //       && !leftTileSolid
-        //       && tile.Bottom > actor.WorldPosition.Bottom()
-        //       && actor.WorldPosition.Left() < tile.Center.X)
-        //    {
-        //        return new CollisionInfo(IsFacingLedge: true);
-        //    }
-        //    else
-        //        return new CollisionInfo();
-        //}
-
-        private void CheckTouchingGround(MovingWorldSprite actor, Rectangle collidingTile, CollisionInfo collisionInfo)
+     
+        private void CheckTouchingGround(WorldSprite actor, IMotion motion, Rectangle collidingTile, CollisionInfo collisionInfo)
         {
             var correctedBottom = actor.BottomRight.Y + collisionInfo.YCorrection;
 
-            if (actor.YSpeed >= 0
+            if (motion.YSpeed >= 0
                 && correctedBottom == collidingTile.Y
                 && actor.BottomRight.X > collidingTile.X
                 && actor.X <= collidingTile.Right)

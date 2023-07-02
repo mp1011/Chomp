@@ -22,6 +22,8 @@ namespace ChompGame.MainGame
             set => _motion.Y = value;
         }
 
+        public int TargetXSpeed => XSpeed;
+
         public PrecisionMotion(SystemMemoryBuilder memoryBuilder)
         {
             _motion = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
@@ -29,7 +31,7 @@ namespace ChompGame.MainGame
             _subPixelY = memoryBuilder.AddByte();
         }
 
-        public void Apply(MovingWorldSprite sprite)
+        public void Apply(WorldSprite sprite)
         {
             int sx = _subPixelX.Value;
             sx += _motion.X * _motionScale;
@@ -60,6 +62,12 @@ namespace ChompGame.MainGame
             {
                 sprite.Y = sprite.Y + pixelY;
             }
+        }
+
+        public void Stop()
+        {
+            XSpeed = 0;
+            YSpeed = 0;
         }
     }
 

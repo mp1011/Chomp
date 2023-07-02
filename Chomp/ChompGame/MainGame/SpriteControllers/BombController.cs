@@ -4,6 +4,7 @@ using ChompGame.Extensions;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
@@ -15,8 +16,11 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly PlayerController _playerController;
         private readonly DynamicBlockController _dynamicBlockController;
         private readonly GameBit _isThrown;
-
         private readonly GameByteEnum<BombState> _bombState;
+
+
+        private IMotionController _motionController;
+        private AcceleratedMotion _motion;
 
         enum BombState : byte
         {
@@ -38,8 +42,16 @@ namespace ChompGame.MainGame.SpriteControllers
             _collisionDetector = gameModule.CollissionDetector;
             _playerController = playerController;
             _dynamicBlockController = gameModule.DynamicBlocksController;
-            _bombState = new GameByteEnum<BombState>(new MaskedByte(_state.Address, Bit.Right5, memoryBuilder.Memory));
-            _isThrown = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
+
+            var state = memoryBuilder.AddByte();
+            _bombState = new GameByteEnum<BombState>(new MaskedByte(state.Address, Bit.Right5, memoryBuilder.Memory));
+            _isThrown = new GameBit(state.Address, Bit.Bit5, memoryBuilder.Memory);
+
+            var motionController = new ActorMotionController(gameModule.SpritesModule, gameModule.SpriteTileTable,
+                gameModule.LevelTimer, memoryBuilder, new SpriteDefinition(SpriteType.Bomb, memoryBuilder.Memory), WorldSprite);
+
+            _motionController = motionController;
+            _motion = motionController.Motion;
         }
 
         public bool IsCarried => _bombState.Value == BombState.RiseEnd;
@@ -47,7 +59,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if(_bombState.Value >= BombState.Explode)
             {
-                Motion.Stop();
+                _motion.Stop();
 
                 if (WorldSprite.Status == WorldSpriteStatus.Active)
                 {
@@ -66,11 +78,11 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_bombState.Value < BombState.RiseBegin)
             {
-                int ySpeed = Motion.YSpeed;
-                _movingSpriteController.Update();
+                int ySpeed = _motion.YSpeed;
+                _motionController.Update();
 
-                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
-                _movingSpriteController.AfterCollision(collisionInfo);
+                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motion);
+                _motionController.AfterCollision(collisionInfo);
 
                 if(collisionInfo.DynamicBlockCollision)
                 {
@@ -80,9 +92,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 if ((int)_bombState.Value < 2 && (collisionInfo.YCorrection < 0 || collisionInfo.IsOnGround))
                 {
                     _isThrown.Value = false;
-                    Motion.XSpeed = 0;
-                    Motion.TargetXSpeed = 0;
-                    Motion.YSpeed = (int)(-(ySpeed * 0.5));
+                    _motion.XSpeed = 0;
+                    _motion.TargetXSpeed = 0;
+                    _motion.YSpeed = (int)(-(ySpeed * 0.5));
                     _bombState.Value++;
                 }
             }
@@ -120,13 +132,13 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_playerController.Motion.YSpeed < 0)
             {
-                Motion.YSpeed = -50;
-                Motion.XSpeed = _playerController.WorldSprite.FlipX ? -30 : 30;
+                _motion.YSpeed = -50;
+                _motion.XSpeed = _playerController.WorldSprite.FlipX ? -30 : 30;
             }
             else
             {
-                Motion.YSpeed = -10;
-                Motion.XSpeed = _playerController.WorldSprite.FlipX ? -50 : 50;
+                _motion.YSpeed = -10;
+                _motion.XSpeed = _playerController.WorldSprite.FlipX ? -50 : 50;
             }
         }
 
@@ -151,17 +163,18 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            Motion.XSpeed = 0;
-            Motion.YSpeed = 0;
+            _motion.XSpeed = 0;
+            _motion.YSpeed = 0;
+            _bombState.Value = BombState.Idle;
         }
 
         public void SetPickup()
         {
             _bombState.Value = BombState.RiseBegin;
-            Motion.XSpeed = 0;
-            Motion.YSpeed = 0;
-            Motion.TargetXSpeed = 0;
-            Motion.TargetYSpeed = 0;
+            _motion.XSpeed = 0;
+            _motion.YSpeed = 0;
+            _motion.TargetXSpeed = 0;
+            _motion.TargetYSpeed = 0;
 
             if(DestructionBitOffset != 255)
                 _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);

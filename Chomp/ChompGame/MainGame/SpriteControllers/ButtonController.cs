@@ -79,7 +79,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 && _playerController.Motion.YSpeed > 0 
                 && player.Bounds.Intersects(this.WorldSprite.Bounds))
             {
-                player.Motion.YSpeed = -10;
+                throw new System.NotImplementedException();
+                //player.Motion.YSpeed = -10;
                 WorldSprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Button) + 1);
                 _audio.PlaySound(ChompAudioService.Sound.ButtonPress);
                 _dynamicBlockController.SwitchOffBlocks();

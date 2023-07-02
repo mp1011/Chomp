@@ -1,22 +1,28 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
     class ExplosionController : ActorController
     {
+        private GameByte _timer;
+        private ActorMotionController _motionController;
+
         public ExplosionController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Explosion, gameModule, memoryBuilder, tileIndex: SpriteTileIndex.Explosion)
         {
+            _timer = memoryBuilder.AddByte();
+            _motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.Explosion, WorldSprite);
         }
 
         protected override void UpdateActive()
         {
-            _movingSpriteController.Update();
-            _state.Value++;
-            if(_state.Value >= 16)
+            _motionController.Update();
+            _timer.Value++;
+            if(_timer.Value >= 16)
             {
                 Destroy();
                 return;
@@ -25,24 +31,26 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _state.Value = 0;
+            _timer.Value = 0;
         }
 
         public void SetMotion(int xMod, int yMod)
         {
+            var motion = _motionController.Motion;
+
             if (yMod == 0)
-                Motion.YSpeed = -_movingSpriteController.JumpSpeed;
+                motion.YSpeed = -_motionController.JumpSpeed;
             else
-                Motion.YSpeed = 0;
+                motion.YSpeed = 0;
 
             if (xMod == 0)
-                Motion.SetXSpeed(-_movingSpriteController.WalkSpeed);
+                motion.SetXSpeed(-_motionController.WalkSpeed);
             else
-                Motion.SetXSpeed(_movingSpriteController.WalkSpeed);
+                motion.SetXSpeed(_motionController.WalkSpeed);
 
 
-            Motion.TargetYSpeed = _movingSpriteController.FallSpeed;
-            Motion.YAcceleration = _movingSpriteController.GravityAccel;
+            motion.TargetYSpeed = _motionController.FallSpeed;
+            motion.YAcceleration = _motionController.GravityAccel;
         }
     }
 }

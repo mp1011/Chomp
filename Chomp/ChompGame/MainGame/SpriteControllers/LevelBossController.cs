@@ -13,6 +13,9 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class LevelBossController : EnemyController
     {
+        private AcceleratedMotion _motion;
+        private IMotionController _motionController;
+
         private const byte BossLightningAppearValue = 100;
         private const byte FloatSpeed = 20;
         private const byte FloatTurnAngle = 16;
@@ -85,6 +88,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _hitPoints.Value = 4;
+            _state.Value = 0;
         }
 
         protected override bool HandleDestroy()
@@ -104,8 +108,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (_internalTimer.Value == 0)
                 {
                     _musicModule.CurrentSong = MusicModule.SongName.None;
-                    Motion.SetXSpeed(0);
-                    Motion.SetYSpeed(0);
+                    _motion.SetXSpeed(0);
+                    _motion.SetYSpeed(0);
                     _internalTimer.Value++;
                 }
 
@@ -221,10 +225,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _paletteModule.BgColor = ColorIndex.Black;
             SetBossTiles();
 
-            Motion.XAcceleration = 10;
-            Motion.YAcceleration = 10;
-            Motion.XSpeed = 0;
-            Motion.YSpeed = 0;
+            _motion.XAcceleration = 10;
+            _motion.YAcceleration = 10;
+            _motion.XSpeed = 0;
+            _motion.YSpeed = 0;
 
             _jawSpriteIndex.Value = _spritesModule.GetFreeSpriteIndex();
             var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
@@ -268,7 +272,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             CreateBoss();
             PositionBossAbovePlayer();
-            Motion.SetXSpeed(20);
+            _motion.SetXSpeed(20);
 
             _internalTimer.Value = 0;
             _phase.Value = Phase.FireRain;
@@ -297,7 +301,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 bullet.WorldSprite.X = WorldSprite.X;
                 bullet.WorldSprite.Y = WorldSprite.Y + 8;
                 bullet.WorldSprite.FlipX = true;
-                bullet.Motion.SetXSpeed(-40);
+                bullet.Motion.XSpeed = -40;
                 _audioService.PlaySound(ChompAudioService.Sound.Fireball);
             }
         }
@@ -314,9 +318,10 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 bullet.WorldSprite.Y = 64;
                 bullet.WorldSprite.X = _player.X;
-                bullet.Motion.SetYSpeed(20);
-                bullet.Motion.TargetYSpeed = 40;
-                bullet.Motion.YAcceleration = 4;
+                throw new System.NotImplementedException();
+                //bullet.Motion.SetYSpeed(20);
+                //bullet.Motion.TargetYSpeed = 40;
+                //bullet.Motion.YAcceleration = 4;
                 
             }
 
@@ -450,9 +455,9 @@ namespace ChompGame.MainGame.SpriteControllers
                     targetX = maxX;
 
                 if (_levelTimer.IsMod(8))
-                    Motion.TurnTowards(WorldSprite, new Point(targetX, 80), FloatTurnAngle, FloatSpeed);
+                    _motion.TurnTowards(WorldSprite, new Point(targetX, 80), FloatTurnAngle, FloatSpeed);
 
-                _movingSpriteController.Update();
+                _motionController.Update();
 
                 if (_levelTimer.IsMod(8))
                 {
@@ -466,17 +471,17 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.BeforeFireballAttack)
             {
-                Motion.TargetXSpeed = 0;
-                Motion.TargetYSpeed = 0;
-                Motion.XAcceleration = 1;
-                Motion.YAcceleration = 1;
+                _motion.TargetXSpeed = 0;
+                _motion.TargetYSpeed = 0;
+                _motion.XAcceleration = 1;
+                _motion.YAcceleration = 1;
 
                 if (_jawPosition.Value < 4 && _levelTimer.IsMod(8))
                     _jawPosition.Value++;
 
-                _movingSpriteController.Update();
+                _motionController.Update();
 
-                if (Motion.XSpeed == 0 && Motion.YSpeed == 0)
+                if (_motion.XSpeed == 0 && _motion.YSpeed == 0)
                 {
                     _internalTimer.Value++;
                     if (_internalTimer.Value == 50)
@@ -488,12 +493,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (_jawPosition.Value < 4)
                     _jawPosition.Value++;
 
-                Motion.SetYSpeed(20);
+                _motion.SetYSpeed(20);
 
                 if (WorldSprite.X < _player.X)
-                    Motion.SetXSpeed(20);
+                    _motion.SetXSpeed(20);
 
-                _movingSpriteController.Update();
+                _motionController.Update();
 
                 if (_levelTimer.IsMod(32))
                     FireBullet();
@@ -506,17 +511,17 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.Rush)
             {
-                _movingSpriteController.Update();
+                _motionController.Update();
 
                 if (_internalTimer.Value < 25 && _levelTimer.IsMod(32))
                     FireBullet();
 
                 if (_internalTimer.Value < 100)
-                {                   
-                    Motion.TargetXSpeed = 0;
-                    Motion.TargetYSpeed = 0;
-                    Motion.XAcceleration = 8;
-                    Motion.YAcceleration = 8;
+                {
+                    _motion.TargetXSpeed = 0;
+                    _motion.TargetYSpeed = 0;
+                    _motion.XAcceleration = 8;
+                    _motion.YAcceleration = 8;
 
                     _internalTimer.Value++;
                 }
@@ -527,8 +532,8 @@ namespace ChompGame.MainGame.SpriteControllers
                         _jawPosition.Value--;
                     }
 
-                    Motion.TargetXSpeed = -50;
-                    Motion.XAcceleration = 8;
+                    _motion.TargetXSpeed = -50;
+                    _motion.XAcceleration = 8;
 
                     if(WorldSprite.X < 8)
                     {
@@ -548,8 +553,8 @@ namespace ChompGame.MainGame.SpriteControllers
                     CollisionEnabled = false;
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                     _internalTimer.Value++;
-                    Motion.SetXSpeed(0);
-                    Motion.SetYSpeed(0);
+                    _motion.SetXSpeed(0);
+                    _motion.SetYSpeed(0);
                     HideBoss();
 
                     _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 4));

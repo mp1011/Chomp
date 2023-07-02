@@ -12,13 +12,13 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private readonly CollisionDetector _collisionDetector;
         private readonly IEnemyOrBulletSpriteControllerPool _lizardBulletControllers;
-        private readonly MovingWorldSprite _player;
+        private readonly WorldSprite _player;
 
         public LizardEnemyController(
             IEnemyOrBulletSpriteControllerPool lizardBulletControllers,
             SpriteTileIndex tileIndex,
             ChompGameModule chompGameModule,
-            MovingWorldSprite player,
+            WorldSprite player,
             SystemMemoryBuilder memoryBuilder)
             : base(SpriteType.Lizard, tileIndex, chompGameModule, memoryBuilder)
         {
@@ -29,30 +29,32 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
-            Motion.XSpeed = _movingSpriteController.WalkSpeed;
-            Motion.XAcceleration = _movingSpriteController.WalkAccel;
+            _motion.TargetXSpeed = _motionController.WalkSpeed;
+            _motion.XSpeed = _motionController.WalkSpeed;
+            _motion.XAcceleration = _motionController.WalkAccel;
+            _hitPoints.Value = 0;
+            _state.Value = 0;
         }
 
         protected override void UpdateBehavior()
         {
-            _movingSpriteController.Update();
-            var collision = _collisionDetector.DetectCollisions(_movingSpriteController.WorldSprite);
-            _movingSpriteController.AfterCollision(collision);
+            _motionController.Update();
+            var collision = _collisionDetector.DetectCollisions(WorldSprite, _motion);
+            _motionController.AfterCollision(collision);
 
            
             if (_state.Value == SpriteIndex && !collision.LeftLedge && !collision.RightLedge)
             {
                 _state.Value++;
-                if (Motion.TargetXSpeed < 0)
+                if (_motion.TargetXSpeed < 0)
                 {
-                    Motion.TargetXSpeed = _movingSpriteController.WalkSpeed;
-                    Motion.XSpeed = _movingSpriteController.WalkSpeed;
+                    _motion.TargetXSpeed = _motionController.WalkSpeed;
+                    _motion.XSpeed = _motionController.WalkSpeed;
                 }
                 else
                 {
-                    Motion.TargetXSpeed = -_movingSpriteController.WalkSpeed;
-                    Motion.XSpeed = -_movingSpriteController.WalkSpeed;
+                    _motion.TargetXSpeed = -_motionController.WalkSpeed;
+                    _motion.XSpeed = -_motionController.WalkSpeed;
                 }
             }
             else if (_state.Value == 16 + SpriteIndex)
@@ -65,7 +67,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     if (fireball != null)
                     {
                         _audioService.PlaySound(ChompAudioService.Sound.Fireball);
-                        var thisSprite = _movingSpriteController.WorldSprite;
+                        var thisSprite = WorldSprite;
                         fireball.WorldSprite.X = thisSprite.X;
                         fireball.WorldSprite.Y = thisSprite.Y;
                         fireball.WorldSprite.FlipX = thisSprite.FlipX;

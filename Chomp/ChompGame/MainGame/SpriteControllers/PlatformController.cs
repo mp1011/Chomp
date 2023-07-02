@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
@@ -19,6 +20,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
     class PlatformController : ActorController
     {
+        private IMotionController _motionController;
         private GameBit _direction;
         private GameBit _movedBack;
         private GameBit _movedForward;
@@ -49,6 +51,9 @@ namespace ChompGame.MainGame.SpriteControllers
             _platformType = new TwoBitEnum<PlatformType>(memoryBuilder.Memory,
                     address,
                     6);
+
+            _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
+                new SpriteDefinition(SpriteType.Platform, memoryBuilder.Memory));
         }
 
         protected override void UpdateActive()
@@ -66,7 +71,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private void Update_LeftRight()
         {
             int startX = WorldSprite.X;
-            _movingSpriteController.Update();
+            _motionController.Update();
 
             _movedBack.Value = WorldSprite.X < startX;
             _movedForward.Value = WorldSprite.X > startX;
@@ -76,9 +81,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 _direction.Value = !_direction.Value;
 
                 if (_direction.Value)
-                    Motion.SetXSpeed(8);
+                    _motionController.Motion.XSpeed = 8;
                 else
-                    Motion.SetXSpeed(-8);
+                    _motionController.Motion.XSpeed = -8;
 
                 _timer.Value++;
             }
@@ -91,7 +96,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private void Update_UpDown()
         {
             int startY = WorldSprite.Y;
-            _movingSpriteController.Update();
+            _motionController.Update();
 
             _movedBack.Value = WorldSprite.Y < startY;
             _movedForward.Value = WorldSprite.Y > startY;
@@ -101,9 +106,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 _direction.Value = !_direction.Value;
 
                 if (_direction.Value)
-                    Motion.SetYSpeed(8);
+                    _motionController.Motion.YSpeed = 8;
                 else
-                    Motion.SetYSpeed(-8);
+                    _motionController.Motion.YSpeed = -8;
 
                 _timer.Value++;
             }

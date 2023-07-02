@@ -1,13 +1,13 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
-using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
-namespace ChompGame.MainGame.SpriteControllers.Base
+namespace ChompGame.MainGame.SpriteControllers.MotionControllers
 {
-    class MovingSpriteController
+   class ActorMotionController : IMotionController
     {
         private SpriteDefinition _spriteDefinition;
         private SpriteTileTable _spriteTileTable;
@@ -18,9 +18,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => WorldSprite.Status = value;
         }
 
+        byte IMotionController.Speed => WalkSpeed;
         public byte WalkSpeed =>
-            _spriteDefinition.MovementSpeed switch 
-            {
+            _spriteDefinition.MovementSpeed switch {
                 MovementSpeed.VerySlow => 1,
                 MovementSpeed.Slow => 10,
                 MovementSpeed.Fast => 40,
@@ -76,8 +76,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         private readonly GameByte _levelTimer;
         private readonly SpritesModule _spritesModule;
 
+        IMotion IMotionController.Motion => Motion;
         public AcceleratedMotion Motion { get; }
-        public MovingWorldSprite WorldSprite { get; }
+        public WorldSprite WorldSprite { get; }
         public byte SpriteIndex
         {
             get => WorldSprite.SpriteIndex.Value;
@@ -88,31 +89,29 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void ConfigureSprite(Sprite s) => WorldSprite.ConfigureSprite(s);
 
-        public MovingSpriteController(
+
+        public ActorMotionController(ChompGameModule gameModule,
+            SystemMemoryBuilder memoryBuilder,
+            SpriteType spriteType,
+            WorldSprite worldSprite)
+            : this(gameModule.SpritesModule, gameModule.SpriteTileTable, gameModule.LevelTimer, memoryBuilder,
+                  new SpriteDefinition(spriteType, memoryBuilder.Memory), worldSprite)
+        { }
+
+        public ActorMotionController(
             SpritesModule spritesModule,
             SpriteTileTable spriteTileTable,
             GameByte levelTimer,
             SystemMemoryBuilder memoryBuilder,
-            SpriteTileIndex spriteIndex,
             SpriteDefinition spriteDefinition,
-            WorldScroller worldScroller)
+            WorldSprite worldSprite)
         {
             _spriteDefinition = spriteDefinition;
             _spritesModule = spritesModule;
             _levelTimer = levelTimer;
             _spriteTileTable = spriteTileTable;
-
+            WorldSprite = worldSprite;
             Motion = new AcceleratedMotion(levelTimer, memoryBuilder);
-
-            WorldSprite = new MovingWorldSprite(
-                specs: _spritesModule.Specs,
-                spriteTileTable: spriteTileTable,
-                spriteDefinition: spriteDefinition,
-                memoryBuilder: memoryBuilder,
-                spritesModule: _spritesModule,
-                motion: Motion.CurrentMotion,
-                scroller: worldScroller,
-                tileIndex: spriteIndex);          
         }
 
         public void AfterCollision(CollisionInfo collisionInfo)
@@ -131,15 +130,15 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 }
             }
 
-            if(_spriteDefinition.StopsAtLedges && collisionInfo.LedgeHeight > 2)
+            if (_spriteDefinition.StopsAtLedges && collisionInfo.LedgeHeight > 2)
             {
-                if(Motion.XSpeed < 0 
+                if (Motion.XSpeed < 0
                     && collisionInfo.LeftLedge)
                 {
                     Motion.XSpeed = 0;
                     Motion.TargetXSpeed = WalkSpeed;
                 }
-                else if (Motion.XSpeed > 0 
+                else if (Motion.XSpeed > 0
                     && collisionInfo.RightLedge)
                 {
                     Motion.XSpeed = 0;
@@ -177,42 +176,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (WorldSprite.Status != WorldSpriteStatus.Active)
                 return;
 
-            var sprite = WorldSprite.GetSprite();
             Motion.Apply(WorldSprite);
-
-            if (_spriteDefinition.FlipXWhenMovingLeft)
-            {
-                if (Motion.TargetXSpeed < 0 && !sprite.FlipX)
-                {
-                    sprite.FlipX = true;
-                }
-                else if (Motion.TargetXSpeed > 0 && sprite.FlipX)
-                {
-                    sprite.FlipX = false;
-                }
-            }
-
-            bool shouldAnimate = _spriteDefinition.AnimationStyle switch {
-                AnimationStyle.AlwaysAnimate => true,
-                AnimationStyle.AnimateWhenMoving => Motion.XSpeed != 0,
-                AnimationStyle.AnimateLowerTileOnly => Motion.XSpeed != 0,
-                _ => false
-            };
-
-            byte spriteTile = _spriteTileTable.GetTile(WorldSprite.TileIndex);
-          
-            if (!shouldAnimate)
-            {
-                sprite.Tile = spriteTile;
-                sprite.Tile2Offset = 1;
-            }
-            else if ((_levelTimer.Value % 16) == 0)
-            {
-                if(_spriteDefinition.AnimationStyle == AnimationStyle.AnimateLowerTileOnly)
-                    sprite.Tile2Offset = sprite.Tile2Offset.Toggle(1,2);
-                else
-                    sprite.Tile = sprite.Tile.Toggle(spriteTile, (byte)(spriteTile + sprite.SizeX));
-            }
         }
     }
+
 }

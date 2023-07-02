@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.Motion;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
@@ -14,15 +15,13 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
     abstract class ActorController : ISpriteController
     {
-        protected readonly GameByte _state;
         protected readonly TwoBit _palette;
-        protected readonly MovingSpriteController _movingSpriteController;
         protected readonly GameByte _levelTimer;
         protected readonly SpritesModule _spritesModule;
         protected readonly SpriteTileTable _spriteTileTable;
         private readonly GameByte _destructionBitOffset;
         private readonly TwoBitEnum<FallCheck> _fallCheck;
-
+        private readonly AnimationController _animationController;
         public FallCheck FallCheck
         {
             get => _fallCheck.Value;
@@ -59,7 +58,14 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _collisionEnabled.Value = value;
         }
 
-        protected MaskedByte _hitPoints;
+        private GameBit _visible;
+        public bool Visible
+        {
+            get => _visible.Value;
+            set => _visible.Value = value;
+        }
+
+        public virtual IMotion Motion { get; } = new NoMotion();
 
         protected ActorController(
             SpriteType spriteType,
@@ -69,35 +75,35 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         {
             _spritesModule = gameModule.SpritesModule;
             _spriteTileTable = gameModule.SpriteTileTable;
-            _state = memoryBuilder.AddByte();
-
             _destructionBitOffset = memoryBuilder.AddByte();
-            memoryBuilder.AddByte();
-            _movingSpriteController = new MovingSpriteController(
-               gameModule.SpritesModule,
-               _spriteTileTable,
-               gameModule.LevelTimer,
-               memoryBuilder,
-               spriteIndex: tileIndex,
-               worldScroller: gameModule.WorldScroller,
-               spriteDefinition: new SpriteDefinition(spriteType, memoryBuilder.Memory));
 
             _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 0);
             _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 2);
-            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)112, memoryBuilder.Memory, 4);
+            _visible = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit6, memoryBuilder.Memory);
             _collisionEnabled = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             memoryBuilder.AddByte();
+
+            WorldSprite = new WorldSprite(
+             specs: _spritesModule.Specs,
+             spriteTileTable: _spriteTileTable,
+             spriteDefinition: new SpriteDefinition(spriteType, memoryBuilder.Memory),
+             memoryBuilder: memoryBuilder,
+             spritesModule: _spritesModule,
+             scroller: gameModule.WorldScroller,
+             index: tileIndex);
+
             _levelTimer = gameModule.LevelTimer;
+
+            _animationController = new AnimationController(new SpriteDefinition(spriteType, memoryBuilder.Memory),
+                gameModule.SpriteTileTable, gameModule.LevelTimer);
         }
 
-        public AcceleratedMotion Motion => _movingSpriteController.Motion;
-
-        public MovingWorldSprite WorldSprite => _movingSpriteController.WorldSprite;
+        public WorldSprite WorldSprite { get; }
 
         public byte SpriteIndex
         {
-            get => _movingSpriteController.SpriteIndex;
-            set => _movingSpriteController.SpriteIndex = value;
+            get => WorldSprite.SpriteIndex.Value;
+            set => WorldSprite.SpriteIndex.Value = value;
         }
 
         protected virtual void BeforeInitializeSprite()
@@ -107,6 +113,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void InitializeSprite(byte palette)
         {
+            GameDebug.DebugLog($"Initialized sprite #{SpriteIndex} from {GetType().Name}", DebugLogFlags.SpriteSpawn);
+
             _collisionEnabled.Value = true;
             BeforeInitializeSprite();
             _palette.Value = palette;
@@ -115,11 +123,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             sprite.FlipY = false;
             WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = _palette.Value;
-            _state.Value = 0;
-
-            _movingSpriteController.Motion.Stop();
-            _hitPoints.Value = 0;
-            OnSpriteCreated(sprite);    
+            OnSpriteCreated(sprite);
+            Motion.Stop();
         }
 
         protected virtual void OnSpriteCreated(Sprite sprite)
@@ -155,7 +160,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             }
         }
 
-        public Sprite GetSprite() => _movingSpriteController.GetSprite();
+        public Sprite GetSprite() => WorldSprite.GetSprite();
 
         public void Update()
         {
@@ -164,6 +169,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (WorldSprite.Status == WorldSpriteStatus.Active)
             {
                 UpdateActive();
+                _animationController.Update(WorldSprite, Motion);
                 WorldSprite.UpdateSprite();
 
                 CheckFall();

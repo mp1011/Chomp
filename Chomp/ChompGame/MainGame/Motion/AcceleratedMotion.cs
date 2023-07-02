@@ -73,7 +73,7 @@ namespace ChompGame.MainGame
             TargetYSpeed = speed;
         }
 
-        public void Apply(MovingWorldSprite sprite)
+        public void Apply(WorldSprite sprite)
         {
             if ((_timer.Value % 4) == 0)
             {
@@ -111,12 +111,12 @@ namespace ChompGame.MainGame
         /// Adjust target x and y speed such that object will move toward target
         /// </summary>
         /// <param name="destination"></param>
-        public void TargetTowards(MovingWorldSprite source, MovingWorldSprite destination, int speed)
+        public void TargetTowards(WorldSprite source, WorldSprite destination, int speed)
         {
             TargetTowards(source, destination.Bounds.Center, speed);
         }
 
-        public void TurnTowards(MovingWorldSprite source, Point destination, int turnAngle, int speed)
+        public void TurnTowards(WorldSprite source, Point destination, int turnAngle, int speed)
         {
             var targetAngle = source.Bounds.Center
                 .GetVectorTo(destination, speed);
@@ -157,7 +157,7 @@ namespace ChompGame.MainGame
         /// Adjust target x and y speed such that object will move toward target
         /// </summary>
         /// <param name="destination"></param>
-        public void TargetTowards(MovingWorldSprite source, Point destination, int speed)
+        public void TargetTowards(WorldSprite source, Point destination, int speed)
         {
             var src = source.Bounds.Center;         
             Point targetAngle = src.GetVectorTo(destination, speed);
@@ -173,7 +173,7 @@ namespace ChompGame.MainGame
         /// <param name="destination"></param>
         /// <param name="speed"></param>
         /// <returns>true when the object is at the destination</returns>
-        public bool TargetTowardsExact(MovingWorldSprite source, Point destination, int speed)
+        public bool TargetTowardsExact(WorldSprite source, Point destination, int speed)
         {
             TargetTowards(source, destination, speed);
 

@@ -1,4 +1,5 @@
-﻿using ChompGame.Data.Memory;
+﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
@@ -10,10 +11,13 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class BossBulletController : ActorController, ICollidesWithPlayer, IEnemyOrBulletSpriteController
     {
+        private GameByte _state;
+        private IMotionController _motionController; 
         private readonly CollisionDetector _collisionDetector;
         private readonly ChompAudioService _audioService;
         private readonly DynamicBlockController _dynamicBlockController;
         private readonly Specs _specs;
+        public IMotion Motion { get; }
 
         public BossBulletController(
             ChompGameModule gameModule,
@@ -24,6 +28,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _audioService = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _specs = gameModule.Specs;
+            _state = memoryBuilder.AddByte();
+            throw new System.NotImplementedException("motion controller");
         }
 
         protected override bool DestroyWhenOutOfBounds => true;
@@ -32,13 +38,13 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             var sprite = GetSprite();
 
-            _movingSpriteController.Update();
+            _motionController.Update();
 
             if(_levelTimer.Value.IsMod(4))
                 _state.Value++;
 
 
-            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite);
+            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motionController.Motion);
             if(collisionInfo.XCorrection != 0 || collisionInfo.YCorrection != 0)
             {
                 Explode();
@@ -71,17 +77,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _audioService.PlaySound(ChompAudioService.Sound.Break);
             _state.Value = 41;
-            _movingSpriteController.Motion.XSpeed = 0;
-            _movingSpriteController.Motion.YSpeed = 0;
-            _movingSpriteController.Motion.TargetXSpeed = 0;
-            _movingSpriteController.Motion.TargetYSpeed = 0;
+            _motionController.Motion.XSpeed = 0;
+            _motionController.Motion.YSpeed = 0;
         }
 
-        public void HandlePlayerCollision(MovingWorldSprite player)
+        public void HandlePlayerCollision(WorldSprite player)
         {
             Explode();
         }
 
-        public bool HandleBombCollision(MovingWorldSprite player) => false;
+        public bool HandleBombCollision(WorldSprite player) => false;
     }
 }
