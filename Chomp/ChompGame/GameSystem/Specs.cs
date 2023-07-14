@@ -39,6 +39,8 @@ namespace ChompGame.GameSystem
         public virtual int BytesPerPalette { get; } = 2;
         public virtual int NumPalettes { get; } = 1;
 
+        public virtual int NumSpritePalettes => NumPalettes / 2;
+
         public virtual int BackgroundPalettes => 1;
 
         public virtual int BitsPerPixel => 2;

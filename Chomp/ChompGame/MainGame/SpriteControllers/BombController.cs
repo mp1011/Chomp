@@ -22,6 +22,8 @@ namespace ChompGame.MainGame.SpriteControllers
         private IMotionController _motionController;
         private AcceleratedMotion _motion;
 
+        public AcceleratedMotion AcceleratedMotion => _motion;
+
         enum BombState : byte
         {
             Idle=0,
@@ -179,5 +181,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if(DestructionBitOffset != 255)
                 _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
         }
+
+        protected override void UpdateDying() { }
     }
 }

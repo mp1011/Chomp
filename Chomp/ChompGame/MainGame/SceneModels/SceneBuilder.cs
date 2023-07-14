@@ -290,7 +290,7 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level1_5_Vertical, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new SpriteScenePart(b, ScenePartType.Bomb, 6, 19, scene),
-                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 6, 10, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 4, 6, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 8, 34, scene),
                 b => new ExitScenePart(b, ExitType.Right, exitOffset:5, scene),
                 b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 3, 36, scene),

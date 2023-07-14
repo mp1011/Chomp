@@ -1,57 +1,100 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 
 namespace ChompGame.MainGame
 {
     class RewardsModule : Module
     {
+        private const int FlashDuration = 60;
+        private const int CoinsUntilReward = 20;
+
+        private readonly Specs _specs;
         private readonly ChompAudioService _audioService;
-        private GameInteger _nextBomb;
-        private GameInteger _nextLife;
+        private readonly SpritesModule _spritesModule;
+        private SceneDefinition _currentScene;
+        private GameByte _nextReward;
         private GameByte _timer;
+        private GameByte _rewardSpriteIndex;
 
         public RewardsModule(MainSystem mainSystem) : base(mainSystem)
         {
             _audioService = mainSystem.GetModule<ChompAudioService>();
+            _spritesModule = mainSystem.GetModule<SpritesModule>();
+            _specs = mainSystem.Specs;
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
-            _nextBomb = memoryBuilder.AddInteger();
-            _nextLife = memoryBuilder.AddInteger();
+            _nextReward = memoryBuilder.AddByte();
             _timer = memoryBuilder.AddByte();
+            _rewardSpriteIndex = memoryBuilder.AddByte();
+        }
+
+        public void SetScene(SceneDefinition scene)
+        {
+            _currentScene = scene;
         }
 
         public override void OnStartup()
         {
-            _nextBomb.Value = 500;
-            _nextLife.Value = 2000;
+            _nextReward.Value = CoinsUntilReward;
         }
 
-        public void GiveRewards(int score, SceneSpriteControllers spriteControllers)
+        public void Update(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)
         {
-            if(_timer.Value == 0 && score >= _nextBomb.Value)
+            if (_timer.Value > 0)
+            {
+                if(_timer.Value == FlashDuration)
+                    AddReward(statusBar, sceneSpriteControllers);
+
+                var sprite = _spritesModule.GetSprite(_rewardSpriteIndex.Value);
+                sprite.Palette = (sprite.Palette + 1).NModByte(_specs.NumSpritePalettes);
+
+                _timer.Value--;
+                if (_timer.Value == 0)
+                    sprite.Palette = 0;
+            }
+        }
+
+        public void CheckRewards(int coinsAdded)
+        {
+            if(coinsAdded >= _nextReward.Value)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Reward);
-                _timer.Value = 30;
+                _timer.Value = FlashDuration;
+                _nextReward.Value = CoinsUntilReward;
             }
-
-            if(_timer.Value > 0)
+            else
             {
-                _timer.Value--;
-                if(_timer.Value == 0)
-                {
-                    _nextBomb.Value += 500;
-                   
-                    var bomb = spriteControllers.BombControllers.TryAddNew(0);
-                    if(bomb != null)
-                    {
-                        bomb.WorldSprite.X = spriteControllers.Player.WorldSprite.X;
-                        bomb.WorldSprite.Y = spriteControllers.Player.WorldSprite.Y - 24;
-                    }
+                _nextReward.Value -= (byte)coinsAdded;
+            }
+        }
 
+        private void AddReward(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)
+        {
+            if (_currentScene.IsLevelBossScene || _currentScene.IsMidBossScene || statusBar.Health == StatusBar.FullHealth)
+            {
+                var bomb = sceneSpriteControllers.BombControllers.TryAddNew(0);
+                if (bomb != null)
+                {
+                    bomb.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X;
+                    bomb.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
+                    bomb.AcceleratedMotion.SetYSpeed(-80);
+                    _rewardSpriteIndex.Value = bomb.SpriteIndex;
+                }
+            }
+            else
+            {
+                var prize = sceneSpriteControllers.PrizeControllers.TryAddNew(0);
+                if (prize != null)
+                {
+                    prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 16;
+                    prize.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
+                    _rewardSpriteIndex.Value = prize.SpriteIndex;
                 }
             }
         }

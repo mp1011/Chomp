@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private ChompGameModule _gameModule;
         private PlayerController _playerController;
         private SpriteControllerPool<BombController> _bombControllers;
+        private SpriteControllerPool<PrizeController> _prizeControllers;
         private SpriteControllerPool<DoorController> _doorControllers;
         private SpriteControllerPool<ButtonController> _buttonControllers;
         private SpriteControllerPool<PlatformController> _platformControllers;
@@ -32,11 +33,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public SpriteControllerPool<BombController> BombControllers => _bombControllers;
 
+        public SpriteControllerPool<PrizeController> PrizeControllers => _prizeControllers;
+
         public SpriteControllerPool<ExplosionController> ExplosionControllers => _explosionControllers;
 
         public SceneSpriteControllers(ChompGameModule chompGameModule, 
             PlayerController playerController, 
-            SpriteControllerPool<BombController> bombControllers, 
+            SpriteControllerPool<BombController> bombControllers,
+            SpriteControllerPool<PrizeController> prizeControllers,
             SpriteControllerPool<DoorController> doorControllers,
             SpriteControllerPool<ButtonController> buttonControllers,
             SpriteControllerPool<PlatformController> platformControllers,
@@ -51,6 +55,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _platformControllers = platformControllers;
             _explosionControllers = explosionControllers;
             _bombControllers = bombControllers;
+            _prizeControllers = prizeControllers;
             _doorControllers = doorControllers;
             _buttonControllers = buttonControllers;
             _enemyAControllers = enemyAControllers;
@@ -107,6 +112,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _doorControllers.Execute(c => c.Update());
                 _buttonControllers.Execute(c => c.Update());
                 _platformControllers.Execute(c => c.Update());
+                _prizeControllers.Execute(c => c.Update());
             }
 
             _explosionControllers.Execute(c => c.Update());
@@ -134,6 +140,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _doorControllers.Execute(c => c.WorldSprite.UpdateSprite());
                 _buttonControllers.Execute(c => c.WorldSprite.UpdateSprite());
                 _platformControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                _prizeControllers.Execute(c => c.WorldSprite.UpdateSprite());
             }
 
             _explosionControllers.Execute(c => c.WorldSprite.UpdateSprite());
@@ -285,8 +292,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _playerController.CheckEnemyOrBulletCollisions(_enemyBControllers);
             _playerController.CheckEnemyOrBulletCollisions(_extra1Controllers);
             _playerController.CheckBombPickup(_bombControllers);
+            _playerController.CheckPrizePickup(_prizeControllers);
 
             _platformControllers.Execute(b => b.CheckPlayerCollision(_playerController));
+            _prizeControllers.Execute(b => b.CheckPlayerCollision(_playerController));
 
             _doorControllers.Execute(b =>
             {

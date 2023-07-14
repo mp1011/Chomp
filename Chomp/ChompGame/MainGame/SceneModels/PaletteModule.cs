@@ -160,7 +160,7 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.Bomb,
                 ColorIndex.Black,
                 ColorIndex.Gray1,
-                ColorIndex.Gray2);
+                ColorIndex.LightYellow);
 
             DefinePalette(PaletteKey.Player,
                 ColorIndex.Orange,

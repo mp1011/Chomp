@@ -18,7 +18,8 @@ namespace ChompGame.MainGame.SpriteModels
         Extra2,
         Explosion,
         Door,
-        Platform
+        Platform,
+        Prize
     }
 
     class SpriteTileTable

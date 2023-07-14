@@ -299,7 +299,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level1_11_Boss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -310,7 +310,6 @@ namespace ChompGame.MainGame
 
         public void RestartScene()
         {
-            GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LoadScene;
         }
@@ -335,7 +334,7 @@ namespace ChompGame.MainGame
             _worldScroller = _currentScene.ScrollStyle switch {
                 ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
                 ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
-                ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule), 
+                ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsLevelBossScene), 
                 _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
             };
 
@@ -351,6 +350,7 @@ namespace ChompGame.MainGame
                 GameSystem.CoreGraphicsModule.PatternTable);
 
             PaletteModule.SetScene(_currentScene, _currentLevel.Value, GameSystem.Memory);
+            RewardsModule.SetScene(_currentScene);
 
             _gameState.Value = GameState.PlayScene;
                        
@@ -414,8 +414,7 @@ namespace ChompGame.MainGame
             _sceneSpriteControllers.CheckCollissions();
 
             PaletteModule.Update();
-
-            RewardsModule.GiveRewards(_statusBar.Score, _sceneSpriteControllers);
+            RewardsModule.Update(_statusBar, _sceneSpriteControllers);
 
             ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
             if(ExitsModule.ActiveExit.ExitType != ExitType.None)

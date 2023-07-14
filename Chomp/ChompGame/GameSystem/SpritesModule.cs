@@ -84,7 +84,7 @@ namespace ChompGame.GameSystem
             for (int i = 0; ScanlineSprites[i] != 255; i++)
             {
                 var sprite = new Sprite(_sprite0Address + ScanlineSprites[i], GameSystem.Memory, GameSystem.Specs, Scroll);
-                byte row = (byte)((ScreenPoint.Y + Scroll.Y).NModByte(Specs.NameTablePixelHeight) - sprite.Y);
+                byte row = (ScreenPoint.Y + Scroll.Y - sprite.Y).NModByte(Specs.NameTablePixelHeight);
 
                 if (sprite.FlipY)
                     row = (byte)(sprite.Height - row - 1);

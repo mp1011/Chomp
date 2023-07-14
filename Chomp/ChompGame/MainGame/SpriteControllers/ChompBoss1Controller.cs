@@ -181,11 +181,10 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.SetYSpeed(0);
                     _phase.Value = Phase.BeforeAttack;
 
-                    throw new System.NotImplementedException();
-                    //_motion.XAcceleration = _movingSpriteController.WalkAccel;
-                    //_motion.YAcceleration = _movingSpriteController.WalkAccel;
-                    //_motion.XSpeed = _movingSpriteController.WalkSpeed;
-                    //_motion.YSpeed = _movingSpriteController.WalkSpeed;
+                    _motion.XAcceleration = _motionController.WalkAccel;
+                    _motion.YAcceleration = _motionController.WalkAccel;
+                    _motion.XSpeed = _motionController.WalkSpeed;
+                    _motion.YSpeed = _motionController.WalkSpeed;
                 }
             }
             else if (_phase.Value.Between(Phase.BeforeAttack, Phase.PrepareAttack))
@@ -285,9 +284,8 @@ namespace ChompGame.MainGame.SpriteControllers
                         rng.RandomItem(-4, -2, 0, 2, 4),
                         rng.RandomItem(-4, 2, 0, 2, 4));
 
-                    throw new System.NotImplementedException();
-                 //   bullet.Motion.SetYSpeed(0);
-                   // bullet.Motion.SetXSpeed(0);
+                    bullet.Motion.YSpeed = 0;
+                    bullet.Motion.XSpeed = 0;
                     bullet.Explode();
                 }
             }
@@ -296,7 +294,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         }
 
-
         private void FireBullet(int xSpeed)
         {
             var bullet = _bullets.TryAddNew(3);
@@ -304,9 +301,10 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             bullet.WorldSprite.Center = WorldSprite.Center;
-            throw new NotImplementedException();
-            //bullet.Motion.SetYSpeed(15);
-            //bullet.Motion.SetXSpeed(xSpeed);
+            bullet.Motion.YSpeed = 15;
+            bullet.Motion.XSpeed= xSpeed;
         }
+
+        protected override void UpdateDying() { }
     }
 }

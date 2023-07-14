@@ -11,7 +11,8 @@ namespace ChompGame.MainGame
     {
         Inactive=0,
         Hidden=1,
-        Active=2
+        Active=2,
+        Dying=3
     }
 
     public enum BoundsCheck : byte
@@ -30,6 +31,15 @@ namespace ChompGame.MainGame
         protected readonly WorldScroller _scroller;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
         private GameByteEnum<SpriteTileIndex> _tileIndex;
+
+        private GameBit _visible;
+
+        public bool Visible
+        {
+            get => _visible.Value;
+            set => _visible.Value = value;
+        }
+
         public SpriteTileIndex TileIndex
         {
             get => _tileIndex.Value;
@@ -111,7 +121,9 @@ namespace ChompGame.MainGame
         {
             _spriteTileTable = spriteTileTable;
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
-            _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 6);
+            _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 5);
+            _visible = new GameBit(SpriteIndex.Address, Bit.Bit7, memoryBuilder.Memory);
+
             _spriteDefinition = spriteDefinition;
 
             _position = memoryBuilder.AddExtendedPoint(); // 6 bits free here
@@ -133,8 +145,16 @@ namespace ChompGame.MainGame
                 return;
 
             var sprite = GetSprite();
-            sprite.X = (byte)(X % _specs.NameTablePixelWidth);
-            sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
+            if (_scroller.DistanceFromViewpane(Bounds) > 8)
+            {
+                sprite.Visible = false;
+            }
+            else
+            {
+                sprite.Visible = Visible;
+                sprite.X = (byte)(X % _specs.NameTablePixelWidth);
+                sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
+            }
         }
 
         public BoundsCheck CheckInBounds()
@@ -159,6 +179,7 @@ namespace ChompGame.MainGame
             sprite.SizeX = _spriteDefinition.SizeX;
             sprite.SizeY = _spriteDefinition.SizeY;
             sprite.Visible = true;
+            Visible = true;
 
             GameDebug.DebugLog($"Configure sprite #{SpriteIndex} Tile={sprite.Tile}", DebugLogFlags.SpriteSpawn);
         }
@@ -197,7 +218,7 @@ namespace ChompGame.MainGame
 
         public void Destroy()
         {
-            if (Status == WorldSpriteStatus.Active)
+            if (Status == WorldSpriteStatus.Active || Status == WorldSpriteStatus.Dying)
             {
                 GetSprite().Tile = 0;
                 GameDebug.DebugLog($"Sprite {SpriteIndex} erased", DebugLogFlags.SpriteSpawn);

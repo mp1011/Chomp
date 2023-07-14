@@ -18,7 +18,6 @@ namespace ChompGame.MainGame.SpriteControllers
         public override IMotion Motion => AcceleratedMotion;
         public AcceleratedMotion AcceleratedMotion => _motionController.Motion;
 
-        private GameByte _state;
         private SceneDefinition _scene;
         private readonly Specs _specs;
         private const byte _recoilSpeed = 30;
@@ -43,7 +42,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Player, gameModule, memoryBuilder, SpriteTileIndex.Player)
         {
-            _state = memoryBuilder.AddByte();
+            var state = memoryBuilder.AddByte();
             _scene = gameModule.CurrentScene;
             _specs = gameModule.Specs;
             _statusBar = gameModule.StatusBar;
@@ -53,11 +52,11 @@ namespace ChompGame.MainGame.SpriteControllers
             _inputModule = gameModule.InputModule;
             _collisionDetector = gameModule.CollissionDetector;
 
-            _onPlatform = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
-            _openingDoor = new GameBit(_state.Address, Bit.Bit6, memoryBuilder.Memory);
-            _bombPickup = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
+            _onPlatform = new GameBit(state.Address, Bit.Bit5, memoryBuilder.Memory);
+            _openingDoor = new GameBit(state.Address, Bit.Bit6, memoryBuilder.Memory);
+            _bombPickup = new GameBit(state.Address, Bit.Bit7, memoryBuilder.Memory);
 
-            _afterHitInvincibility = new MaskedByte(_state.Address, Bit.Right4, memoryBuilder.Memory);
+            _afterHitInvincibility = new MaskedByte(state.Address, Bit.Right4, memoryBuilder.Memory);
 
             _motionController = new ActorMotionController(
                 gameModule.SpritesModule, 
@@ -136,7 +135,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _openingDoor.Value = true;
             var sprite = WorldSprite.GetSprite();
-            sprite.Visible = false;
+            Visible = false;
         }
 
         protected override void HandleFall()
@@ -173,7 +172,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 
                 if(_levelTimer.IsMod(4))
                 {
-                    sprite.Visible = !sprite.Visible;
+                    Visible = !Visible;
                 }
 
                 if (_levelTimer.IsMod(8))
@@ -183,7 +182,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if (_afterHitInvincibility.Value == 0)
                 {
-                    sprite.Visible = true;
+                    Visible = true;
                 }
             }
 
@@ -251,6 +250,14 @@ namespace ChompGame.MainGame.SpriteControllers
                     _bombPickup.Value = true;
                     p.SetPickup();
                 }
+            });
+        }
+
+        public void CheckPrizePickup(SpriteControllerPool<PrizeController> prizes)
+        {
+            prizes.Execute(p =>
+            {
+
             });
         }
 

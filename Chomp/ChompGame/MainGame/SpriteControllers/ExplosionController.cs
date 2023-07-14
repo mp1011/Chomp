@@ -52,5 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers
             motion.TargetYSpeed = _motionController.FallSpeed;
             motion.YAcceleration = _motionController.GravityAccel;
         }
+
+        protected override void UpdateDying() { }
     }
 }

@@ -6,6 +6,7 @@ using ChompGame.Graphics;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
@@ -16,6 +17,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private AcceleratedMotion _motion;
         private IMotionController _motionController;
 
+        public override IMotion Motion => _motion;
         private const byte BossLightningAppearValue = 100;
         private const byte FloatSpeed = 20;
         private const byte FloatTurnAngle = 16;
@@ -34,6 +36,11 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameByte _jawPosition;
         private GameByte _internalTimer;
         private MusicModule _musicModule;
+
+        protected override bool DestroyWhenFarOutOfBounds => false;
+        protected override bool DestroyWhenOutOfBounds => false;
+
+        protected override bool AlwaysActive => true;
 
         private enum Phase : byte
         {
@@ -72,6 +79,11 @@ namespace ChompGame.MainGame.SpriteControllers
             _jawSpriteDefinition = new SpriteDefinition(SpriteType.BossJaw, memoryBuilder.Memory);
             _internalTimer = memoryBuilder.AddByte();
             _jawPosition = memoryBuilder.AddByte();
+
+            var motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.LevelBoss, WorldSprite);
+            _motion = motionController.Motion;
+
+            _motionController = motionController;
         }
 
         protected override void BeforeInitializeSprite()
@@ -318,11 +330,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 bullet.WorldSprite.Y = 64;
                 bullet.WorldSprite.X = _player.X;
-                throw new System.NotImplementedException();
-                //bullet.Motion.SetYSpeed(20);
-                //bullet.Motion.TargetYSpeed = 40;
-                //bullet.Motion.YAcceleration = 4;
-                
+                bullet.Motion.YSpeed = 40;
             }
 
             return bullet;

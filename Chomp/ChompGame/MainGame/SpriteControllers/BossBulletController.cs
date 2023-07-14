@@ -4,6 +4,7 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
@@ -17,7 +18,9 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly ChompAudioService _audioService;
         private readonly DynamicBlockController _dynamicBlockController;
         private readonly Specs _specs;
-        public IMotion Motion { get; }
+        public override IMotion Motion => _motionController.Motion;
+
+        public PrecisionMotion PrecisionMotion { get; }
 
         public BossBulletController(
             ChompGameModule gameModule,
@@ -29,7 +32,12 @@ namespace ChompGame.MainGame.SpriteControllers
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _specs = gameModule.Specs;
             _state = memoryBuilder.AddByte();
-            throw new System.NotImplementedException("motion controller");
+
+            var motionController = new SimpleMotionController(memoryBuilder, WorldSprite,
+                new SpriteDefinition(spriteType, memoryBuilder.Memory));
+
+            PrecisionMotion = motionController.Motion;
+            _motionController = motionController;
         }
 
         protected override bool DestroyWhenOutOfBounds => true;
@@ -49,7 +57,19 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 Explode();
             }
+        }
 
+        protected override void OnSpriteCreated(Sprite sprite)
+        {
+            _state.Value = 0;
+        }
+
+        protected override void UpdateDying()
+        {
+            if (_levelTimer.Value.IsMod(4))
+                _state.Value++;
+
+            var sprite = GetSprite();
             if (_state.Value == 60)
             {
                 var spriteBounds = WorldSprite.Bounds;
@@ -76,6 +96,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             _audioService.PlaySound(ChompAudioService.Sound.Break);
+            WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 41;
             _motionController.Motion.XSpeed = 0;
             _motionController.Motion.YSpeed = 0;
@@ -87,5 +108,6 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         public bool HandleBombCollision(WorldSprite player) => false;
+
     }
 }

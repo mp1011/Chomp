@@ -517,6 +517,7 @@ namespace ChompGame.MainGame.SceneModels
         {             
             PlayerController playerController = null;
             SpriteControllerPool<BombController> bombControllers = null;
+            SpriteControllerPool<PrizeController> prizeControllers = null;
             SpriteControllerPool<DoorController> doorControllers = null;
             SpriteControllerPool<ButtonController> buttonControllers = null;
             SpriteControllerPool<PlatformController> platformControllers = null;
@@ -532,6 +533,9 @@ namespace ChompGame.MainGame.SceneModels
                      size: 2,
                      _gameModule.SpritesModule,
                      () => new BombController(_gameModule, playerController, memoryBuilder));
+
+                prizeControllers = new SpriteControllerPool<PrizeController>(size: 2, _gameModule.SpritesModule,
+                    () => new PrizeController(_gameModule, memoryBuilder));
 
                 doorControllers = new SpriteControllerPool<DoorController>(
                     size: 2,
@@ -617,11 +621,13 @@ namespace ChompGame.MainGame.SceneModels
                           spritesModule: _gameModule.SpritesModule,
                           () => new LevelBossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
 
+                    enemyB = EmptyEnemyController.Instance;
                 }
             }
 
             return new SceneSpriteControllers(_gameModule, playerController,
                 bombControllers,
+                prizeControllers,
                 doorControllers,
                 buttonControllers,
                 platformControllers,
@@ -829,6 +835,10 @@ namespace ChompGame.MainGame.SceneModels
                   _gameModule.Specs,
                   memory);
                 _spriteTileTable.SetTile(SpriteTileIndex.Bomb,2);
+
+                //prize
+                _spriteTileTable.SetTile(SpriteTileIndex.Prize, 8);
+
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
 

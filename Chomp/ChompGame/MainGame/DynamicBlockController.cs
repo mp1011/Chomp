@@ -79,11 +79,13 @@ namespace ChompGame.MainGame
         private SceneDefinition _scene;
         private SpriteControllerPool<ExplosionController> _explosionControllers;
         private SpriteTileTable _spriteTileTable;
+        private RewardsModule _rewardsModule;
 
         public DynamicBlockController(ChompGameModule gameModule, SpriteTileTable spriteTileTable)
         {
             _gameModule = gameModule;
             _spriteTileTable = spriteTileTable;
+            _rewardsModule = gameModule.RewardsModule;
         }
 
         public void InitializeDynamicBlocks(
@@ -336,8 +338,8 @@ namespace ChompGame.MainGame
                     int count = 0;
 
                     if(block.State.TopLeft 
-                        && collisionInfo.DynamicTileX == block.Location.TileX 
-                        && collisionInfo.DynamicTileY == block.Location.TileY)
+                        && collisionInfo.CoinTileX == block.Location.TileX 
+                        && collisionInfo.CoinTileY == block.Location.TileY)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset);
                         block.State.TopLeft = false;
@@ -345,8 +347,8 @@ namespace ChompGame.MainGame
                     }
 
                     if (block.State.TopRight
-                       && collisionInfo.DynamicTileX == block.Location.TileX + 1
-                       && collisionInfo.DynamicTileY == block.Location.TileY)
+                       && collisionInfo.CoinTileX == block.Location.TileX + 1
+                       && collisionInfo.CoinTileY == block.Location.TileY)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+1);
                         block.State.TopRight = false;
@@ -354,8 +356,8 @@ namespace ChompGame.MainGame
                     }
 
                     if (block.State.BottomLeft
-                       && collisionInfo.DynamicTileX == block.Location.TileX
-                       && collisionInfo.DynamicTileY == block.Location.TileY + 1)
+                       && collisionInfo.CoinTileX == block.Location.TileX
+                       && collisionInfo.CoinTileY == block.Location.TileY + 1)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+2);
                         block.State.BottomLeft = false;
@@ -363,8 +365,8 @@ namespace ChompGame.MainGame
                     }
 
                     if (block.State.BottomRight
-                       && collisionInfo.DynamicTileX == block.Location.TileX + 1
-                       && collisionInfo.DynamicTileY == block.Location.TileY + 1)
+                       && collisionInfo.CoinTileX == block.Location.TileX + 1
+                       && collisionInfo.CoinTileY == block.Location.TileY + 1)
                     {
                         _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset+3);
                         block.State.BottomRight = false;
@@ -375,6 +377,7 @@ namespace ChompGame.MainGame
                     {
                         _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
                         _gameModule.WorldScroller.ModifyTiles((t,a) => SetTiles(block, t, a));
+                        _rewardsModule.CheckRewards(count);
                         return count;
                     }
                 }
@@ -398,8 +401,8 @@ namespace ChompGame.MainGame
                     
                 if(block.Type == DynamicBlockType.DestructibleBlock 
                     && block.State.AnyOn
-                    && (block.Location.TileX == collisionInfo.DynamicTileX || block.Location.TileX + 1 == collisionInfo.DynamicTileX)
-                    && (block.Location.TileY == collisionInfo.DynamicTileY || block.Location.TileY + 1 == collisionInfo.DynamicTileY))
+                    && (block.Location.TileX == collisionInfo.BreakableTileX || block.Location.TileX + 1 == collisionInfo.BreakableTileX)
+                    && (block.Location.TileY == collisionInfo.BreakableTileY || block.Location.TileY + 1 == collisionInfo.BreakableTileY))
                 {
 
                     _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Break);

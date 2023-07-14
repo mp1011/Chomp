@@ -79,6 +79,13 @@ namespace ChompGame
                 _paletteIndex = 3;
             if (ks.IsKeyDown(Keys.D5))
                 _paletteIndex = 4;
+            if (ks.IsKeyDown(Keys.D6))
+                _paletteIndex = 5;
+            if (ks.IsKeyDown(Keys.D7))
+                _paletteIndex = 6;
+            if (ks.IsKeyDown(Keys.D8))
+                _paletteIndex = 7;
+
 
             var ms = Mouse.GetState();
             if(ms.LeftButton == ButtonState.Pressed)

@@ -48,45 +48,6 @@ namespace ChompGame.MainGame
             _tilesPerScreen = (byte)(_specs.ScreenHeight / _specs.TileHeight);
             _forwardSeamOffset = (byte)((_specs.ScreenWidth + _halfWindowSize) / _specs.TileWidth);
             _backwardSeamOffset = (byte)(_specs.NameTableWidth - _forwardSeamOffset - 1);
-
-            GameDebug.Watch1 = new DebugWatch(
-                       "Pl NT X",
-                       () => _focusSprite.GetSprite().X);
-
-            GameDebug.Watch2 = new DebugWatch(
-              "Pl X",
-              () => _focusSprite.X);
-
-            GameDebug.Watch3 = new DebugWatch(
-               "P Tile X",
-               () => _focusSprite.X.NModByte(_specs.NameTablePixelWidth) / _specs.TileWidth);
-
-            GameDebug.Watch4 = new DebugWatch(
-             "P WTile X",
-             () => _focusSprite.X / _specs.TileWidth);
-
-
-            //GameDebug.Watch4 = new DebugWatch(
-            // "Scroll X",
-            // () => _tileModule.Scroll.X);
-
-            //GameDebug.Watch1 = new DebugWatch(
-            //  "Pl NT Y",
-            //  () => _focusSprite.GetSprite().Y);
-
-            //GameDebug.Watch2 = new DebugWatch(
-            //  "Pl Y",
-            //  () => _focusSprite.Y);
-
-            //GameDebug.Watch3 = new DebugWatch(
-            //   "P Tile Y",
-            //   () => _focusSprite.Y.NModByte(_specs.NameTablePixelHeight) / _specs.TileHeight);
-
-            //GameDebug.Watch4 = new DebugWatch(
-            // "Scroll Y",
-            // () => _tileModule.Scroll.Y);
-
-
         }
 
         public byte ScrollWindowBegin

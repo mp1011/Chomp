@@ -82,5 +82,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _state.Value++;
 
         }
+
+        protected override void UpdateDying() { }
     }
 }

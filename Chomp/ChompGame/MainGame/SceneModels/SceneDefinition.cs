@@ -106,6 +106,8 @@ namespace ChompGame.MainGame.SceneModels
         public int Address => _scrollStyle.Address;
 
         public bool IsLevelBossScene => _enemies.Value == EnemyGroup.LevelBoss;
+
+        public bool IsMidBossScene => _enemies.Value == EnemyGroup.MidBoss;
         
         public int GroundFillStart => _enemies.Value == EnemyGroup.LevelBoss ? 8 : 16;
 

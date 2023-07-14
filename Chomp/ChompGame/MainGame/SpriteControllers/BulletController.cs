@@ -53,17 +53,31 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_state.Value == 40 || _state.Value == 60)
                 Destroy();
+        }
+
+        protected override void UpdateDying()
+        {
+            var sprite = GetSprite();
+            
+            if (_levelTimer.Value.IsMod(4))
+                _state.Value++;
+
+            if (_state.Value == 40 || _state.Value == 60)
+                Destroy();
             else if (_state.Value > 40)
             {
-                sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
+                sprite.Tile = (byte)(6 + (_levelTimer.Value % 2));
             }
         }
+
+
 
         public void HandlePlayerCollision(WorldSprite player)
         {
             if (_state.Value >= 40)
                 return;
 
+            WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 41;
             _motionController.Motion.XSpeed = 0;
             _motionController.Motion.YSpeed = 0;

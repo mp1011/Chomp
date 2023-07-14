@@ -17,8 +17,10 @@ namespace ChompGame.Helpers
         public bool DynamicBlockCollision { get; set; }
         public int TileX { get; set; }
         public int TileY { get; set; }
-        public int DynamicTileX { get; set; }
-        public int DynamicTileY { get; set; }
+        public int CoinTileX { get; set; }
+        public int CoinTileY { get; set; }
+        public int BreakableTileX { get; set; }
+        public int BreakableTileY { get; set; }
         public bool LeftLedge { get; set; }
         public bool RightLedge { get; set; }
         public byte LedgeHeight { get; set; }
@@ -129,8 +131,8 @@ namespace ChompGame.Helpers
                         if (t == _spriteTileTable.DestructibleBlockTile)
                         {
                             collisionInfo.DynamicBlockCollision = true;
-                            collisionInfo.DynamicTileX = x;
-                            collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
+                            collisionInfo.BreakableTileX = x;
+                            collisionInfo.BreakableTileY = y - Constants.StatusBarTiles;
                         }
                         return;
                     }
@@ -144,14 +146,14 @@ namespace ChompGame.Helpers
                         if (t == _spriteTileTable.DestructibleBlockTile)
                         {
                             collisionInfo.DynamicBlockCollision = true;
-                            collisionInfo.DynamicTileX = x;
-                            collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
+                            collisionInfo.BreakableTileX = x;
+                            collisionInfo.BreakableTileY = y - Constants.StatusBarTiles;
                         }
                         else if( t == _spriteTileTable.CoinTile)
                         {
                             collisionInfo.IsOnGround = false;
-                            collisionInfo.DynamicTileX = x;
-                            collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
+                            collisionInfo.CoinTileX = x;
+                            collisionInfo.CoinTileY = y - Constants.StatusBarTiles;
                         }
                         else
                         {
@@ -166,11 +168,17 @@ namespace ChompGame.Helpers
                     return;
                 }
 
-                if (t == _spriteTileTable.DestructibleBlockTile || t == _spriteTileTable.CoinTile)
+                if (t == _spriteTileTable.DestructibleBlockTile)
                 {
                     collisionInfo.DynamicBlockCollision = true;
-                    collisionInfo.DynamicTileX = x;
-                    collisionInfo.DynamicTileY = y - Constants.StatusBarTiles;
+                    collisionInfo.BreakableTileX = x;
+                    collisionInfo.BreakableTileY = y - Constants.StatusBarTiles;
+                }
+                if (t == _spriteTileTable.CoinTile)
+                {
+                    collisionInfo.DynamicBlockCollision = true;
+                    collisionInfo.CoinTileX = x;
+                    collisionInfo.CoinTileY = y - Constants.StatusBarTiles;
                 }
                 else
                 {

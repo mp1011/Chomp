@@ -37,6 +37,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected virtual bool DestroyWhenFarOutOfBounds => true;
         protected virtual bool DestroyWhenOutOfBounds => false;
 
+        protected virtual bool AlwaysActive => false;
+
         WorldSprite ISpriteController.WorldSprite => WorldSprite;
 
         public WorldSpriteStatus Status
@@ -58,11 +60,10 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => _collisionEnabled.Value = value;
         }
 
-        private GameBit _visible;
         public bool Visible
         {
-            get => _visible.Value;
-            set => _visible.Value = value;
+            get => WorldSprite.Visible;
+            set => WorldSprite.Visible = value;
         }
 
         public virtual IMotion Motion { get; } = new NoMotion();
@@ -79,7 +80,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 0);
             _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 2);
-            _visible = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit6, memoryBuilder.Memory);
             _collisionEnabled = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             memoryBuilder.AddByte();
 
@@ -134,6 +134,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         private void HideOrDestroyIfOutOfBounds()
         {
+            if (AlwaysActive)
+                return;
+
             var boundsCheck = WorldSprite.CheckInBounds();
 
             if(boundsCheck == BoundsCheck.FarOutOfBounds)
@@ -164,7 +167,14 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void Update()
         {
-             HideOrDestroyIfOutOfBounds();
+            if (WorldSprite.Status == WorldSpriteStatus.Dying)
+            {
+                UpdateDying();
+                WorldSprite.UpdateSprite();
+                return;
+            }
+
+            HideOrDestroyIfOutOfBounds();
 
             if (WorldSprite.Status == WorldSpriteStatus.Active)
             {
@@ -211,7 +221,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void Destroy()
         {
-            if (Status != WorldSpriteStatus.Active)
+            if (Status != WorldSpriteStatus.Active && Status != WorldSpriteStatus.Dying)
                 return;
 
             GameDebug.DebugLog($"Sprite {SpriteIndex} destroyed by {GetType().Name}", DebugLogFlags.SpriteSpawn);
@@ -219,5 +229,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         }
 
         protected abstract void UpdateActive();
+        protected virtual void UpdateDying() { }
     }
 }

@@ -26,6 +26,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _movedForward;
         private GameBit _playerOnPlatform;
         private MaskedByte _timer;
+        public override IMotion Motion => _motionController.Motion;
 
         private TwoBitEnum<PlatformType> _platformType;
 
@@ -54,6 +55,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
                 new SpriteDefinition(SpriteType.Platform, memoryBuilder.Memory));
+        }
+
+        protected override void OnSpriteCreated(Sprite sprite)
+        {
+            Motion.Stop();
         }
 
         protected override void UpdateActive()

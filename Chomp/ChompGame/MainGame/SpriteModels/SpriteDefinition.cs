@@ -18,6 +18,7 @@ namespace ChompGame.MainGame.SpriteModels
         BossBullet,
         LevelBoss,
         BossJaw,
+        Prize,
         Max=31
     }
 

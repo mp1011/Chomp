@@ -11,7 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers.MotionControllers
 
         IMotion IMotionController.Motion => Motion;
 
-        public IMotion Motion { get; }
+        public PrecisionMotion Motion { get; }
 
         public byte Speed =>
             _spriteDefinition.MovementSpeed switch {
