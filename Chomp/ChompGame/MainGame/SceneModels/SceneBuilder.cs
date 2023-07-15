@@ -310,8 +310,8 @@ namespace ChompGame.MainGame.SceneModels
                 b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene),
                 b => new ExitScenePart(b, ExitType.Left, exitOffset: 1, scene),
                 b => new PitScenePart(b, 30,10, scene),
-                b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 35, 12, scene),
-                b => new SpriteScenePart(b, ScenePartType.Platform_LeftRight, 16, 12, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 34, 8, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 10, 12, scene),
                 b => new PitScenePart(b, 10, 10, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 48, 8, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 17, 6, scene),
@@ -350,9 +350,9 @@ namespace ChompGame.MainGame.SceneModels
                 b => new PitScenePart(b, 22, 3, scene),
                 b => new PitScenePart(b, 29, 10, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 45, 9, scene),
-                b => new SpriteScenePart(b, ScenePartType.Platform_LeftRight, 35, 12, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 30, 12, scene),
                 b => new PitScenePart(b, 48, 10, scene),
-                b => new SpriteScenePart(b, ScenePartType.Platform_LeftRight, 55, 12, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 48, 12, scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 8, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 8, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 22, y: 8, definition: scene),
@@ -404,7 +404,7 @@ namespace ChompGame.MainGame.SceneModels
                   b => new ExitScenePart(b, ExitType.Left, exitOffset: -1, scene),
                   b => new ExitScenePart(b, ExitType.Right, exitOffset: 1, scene),
                   b => new PrefabScenePart(b, scene, 14, PrefabSize.Full, PrefabSize.ThreeQuarter, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
-                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 8, 12, scene),
+                  b => new PlatformScenePart(b, ScenePartType.Platform_UpDown,PlatformDistance.Len16, 12, 8,  scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType1, 16, 4, scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType2, 42, 8, scene),
                   b => new SpriteScenePart(b, ScenePartType.Bomb, 30, 8, scene),
@@ -416,9 +416,11 @@ namespace ChompGame.MainGame.SceneModels
                   b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 54, y: 9, definition: scene),
                   b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 54, y: 11, definition: scene),
 
+                  b => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 36, y: 11, definition: scene),
+
                   b => new PrefabScenePart(b, scene, 50, PrefabSize.Quarter, PrefabSize.Full, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
                   b => new PitScenePart(b, 40,8, scene),
-                  b => new SpriteScenePart(b, ScenePartType.Platform_LeftRight, 46, 10, scene)
+                  b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 40, 8, scene)
               );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
@@ -427,8 +429,8 @@ namespace ChompGame.MainGame.SceneModels
                   b => new ExitScenePart(b, ExitType.Left, exitOffset: -1, scene),
                   b => new PrefabScenePart(b, scene, 12, PrefabSize.Full, PrefabSize.Quarter, PrefabOrigin.BottomOrLeft, PrefabShape.StairLeft),
                   b => new PrefabScenePart(b, scene, 28, PrefabSize.Quarter, PrefabSize.ThreeQuarter, PrefabOrigin.BottomOrLeft, PrefabShape.Block),
-                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 20, 13, scene),
-                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 24, 14, scene),
+                  b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 20, 13, scene),
+                  b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len32, 24, 14, scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType1, 16, 16, scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType1, 24, 16, scene),
                   b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 28, 8, scene),
@@ -449,8 +451,10 @@ namespace ChompGame.MainGame.SceneModels
                   b => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 32, definition: scene),
                   b => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 34, definition: scene),
                   b => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: false, topRight: true, bottomLeft: false, bottomRight: true, x: 10, y: 30, definition: scene),
-                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 4, 21, scene),
-                  b => new SpriteScenePart(b, ScenePartType.Platform_UpDown, 10, 13, scene),
+                  b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 4, 21, scene),             
+                  b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 10, 12, scene),
+                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 21, scene),
+
                   b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 4, 9, scene)
                   );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);

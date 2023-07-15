@@ -181,7 +181,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             for (int i = 0; i < header.PartsCount; i++)
             {
-                var sp = header.GetSpriteScenePart(i, _scene, _gameModule.Specs);
+                BaseScenePart sp = header.GetSpriteOrPlatformScenePart(i, _scene, _gameModule.Specs);
 
                 byte destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;
@@ -244,7 +244,7 @@ namespace ChompGame.MainGame.SpriteControllers
                             _ =>  PlatformType.Falling
                         };
 
-                        pc.Dephase(spawnY);
+                        pc.SetInitialPosition(spawnX, spawnY, (sp as PlatformScenePart).Length);
                     }
 
                     if(sp.DestroyBitsRequired > 0)                    

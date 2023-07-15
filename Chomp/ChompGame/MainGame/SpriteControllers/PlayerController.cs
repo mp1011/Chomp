@@ -66,6 +66,10 @@ namespace ChompGame.MainGame.SpriteControllers
                 new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory),
                 WorldSprite);
             SpriteIndex = 0;
+
+            GameDebug.Watch1 = new DebugWatch("P Tx", () => WorldSprite.X / 4);
+            GameDebug.Watch2 = new DebugWatch("P Ty", () => WorldSprite.Y / 4);
+
         }
 
         public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType,

@@ -95,6 +95,22 @@ namespace ChompGame.MainGame.SceneModels
         {
             return new SpriteScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
         }
+
+        public BaseScenePart GetSpriteOrPlatformScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            var s = new SpriteScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+            switch(s.Type)
+            {
+                case ScenePartType.Platform_Falling:
+                case ScenePartType.Platform_LeftRight:
+                case ScenePartType.Platform_UpDown:
+                case ScenePartType.Platform_Vanishing:
+                    return new PlatformScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+                default:
+                    return s;
+            }
+        }
+
         public PrefabScenePart GetPrefabScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
         {
             return new PrefabScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);

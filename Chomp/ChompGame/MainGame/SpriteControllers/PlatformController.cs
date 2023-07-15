@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -25,7 +26,9 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _movedBack;
         private GameBit _movedForward;
         private GameBit _playerOnPlatform;
-        private MaskedByte _timer;
+        private TwoBitEnum<PlatformDistance> _distance;
+        private GameByte _startPosition;
+
         public override IMotion Motion => _motionController.Motion;
 
         private TwoBitEnum<PlatformType> _platformType;
@@ -43,7 +46,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             int address = memoryBuilder.CurrentAddress;
             memoryBuilder.AddByte();
-            _timer = new MaskedByte(address, Bit.Right2, memoryBuilder.Memory);
+            _distance = new TwoBitEnum<PlatformDistance>(memoryBuilder.Memory, address, 0);
             _playerOnPlatform = new GameBit(address, Bit.Bit2, memoryBuilder.Memory);
             _direction = new GameBit(address, Bit.Bit3, memoryBuilder.Memory);
             _movedBack = new GameBit(address, Bit.Bit4, memoryBuilder.Memory);
@@ -53,6 +56,8 @@ namespace ChompGame.MainGame.SpriteControllers
                     address,
                     6);
 
+            _startPosition = memoryBuilder.AddByte();
+
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
                 new SpriteDefinition(SpriteType.Platform, memoryBuilder.Memory));
         }
@@ -60,6 +65,11 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             Motion.Stop();
+
+            if (_platformType.Value == PlatformType.UpDown)
+                WorldSprite.Y = _startPosition.Value;
+            else
+                WorldSprite.X = _startPosition.Value;
         }
 
         protected override void UpdateActive()
@@ -74,6 +84,17 @@ namespace ChompGame.MainGame.SpriteControllers
                 Update_Falling();
         }
 
+        private int GetTravelDistance()
+        {
+            return _distance.Value switch {
+                PlatformDistance.Len16 => 16,
+                PlatformDistance.Len24 => 24,
+                PlatformDistance.Len32 => 32,
+                PlatformDistance.Len48 => 48,
+                _ => 0
+            };
+        }
+
         private void Update_LeftRight()
         {
             int startX = WorldSprite.X;
@@ -82,23 +103,18 @@ namespace ChompGame.MainGame.SpriteControllers
             _movedBack.Value = WorldSprite.X < startX;
             _movedForward.Value = WorldSprite.X > startX;
 
-            if (_timer.Value == 0)
+            if(WorldSprite.X <= _startPosition.Value)
             {
-                _direction.Value = !_direction.Value;
-
-                if (_direction.Value)
-                    _motionController.Motion.XSpeed = 8;
-                else
-                    _motionController.Motion.XSpeed = -8;
-
-                _timer.Value++;
+                _direction.Value = true;
+                _motionController.Motion.XSpeed = 8;
             }
-
-            if ((_levelTimer.Value % 64) == 0)
+            else if(WorldSprite.X > _startPosition.Value + GetTravelDistance())
             {
-                _timer.Value++;
+                _direction.Value = true;
+                _motionController.Motion.XSpeed = -8;
             }
         }
+
         private void Update_UpDown()
         {
             int startY = WorldSprite.Y;
@@ -107,27 +123,25 @@ namespace ChompGame.MainGame.SpriteControllers
             _movedBack.Value = WorldSprite.Y < startY;
             _movedForward.Value = WorldSprite.Y > startY;
 
-            if (_timer.Value == 0)
+            if (WorldSprite.Y <= _startPosition.Value)
             {
-                _direction.Value = !_direction.Value;
-
-                if (_direction.Value)
-                    _motionController.Motion.YSpeed = 8;
-                else
-                    _motionController.Motion.YSpeed = -8;
-
-                _timer.Value++;
+                _direction.Value = true;
+                _motionController.Motion.YSpeed = 8;
             }
-
-            if (_levelTimer.Value.IsMod(64))
+            else if (WorldSprite.Y > _startPosition.Value + GetTravelDistance())
             {
-                _timer.Value++;
+                _direction.Value = true;
+                _motionController.Motion.YSpeed = -8;
             }
         }
 
-        public void Dephase(int y)
+        public void SetInitialPosition(int spawnX, int spawnY, PlatformDistance length)
         {
-            _direction.Value = ((y/4) % 2) == 0;
+            if(_platformType.Value == PlatformType.UpDown)
+                _startPosition.Value = (byte)spawnY;
+            else
+                _startPosition.Value = (byte)spawnX;
+            _distance.Value = length;
         }
 
         private void Update_Vanishing()
