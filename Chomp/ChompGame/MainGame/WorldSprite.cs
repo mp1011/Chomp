@@ -141,7 +141,7 @@ namespace ChompGame.MainGame
 
         public void UpdateSprite()
         {
-            if (Status != WorldSpriteStatus.Active)
+            if (Status != WorldSpriteStatus.Active && Status != WorldSpriteStatus.Dying)
                 return;
 
             var sprite = GetSprite();

@@ -228,6 +228,26 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             WorldSprite.Destroy();
         }
 
+        public void EnsureInFrontOf(ActorController other)
+        {
+            if (SpriteIndex < other.SpriteIndex)
+            {
+                var otherSpriteIndex = other.SpriteIndex;
+                other.SpriteIndex = SpriteIndex;
+                SpriteIndex = otherSpriteIndex;
+
+                var thisSprite = GetSprite();
+                thisSprite.Palette = Palette;
+                WorldSprite.ConfigureSprite(thisSprite);
+                WorldSprite.UpdateSprite();
+
+                var otherSprite = other.GetSprite();
+                otherSprite.Palette = other.Palette;
+                other.WorldSprite.ConfigureSprite(otherSprite);
+                other.WorldSprite.UpdateSprite();
+            }
+        }
+
         protected abstract void UpdateActive();
         protected virtual void UpdateDying() { }
     }

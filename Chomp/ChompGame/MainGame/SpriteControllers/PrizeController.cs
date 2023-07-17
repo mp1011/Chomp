@@ -10,6 +10,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PrizeController : ActorController
     {
+        public const byte HealthPerPickup = 2;
         private CollisionDetector _collisionDetector;
         private IMotionController _motionController;
         private AcceleratedMotion _motion;
@@ -65,8 +66,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if(playerController.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
             {
                 Destroy();
-                if(_statusBar.Health < StatusBar.FullHealth)
-                    _statusBar.Health++;
+                if (_statusBar.Health < StatusBar.FullHealth - HealthPerPickup)
+                    _statusBar.Health += HealthPerPickup;
+                else
+                    _statusBar.Health = StatusBar.FullHealth;
+
                 _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
             }
         }

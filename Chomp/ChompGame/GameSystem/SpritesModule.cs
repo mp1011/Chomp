@@ -137,11 +137,9 @@ namespace ChompGame.GameSystem
                 scanlineSprites.Add(sprite);
             }
 
-            foreach(var orderedSprite in scanlineSprites
-                .OrderBy(p=>p.SizeX + p.SizeY)
-                .ThenBy(p=>p.X))
+            foreach(var sprite in scanlineSprites)
             {
-                ScanlineSprites[scanlineSpriteIndex] = (byte)(orderedSprite.Address - _sprite0Address);
+                ScanlineSprites[scanlineSpriteIndex] = (byte)(sprite.Address - _sprite0Address);
                 scanlineSpriteIndex++;
                 if (scanlineSpriteIndex == Specs.SpritesPerScanline)
                     break;

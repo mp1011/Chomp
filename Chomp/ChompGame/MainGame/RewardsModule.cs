@@ -84,6 +84,7 @@ namespace ChompGame.MainGame
                     bomb.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X;
                     bomb.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
                     bomb.AcceleratedMotion.SetYSpeed(-80);
+                    bomb.FallCheck = _currentScene.SpriteFallCheck;
                     _rewardSpriteIndex.Value = bomb.SpriteIndex;
                 }
             }

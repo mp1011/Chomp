@@ -12,6 +12,8 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss1Controller : EnemyController
     {
+        public const int BossHp = 1;
+
         private readonly WorldSprite _player;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
         private readonly ChompAudioService _audioService;
@@ -94,10 +96,23 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void BeforeInitializeSprite() 
         {
-            for(int i=0; i< TailSections;i++)
+            if (_state.Value == 0)
+                CreateTail();
+        }
+
+        private void CreateTail()
+        {
+            for (int i = 0; i < TailSections; i++)
             {
                 var spriteIndex = _spritesModule.GetFreeSpriteIndex();
-                _tailSprites[i] = spriteIndex;
+                if (spriteIndex < SpriteIndex)
+                {
+                    _tailSprites[i] = SpriteIndex;
+                    SpriteIndex = spriteIndex;
+                    spriteIndex = _tailSprites[i];
+                }
+                else
+                    _tailSprites[i] = spriteIndex;
 
                 var sprite = _spritesModule.GetSprite(spriteIndex);
                 sprite.Tile = 7;
@@ -114,7 +129,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _hitPoints.Value = 3;
+            _hitPoints.Value = BossHp;
+            _state.Value = 0;
             HideTail();
         }
 
@@ -259,6 +275,9 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _phase.Value = Phase.DestroyBegin;
                 _music.CurrentSong = MusicModule.SongName.None;
+                Palette = 0;
+                GetSprite().Palette = 0;
+                _bullets.Execute(p => p.Destroy());
             }
             else if (_phase.Value >= Phase.DestroyEnd)
             {
@@ -279,6 +298,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 var bullet = _bullets.TryAddNew(3);
                 if (bullet != null)
                 {
+                    bullet.EnsureInFrontOf(this);
                     var rng = new RandomHelper(_levelTimer.Value);
                     bullet.WorldSprite.Center = WorldSprite.Center.Add(
                         rng.RandomItem(-4, -2, 0, 2, 4),

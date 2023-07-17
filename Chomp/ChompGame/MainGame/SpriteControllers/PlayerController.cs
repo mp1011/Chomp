@@ -302,6 +302,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void HarmPlayer(byte damage)
         {
+            if (_openingDoor.Value)
+                return;
+
             if (_statusBar.Health == 0)
                 return;
 
