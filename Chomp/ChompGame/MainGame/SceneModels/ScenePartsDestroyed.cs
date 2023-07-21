@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels.SceneParts;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -39,6 +40,28 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             _sceneOffset.Value = sceneOffset;
+        }
+
+        public void OnSceneRestart(ChompGameModule gameModule)
+        {
+            byte nextDestructionBitOffset = 0;
+
+            for (int i = 0; i < gameModule.CurrentScenePartHeader.PartsCount; i++)
+            {
+                var sp = gameModule.CurrentScenePartHeader.GetScenePart(i, gameModule.CurrentScene, gameModule.Specs);
+                
+                switch(sp.Type)
+                {
+                    case ScenePartType.EnemyType1:
+                    case ScenePartType.EnemyType2:
+                    case ScenePartType.Bomb:
+                    case ScenePartType.DestructibleBlock:
+                        _partsDestroyed[_sceneOffset.Value + nextDestructionBitOffset] = false;
+                        break;
+                }
+
+                nextDestructionBitOffset += sp.DestroyBitsRequired;
+            }
         }
 
         public bool IsDestroyed(byte offsetWithinScene) => offsetWithinScene == 255 ? false 

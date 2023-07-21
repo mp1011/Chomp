@@ -299,7 +299,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level1_11_Boss;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -312,6 +312,7 @@ namespace ChompGame.MainGame
         {
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LoadScene;
+            _scenePartsDestroyed.OnSceneRestart(this);
         }
 
         public void LoadScene()

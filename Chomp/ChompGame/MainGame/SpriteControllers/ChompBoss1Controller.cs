@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss1Controller : EnemyController
     {
-        public const int BossHp = 1;
+        public const int BossHp = 3;
 
         private readonly WorldSprite _player;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;

@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class LevelBossController : EnemyController
     {
+        private const int BossHP = 4;
         private AcceleratedMotion _motion;
         private IMotionController _motionController;
 
@@ -99,7 +100,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _hitPoints.Value = 4;
+            _hitPoints.Value = BossHP;
             _state.Value = 0;
         }
 
@@ -124,6 +125,14 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.SetYSpeed(0);
                     _internalTimer.Value++;
                 }
+
+                if (WorldSprite.Y > 84)
+                {
+                    _motion.SetYSpeed(-10);
+                    _motionController.Update();
+                }
+                else
+                    _motion.SetYSpeed(0);
 
                 if (_levelTimer.IsMod(16))
                 {
@@ -278,6 +287,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.X = maxX;
 
             WorldSprite.Y = 80;
+
+            Visible = true;
+            var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
+            jawSprite.Visible = true;
+
         }
 
         private void BossTest()
@@ -310,7 +324,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if (bullet != null)
             {
                 bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
-                bullet.WorldSprite.X = WorldSprite.X;
+                bullet.WorldSprite.X = WorldSprite.X - 8;
                 bullet.WorldSprite.Y = WorldSprite.Y + 8;
                 bullet.WorldSprite.FlipX = true;
                 bullet.Motion.XSpeed = -40;
@@ -577,6 +591,10 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     _paletteModule.BgColor = ColorIndex.Black;
                     PositionBossAbovePlayer();
+
+                    Visible = false;
+                    var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
+                    jawSprite.Visible = false;
                 }
 
                 if (_internalTimer < 15)
@@ -590,15 +608,20 @@ namespace ChompGame.MainGame.SpriteControllers
                     {
                         _internalTimer.Value++;
 
-                        if(_internalTimer.Value == 40)
+                        if(_internalTimer.Value == 45)
                         {
                             _phase.Value = Phase.BossAppear;
+
+                            Visible = true;
+                            var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
+                            jawSprite.Visible = true;
+
                             _dynamicBlockController.ResetCoinsForLevelBoss();
                             _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 2));
                             SetBossTiles();
                             _internalTimer.Value = 0;
                         }
-                        else if(_internalTimer.Value >= 20)
+                        else if(_internalTimer.Value >= 20 && _internalTimer.Value < 40)
                         {
                             CreateFirebomb();
                         }

@@ -15,10 +15,12 @@ namespace ChompGame.MainGame.SceneModels
         PlainsEveningFarMountains,
         PlainsEveningCloseMountains,
         Bomb,
+        BombLight,
         Player,
         GreenEnemy,
         GreenEnemy2,
         GreenEnemy3,
+        BlueGrayEnemy,
         ChompBoss,
         Bullet,
         StatusBar,
@@ -162,6 +164,11 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.Gray1,
                 ColorIndex.LightYellow);
 
+            DefinePalette(PaletteKey.BombLight,
+              ColorIndex.Gray1,
+              ColorIndex.Gray2,
+              ColorIndex.LightYellow);
+
             DefinePalette(PaletteKey.Player,
                 ColorIndex.Orange,
                 ColorIndex.DarkBrown,
@@ -170,6 +177,11 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.GreenEnemy,
                 ColorIndex.Green1,
                 ColorIndex.Green3,
+                ColorIndex.Red3);
+
+            DefinePalette(PaletteKey.BlueGrayEnemy,
+                ColorIndex.BlueGray2,
+                ColorIndex.BlueGray3,
                 ColorIndex.Red3);
 
             DefinePalette(PaletteKey.GreenEnemy2,
@@ -233,7 +245,7 @@ namespace ChompGame.MainGame.SceneModels
             LoadPalette(PaletteKey.Coins, coinPalette);
             LoadPalette(PaletteKey.DynamicBlocks, dynamicBlockPalette);
 
-            LoadPalette(PaletteKey.Bomb, bombPalette);
+            LoadPalette(levelTheme.Bomb, bombPalette);
             LoadPalette(PaletteKey.Player, playerPalette);
             LoadPalette(levelTheme.Enemy1, enemy1Pallete);
             LoadPalette(levelTheme.Enemy2, enemy2Pallete);
