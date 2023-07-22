@@ -26,7 +26,9 @@ namespace ChompGame.MainGame.SceneModels
         StatusBar,
         Coins,
         DynamicBlocks,
-        Max=DynamicBlocks
+        Water,
+        Sand,
+        Max= Water
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -219,6 +221,20 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.Black,
              ColorIndex.Gray2,
              ColorIndex.Gray1);
+
+            DefinePalette(PaletteKey.Water,
+               ColorIndex.Blue1,
+               ColorIndex.Blue2,
+               ColorIndex.Blue3,
+               ColorIndex.Blue4);
+
+            DefinePalette(PaletteKey.Sand,
+                ColorIndex.Blue4,
+                ColorIndex.LightTan,
+                ColorIndex.LightYellow,
+                ColorIndex.White);
+
+
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -280,6 +296,11 @@ namespace ChompGame.MainGame.SceneModels
                 OnHBlank_LevelBoss();
                 return;
             }
+            else if(_currentScene.IsAutoScroll)
+            {
+                OnHBlank_AutoScroll();
+                return;
+            }
 
             int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
 
@@ -314,6 +335,24 @@ namespace ChompGame.MainGame.SceneModels
             {
                 LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
                 _graphicsModule.GetBackgroundPalette(0).SetColor(0, _bgColor.Value);
+            }
+        }
+
+        private void OnHBlank_AutoScroll()
+        {
+            int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true);
+
+            if (_graphicsModule.ScreenPoint.Y == 0)
+            {
+                LoadPalette(PaletteKey.StatusBar, _graphicsModule.GetBackgroundPalette(0));
+            }
+            else if (_graphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            {
+                LoadPalette(BgPalette1.Address, _graphicsModule.GetBackgroundPalette(0));
+            }
+            else if (_graphicsModule.ScreenPoint.Y == back2Pixel)
+            {
+                LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
             }
         }
 

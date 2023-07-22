@@ -58,13 +58,27 @@ namespace ChompGame.MainGame
                 _statusBar.OnHBlank(_realScrollX, _realScrollY);
             }
 
-            if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
-            {
+            if (_sceneDefinition.IsAutoScroll)
+                HandleAutoScroll();
+            else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
-            }
         }
 
         private bool IsBossScene => _sceneDefinition.HasSprite(SpriteLoadFlags.Boss) && _sceneDefinition.ScrollStyle == ScrollStyle.NameTable;
+
+        private void HandleAutoScroll()
+        {
+            var waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true);
+            if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            {
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin)
+            {
+                int waterY = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY+3)/16.0));
+            }
+        }
 
         private void HandleParallax()
         {
@@ -85,7 +99,8 @@ namespace ChompGame.MainGame
 
         public void Update()
         {
-
+            if (_sceneDefinition.IsAutoScroll)
+                _autoScroll.Value++;
         }
 
         public void OnStartup()

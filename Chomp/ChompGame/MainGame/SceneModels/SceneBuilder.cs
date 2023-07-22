@@ -22,7 +22,8 @@ namespace ChompGame.MainGame.SceneModels
         Level1_14_BigRoom,
         Level1_15_Vertical2,
         Level1_16_BeforeBoss,
-        Level1_17_Boss
+        Level1_17_Boss,
+        Level2_1_Fly
 
     }
 
@@ -230,6 +231,18 @@ namespace ChompGame.MainGame.SceneModels
 
             //Level1_17_Boss
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.PlainsBoss);
+
+            //Level2_1_Flying,
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.Ocean,
+                enemyGroup: EnemyGroup.Lizard_Bird,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 1,
+                bgPosition1: 1
+            );
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -477,6 +490,13 @@ namespace ChompGame.MainGame.SceneModels
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 16, definition: scene)
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
+            scene = new SceneDefinition(Level.Level2_1_Fly, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene)
+            );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
 
         }
     }

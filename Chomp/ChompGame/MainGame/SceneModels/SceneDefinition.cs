@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels.Themes;
 using ChompGame.MainGame.SpriteControllers.Base;
 using System;
 
@@ -92,15 +93,15 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle; //shared with bg2
 
         //byte 1
-        private NibbleEnum<ThemeType> _theme;          
-        private NibbleEnum<EnemyGroup> _enemies;   
+        private NibbleEnum<ThemeType> _theme;
+        private NibbleEnum<EnemyGroup> _enemies;
 
         //byte 2 (four TwoBits or two Nibbles)
         private TwoBit _left;
         private TwoBit _top;
         private TwoBit _right;
         private TwoBit _bottom;
-        private Nibble _begin; 
+        private Nibble _begin;
         private Nibble _end;
 
         public int Address => _scrollStyle.Address;
@@ -108,7 +109,7 @@ namespace ChompGame.MainGame.SceneModels
         public bool IsLevelBossScene => _enemies.Value == EnemyGroup.LevelBoss;
 
         public bool IsMidBossScene => _enemies.Value == EnemyGroup.MidBoss;
-        
+
         public int GroundFillStart => _enemies.Value == EnemyGroup.LevelBoss ? 8 : 16;
 
         public int GroundFillEnd => GroundFillStart + 1;
@@ -129,10 +130,12 @@ namespace ChompGame.MainGame.SceneModels
 
         public ScrollStyle ScrollStyle => _scrollStyle.Value;
 
+        public bool IsAutoScroll => _theme.Value == ThemeType.Ocean;
+
         public int LeftTiles => _scrollStyle.Value switch {
             ScrollStyle.Vertical => _begin.Value * 2,
             _ => _left.Value * 2 };
-            
+
         public int RightTiles => _scrollStyle.Value switch {
             ScrollStyle.Vertical => _end.Value * 2,
             _ => _right.Value * 2
@@ -150,13 +153,10 @@ namespace ChompGame.MainGame.SceneModels
             _ => _bottom.Value * 2
         };
 
-        public int LeftEdgeFloorTiles => _scrollStyle.Value switch 
-        {
-            ScrollStyle.None => _levelShape.Value switch 
-            {
-                LevelShape.CornerStairs => _cornerStairStyle.Value switch 
-                {
-                    CornerStairStyle.OneBlockDouble => BottomTiles + 2, 
+        public int LeftEdgeFloorTiles => _scrollStyle.Value switch {
+            ScrollStyle.None => _levelShape.Value switch {
+                LevelShape.CornerStairs => _cornerStairStyle.Value switch {
+                    CornerStairStyle.OneBlockDouble => BottomTiles + 2,
                     CornerStairStyle.TwoBlockDouble => BottomTiles + 4,
                     CornerStairStyle.TwoBlockLeft => BottomTiles + 4, //todo, check stair generation
                     _ => BottomTiles
@@ -180,6 +180,8 @@ namespace ChompGame.MainGame.SceneModels
         };
 
         public ThemeType Theme => _theme.Value;
+
+        public ThemeSetup ThemeSetup => ThemeSetup.Create(Theme, _specs, this);
 
         public CornerStairStyle CornerStairStyle => _cornerStairStyle.Value;
 

@@ -50,7 +50,13 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: PaletteKey.Bullet);
 
             //Ocean
-            new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
+            new Theme(memoryBuilder, 
+               bomb: PaletteKey.Bomb,
+               bg1: PaletteKey.PlainsFarMountains,
+               bg2: PaletteKey.Water,
+               fg: PaletteKey.Sand,
+               enemy1: PaletteKey.GreenEnemy3,
+               enemy2: PaletteKey.Bullet);
 
             //Forest 
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
