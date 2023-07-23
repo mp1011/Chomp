@@ -26,8 +26,9 @@ namespace ChompGame.MainGame.SpriteControllers
             head.Palette = 1;
         }
 
-        protected override void UpdateActive()
+        private void CheckInput()
         {
+            _inputModule.OnLogicUpdate();
             if (_inputModule.Player1.UpKey.IsDown())
             {
                 AcceleratedMotion.TargetYSpeed = -_motionController.WalkSpeed;
@@ -59,14 +60,50 @@ namespace ChompGame.MainGame.SpriteControllers
                 AcceleratedMotion.TargetXSpeed = 0;
                 AcceleratedMotion.XAcceleration = _motionController.BrakeAccel;
             }
+        }
 
-            _motionController.Update();
+        private void PositionHeadSprite()
+        {
 
             var headSprite = _spritesModule.GetSprite(_headSpriteIndex.Value);
             var sprite = GetSprite();
             headSprite.X = (byte)(sprite.X + 2);
             headSprite.Y = (byte)(sprite.Y - 4);
-            _inputModule.OnLogicUpdate();
+        }
+
+        private void CheckBounds()
+        {
+            if (WorldSprite.X < -4)
+            {
+                WorldSprite.X = -4;
+                AcceleratedMotion.SetXSpeed(0);
+            }
+            else if (WorldSprite.X > _specs.ScreenWidth - 4)
+            {
+                WorldSprite.X = _specs.ScreenWidth - 4;
+                AcceleratedMotion.SetXSpeed(0);
+            }
+
+            if (WorldSprite.Y < Constants.StatusBarHeight + 4)
+            {
+                WorldSprite.Y = Constants.StatusBarHeight + 4;
+                AcceleratedMotion.SetYSpeed(0);
+            }
+            else if (WorldSprite.Y > _specs.ScreenHeight - 4)
+            {
+                WorldSprite.Y = _specs.ScreenHeight - 4;
+                AcceleratedMotion.SetYSpeed(0);
+            }
+        }
+
+        protected override void UpdateActive()
+        {
+            CheckInput();
+            _motionController.Update();
+            CheckBounds();
+
+            WorldSprite.UpdateSprite();
+            PositionHeadSprite();
         }
     }
 }

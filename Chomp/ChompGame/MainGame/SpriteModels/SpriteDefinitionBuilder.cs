@@ -190,7 +190,7 @@ namespace ChompGame.MainGame.SpriteModels
                 sizeX: 2,
                 sizeY: 1,
                 gravityStrength: GravityStrength.None,
-                movementSpeed: MovementSpeed.Fast,
+                movementSpeed: MovementSpeed.VeryFast,
                 animationStyle: AnimationStyle.NoAnimation,
                 collidesWithBackground: true,
                 flipXWhenMovingLeft: false);

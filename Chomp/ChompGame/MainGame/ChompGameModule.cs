@@ -332,12 +332,15 @@ namespace ChompGame.MainGame
                 Specs,
                 GameRAM);
 
-            _worldScroller = _currentScene.ScrollStyle switch {
-                ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
-                ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
-                ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsLevelBossScene), 
-                _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
-            };
+            if (_currentScene.IsAutoScroll)
+                _worldScroller = new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
+            else 
+                _worldScroller = _currentScene.ScrollStyle switch {
+                    ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
+                    ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
+                    ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsLevelBossScene), 
+                    _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
+                };
 
             _sceneSpriteControllers = _levelBuilder.CreateSpriteControllers(memoryBuilder);
 

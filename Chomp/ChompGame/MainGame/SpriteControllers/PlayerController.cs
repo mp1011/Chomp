@@ -19,7 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public AcceleratedMotion AcceleratedMotion => _motionController.Motion;
 
         private SceneDefinition _scene;
-        private readonly Specs _specs;
+        protected readonly Specs _specs;
         private const byte _recoilSpeed = 30;
         private const byte _fallSpringSpeed = 120;
 
