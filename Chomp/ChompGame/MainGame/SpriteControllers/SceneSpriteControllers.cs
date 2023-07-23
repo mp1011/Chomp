@@ -79,7 +79,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.WorldSprite.X = 16;
                 _playerController.WorldSprite.Y = 16;
                 _playerController.Palette = 1;
-                _playerController.InitializeSprite(1);
+
+                if(_scene.IsAutoScroll)
+                    _playerController.InitializeSprite(0);
+                else 
+                    _playerController.InitializeSprite(1);
+
                 _playerController.Motion.XSpeed = 0;
                 _playerController.Motion.YSpeed = 0;
                 _playerController.SetInitialPosition(levelMap, lastExitType, this);
@@ -105,14 +110,19 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
-            if (_scene.HasSprite(SpriteLoadFlags.Player))
+            if(_scene.IsAutoScroll)
+            {
+                _playerController.Update();
+                _bombControllers.Execute(c => c.Update());
+                _prizeControllers.Execute(c => c.Update());
+            }
+            else if (_scene.HasSprite(SpriteLoadFlags.Player))
             {
                 _playerController.Update();
                 _bombControllers.Execute(c => c.Update());
                 _doorControllers.Execute(c => c.Update());
                 _buttonControllers.Execute(c => c.Update());
                 _platformControllers.Execute(c => c.Update());
-                _prizeControllers.Execute(c => c.Update());
             }
 
             _explosionControllers.Execute(c => c.Update());
@@ -137,10 +147,14 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _playerController.WorldSprite.UpdateSprite();
                 _bombControllers.Execute(c => c.WorldSprite.UpdateSprite());
-                _doorControllers.Execute(c => c.WorldSprite.UpdateSprite());
-                _buttonControllers.Execute(c => c.WorldSprite.UpdateSprite());
-                _platformControllers.Execute(c => c.WorldSprite.UpdateSprite());
                 _prizeControllers.Execute(c => c.WorldSprite.UpdateSprite());
+
+                if (!_scene.IsAutoScroll)
+                {
+                    _doorControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                    _buttonControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                    _platformControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                }                
             }
 
             _explosionControllers.Execute(c => c.WorldSprite.UpdateSprite());
@@ -294,14 +308,17 @@ namespace ChompGame.MainGame.SpriteControllers
             _playerController.CheckBombPickup(_bombControllers);
             _playerController.CheckPrizePickup(_prizeControllers);
 
-            _platformControllers.Execute(b => b.CheckPlayerCollision(_playerController));
-            _prizeControllers.Execute(b => b.CheckPlayerCollision(_playerController));
-
-            _doorControllers.Execute(b =>
+            //should do this better
+            if (!_scene.IsAutoScroll)
             {
-                b.CheckPlayerOpen();
-            });
+                _platformControllers.Execute(b => b.CheckPlayerCollision(_playerController));
+                _doorControllers.Execute(b =>
+                {
+                    b.CheckPlayerOpen();
+                });
+            }
 
+            _prizeControllers.Execute(b => b.CheckPlayerCollision(_playerController));
             _bombControllers.Execute(b =>
             {
                 b.CheckEnemyCollisions(_enemyAControllers);

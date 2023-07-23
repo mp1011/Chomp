@@ -151,7 +151,29 @@ namespace ChompGame.MainGame.SpriteModels
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
 
-            //level boss fireball
+            ////level boss fireball
+            //new SpriteDefinition(memoryBuilder,
+            //    secondTileOffset: 0,
+            //    sizeX: 1,
+            //    sizeY: 1,
+            //    gravityStrength: GravityStrength.None,
+            //    movementSpeed: MovementSpeed.Fast,
+            //    animationStyle: AnimationStyle.NoAnimation,
+            //    collidesWithBackground: false,
+            //    flipXWhenMovingLeft: true);
+
+            //prize
+            new SpriteDefinition(memoryBuilder,
+                secondTileOffset: 0,
+                sizeX: 1,
+                sizeY: 1,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.Fast,
+                animationStyle: AnimationStyle.NoAnimation,
+                collidesWithBackground: true,
+                flipXWhenMovingLeft: false);
+
+            //player head
             new SpriteDefinition(memoryBuilder,
                 secondTileOffset: 0,
                 sizeX: 1,
@@ -160,12 +182,12 @@ namespace ChompGame.MainGame.SpriteModels
                 movementSpeed: MovementSpeed.Fast,
                 animationStyle: AnimationStyle.NoAnimation,
                 collidesWithBackground: false,
-                flipXWhenMovingLeft: true);
+                flipXWhenMovingLeft: false);
 
-            //prize
+            //plane
             new SpriteDefinition(memoryBuilder,
                 secondTileOffset: 0,
-                sizeX: 1,
+                sizeX: 2,
                 sizeY: 1,
                 gravityStrength: GravityStrength.None,
                 movementSpeed: MovementSpeed.Fast,

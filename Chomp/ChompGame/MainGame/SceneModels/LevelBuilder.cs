@@ -492,7 +492,18 @@ namespace ChompGame.MainGame.SceneModels
             SpriteControllerPool<ExplosionController> explosionControllers = null;
 
 
-            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+            if(_sceneDefinition.IsAutoScroll)
+            {
+                playerController = new PlayerPlaneController(_gameModule, memoryBuilder);
+                bombControllers = new SpriteControllerPool<BombController>(
+                   size: 2,
+                   _gameModule.SpritesModule,
+                   () => new BombController(_gameModule, playerController, memoryBuilder));
+
+                prizeControllers = new SpriteControllerPool<PrizeController>(size: 2, _gameModule.SpritesModule,
+                    () => new PrizeController(_gameModule, memoryBuilder));
+            }
+            else if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
             {
                 playerController = new PlayerController(_gameModule, memoryBuilder);
                 playerController.FallCheck = _sceneDefinition.SpriteFallCheck;
@@ -749,7 +760,42 @@ namespace ChompGame.MainGame.SceneModels
             if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
                 spriteDestination.Y = 4;
 
-            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+            if(_sceneDefinition.IsAutoScroll)
+            {
+                //player sprite
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(0, 0, 1, 1),
+                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
+                  _gameModule.Specs,
+                  memory);
+
+                //plane
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(13, 2, 2, 1),
+                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 1),
+                  _gameModule.Specs,
+                  memory);
+
+                //bomb sprite
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(5, 1, 1, 1),
+                  destinationPoint: new Point(spriteDestination.X + 1, spriteDestination.Y),
+                  _gameModule.Specs,
+                  memory);
+                _spriteTileTable.SetTile(SpriteTileIndex.Bomb, 2);
+
+                //prize
+                _spriteTileTable.SetTile(SpriteTileIndex.Prize, 8);
+
+                _spriteTileTable.SetTile(SpriteTileIndex.Plane, 9);
+
+
+                spriteDestination.Advance(2, extraRowSkip: 1);
+            }
+            else if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
             {
                 //player sprite
                 masterPatternTable.CopyTilesTo(
@@ -773,8 +819,6 @@ namespace ChompGame.MainGame.SceneModels
 
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
-
-               
             }
 
             if (_sceneDefinition.HasSprite(SpriteLoadFlags.Lizard))

@@ -19,7 +19,8 @@ namespace ChompGame.MainGame.SpriteModels
         Explosion,
         Door,
         Platform,
-        Prize
+        Prize,
+        Plane
     }
 
     class SpriteTileTable

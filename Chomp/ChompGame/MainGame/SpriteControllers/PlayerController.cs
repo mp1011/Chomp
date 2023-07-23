@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController : ActorController
     {
-        private ActorMotionController _motionController;
+        protected ActorMotionController _motionController;
 
         public override IMotion Motion => AcceleratedMotion;
         public AcceleratedMotion AcceleratedMotion => _motionController.Motion;
@@ -26,7 +26,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly StatusBar _statusBar;
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
-        private readonly InputModule _inputModule;
+        protected readonly InputModule _inputModule;
         private readonly DynamicBlockController _dynamicBlockController;
 
         private GameBit _bombPickup;
@@ -39,8 +39,10 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public PlayerController(
             ChompGameModule gameModule, 
-            SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Player, gameModule, memoryBuilder, SpriteTileIndex.Player)
+            SystemMemoryBuilder memoryBuilder,
+            SpriteType spriteType = SpriteType.Player,
+            SpriteTileIndex spriteTileIndex = SpriteTileIndex.Player) 
+            : base(spriteType, gameModule, memoryBuilder, spriteTileIndex)
         {
             var state = memoryBuilder.AddByte();
             _scene = gameModule.CurrentScene;
@@ -63,13 +65,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 gameModule.SpriteTileTable, 
                 gameModule.LevelTimer, 
                 memoryBuilder, 
-                new SpriteDefinition(SpriteType.Player, memoryBuilder.Memory),
+                new SpriteDefinition(spriteType, memoryBuilder.Memory),
                 WorldSprite);
             SpriteIndex = 0;
 
             GameDebug.Watch1 = new DebugWatch("P Tx", () => WorldSprite.X / 4);
             GameDebug.Watch2 = new DebugWatch("P Ty", () => WorldSprite.Y / 4);
-
         }
 
         public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType,

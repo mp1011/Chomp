@@ -76,7 +76,7 @@ namespace ChompGame.MainGame
             else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin)
             {
                 int waterY = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
-                _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY+3)/16.0));
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY+5)/16.0));
             }
         }
 

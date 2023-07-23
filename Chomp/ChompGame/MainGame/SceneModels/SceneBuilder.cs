@@ -240,8 +240,8 @@ namespace ChompGame.MainGame.SceneModels
                 enemyGroup: EnemyGroup.Lizard_Bird,
                 memoryBuilder: memoryBuilder,
                 top: 0,
-                bottom: 1,
-                bgPosition1: 1
+                bottom: 0,
+                bgPosition1: 3
             );
         }
 

@@ -19,6 +19,8 @@ namespace ChompGame.MainGame.SpriteModels
         LevelBoss,
         BossJaw,
         Prize,
+        PlayerHead,
+        Plane,
         Max=31
     }
 
