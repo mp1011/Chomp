@@ -237,7 +237,7 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.Ocean,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemyGroup: EnemyGroup.Rocket_Bird,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 0,
@@ -493,7 +493,7 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level2_1_Fly, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene)
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 14, y: 6, definition: scene)
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 

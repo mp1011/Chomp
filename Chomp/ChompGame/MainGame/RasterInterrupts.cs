@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame
 {
@@ -53,7 +54,7 @@ namespace ChompGame.MainGame
                 return;
 
             if (_coreGraphicsModule.ScreenPoint.Y <= Constants.StatusBarHeight
-                && _sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+                && _sceneDefinition.HasSprite(SpriteType.Player))
             {
                 _statusBar.OnHBlank(_realScrollX, _realScrollY);
             }
@@ -63,8 +64,6 @@ namespace ChompGame.MainGame
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
         }
-
-        private bool IsBossScene => _sceneDefinition.HasSprite(SpriteLoadFlags.Boss) && _sceneDefinition.ScrollStyle == ScrollStyle.NameTable;
 
         private void HandleAutoScroll()
         {

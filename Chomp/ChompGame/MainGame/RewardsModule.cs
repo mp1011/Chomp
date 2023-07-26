@@ -78,7 +78,7 @@ namespace ChompGame.MainGame
         {
             if (_currentScene.IsLevelBossScene || _currentScene.IsMidBossScene || statusBar.Health == StatusBar.FullHealth)
             {
-                var bomb = sceneSpriteControllers.BombControllers.TryAddNew(0);
+                var bomb = sceneSpriteControllers.BombControllers.TryAddNew();
                 if (bomb != null)
                 {
                     bomb.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X;
@@ -90,7 +90,7 @@ namespace ChompGame.MainGame
             }
             else
             {
-                var prize = sceneSpriteControllers.PrizeControllers.TryAddNew(0);
+                var prize = sceneSpriteControllers.PrizeControllers.TryAddNew();
                 if (prize != null)
                 {
                     prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 16;

@@ -21,6 +21,7 @@ namespace ChompGame.MainGame.SpriteModels
         Prize,
         PlayerHead,
         Plane,
+        Rocket,
         Max=31
     }
 

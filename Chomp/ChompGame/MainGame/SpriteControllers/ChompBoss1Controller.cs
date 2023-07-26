@@ -295,7 +295,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Break);
 
-                var bullet = _bullets.TryAddNew(3);
+                var bullet = _bullets.TryAddNew();
                 if (bullet != null)
                 {
                     bullet.EnsureInFrontOf(this);
@@ -316,7 +316,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void FireBullet(int xSpeed)
         {
-            var bullet = _bullets.TryAddNew(3);
+            var bullet = _bullets.TryAddNew();
             if (bullet == null)
                 return;
 

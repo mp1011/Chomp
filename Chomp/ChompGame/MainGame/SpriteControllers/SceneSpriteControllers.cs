@@ -71,27 +71,22 @@ namespace ChompGame.MainGame.SpriteControllers
             GameBit isCarryingBomb)
         {
             _scene = scene;
-            if (scene.HasSprite(SpriteLoadFlags.Player))
+            if (scene.HasSprite(SpriteType.Player))
             {
                 _gameModule.WorldScroller.Initialize(scene, _playerController.WorldSprite, levelMap, levelAttributeTable);
             
                 var playerSpriteDefinition = new SpriteDefinition(SpriteType.Player, _gameModule.GameSystem.Memory);
                 _playerController.WorldSprite.X = 16;
                 _playerController.WorldSprite.Y = 16;
-                _playerController.Palette = 1;
-
-                if(_scene.IsAutoScroll)
-                    _playerController.InitializeSprite(0);
-                else 
-                    _playerController.InitializeSprite(1);
-
+              
+                _playerController.InitializeSprite();
                 _playerController.Motion.XSpeed = 0;
                 _playerController.Motion.YSpeed = 0;
                 _playerController.SetInitialPosition(levelMap, lastExitType, this);
 
                 if(isCarryingBomb.Value)
                 {
-                    var bomb = _bombControllers.TryAddNew(0);
+                    var bomb = _bombControllers.TryAddNew();
                     if (bomb != null)
                     {
                         bomb.DestructionBitOffset = 255;
@@ -116,7 +111,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _bombControllers.Execute(c => c.Update());
                 _prizeControllers.Execute(c => c.Update());
             }
-            else if (_scene.HasSprite(SpriteLoadFlags.Player))
+            else if (_scene.HasSprite(SpriteType.Player))
             {
                 _playerController.Update();
                 _bombControllers.Execute(c => c.Update());
@@ -143,7 +138,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void OnWorldScrollerUpdate()
         {
-            if (_scene.HasSprite(SpriteLoadFlags.Player))
+            if (_scene.HasSprite(SpriteType.Player))
             {
                 _playerController.WorldSprite.UpdateSprite();
                 _bombControllers.Execute(c => c.WorldSprite.UpdateSprite());
@@ -232,7 +227,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if(_gameModule.WorldScroller.DistanceFromViewpane(spawnBounds) < 12)
                 {
-                    var sprite = pool.TryAddNew(_scene.GetPalette(sp.Type));
+                    var sprite = pool.TryAddNew();
                     if (sprite == null)
                     {
                         GameDebug.DebugLog($"Unable to spawn {sp.Type}", DebugLogFlags.SpriteSpawn);

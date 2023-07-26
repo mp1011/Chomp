@@ -20,6 +20,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
                 new SpriteDefinition(spriteType, memoryBuilder.Memory));
             _state = memoryBuilder.AddByte();
+            Palette = 3;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

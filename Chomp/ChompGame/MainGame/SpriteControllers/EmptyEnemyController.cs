@@ -11,6 +11,6 @@ namespace ChompGame.MainGame.SpriteControllers
         public bool CanAddNew() => false;
         public void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true) { }
         public void Execute(Action<ISpriteController> action, bool skipIfInactive = true) { }
-        public ISpriteController TryAddNew(byte palette) => null;
+        public ISpriteController TryAddNew() => null;
     }
 }

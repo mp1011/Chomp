@@ -60,7 +60,7 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();
-        public void InitializeSprite(byte palette)
+        public void InitializeSprite()
         {
             var sprite = GetSprite();
             WorldSprite.ConfigureSprite(sprite);
@@ -100,7 +100,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.Show();
                 if (Status == WorldSpriteStatus.Active)
                 {
-                    InitializeSprite(0);
+                    InitializeSprite();
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         WorldSprite WorldSprite { get; }
 
-        void InitializeSprite(byte palette);
+        void InitializeSprite();
 
         void Update();
 

@@ -25,6 +25,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _lizardBulletControllers = lizardBulletControllers;
             _player = player;
             _collisionDetector = chompGameModule.CollissionDetector;
+            Palette = 2;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
@@ -63,7 +64,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 int distanceToPlayer = Math.Abs(WorldSprite.X - _player.X);
                 if (distanceToPlayer < 64)
                 {
-                    var fireball = _lizardBulletControllers.TryAddNew(3);
+                    var fireball = _lizardBulletControllers.TryAddNew();
                     if (fireball != null)
                     {
                         _audioService.PlaySound(ChompAudioService.Sound.Fireball);

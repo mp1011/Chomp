@@ -194,6 +194,17 @@ namespace ChompGame.MainGame.SpriteModels
                 animationStyle: AnimationStyle.NoAnimation,
                 collidesWithBackground: true,
                 flipXWhenMovingLeft: false);
+
+            //rocket
+            new SpriteDefinition(memoryBuilder,
+              secondTileOffset: 0,
+              sizeX: 2,
+              sizeY: 1,
+              gravityStrength: GravityStrength.None,
+              movementSpeed: MovementSpeed.Fast,
+              animationStyle: AnimationStyle.NoAnimation,
+              collidesWithBackground: true,
+              flipXWhenMovingLeft: false);
         }
     }
 }

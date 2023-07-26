@@ -432,7 +432,7 @@ namespace ChompGame.MainGame
       
         private void SpawnExplosion(DynamicBlock block, int xMod, int yMod)
         {
-            var explosionController = _explosionControllers.TryAddNew(3);
+            var explosionController = _explosionControllers.TryAddNew();
             if (explosionController != null)
             {
                 explosionController.WorldSprite.X = (block.Location.TileX + xMod) * _gameModule.Specs.TileWidth;

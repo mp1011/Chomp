@@ -111,13 +111,12 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         }
 
-        public void InitializeSprite(byte palette)
+        public void InitializeSprite()
         {
             GameDebug.DebugLog($"Initialized sprite #{SpriteIndex} from {GetType().Name}", DebugLogFlags.SpriteSpawn);
 
             _collisionEnabled.Value = true;
             BeforeInitializeSprite();
-            _palette.Value = palette;
             Status = WorldSpriteStatus.Active;
             var sprite = GetSprite();
             sprite.FlipY = false;
@@ -158,7 +157,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 WorldSprite.Show();
                 if (Status == WorldSpriteStatus.Active)
                 {
-                    InitializeSprite(_palette.Value);
+                    InitializeSprite();
                 }
             }
         }

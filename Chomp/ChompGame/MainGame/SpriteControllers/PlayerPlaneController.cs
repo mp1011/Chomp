@@ -11,6 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(gameModule, memoryBuilder, SpriteModels.SpriteType.Plane, SpriteModels.SpriteTileIndex.Plane)
         {
             _headSpriteIndex = memoryBuilder.AddByte();
+            Palette = 0;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

@@ -10,7 +10,7 @@ namespace ChompGame.Data
     interface ISpriteControllerPool
     {
         void Execute(Action<ISpriteController> action, bool skipIfInactive = true);
-        ISpriteController TryAddNew(byte palette);
+        ISpriteController TryAddNew();
         bool CanAddNew();
     }
 
@@ -53,9 +53,9 @@ namespace ChompGame.Data
             return false;
         }
 
-        ISpriteController ISpriteControllerPool.TryAddNew(byte palette)
-            => TryAddNew(palette);
-        public T TryAddNew(byte palette)
+        ISpriteController ISpriteControllerPool.TryAddNew()
+            => TryAddNew();
+        public T TryAddNew()
         {
             byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
             if (freeSpriteIndex == 255)
@@ -68,7 +68,7 @@ namespace ChompGame.Data
 
                 _items[i].SpriteIndex = freeSpriteIndex;
                 _items[i].Status = WorldSpriteStatus.Active;
-                _items[i].InitializeSprite(palette);
+                _items[i].InitializeSprite();
 
                 return _items[i];
             }

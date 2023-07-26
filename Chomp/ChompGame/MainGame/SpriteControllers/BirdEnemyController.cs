@@ -21,6 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     memoryBuilder)
         {
             _player = player;
+            Palette = 1;
         }
 
         protected override void UpdateBehavior() 

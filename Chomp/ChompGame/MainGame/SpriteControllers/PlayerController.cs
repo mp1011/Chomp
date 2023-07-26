@@ -69,6 +69,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite);
             SpriteIndex = 0;
 
+            Palette = 1;
+
             GameDebug.Watch1 = new DebugWatch("P Tx", () => WorldSprite.X / 4);
             GameDebug.Watch2 = new DebugWatch("P Ty", () => WorldSprite.Y / 4);
         }

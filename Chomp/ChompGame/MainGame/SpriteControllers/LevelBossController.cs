@@ -320,7 +320,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void FireBullet()
         {
-            var bullet = _bulletControllers.TryAddNew(3);
+            var bullet = _bulletControllers.TryAddNew();
             if (bullet != null)
             {
                 bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
@@ -334,7 +334,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private ISpriteController CreateFirebomb()
         {
-            var bullet = _bulletControllers.TryAddNew(3);
+            var bullet = _bulletControllers.TryAddNew();
             if (bullet != null)
             {
                 bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
@@ -632,7 +632,7 @@ namespace ChompGame.MainGame.SpriteControllers
    
         private void CreateExplosion()
         {
-            var explosion = _bulletControllers.TryAddNew(3);
+            var explosion = _bulletControllers.TryAddNew();
             if (explosion != null)
             {
                 explosion.Explode();

@@ -16,6 +16,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _timer = memoryBuilder.AddByte();
             _motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.Explosion, WorldSprite);
+            Palette = 3;
         }
 
         protected override void UpdateActive()

@@ -38,6 +38,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             PrecisionMotion = motionController.Motion;
             _motionController = motionController;
+            Palette = 3;
         }
 
         protected override bool DestroyWhenOutOfBounds => true;

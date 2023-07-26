@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.Themes;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteModels;
 using System;
 
 namespace ChompGame.MainGame.SceneModels
@@ -29,6 +30,7 @@ namespace ChompGame.MainGame.SceneModels
     public enum EnemyGroup : byte
     {
         Lizard_Bird,
+        Rocket_Bird,
         MidBoss,
         LevelBoss
     }
@@ -40,15 +42,6 @@ namespace ChompGame.MainGame.SceneModels
         NameTable=1,
         Horizontal=2,
         Vertical=3
-    }
-
-    [Flags]
-    public enum SpriteLoadFlags : byte
-    {
-        Player = 1,
-        Lizard = 2,
-        Bird = 4,
-        Boss = 8
     }
 
     public enum LevelShape : byte
@@ -191,15 +184,16 @@ namespace ChompGame.MainGame.SceneModels
                     ScrollStyle.Vertical => FallCheck.None,
                     _ => FallCheck.WrapAround };
 
-        public bool HasSprite(SpriteLoadFlags flag)
+        public bool HasSprite(SpriteType spriteType)
         {
-            if (flag.HasFlag(SpriteLoadFlags.Player))
+            if (spriteType == SpriteType.Player)
                 return true;
 
             return _enemies.Value switch {
-                EnemyGroup.Lizard_Bird => flag.HasFlag(SpriteLoadFlags.Bird) || flag.HasFlag(SpriteLoadFlags.Lizard),
-                EnemyGroup.MidBoss => flag.HasFlag(SpriteLoadFlags.Boss),
-                EnemyGroup.LevelBoss => flag.HasFlag(SpriteLoadFlags.Boss),
+                EnemyGroup.Lizard_Bird => spriteType == SpriteType.Bird || spriteType == SpriteType.Lizard,
+                EnemyGroup.Rocket_Bird => spriteType == SpriteType.Bird || spriteType == SpriteType.Rocket,
+                EnemyGroup.MidBoss => spriteType == SpriteType.Chomp,
+                EnemyGroup.LevelBoss => spriteType == SpriteType.LevelBoss,
                 _ => false
             };
         }
@@ -506,15 +500,5 @@ namespace ChompGame.MainGame.SceneModels
                  ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 4,
                  _ => throw new NotImplementedException()
              };
-
-        //todo, need to change how we do palettes
-        public byte GetPalette(ScenePartType scenePartType)
-        {
-            return scenePartType switch {
-                ScenePartType.EnemyType1 => 2,
-                ScenePartType.EnemyType2 => 1,
-                _ => 0
-            };
-        }
     }
 }

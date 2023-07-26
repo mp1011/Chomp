@@ -503,7 +503,7 @@ namespace ChompGame.MainGame.SceneModels
                 prizeControllers = new SpriteControllerPool<PrizeController>(size: 2, _gameModule.SpritesModule,
                     () => new PrizeController(_gameModule, memoryBuilder));
             }
-            else if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+            else if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
                 playerController = new PlayerController(_gameModule, memoryBuilder);
                 playerController.FallCheck = _sceneDefinition.SpriteFallCheck;
@@ -540,7 +540,7 @@ namespace ChompGame.MainGame.SceneModels
             IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
 
            
-            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Lizard))
+            if(_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
                 extraA = new EnemyOrBulletSpriteControllerPool<BulletController>(
                    2,
@@ -554,7 +554,16 @@ namespace ChompGame.MainGame.SceneModels
                     () => new LizardEnemyController(extraA, SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, memoryBuilder));
             }
 
-            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Bird))
+            if (_sceneDefinition.HasSprite(SpriteType.Rocket))
+            {
+                enemyA = new EnemyOrBulletSpriteControllerPool<RocketEnemyController>(
+                    4,
+                    _gameModule.SpritesModule,
+                    () => new RocketEnemyController(SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, memoryBuilder));
+            }
+
+
+            if (_sceneDefinition.HasSprite(SpriteType.Bird))
             {
                 if (enemyA == null)
                 {
@@ -572,7 +581,7 @@ namespace ChompGame.MainGame.SceneModels
                 }
             }
 
-            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            if (_sceneDefinition.HasSprite(SpriteType.Chomp) || _sceneDefinition.HasSprite(SpriteType.LevelBoss))
             {
                 if (_gameModule.CurrentLevel == Level.Level1_11_Boss)
                 {
@@ -795,7 +804,7 @@ namespace ChompGame.MainGame.SceneModels
 
                 spriteDestination.Advance(2, extraRowSkip: 1);
             }
-            else if (_sceneDefinition.HasSprite(SpriteLoadFlags.Player))
+            else if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
                 //player sprite
                 masterPatternTable.CopyTilesTo(
@@ -808,7 +817,7 @@ namespace ChompGame.MainGame.SceneModels
                 //bomb sprite
                 masterPatternTable.CopyTilesTo(
                   destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(5, 1, 1, 1),
+                  source: new InMemoryByteRectangle(4, 1, 1, 1),
                   destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
                   _gameModule.Specs,
                   memory);
@@ -821,7 +830,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteDestination.Advance(2, extraRowSkip: 1);
             }
 
-            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Lizard))
+            if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
                 //lizard sprite
                 masterPatternTable.CopyTilesTo(
@@ -848,7 +857,20 @@ namespace ChompGame.MainGame.SceneModels
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
 
-            if (_sceneDefinition.HasSprite(SpriteLoadFlags.Bird))
+            if (_sceneDefinition.HasSprite(SpriteType.Rocket))
+            {
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(5, 1, 2, 1),
+                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
+                  _gameModule.Specs,
+                  memory);
+                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
+
+                spriteDestination.Advance(2, extraRowSkip: 1);
+            }
+
+            if (_sceneDefinition.HasSprite(SpriteType.Bird))
             {
                 //bird sprite
                 masterPatternTable.CopyTilesTo(
@@ -861,12 +883,11 @@ namespace ChompGame.MainGame.SceneModels
                 spriteDestination.Advance(4, extraRowSkip: 1);
             }
 
-            if(_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            if(_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
             {
                 AddBossSprites(masterPatternTable, vramPatternTable, memory, spriteDestination);
             }
-
-            if (!_sceneDefinition.HasSprite(SpriteLoadFlags.Boss))
+            else
             {
                 //platform
                 masterPatternTable.CopyTilesTo(
