@@ -8,7 +8,7 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
-        public const bool Enabled = false;
+        public const bool Enabled = true;
 
         private readonly ContentManager _contentManager;
 
@@ -19,7 +19,8 @@ namespace ChompGame.GameSystem
             Adventure,
             Adventure2,
             Threat,
-            Nemesis
+            Nemesis,
+            Flight
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -50,8 +51,10 @@ namespace ChompGame.GameSystem
         {
             if (level >= Level.Level1_1_Start && level <= Level.Level1_10_Stair)
                 CurrentSong = SongName.Adventure;
-            else if (level >= Level.Level1_12_Horizontal2)
+            else if (level >= Level.Level1_12_Horizontal2 && level < Level.Level2_1_Fly)
                 CurrentSong = SongName.Adventure2;
+            else if (level >= Level.Level2_1_Fly)
+                CurrentSong = SongName.Flight;
             else
                 CurrentSong = SongName.None;
         }

@@ -97,8 +97,21 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             _audioService.PlaySound(ChompAudioService.Sound.Break);
+
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 41;
+            _motionController.Motion.XSpeed = 0;
+            _motionController.Motion.YSpeed = 0;
+        }
+
+        public void Smoke()
+        {
+            if (_state.Value >= 40)
+                return;
+
+            Palette = 0;
+            WorldSprite.Status = WorldSpriteStatus.Dying;
+            _state.Value = 50;
             _motionController.Motion.XSpeed = 0;
             _motionController.Motion.YSpeed = 0;
         }

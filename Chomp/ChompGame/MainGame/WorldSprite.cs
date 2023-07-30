@@ -29,6 +29,7 @@ namespace ChompGame.MainGame
         protected SpriteDefinition _spriteDefinition;
         protected readonly SpritesModule _spritesModule;
         protected readonly WorldScroller _scroller;
+        private readonly TwoBit _palette;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
         private GameByteEnum<SpriteTileIndex> _tileIndex;
 
@@ -117,7 +118,8 @@ namespace ChompGame.MainGame
             SpriteDefinition spriteDefinition,
             SpritesModule spritesModule,
             WorldScroller scroller,
-            SpriteTileIndex index)
+            SpriteTileIndex index,
+            TwoBit palette)
         {
             _spriteTileTable = spriteTileTable;
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
@@ -135,6 +137,7 @@ namespace ChompGame.MainGame
             _spritesModule = spritesModule;
 
             _tileIndex.Value = index;
+            _palette = palette;
         }
 
         public Sprite GetSprite() => _spritesModule.GetSprite(SpriteIndex.Value);
@@ -152,6 +155,7 @@ namespace ChompGame.MainGame
             else
             {
                 sprite.Visible = Visible;
+                sprite.Palette = _palette.Value;
                 sprite.X = (byte)(X % _specs.NameTablePixelWidth);
                 sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
             }

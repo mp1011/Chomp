@@ -96,6 +96,11 @@ namespace ChompGame.MainGame.SceneModels
             return new SpriteScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
         }
 
+        public AutoscrollScenePart GeAutoScrollScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            return new AutoscrollScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+        }
+
         public BaseScenePart GetSpriteOrPlatformScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
         {
             var s = new SpriteScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);

@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SceneModels.SceneParts;
@@ -110,6 +111,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.Update();
                 _bombControllers.Execute(c => c.Update());
                 _prizeControllers.Execute(c => c.Update());
+
+                if(_gameModule.LevelTimer.Value.IsMod(8))
+                    CheckSpriteSpawn();
             }
             else if (_scene.HasSprite(SpriteType.Player))
             {
@@ -183,6 +187,12 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void CheckSpriteSpawn()
         {
+            if(_scene.IsAutoScroll)
+            {
+                CheckSpriteSpawn_AutoScroll();
+                return;
+            }
+
             GameDebug.DebugLog("Checking sprite spawn", DebugLogFlags.SpriteSpawn);
             byte nextDestructionBitOffset = 0;
 
@@ -277,6 +287,40 @@ namespace ChompGame.MainGame.SpriteControllers
                     GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it is not in bounds", DebugLogFlags.SpriteSpawn);
                 }
             }
+        }
+
+
+        private void CheckSpriteSpawn_AutoScroll()
+        {
+            DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
+            byte time = 0;
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {
+                AutoscrollScenePart sp = header.GeAutoScrollScenePart(i, _scene, _gameModule.Specs);
+                time += sp.Delay;
+
+                if (header.IsPartActivated(i))
+                    continue;
+
+                if (_gameModule.LevelTimerLong.Value == time)
+                {
+                    SpawnAutoscrollSprite(sp);
+                    header.MarkActive(i);
+                }
+            }
+        }
+
+        private void SpawnAutoscrollSprite(AutoscrollScenePart sp)
+        {
+            var pool = GetPool(sp.Type);
+            var sprite = pool.TryAddNew();
+            if (sprite == null)
+                return;
+
+            sprite.WorldSprite.X = Specs.ScreenWidth;
+            sprite.WorldSprite.Y = sp.Y * Specs.TileHeight;           
+            sprite.WorldSprite.UpdateSprite();
         }
 
         private ISpriteControllerPool GetPool(ScenePartType scenePartType) =>

@@ -547,7 +547,6 @@ namespace ChompGame.MainGame.SceneModels
                    _gameModule.SpritesModule,
                    () => new BulletController(_gameModule, memoryBuilder, SpriteType.LizardBullet));
 
-
                 enemyA = new EnemyOrBulletSpriteControllerPool<LizardEnemyController>(
                     2,
                     _gameModule.SpritesModule,
@@ -556,10 +555,17 @@ namespace ChompGame.MainGame.SceneModels
 
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
             {
+                var bulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                      8,
+                      _gameModule.SpritesModule,
+                      () => new BossBulletController(_gameModule, memoryBuilder));
+
+                extraA = bulletControllers;
+
                 enemyA = new EnemyOrBulletSpriteControllerPool<RocketEnemyController>(
                     4,
                     _gameModule.SpritesModule,
-                    () => new RocketEnemyController(SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, memoryBuilder));
+                    () => new RocketEnemyController(SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, bulletControllers, memoryBuilder));
             }
 
 
@@ -867,7 +873,25 @@ namespace ChompGame.MainGame.SceneModels
                   memory);
                 _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
 
-                spriteDestination.Advance(2, extraRowSkip: 1);
+                //bullet
+                masterPatternTable.CopyTilesTo(
+                 destination: vramPatternTable,
+                 source: new InMemoryByteRectangle(12, 2, 1, 1),
+                 destinationPoint: new Point(spriteDestination.X + 2, spriteDestination.Y),
+                 _gameModule.Specs,
+                 memory);
+
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(5, 0, 2, 1),
+                  destinationPoint: new Point(spriteDestination.X + 3, spriteDestination.Y),
+                  _gameModule.Specs,
+                  memory);
+                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 5);
+                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 6);
+
+                spriteDestination.X = 0;
+                spriteDestination.Y += 2;
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))

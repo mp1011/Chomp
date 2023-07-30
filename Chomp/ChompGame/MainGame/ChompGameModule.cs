@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.Helpers;
@@ -55,6 +56,8 @@ namespace ChompGame.MainGame
         private GameBit _carryingBomb;
 
         private GameByte _timer;
+        private GameByte _longTimer;
+
         private GameByte _deathTimer;
         private SceneSpriteControllers _sceneSpriteControllers;
         private WorldScroller _worldScroller;
@@ -72,6 +75,7 @@ namespace ChompGame.MainGame
         public SpritesModule SpritesModule => _spritesModule;
         public SpriteTileTable SpriteTileTable { get; private set; }
         public GameByte LevelTimer => _timer;
+        public GameByte LevelTimerLong => _longTimer;
         public WorldScroller WorldScroller => _worldScroller;
         public CollisionDetector CollissionDetector => _collisionDetector;
         public StatusBar StatusBar => _statusBar;
@@ -125,6 +129,7 @@ namespace ChompGame.MainGame
             memoryBuilder.Memory.AddLabel(AddressLabels.MainTimer, memoryBuilder.CurrentAddress);
 
             _timer = memoryBuilder.AddByte();
+            _longTimer = memoryBuilder.AddByte();
             _deathTimer = memoryBuilder.AddByte();
             _currentLevel = new GameByteEnum<Level>(memoryBuilder.AddByte());
 
@@ -199,6 +204,9 @@ namespace ChompGame.MainGame
             _musicModule.Update();
             _audioService.Update();
             _timer.Value++;
+
+            if (_timer.Value.IsMod(16))
+                _longTimer.Value++;
           
             switch (_gameState.Value)
             {
@@ -317,6 +325,7 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
+            _longTimer.Value = 0;
             _tileModule.NameTable.Reset();
             _tileModule.AttributeTable.Reset();
 

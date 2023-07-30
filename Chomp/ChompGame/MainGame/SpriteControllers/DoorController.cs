@@ -78,7 +78,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 memoryBuilder: memoryBuilder,
                 spritesModule: _spritesModule,
                 scroller: gameModule.WorldScroller,
-                index: SpriteTileIndex.Door);
+                index: SpriteTileIndex.Door,
+                palette: null);
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();

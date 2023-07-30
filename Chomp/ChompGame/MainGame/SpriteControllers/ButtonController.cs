@@ -56,7 +56,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 memoryBuilder: memoryBuilder,
                 spritesModule: gameModule.SpritesModule,
                 scroller: gameModule.WorldScroller,
-                index: SpriteTileIndex.Button);
+                index: SpriteTileIndex.Button,
+                palette: new TwoBit(memoryBuilder.Memory, 0,0));
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();

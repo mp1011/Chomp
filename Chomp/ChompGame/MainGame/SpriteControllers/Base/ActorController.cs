@@ -90,7 +90,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
              memoryBuilder: memoryBuilder,
              spritesModule: _spritesModule,
              scroller: gameModule.WorldScroller,
-             index: tileIndex);
+             index: tileIndex,
+             palette: _palette);
 
             _levelTimer = gameModule.LevelTimer;
 
