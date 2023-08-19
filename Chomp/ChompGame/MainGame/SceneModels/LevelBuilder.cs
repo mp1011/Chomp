@@ -500,7 +500,7 @@ namespace ChompGame.MainGame.SceneModels
                    _gameModule.SpritesModule,
                    () => new BombController(_gameModule, playerController, memoryBuilder));
 
-                prizeControllers = new SpriteControllerPool<PrizeController>(size: 2, _gameModule.SpritesModule,
+                prizeControllers = new SpriteControllerPool<PrizeController>(size: 10, _gameModule.SpritesModule,
                     () => new PrizeController(_gameModule, memoryBuilder));
             }
             else if (_sceneDefinition.HasSprite(SpriteType.Player))
@@ -782,6 +782,14 @@ namespace ChompGame.MainGame.SceneModels
                   destination: vramPatternTable,
                   source: new InMemoryByteRectangle(0, 0, 1, 1),
                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
+                  _gameModule.Specs,
+                  memory);
+
+                //coin
+                masterPatternTable.CopyTilesTo(
+                  destination: vramPatternTable,
+                  source: new InMemoryByteRectangle(15, 0, 1, 1),
+                  destinationPoint: new Point(7, spriteDestination.Y),
                   _gameModule.Specs,
                   memory);
 

@@ -6,7 +6,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class RocketEnemyController : EnemyController
+    class RocketEnemyController : EnemyController, IAutoScrollSpriteController
     {
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bulletControllers;
         private const int Speed = 40;
@@ -16,7 +16,19 @@ namespace ChompGame.MainGame.SpriteControllers
         private WorldSprite _player;
 
         private GameBit _thrust;
-        private LowNibble _thrustCount;
+        private GameBit _variation;
+        private MaskedByte _thrustCount;
+
+        public byte Variation
+        {
+            get => (byte)(_variation.Value ? 1 : 0);
+            set => _variation.Value = value == 1;
+        }
+
+        public void AfterSpawn(ISpriteControllerPool pool)
+        {
+
+        }
 
         public RocketEnemyController(SpriteTileIndex index, ChompGameModule gameModule, WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers,
@@ -27,14 +39,18 @@ namespace ChompGame.MainGame.SpriteControllers
             _bulletControllers = bulletControllers;
 
             _thrust = new GameBit(_state.Address, Bit.Bit4, memoryBuilder.Memory);
-            _thrustCount = new LowNibble(_state.Address, memoryBuilder.Memory);
+            _thrustCount = new MaskedByte(_state.Address, Bit.Right3, memoryBuilder.Memory);
+            _variation = new GameBit(_state.Address, Bit.Bit3, memoryBuilder.Memory);
             Palette = 0;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
+            bool variation = _variation.Value;
             _state.Value = 0;
             Palette = 0;
+
+            _variation.Value = variation;
         }
 
         protected override void UpdateBehavior()
@@ -52,8 +68,17 @@ namespace ChompGame.MainGame.SpriteControllers
                     GetSprite().FlipX = false;
                 }
 
-                _motion.TargetXSpeed = 0;
-                _motion.TargetYSpeed = 0;
+                if (_variation.Value)
+                {
+                    _motion.TargetXSpeed = 0;
+                    _motion.TargetYSpeed = 0;
+                }
+                else
+                {
+                    _motion.TargetXSpeed = -Speed;
+                    _motion.TargetYSpeed = 0;
+                }
+
                 _motion.XAcceleration = Brake;
                 _motion.YAcceleration = Brake;
 
@@ -66,11 +91,15 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_thrustCount.Value <= 3)
             {
-                if (_motion.XSpeed == 0)
+                if (_variation.Value && _motion.XSpeed == 0)
                 {
                     _thrustCount.Value++;
                     if(_thrustCount.Value < 3)
                         _thrust.Value = false;
+                }
+                else if(!_variation.Value && WorldSprite.X < 16)
+                {
+                    _thrustCount.Value = 4;
                 }
                 else if (_levelTimer.IsMod(16))
                 {
@@ -82,10 +111,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 Palette = 3;
                 _motion.TargetXSpeed = 0;
                 _motion.TargetYSpeed = 0;
+                _motion.XAcceleration = Brake * 2;
                 if (_levelTimer.IsMod(16))
                     _thrustCount.Value++;
 
-                if(_thrustCount.Value == 8)
+                if(_thrustCount.Value == 7)
                     Explode();
             }
 
@@ -97,10 +127,19 @@ namespace ChompGame.MainGame.SpriteControllers
             Destroy();
             _audioService.PlaySound(ChompAudioService.Sound.Lightning);
 
-            ShootBullet(-BulletSpeed, -BulletSpeed);
-            ShootBullet(BulletSpeed, -BulletSpeed);
-            ShootBullet(-BulletSpeed, BulletSpeed);
-            ShootBullet(BulletSpeed, BulletSpeed);
+            if (_variation.Value)
+            {
+                ShootBullet(-BulletSpeed, -BulletSpeed);
+                ShootBullet(BulletSpeed, -BulletSpeed);
+                ShootBullet(-BulletSpeed, BulletSpeed);
+                ShootBullet(BulletSpeed, BulletSpeed);
+            }
+            else
+            {
+                ShootBullet(BulletSpeed, -BulletSpeed);
+                ShootBullet(BulletSpeed, 0);
+                ShootBullet(BulletSpeed, BulletSpeed);
+            }
         }
 
         private void ShootBullet(int x, int y)

@@ -314,13 +314,20 @@ namespace ChompGame.MainGame.SpriteControllers
         private void SpawnAutoscrollSprite(AutoscrollScenePart sp)
         {
             var pool = GetPool(sp.Type);
+
             var sprite = pool.TryAddNew();
             if (sprite == null)
                 return;
 
             sprite.WorldSprite.X = Specs.ScreenWidth;
-            sprite.WorldSprite.Y = sp.Y * Specs.TileHeight;           
+            sprite.WorldSprite.Y = sp.Y * Specs.TileHeight;
             sprite.WorldSprite.UpdateSprite();
+
+            if (sprite is IAutoScrollSpriteController a)
+            {
+                a.Variation = sp.Variation;
+                a.AfterSpawn(pool);
+            }
         }
 
         private ISpriteControllerPool GetPool(ScenePartType scenePartType) =>
@@ -336,6 +343,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.Platform_UpDown => _platformControllers,
                 ScenePartType.Platform_Vanishing=> _platformControllers,
                 ScenePartType.Button => _buttonControllers,
+                ScenePartType.Coin => _prizeControllers,
                 _ => _bombControllers
             };
         

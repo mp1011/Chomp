@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.SceneParts;
+using ChompGame.MainGame.SpriteControllers;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -493,15 +494,25 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level2_1_Fly, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, scene),
-                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 8, scene),
-                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 8, delay: 16, scene),
-                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 20, delay: 4, scene),
-                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 16, delay: 24, scene)
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 2, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 6, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 6, variation: PrizeController.Coin5Diag, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 4, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 0, variation: PrizeController.Coin5Diag2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 15, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 4, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 0, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 10, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 6, variation: PrizeController.Coin5Diag, scene),               
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 6, delay: 4, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 14, delay: 4, variation: 1, scene)
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
-
-
         }
     }
 }

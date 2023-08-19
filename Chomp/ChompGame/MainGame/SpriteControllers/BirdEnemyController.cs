@@ -5,10 +5,20 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class BirdEnemyController : EnemyController
+    class BirdEnemyController : EnemyController, IAutoScrollSpriteController
     {
         private const int _hoverSpeed = 20;
         private readonly WorldSprite _player;
+
+        private GameByte _variation;
+        public byte Variation
+        {
+            get => _variation.Value;
+            set => _variation.Value = value;
+        }
+
+        protected override bool DestroyWhenFarOutOfBounds => _variation.Value > 0;
+        protected override bool DestroyWhenOutOfBounds => _variation.Value > 0;
 
         public BirdEnemyController(
             WorldSprite player,
@@ -21,6 +31,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     memoryBuilder)
         {
             _player = player;
+            _variation = memoryBuilder.AddByte();
             Palette = 1;
         }
 
@@ -28,7 +39,15 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _motionController.Update();
 
-            if((_levelTimer % 32) == 0)
+            if (_variation.Value == 0)
+                UpdateBehavior_Normal();
+            else
+                UpdateBehavior_AutoScroll();
+        }
+
+        private void UpdateBehavior_Normal()
+        {
+            if ((_levelTimer % 32) == 0)
             {
                 _state.Value++;
 
@@ -43,7 +62,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     WorldSprite.FlipX = _player.X < WorldSprite.X;
                 }
-                else if(_state >= 8 && _state < 14)
+                else if (_state >= 8 && _state < 14)
                 {
                     if (WorldSprite.Y < _player.Y)
                         _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
@@ -64,6 +83,19 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        private void UpdateBehavior_AutoScroll()
+        {
+            if ((_levelTimer % 32) == 0)
+            {
+                _state.Value++;
+
+                if (_state < 7)
+                {
+                    _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
+                }
+            }
+        }
+
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _motion.TargetXSpeed = 0;
@@ -76,6 +108,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _hitPoints.Value = 0;
             _state.Value = 0;
         }
+
+        public void AfterSpawn(ISpriteControllerPool pool) { }
     }
 
 }

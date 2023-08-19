@@ -46,6 +46,9 @@ namespace ChompGame.MainGame.SceneModels
             if (ActiveExit.ExitType != ExitType.None)
                 return;
 
+            if (_gameModule.CurrentScene.IsAutoScroll)
+                return;
+
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             int rightEdge = (sceneDefinition.LevelTileWidth - 1) * _gameModule.Specs.TileWidth;
