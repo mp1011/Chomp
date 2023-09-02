@@ -7,7 +7,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class BulletController : ActorController, ICollidesWithPlayer, IEnemyOrBulletSpriteController
+    class BulletController : ActorController, ICollidesWithPlayer, ICollidableSpriteController
     {
         private GameByte _state;
         private IMotionController _motionController;
@@ -73,15 +73,17 @@ namespace ChompGame.MainGame.SpriteControllers
 
 
 
-        public void HandlePlayerCollision(WorldSprite player)
+        public CollisionResult HandlePlayerCollision(WorldSprite player)
         {
             if (_state.Value >= 40)
-                return;
+                return CollisionResult.HarmPlayer;
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 41;
             _motionController.Motion.XSpeed = 0;
             _motionController.Motion.YSpeed = 0;
+
+            return CollisionResult.HarmPlayer;
         }
 
         public bool HandleBombCollision(WorldSprite player) => false;

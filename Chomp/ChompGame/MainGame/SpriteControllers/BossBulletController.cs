@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
-    class BossBulletController : ActorController, ICollidesWithPlayer, IEnemyOrBulletSpriteController
+    class BossBulletController : ActorController, ICollidesWithPlayer, ICollidableSpriteController
     {
         private GameByte _state;
         private IMotionController _motionController; 
@@ -116,9 +116,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _motionController.Motion.YSpeed = 0;
         }
 
-        public void HandlePlayerCollision(WorldSprite player)
+        public CollisionResult HandlePlayerCollision(WorldSprite player)
         {
             Explode();
+            return CollisionResult.HarmPlayer;
         }
 
         public bool HandleBombCollision(WorldSprite player) => false;

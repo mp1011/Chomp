@@ -112,5 +112,15 @@
         public static byte LightTan => Brown(7).Value;
         public static byte LightYellow => Red(7).Value;
 
+        public static byte Brown1 => Brown(0).Value;
+        public static byte Brown2 => Brown(1).Value;
+        public static byte Brown3 => Brown(2).Value;
+        public static byte Brown4 => Brown(3).Value;
+        public static byte Brown5 => Brown(4).Value;
+        public static byte Brown6 => Brown(5).Value;
+        public static byte Brown7 => Brown(6).Value;
+        public static byte Brown8 => Brown(7).Value;
+
+
     }
 }

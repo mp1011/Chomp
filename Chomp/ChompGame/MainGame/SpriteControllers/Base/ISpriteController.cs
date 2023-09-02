@@ -22,7 +22,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         FallCheck FallCheck { get; set; }
     }
 
-    interface IEnemyOrBulletSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb
+    interface ICollidableSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb
     {
         bool CollisionEnabled { get; }
     }

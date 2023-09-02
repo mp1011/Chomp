@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
+using System;
 
 namespace ChompGame.MainGame
 {
@@ -61,6 +62,8 @@ namespace ChompGame.MainGame
 
             if (_sceneDefinition.IsAutoScroll)
                 HandleAutoScroll();
+            else if (_sceneDefinition.Theme == ThemeType.Ocean)
+                HandleOcean();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
         }
@@ -94,6 +97,38 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
             }
+        }
+
+        private void HandleOcean()
+        {
+            int waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true);
+
+            if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight)
+            {
+                _tileModule.Scroll.X =0;
+            }
+            else if(_coreGraphicsModule.ScreenPoint.Y < waterBegin)
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin && _coreGraphicsModule.ScreenPoint.Y < waterBegin + 16)
+            {                
+                int y = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
+
+                var b = y % 8;
+                if (b > 4)
+                    b = 8 - b;
+
+                var t = (_gameModule.LevelTimer.Value % 255) / 255.0;
+                var t1 = _gameModule.LevelTimer.Value / 64.0;
+
+                var a = t1 + (b * (y+1) * Math.Sin(2 * Math.PI * t) / 2.0);
+                _tileModule.Scroll.X = (byte)(a);
+            }
+            else
+            {
+                _tileModule.Scroll.X = _realScrollX.Value;
+            }            
         }
 
         public void Update()

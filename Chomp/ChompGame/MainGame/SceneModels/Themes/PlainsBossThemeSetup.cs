@@ -23,5 +23,18 @@ namespace ChompGame.MainGame.SceneModels.Themes
                     memory);          
         }
 
+        public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
+        {
+            int floorPos = attributeTable.Height - 1;
+            attributeTable.ForEach((x, y, b) =>
+            {
+                if (y == floorPos)
+                    attributeTable[x, y] = 1;
+                else
+                    attributeTable[x, y] = 0;
+            });
+
+            return attributeTable;
+        }
     }
 }

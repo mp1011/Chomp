@@ -32,6 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _bombPickup;
         private GameBit _openingDoor;
         private GameBit _onPlatform;
+        private GameBit _onPlane;
 
         private MaskedByte _afterHitInvincibility;
 
@@ -54,6 +55,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _inputModule = gameModule.InputModule;
             _collisionDetector = gameModule.CollissionDetector;
 
+            _onPlane = new GameBit(state.Address, Bit.Bit4, memoryBuilder.Memory);
             _onPlatform = new GameBit(state.Address, Bit.Bit5, memoryBuilder.Memory);
             _openingDoor = new GameBit(state.Address, Bit.Bit6, memoryBuilder.Memory);
             _bombPickup = new GameBit(state.Address, Bit.Bit7, memoryBuilder.Memory);
@@ -145,6 +147,14 @@ namespace ChompGame.MainGame.SpriteControllers
             Visible = false;
         }
 
+        public void OnPlaneEnter()
+        {
+            _onPlane.Value = true;
+            var sprite = WorldSprite.GetSprite();
+            sprite.SizeY = 1;
+            sprite.FlipX = false;
+        }
+
         protected override void HandleFall()
         {
             if (_statusBar.Health == 0)
@@ -170,6 +180,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_openingDoor.Value)
             {
                 _inputModule.OnLogicUpdate();
+                return;
+            }
+
+            if(_onPlane.Value)
+            {
                 return;
             }
 
@@ -277,7 +292,7 @@ namespace ChompGame.MainGame.SpriteControllers
             bombController.DoThrow();
         }
 
-        public void CheckEnemyOrBulletCollisions(IEnemyOrBulletSpriteControllerPool sprites)
+        public void CheckEnemyOrBulletCollisions(ICollidableSpriteControllerPool sprites)
         {
             if (sprites == null)
                 return;
@@ -289,16 +304,17 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 if(p.CollisionEnabled && p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
                 {
-                    p.HandlePlayerCollision(WorldSprite);
+                    if (p.HandlePlayerCollision(WorldSprite) == CollisionResult.HarmPlayer)
+                    {
+                        if (WorldSprite.FlipX)
+                            Motion.XSpeed = _recoilSpeed;
+                        else
+                            Motion.XSpeed = -_recoilSpeed;
 
-                    if(WorldSprite.FlipX)
-                        Motion.XSpeed = _recoilSpeed;
-                    else
-                        Motion.XSpeed = -_recoilSpeed;
+                        Motion.YSpeed = -_recoilSpeed;
 
-                    Motion.YSpeed = -_recoilSpeed;
-
-                    HarmPlayer(1);
+                        HarmPlayer(1);
+                    }
                 }
             });
         }

@@ -89,6 +89,9 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _state.Value++;
 
+                if (_variation.Value == 2 && WorldSprite.X < 48)
+                    return;
+
                 if (_state < 7)
                 {
                     _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);

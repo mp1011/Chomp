@@ -4,7 +4,7 @@ using System;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
-    class OceanThemeSetup : ThemeSetup
+    class OceanAutoscrollThemeSetup : ThemeSetup
     {
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
@@ -14,30 +14,16 @@ namespace ChompGame.MainGame.SceneModels.Themes
             string waterBlock = @"89A089A0008989A0
                                   BBBBBBBBBBBBBBBB
                                   BCBCBCBCBCBCBCBC
-                                  0000000000000000
-                                  0000000000000000
-                                  0000000000000000
-                                  0000000000000000";
+                                  CCCCCCCCCCCCCCCC
+                                  DDDDDDDDDDDDDDDD
+                                  CDCDCDCDCDCDCDCD
+                                  DDCCDDCCDDCCDDCC";
 
-            nameTable.SetFromString(0, bgPos+1, waterBlock, shouldReplace: b => b == 0);
-            nameTable.SetFromString(16, bgPos + 1, waterBlock, shouldReplace: b => b == 0);
-            nameTable.SetFromString(48, bgPos + 1, waterBlock, shouldReplace: b => b == 0);
-        }
+            nameTable.SetFromString(0, bgPos+1, waterBlock);
+            nameTable.SetFromString(16, bgPos + 1, waterBlock);
+            nameTable.SetFromString(32, bgPos + 1, waterBlock);
+            nameTable.SetFromString(48, bgPos + 1, waterBlock);
 
-        public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
-        {
-            attributeTable.ForEach((x, y, b) =>
-            {
-                bool isSolid = nameTable[x * 2, y * 2] != 0
-                    || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
-
-                if (isSolid)
-                    attributeTable[x, y] = 1;
-                else
-                    attributeTable[x, y] = 0;
-
-            });
-            return attributeTable;
         }
 
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)

@@ -14,9 +14,9 @@ namespace ChompGame.Data
         bool CanAddNew();
     }
 
-    interface IEnemyOrBulletSpriteControllerPool : ISpriteControllerPool
+    interface ICollidableSpriteControllerPool : ISpriteControllerPool
     {
-        void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true);       
+        void Execute(Action<ICollidableSpriteController> action, bool skipIfInactive = true);       
     }
 
     class SpriteControllerPool<T> : ISpriteControllerPool
@@ -99,15 +99,15 @@ namespace ChompGame.Data
 
     }
 
-    class EnemyOrBulletSpriteControllerPool<T> : SpriteControllerPool<T>, IEnemyOrBulletSpriteControllerPool
-        where T : class, IEnemyOrBulletSpriteController
+    class EnemyOrBulletSpriteControllerPool<T> : SpriteControllerPool<T>, ICollidableSpriteControllerPool
+        where T : class, ICollidableSpriteController
     {
         public EnemyOrBulletSpriteControllerPool(int size, SpritesModule spritesModule, Func<T> generateController) 
             : base(size, spritesModule, generateController)
         {
         }
 
-        public void Execute(Action<IEnemyOrBulletSpriteController> action, bool skipIfInactive = true)
+        public void Execute(Action<ICollidableSpriteController> action, bool skipIfInactive = true)
         {
             foreach (var item in _items)
             {

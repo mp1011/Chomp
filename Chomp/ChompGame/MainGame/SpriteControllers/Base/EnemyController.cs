@@ -6,7 +6,7 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
 {
-    abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, IEnemyOrBulletSpriteController
+    abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, ICollidableSpriteController
     {
         protected GameByte _state;
         protected readonly ChompAudioService _audioService;
@@ -76,8 +76,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         protected abstract void UpdateBehavior();
 
-        public void HandlePlayerCollision(WorldSprite player)
+        public CollisionResult HandlePlayerCollision(WorldSprite player)
         {
+            return CollisionResult.HarmPlayer;
         }
 
         protected override void HandleFall()

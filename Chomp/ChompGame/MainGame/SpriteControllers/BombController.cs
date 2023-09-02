@@ -144,7 +144,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        public void CheckEnemyCollisions(IEnemyOrBulletSpriteControllerPool sprites)
+        public void CheckEnemyCollisions(ICollidableSpriteControllerPool sprites)
         {
             if (sprites == null)
                 return;

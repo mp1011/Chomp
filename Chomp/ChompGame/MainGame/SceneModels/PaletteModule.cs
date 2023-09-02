@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SceneModels
         PlainsCloseMountains,
         PlainsEveningFarMountains,
         PlainsEveningCloseMountains,
+        OceanSky,
         Bomb,
         BombLight,
         Player,
@@ -28,7 +29,7 @@ namespace ChompGame.MainGame.SceneModels
         DynamicBlocks,
         Water,
         Sand,
-        Max= Water
+        Max= Sand
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -161,6 +162,13 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.BlueGray2,
              ColorIndex.BlueGray1);
 
+
+            DefinePalette(PaletteKey.OceanSky,
+             ColorIndex.LightBlue,
+             ColorIndex.Green1,
+             ColorIndex.BlueGray3,
+             ColorIndex.BlueGray4);
+            
             DefinePalette(PaletteKey.Bomb,
                 ColorIndex.Black,
                 ColorIndex.Gray1,
@@ -223,16 +231,16 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.Gray1);
 
             DefinePalette(PaletteKey.Water,
-               ColorIndex.Blue1,
                ColorIndex.Blue2,
                ColorIndex.Blue3,
-               ColorIndex.Blue4);
+               ColorIndex.Blue4,
+               ColorIndex.Blue1);
 
             DefinePalette(PaletteKey.Sand,
-                ColorIndex.Blue4,
-                ColorIndex.LightTan,
-                ColorIndex.LightYellow,
-                ColorIndex.White);
+                ColorIndex.Red1,
+                ColorIndex.Brown5,
+                ColorIndex.Brown6,
+                ColorIndex.Brown7);
 
 
         }

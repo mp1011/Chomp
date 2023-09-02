@@ -11,11 +11,11 @@ namespace ChompGame.MainGame.SpriteControllers
     class LizardEnemyController : EnemyController
     {
         private readonly CollisionDetector _collisionDetector;
-        private readonly IEnemyOrBulletSpriteControllerPool _lizardBulletControllers;
+        private readonly ICollidableSpriteControllerPool _lizardBulletControllers;
         private readonly WorldSprite _player;
 
         public LizardEnemyController(
-            IEnemyOrBulletSpriteControllerPool lizardBulletControllers,
+            ICollidableSpriteControllerPool lizardBulletControllers,
             SpriteTileIndex tileIndex,
             ChompGameModule chompGameModule,
             WorldSprite player,

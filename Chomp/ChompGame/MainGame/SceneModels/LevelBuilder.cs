@@ -51,47 +51,7 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
-            if (_sceneDefinition.IsLevelBossScene)
-                return BuildAttributeTable_LevelBoss(attributeTable);
-
-            return BuildAttributeTable_Default(attributeTable, nameTable);
-        }
-
-        private NBitPlane BuildAttributeTable_Default(NBitPlane attributeTable, NBitPlane nameTable)
-        {
-            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) / _gameModule.Specs.AttributeTableBlockSize;
-            if(_sceneDefinition.IsAutoScroll)
-            {
-                foreGroundAttributePosition += 2;
-            }
-
-            attributeTable.ForEach((x, y, b) =>
-            {
-                bool isSolid = nameTable[x * 2, y * 2] != 0
-                    || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
-
-                if (isSolid || y >= foreGroundAttributePosition)
-                    attributeTable[x, y] = 1;
-                else
-                    attributeTable[x, y] = 0;
-
-            });
-
-            return attributeTable;
-        }
-
-        private NBitPlane BuildAttributeTable_LevelBoss(NBitPlane attributeTable)
-        {
-            int floorPos = attributeTable.Height - 1;
-            attributeTable.ForEach((x, y, b) =>
-            {
-                if(y == floorPos)
-                    attributeTable[x, y] = 1;
-                else 
-                    attributeTable[x, y] = 0;
-            });
-
-            return attributeTable;
+            return _sceneDefinition.ThemeSetup.BuildAttributeTable(attributeTable, nameTable);
         }
 
         public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, int seed)
@@ -537,7 +497,7 @@ namespace ChompGame.MainGame.SceneModels
                  _gameModule.SpritesModule,
                  () => new ExplosionController(_gameModule, memoryBuilder));
 
-            IEnemyOrBulletSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
+            ICollidableSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
 
            
             if(_sceneDefinition.HasSprite(SpriteType.Lizard))
@@ -551,6 +511,15 @@ namespace ChompGame.MainGame.SceneModels
                     2,
                     _gameModule.SpritesModule,
                     () => new LizardEnemyController(extraA, SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, memoryBuilder));
+            }
+
+            if(_sceneDefinition.HasSprite(SpriteType.Plane))
+            {
+                enemyA = new EnemyOrBulletSpriteControllerPool<PlaneTakeoffController>(
+                   1,
+                   _gameModule.SpritesModule,
+                   () => new PlaneTakeoffController(_gameModule, memoryBuilder, playerController));
+
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
@@ -840,8 +809,20 @@ namespace ChompGame.MainGame.SceneModels
                 //prize
                 _spriteTileTable.SetTile(SpriteTileIndex.Prize, 8);
 
-
                 spriteDestination.Advance(2, extraRowSkip: 1);
+
+                if(_sceneDefinition.HasSprite(SpriteType.Plane))
+                {
+                    //plane
+                    masterPatternTable.CopyTilesTo(
+                      destination: vramPatternTable,
+                      source: new InMemoryByteRectangle(13, 2, 2, 1),
+                      destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 1),
+                      _gameModule.Specs,
+                      memory);
+
+                    _spriteTileTable.SetTile(SpriteTileIndex.Plane, 11);
+                }
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))

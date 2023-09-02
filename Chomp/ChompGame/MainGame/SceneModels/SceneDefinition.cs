@@ -32,7 +32,8 @@ namespace ChompGame.MainGame.SceneModels
         Lizard_Bird,
         Rocket_Bird,
         MidBoss,
-        LevelBoss
+        LevelBoss,
+        PlaneTakeoff
     }
 
 
@@ -123,7 +124,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public ScrollStyle ScrollStyle => _scrollStyle.Value;
 
-        public bool IsAutoScroll => _theme.Value == ThemeType.Ocean;
+        public bool IsAutoScroll => _theme.Value == ThemeType.OceanAutoscroll;
 
         public int LeftTiles => _scrollStyle.Value switch {
             ScrollStyle.Vertical => _begin.Value * 2,
@@ -192,6 +193,7 @@ namespace ChompGame.MainGame.SceneModels
             return _enemies.Value switch {
                 EnemyGroup.Lizard_Bird => spriteType == SpriteType.Bird || spriteType == SpriteType.Lizard,
                 EnemyGroup.Rocket_Bird => spriteType == SpriteType.Bird || spriteType == SpriteType.Rocket,
+                EnemyGroup.PlaneTakeoff => spriteType == SpriteType.Plane,
                 EnemyGroup.MidBoss => spriteType == SpriteType.Chomp,
                 EnemyGroup.LevelBoss => spriteType == SpriteType.LevelBoss,
                 _ => false

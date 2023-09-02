@@ -1,7 +1,9 @@
-﻿namespace ChompGame.MainGame.SpriteControllers.Base
+﻿using ChompGame.Data;
+
+namespace ChompGame.MainGame.SpriteControllers.Base
 {
     interface ICollidesWithPlayer
     {
-        void HandlePlayerCollision(WorldSprite player);
+        CollisionResult HandlePlayerCollision(WorldSprite player);
     }
 }
