@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -8,7 +9,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 {
     abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, ICollidableSpriteController
     {
-        protected GameByte _state;
+        protected LowNibble _stateTimer;
         protected readonly ChompAudioService _audioService;
         private ScenePartsDestroyed _scenePartsDestroyed;
         private StatusBar _statusBar;
@@ -26,7 +27,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _audioService = gameModule.AudioService;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _statusBar = gameModule.StatusBar;
-            _state = memoryBuilder.AddByte();
+            _stateTimer = new LowNibble(memoryBuilder);
+            memoryBuilder.AddByte();
 
             //todo, unused bits
             _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right3, memoryBuilder.Memory);
@@ -36,45 +38,26 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _motion = _motionController.Motion;
         }
 
-        public enum State
+        protected override void UpdateDying()
         {
-            Dying=40,
-            Destroyed=63
-        }
+            if (_levelTimer.Value.IsMod(4))
+                _stateTimer.Value--;
 
-        protected override void UpdateActive()
-        {      
-            if (_state.Value >= (int)State.Dying)
+            if (_stateTimer.Value == 0)
             {
-                
-                if (_state.Value == (int)State.Destroyed)
+                if (_hitPoints.Value == 0)
                 {
-                    if (_hitPoints.Value == 0)
-                    {
-                        if (HandleDestroy())
-                        {
-                            Destroy();
-                            _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
-                        }
-                    }
-                    else
-                    {
-                        _state.Value = 0;
-                        GetSprite().Palette = _palette.Value;
-                    }
+                    _statusBar.AddToScore(100); //todo - score per enemy type                    
+                    WorldSprite.Destroy();
                 }
                 else
                 {
-                    _state.Value++;
+                    WorldSprite.Status = WorldSpriteStatus.Active;
                 }
             }
-            else
-                UpdateBehavior();
         }
 
         protected virtual bool HandleDestroy() => true;
-
-        protected abstract void UpdateBehavior();
 
         public CollisionResult HandlePlayerCollision(WorldSprite player)
         {
@@ -88,27 +71,15 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public bool HandleBombCollision(WorldSprite player)
         {
-            if (_state.Value >= (int)State.Dying)
+            if (WorldSprite.Status != WorldSpriteStatus.Active || _hitPoints.Value == 0)
                 return false;
 
-            _state.Value = (int)State.Dying;
-
-            if (WorldSprite.Status == WorldSpriteStatus.Active)
-            {
-                GetSprite().Palette = 3;
-            }
-
-            if (_hitPoints.Value == 0)
-            {
-                _statusBar.AddToScore(100); //todo - score per enemy type
-                Motion.Stop();
-                _audioService.PlaySound(ChompAudioService.Sound.Break);
-            }
-            else
-            {
-                _hitPoints.Value--;
-                _audioService.PlaySound(ChompAudioService.Sound.Break);
-            }
+            _hitPoints.Value--;
+            Motion.Stop();
+            GetSprite().Palette = 3;
+            WorldSprite.Status = WorldSpriteStatus.Dying;
+            _stateTimer.Value = 8;
+            _audioService.PlaySound(ChompAudioService.Sound.Break);
 
             return true;
         }

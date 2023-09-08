@@ -32,6 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers
             get => _variation.Value;
             set => _variation.Value = value;
         }
+        protected override bool DestroyWhenOutOfBounds => true;
 
         public void AfterSpawn(ISpriteControllerPool pool)
         {

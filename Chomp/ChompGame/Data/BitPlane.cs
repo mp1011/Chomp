@@ -56,7 +56,7 @@ namespace ChompGame.Data
             set => this[(y * Width) + x] = value;
         }
 
-        public bool ValueFromChar(char s)
+        public bool ValueFromChar(char s, int offset)
         {
             return s == '1';
         }

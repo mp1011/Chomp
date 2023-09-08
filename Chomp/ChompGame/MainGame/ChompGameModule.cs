@@ -36,7 +36,7 @@ namespace ChompGame.MainGame
             GameOver
         }
 
-       
+
 
         private readonly CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
@@ -46,10 +46,10 @@ namespace ChompGame.MainGame
         private readonly MusicModule _musicModule;
         private readonly StatusBar _statusBar;
         private readonly DynamicBlockController _dynamicBlockController;
-        
+
         private NBitPlane _masterPatternTable;
         private LevelBuilder _levelBuilder;
-       
+
         private GameByteEnum<GameState> _gameState;
         private GameByteEnum<Level> _currentLevel;
         private NibbleEnum<ExitType> _lastExitType;
@@ -96,6 +96,8 @@ namespace ChompGame.MainGame
 
         public SceneDefinition CurrentScene => _currentScene;
 
+        public RandomModule RandomModule { get; }
+
         public Level CurrentLevel
         {
             get => _currentLevel.Value;
@@ -108,6 +110,7 @@ namespace ChompGame.MainGame
            : base(mainSystem)
         {
             _audioService = mainSystem.GetModule<ChompAudioService>();
+            RandomModule = mainSystem.GetModule<RandomModule>();
             _inputModule = inputModule;
             _spritesModule = spritesModule;
             _tileModule = tileModule;
@@ -259,8 +262,6 @@ namespace ChompGame.MainGame
                    Specs,
                    GameSystem.Memory);
 
-                TileModule.TileStartX = 0;
-                TileModule.TileStartY = 0;
                 TileModule.Scroll.X = 0;
                 TileModule.Scroll.Y = 0;
 
@@ -307,7 +308,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level2_1_Intro;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -391,8 +392,6 @@ namespace ChompGame.MainGame
             ExitsModule.BuildMemory(memoryBuilder, _currentScene);
 
             GameSystem.CoreGraphicsModule.FadeAmount = 16;
-
-            _spritesModule.SpriteStartIndex = (byte)(_currentScene.IsLevelBossScene ? 31 : 39);
 
             _musicModule.PlaySongForLevel(_currentLevel.Value);
         }

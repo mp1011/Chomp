@@ -43,12 +43,6 @@ namespace ChompGame.MainGame
             if (_bossDeathTimer.Value == 255)
                 return;
 
-            if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
-            {
-                _tileModule.TileStartX = 2;
-                _tileModule.TileStartY = 4;
-            }
-
             var groundPosition = _bossBackgroundEnd.Value;
 
             if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight
@@ -77,8 +71,6 @@ namespace ChompGame.MainGame
 
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
             {
-                _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = _gameModule.CurrentScene.BgRow;
                 _tileModule.Scroll.X = _rasterInterrupts.RealScrollX;
                 _tileModule.Scroll.Y = (byte)_specs.ScreenHeight;
             }

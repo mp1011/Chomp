@@ -27,6 +27,9 @@ namespace ChompGame.Data
                     return new FourBitPlane(address, memory, width, height);
                 case 5:
                     return new FiveBitPlane(address, memory, width, height);
+                case 6:
+                    return new SixBitPlane(address, memory, width, height);
+
                 case 8:
                     return new BytePlane(address, memory, width, height);
                 default:
@@ -109,10 +112,10 @@ namespace ChompGame.Data
 
         public int Bytes { get; }
 
-        public byte ValueFromChar(char s)
+        public byte ValueFromChar(char s, int offset)
         {
             var value = s.ParseByteSpecial();
-            return value;
+            return (byte)(value + offset);
         }
 
         public void CopyTo(NBitPlane destination, SystemMemory memory)
@@ -254,6 +257,39 @@ namespace ChompGame.Data
             }
         }
     }
+
+    public class SixBitPlane : NBitPlane
+    {
+        public SixBitPlane(int address, SystemMemory memory, int width, int height)
+            : base(address, memory, 6, width, height)
+        {
+        }
+
+        public override byte this[int index]
+        {
+            get
+            {
+                var p0 = _planes[0][index] ? 1 : 0;
+                var p1 = _planes[1][index] ? 2 : 0;
+                var p2 = _planes[2][index] ? 4 : 0;
+                var p3 = _planes[3][index] ? 8 : 0;
+                var p4 = _planes[4][index] ? 16 : 0;
+                var p5 = _planes[5][index] ? 32 : 0;
+
+                return (byte)(p0 + p1 + p2 + p3 + p4 + p5);
+            }
+            set
+            {
+                _planes[0][index] = (value & 1) > 0;
+                _planes[1][index] = (value & 2) > 0;
+                _planes[2][index] = (value & 4) > 0;
+                _planes[3][index] = (value & 8) > 0;
+                _planes[4][index] = (value & 16) > 0;
+                _planes[5][index] = (value & 32) > 0;
+            }
+        }
+    }
+
 
 
     public class BytePlane : NBitPlane

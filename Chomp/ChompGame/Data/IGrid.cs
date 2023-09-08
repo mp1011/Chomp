@@ -13,7 +13,7 @@ namespace ChompGame.Data
         T this[int index] { get;set; }
         T this[int x, int y] { get;set; }
 
-        T ValueFromChar(char s);
+        T ValueFromChar(char s, int offset);
     }
 
     public static class IGridExtensions
@@ -34,19 +34,26 @@ namespace ChompGame.Data
             grid.ForEach(Point.Zero, new Point(grid.Width, grid.Height), action);
         }
 
-        public static void SetFromString<T>(this IGrid<T> grid, string block, Func<T,bool> shouldReplace=null)
+        public static void SetFromString<T>(this IGrid<T> grid, string block, Func<T, bool> shouldReplace = null)
         {
-            grid.SetFromString(0, 0, block, shouldReplace);
+            grid.SetFromString(0, 0, 0, block, shouldReplace);
+        }
+
+        public static void SetFromString<T>(this IGrid<T> grid, int tileStart, string block, Func<T,bool> shouldReplace=null)
+        {
+            grid.SetFromString(0, 0, tileStart, block, shouldReplace);
         }
 
         public static void SetFromString<T>(this IGrid<T> grid, 
             int startX, 
             int startY, 
+            int tileStart,
             string block,
             Func<T, bool> shouldReplace = null)
         {
             int maxLineLength = grid.Width - startX;
-
+            if (maxLineLength <= 0)
+                return;
             var lines = block.Split(Environment.NewLine)
                                 .Select(p =>
                                 {
@@ -64,7 +71,7 @@ namespace ChompGame.Data
                 {
                     if (shouldReplace == null || shouldReplace(grid[startX + x, startY + y]))
                     {
-                        grid[startX + x, startY + y] = grid.ValueFromChar(lines[y][x]);
+                        grid[startX + x, startY + y] = grid.ValueFromChar(lines[y][x], tileStart);
                     }
                 }
             }

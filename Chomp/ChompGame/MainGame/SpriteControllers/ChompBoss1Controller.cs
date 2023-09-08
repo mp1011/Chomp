@@ -96,7 +96,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void BeforeInitializeSprite() 
         {
-            if (_state.Value == 0)
+            if (_stateTimer.Value == 0)
                 CreateTail();
         }
 
@@ -130,11 +130,11 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _hitPoints.Value = BossHp;
-            _state.Value = 0;
+            _stateTimer.Value = 0;
             HideTail();
         }
 
-        protected override void UpdateBehavior()
+        protected override void UpdateActive()
         {
             _motionController.Update();
             if (_phase.Value >= Phase.Appear)
@@ -233,9 +233,8 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if(_phase.Value == Phase.AttackStart)
             {
-                var rng = new RandomHelper(_levelTimer.Value);
                 _motionTarget.Y = 10;
-                _motionTarget.X = (byte)rng.RandomItem(2, 6, 10);
+                _motionTarget.X = (byte)_rng.RandomItem(2, 6, 10);
 
                 _motion.TargetTowards(WorldSprite, Target, _motionController.WalkSpeed);
                 _phaseByte.Value++;
@@ -299,10 +298,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (bullet != null)
                 {
                     bullet.EnsureInFrontOf(this);
-                    var rng = new RandomHelper(_levelTimer.Value);
                     bullet.WorldSprite.Center = WorldSprite.Center.Add(
-                        rng.RandomItem(-4, -2, 0, 2, 4),
-                        rng.RandomItem(-4, 2, 0, 2, 4));
+                        _rng.RandomItem(-4, -2, 0, 2, 4),
+                        _rng.RandomItem(-4, 2, 0, 2, 4));
 
                     bullet.Motion.YSpeed = 0;
                     bullet.Motion.XSpeed = 0;

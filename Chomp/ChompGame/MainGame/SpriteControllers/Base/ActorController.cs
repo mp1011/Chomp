@@ -15,6 +15,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
     abstract class ActorController : ISpriteController
     {
+        protected readonly RandomModule _rng;
         protected readonly TwoBit _palette;
         protected readonly GameByte _levelTimer;
         protected readonly SpritesModule _spritesModule;
@@ -74,6 +75,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             SystemMemoryBuilder memoryBuilder,
             SpriteTileIndex tileIndex)
         {
+            _rng = gameModule.RandomModule;
             _spritesModule = gameModule.SpritesModule;
             _spriteTileTable = gameModule.SpriteTileTable;
             _destructionBitOffset = memoryBuilder.AddByte();
@@ -123,6 +125,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             sprite.FlipY = false;
             WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = _palette.Value;
+            Palette = _palette.Value;
             OnSpriteCreated(sprite);
             Motion.Stop();
         }
@@ -228,7 +231,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             WorldSprite.Destroy();
         }
 
-        public void EnsureInFrontOf(ActorController other)
+        public void EnsureInFrontOf(ISpriteController other)
         {
             if (SpriteIndex < other.SpriteIndex)
             {

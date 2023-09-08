@@ -19,10 +19,10 @@ namespace ChompGame.MainGame.SceneModels.Themes
                                   CDCDCDCDCDCDCDCD
                                   DDCCDDCCDDCCDDCC";
 
-            nameTable.SetFromString(0, bgPos+1, waterBlock);
-            nameTable.SetFromString(16, bgPos + 1, waterBlock);
-            nameTable.SetFromString(32, bgPos + 1, waterBlock);
-            nameTable.SetFromString(48, bgPos + 1, waterBlock);
+            nameTable.SetFromString(0, bgPos+1, 0, waterBlock);
+            nameTable.SetFromString(16, bgPos + 1, 0,waterBlock);
+            nameTable.SetFromString(32, bgPos + 1,0, waterBlock);
+            nameTable.SetFromString(48, bgPos + 1, 0,waterBlock);
 
         }
 

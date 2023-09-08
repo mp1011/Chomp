@@ -497,95 +497,11 @@ namespace ChompGame.MainGame.SceneModels
                  _gameModule.SpritesModule,
                  () => new ExplosionController(_gameModule, memoryBuilder));
 
-            ICollidableSpriteControllerPool enemyA = null, enemyB = null, extraA = null, extraB = null;
-
-           
-            if(_sceneDefinition.HasSprite(SpriteType.Lizard))
+            ICollidableSpriteControllerPool[] spritePools = new ICollidableSpriteControllerPool[4];
+            
+            foreach(var sprite in _sceneDefinition.Sprites)
             {
-                extraA = new EnemyOrBulletSpriteControllerPool<BulletController>(
-                   2,
-                   _gameModule.SpritesModule,
-                   () => new BulletController(_gameModule, memoryBuilder, SpriteType.LizardBullet));
-
-                enemyA = new EnemyOrBulletSpriteControllerPool<LizardEnemyController>(
-                    2,
-                    _gameModule.SpritesModule,
-                    () => new LizardEnemyController(extraA, SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, memoryBuilder));
-            }
-
-            if(_sceneDefinition.HasSprite(SpriteType.Plane))
-            {
-                enemyA = new EnemyOrBulletSpriteControllerPool<PlaneTakeoffController>(
-                   1,
-                   _gameModule.SpritesModule,
-                   () => new PlaneTakeoffController(_gameModule, memoryBuilder, playerController));
-
-            }
-
-            if (_sceneDefinition.HasSprite(SpriteType.Rocket))
-            {
-                var bulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                      8,
-                      _gameModule.SpritesModule,
-                      () => new BossBulletController(_gameModule, memoryBuilder));
-
-                extraA = bulletControllers;
-
-                enemyA = new EnemyOrBulletSpriteControllerPool<RocketEnemyController>(
-                    4,
-                    _gameModule.SpritesModule,
-                    () => new RocketEnemyController(SpriteTileIndex.Enemy1, _gameModule, playerController.WorldSprite, bulletControllers, memoryBuilder));
-            }
-
-
-            if (_sceneDefinition.HasSprite(SpriteType.Bird))
-            {
-                if (enemyA == null)
-                {
-                    enemyA = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
-                        2,
-                        _gameModule.SpritesModule,
-                        () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, SpriteTileIndex.Enemy1));
-                }
-                else
-                {
-                    enemyB = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
-                       2,
-                       _gameModule.SpritesModule,
-                       () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, SpriteTileIndex.Enemy2));
-                }
-            }
-
-            if (_sceneDefinition.HasSprite(SpriteType.Chomp) || _sceneDefinition.HasSprite(SpriteType.LevelBoss))
-            {
-                if (_gameModule.CurrentLevel == Level.Level1_11_Boss)
-                {
-                    var bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                          3,
-                          _gameModule.SpritesModule,
-                          () => new BossBulletController(_gameModule, memoryBuilder));
-
-                    extraA = bullets;
-                    enemyA = new EnemyOrBulletSpriteControllerPool<ChompBoss1Controller>(
-                            size: 1,
-                            spritesModule: _gameModule.SpritesModule,
-                            () => new ChompBoss1Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
-                }
-                else if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
-                {
-                   var bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                       6,
-                       _gameModule.SpritesModule,
-                       () => new BossBulletController(_gameModule, memoryBuilder));
-
-                    extraA = bossBulletControllers;
-                    enemyA = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
-                          size: 1,
-                          spritesModule: _gameModule.SpritesModule,
-                          () => new LevelBossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
-
-                    enemyB = EmptyEnemyController.Instance;
-                }
+                AssignSpriteControllers(sprite, spritePools, memoryBuilder, playerController);
             }
 
             return new SceneSpriteControllers(_gameModule, playerController,
@@ -595,10 +511,117 @@ namespace ChompGame.MainGame.SceneModels
                 buttonControllers,
                 platformControllers,
                 explosionControllers,
-                enemyA, 
-                enemyB, 
-                extraA, 
-                extraB);
+                spritePools);
+        }
+
+        private void AssignSpriteControllers(SpriteType spriteType, 
+            ICollidableSpriteControllerPool[] spritePools,
+            SystemMemoryBuilder memoryBuilder,
+            PlayerController playerController)
+        {
+            int enemyIndex = spritePools[0] == null ? 0 : 1;
+            int extraIndex = spritePools[2] == null ? 2 : 3;
+
+            var enemyTileIndex = spritePools[0] == null ? SpriteTileIndex.Enemy1 : SpriteTileIndex.Enemy2;
+            var extraTileIndex = spritePools[2] == null ? SpriteTileIndex.Extra1 : SpriteTileIndex.Extra2;
+
+            switch (spriteType)
+            {
+                case SpriteType.Lizard:
+                    spritePools[extraIndex] = new EnemyOrBulletSpriteControllerPool<BulletController>(
+                                      2,
+                                      _gameModule.SpritesModule,
+                                      () => new BulletController(_gameModule, memoryBuilder, SpriteType.LizardBullet));
+
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<LizardEnemyController>(
+                        2,
+                        _gameModule.SpritesModule,
+                        () => new LizardEnemyController(spritePools[extraIndex], enemyTileIndex, _gameModule, playerController.WorldSprite, memoryBuilder));
+                    break;
+
+                case SpriteType.Plane:
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<PlaneTakeoffController>(
+                         1,
+                        _gameModule.SpritesModule,
+                        () => new PlaneTakeoffController(_gameModule, memoryBuilder, playerController));
+                    break;
+
+                case SpriteType.Rocket:
+                    var bulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                      8,
+                      _gameModule.SpritesModule,
+                      () => new BossBulletController(_gameModule, memoryBuilder));
+
+                    spritePools[extraIndex] = bulletControllers;
+
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<RocketEnemyController>(
+                        4,
+                        _gameModule.SpritesModule,
+                        () => new RocketEnemyController(enemyTileIndex, _gameModule, playerController.WorldSprite, bulletControllers, memoryBuilder));
+                    break;
+
+                case SpriteType.Bird:
+  
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
+                    2,
+                    _gameModule.SpritesModule,
+                    () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, enemyTileIndex));
+                    break;
+
+                case SpriteType.Chomp:
+                case SpriteType.LevelBoss:
+
+                    AssignBossSpriteControllers(spritePools, memoryBuilder, playerController);
+                    break;
+            }
+        }
+
+        private void AssignBossSpriteControllers(ICollidableSpriteControllerPool[] spritePools,
+            SystemMemoryBuilder memoryBuilder,
+            PlayerController playerController)
+        {
+            int enemyIndex = spritePools[0] == null ? 0 : 1;
+            int extraIndex = spritePools[2] == null ? 2 : 3;
+
+            switch (_gameModule.CurrentLevel)
+            {
+                case Level.Level1_11_Boss:
+
+                    var bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                          3,
+                          _gameModule.SpritesModule,
+                          () => new BossBulletController(_gameModule, memoryBuilder));
+
+                    spritePools[extraIndex] = bullets;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompBoss1Controller>(
+                            size: 1,
+                            spritesModule: _gameModule.SpritesModule,
+                            () => new ChompBoss1Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+
+                    break;
+                case Level.Level1_17_Boss:
+      
+                    var bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                        6,
+                        _gameModule.SpritesModule,
+                        () => new BossBulletController(_gameModule, memoryBuilder));
+
+                    spritePools[extraIndex] = bossBulletControllers;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
+                          size: 1,
+                          spritesModule: _gameModule.SpritesModule,
+                          () => new LevelBossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
+                    break;
+
+                case Level.Level2_2_Fly:
+                    bossBulletControllers = spritePools[2] as EnemyOrBulletSpriteControllerPool<BossBulletController>;
+                    spritePools[3] = new EnemyOrBulletSpriteControllerPool<ChompBoss2Controller>(
+                            size: 1,
+                            spritesModule: _gameModule.SpritesModule,
+                            () => new ChompBoss2Controller(playerController.WorldSprite, bossBulletControllers, _gameModule, memoryBuilder));
+
+                    break;
+            }
         }
 
 
@@ -697,346 +720,73 @@ namespace ChompGame.MainGame.SceneModels
            NBitPlane masterPatternTable,
            NBitPlane vramPatternTable,
            SystemMemory memory)
-        {
+        {           
             vramPatternTable.Reset();
 
-            //row 0 - top status bar text
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(4, 3, 7, 1),
-                destinationPoint: new Point(1, 0),
-                _gameModule.Specs,
-                memory);
+            var builder = new VramBuilder(masterPatternTable, vramPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
-            //row 1 - bottom status bar text
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(5, 4, 8, 1),
-                destinationPoint: new Point(0, 1),
-                _gameModule.Specs,
-                memory);
-
-            // row 2 - more text
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(12, 4, 2, 1),
-                destinationPoint: new Point(6, 2),
-                _gameModule.Specs,
-                memory);
-
-            // row 2 - health guage, filled tile
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 4, 5, 1),
-                destinationPoint: new Point(1, 2),
-                _gameModule.Specs,
-                memory);
-
-            // row 3 - background
-            // row 4 - foreground
+            builder.AddStatusBarTiles();            
             _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, vramPatternTable, memory);
-
-
-            GridPoint spriteDestination = new ByteGridPoint(_gameModule.Specs.PatternTableTilesAcross, _gameModule.Specs.PatternTableTilesDown);
-            spriteDestination.Y = 5;
-
-            //really need to fix this
-            if (_gameModule.CurrentLevel == Level.Level1_17_Boss)
-                spriteDestination.Y = 4;
 
             if(_sceneDefinition.IsAutoScroll)
             {
                 //player sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(0, 0, 1, 1),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-
-                //coin
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(15, 0, 1, 1),
-                  destinationPoint: new Point(7, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-
-                //plane
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(13, 2, 2, 1),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 1),
-                  _gameModule.Specs,
-                  memory);
-
-                //bomb sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(5, 1, 1, 1),
-                  destinationPoint: new Point(spriteDestination.X + 1, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Bomb, 2);
-
-                //prize
-                _spriteTileTable.SetTile(SpriteTileIndex.Prize, 8);
-
-                _spriteTileTable.SetTile(SpriteTileIndex.Plane, 9);
-
-
-                spriteDestination.Advance(2, extraRowSkip: 1);
+                builder.AddSprite(SpriteTileIndex.Player, 0, 0, 1, 1);
+                builder.AddSprite(SpriteTileIndex.Prize, 15, 0, 1, 1);
+                builder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);
+                builder.AddSprite(SpriteTileIndex.Bomb, 5, 1, 1, 1);
             }
             else if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
-                //player sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(0, 0, 2, 2),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-
-                //bomb sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(4, 1, 1, 1),
-                  destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Bomb,2);
-
-                //prize
-                _spriteTileTable.SetTile(SpriteTileIndex.Prize, 8);
-
-                spriteDestination.Advance(2, extraRowSkip: 1);
-
+                builder.AddSprite(SpriteTileIndex.Player, 0, 0, 2, 2);
+                builder.AddSprite(SpriteTileIndex.Bomb, 4, 1, 1, 1);
+           
                 if(_sceneDefinition.HasSprite(SpriteType.Plane))
-                {
-                    //plane
-                    masterPatternTable.CopyTilesTo(
-                      destination: vramPatternTable,
-                      source: new InMemoryByteRectangle(13, 2, 2, 1),
-                      destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 1),
-                      _gameModule.Specs,
-                      memory);
+                    builder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);                 
+            }
 
-                    _spriteTileTable.SetTile(SpriteTileIndex.Plane, 11);
-                }
+            if (_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
+            {
+                builder.AddBossSprites(_gameModule.CurrentLevel);
+            }
+            else
+            {
+                builder.AddSprite(SpriteTileIndex.Door, 14, 5, 2, 2);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
-                //lizard sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(2, 0, 2, 2),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
-
-                spriteDestination.Advance(2, extraRowSkip: 1);
-
-                //fireball sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(4, 0, 4, 1),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-
-                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 5);
-                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 6);
-
-                spriteDestination.Advance(4, extraRowSkip: 1);
+                builder.AddEnemySprite(2, 0, 2, 2);
+                var fireballTile = builder.AddExtraSprite(4, 0, 3, 1);
+                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, (byte)(fireballTile + 1));
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
             {
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(5, 1, 2, 1),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
-
-                //bullet
-                masterPatternTable.CopyTilesTo(
-                 destination: vramPatternTable,
-                 source: new InMemoryByteRectangle(12, 2, 1, 1),
-                 destinationPoint: new Point(spriteDestination.X + 2, spriteDestination.Y),
-                 _gameModule.Specs,
-                 memory);
-
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(5, 0, 2, 1),
-                  destinationPoint: new Point(spriteDestination.X + 3, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 5);
-                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 6);
-
-                spriteDestination.X = 0;
-                spriteDestination.Y += 2;
+                builder.AddEnemySprite(5, 1, 2, 1);
+                builder.AddExtraSprite(5, 0, 2, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
-            {
-                //bird sprite
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(8, 0, 4, 1),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy2, 17);
-                spriteDestination.Advance(4, extraRowSkip: 1);
-            }
+                builder.AddEnemySprite(8, 0, 4, 1);
 
-            if(_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
+            if (_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
             {
-                AddBossSprites(masterPatternTable, vramPatternTable, memory, spriteDestination);
             }
             else
             {
-                //platform
-                masterPatternTable.CopyTilesTo(
-                   destination: vramPatternTable,
-                   source: new InMemoryByteRectangle(12, 5, 2, 1),
-                   destinationPoint: new Point(4, 6),
-                   _gameModule.Specs,
-                   memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Platform, 13);
-
-                //door
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(14, 5, 2, 2),
-                    destinationPoint: new Point(6, 6),
-                    _gameModule.Specs,
-                    memory);
-
-                //button
-                masterPatternTable.CopyTilesTo(
-                   destination: vramPatternTable,
-                   source: new InMemoryByteRectangle(11, 6, 2, 1),
-                   destinationPoint: new Point(4, 7),
-                   _gameModule.Specs,
-                   memory);
-                _spriteTileTable.SetTile(SpriteTileIndex.Button, 21); 
+                builder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);
+                builder.AddSprite(SpriteTileIndex.Button, 11, 6, 2, 1);
             }
 
-            //block 
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(13, 6, 1, 1),
-                destinationPoint: new Point(6, 3),
-                _gameModule.Specs,
-                memory);
-            _spriteTileTable.SetTile(SpriteTileIndex.Block, 14);
-
-            //coin 
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(15, 0, 1, 1),
-                destinationPoint: new Point(7, 3),
-                _gameModule.Specs,
-                memory);
-            _spriteTileTable.SetTile(SpriteTileIndex.Coin, 15);
-        }
-    
-        private void AddBossSprites(
-            NBitPlane masterPatternTable,
-            NBitPlane vramPatternTable,
-            SystemMemory memory,
-            GridPoint spriteDestination)
-        {
-            if(_gameModule.CurrentLevel == Level.Level1_11_Boss)
+            if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(8, 1, 4, 2),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                  _gameModule.Specs,
-                  memory);
-
-                spriteDestination.Advance(4, extraRowSkip: 0);
-
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(7, 1, 1, 1),
-                    destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                    _gameModule.Specs,
-                    memory);
-
-                spriteDestination.Advance(1, extraRowSkip: 0);
-
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(12, 2, 1, 1),
-                    destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                    _gameModule.Specs,
-                    memory);
-
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 3);
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy2, 7);
-                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 8);
-                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 17);
-
-                //explosion
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(5, 0, 3, 1),
-                  destinationPoint: new Point(0, 7),
-                  _gameModule.Specs,
-                  memory);
+                builder.AddSprite(SpriteTileIndex.Prize, 7, 0, 1, 1);
             }
-            else if(_gameModule.CurrentLevel == Level.Level1_17_Boss)
-            {
-                //body
-                masterPatternTable.CopyTilesTo(
-                 destination: vramPatternTable,
-                 source: new InMemoryByteRectangle(11, 9, 5, 3),
-                 destinationPoint: new Point(spriteDestination.X+1, spriteDestination.Y),
-                 _gameModule.Specs,
-                 memory);
-
-                //eye
-                masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(11, 12, 2, 2),
-                    destinationPoint: new Point(spriteDestination.X - 2, spriteDestination.Y + 2),
-                    _gameModule.Specs,
-                    memory);
-
-                //bullet
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(4, 0, 4, 1),
-                  destinationPoint: new Point(spriteDestination.X, spriteDestination.Y + 3),
-                  _gameModule.Specs,
-                  memory);
-
-                //bullet2
-                masterPatternTable.CopyTilesTo(
-                  destination: vramPatternTable,
-                  source: new InMemoryByteRectangle(10, 7, 1, 1),
-                  destinationPoint: new Point(spriteDestination.X+5, spriteDestination.Y + 3),
-                  _gameModule.Specs,
-                  memory);
-
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy1, 17);
-                _spriteTileTable.SetTile(SpriteTileIndex.Enemy2, 23);
-                _spriteTileTable.SetTile(SpriteTileIndex.Extra1, 27);
-                _spriteTileTable.SetTile(SpriteTileIndex.Extra2, 32);
-                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, 28);
-
-            }
-
-
+                
+            builder.AddDynamicTile(SpriteTileIndex.Block, 13, 6, 1, 1);
+            builder.AddDynamicTile(SpriteTileIndex.Coin, 15, 0, 1, 1);
         }
+         
     }
 }

@@ -39,9 +39,6 @@ namespace ChompGame.MainGame.SpriteModels
         {
             _spriteTiles = new GameByteArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddBytes(Enum.GetValues(typeof(SpriteTileIndex)).Length);
-
-            SetTile(SpriteTileIndex.Player, 1);
-            SetTile(SpriteTileIndex.Door, Constants.DoorTile);
         }
     }
 }

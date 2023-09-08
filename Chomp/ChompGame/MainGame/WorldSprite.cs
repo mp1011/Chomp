@@ -155,7 +155,12 @@ namespace ChompGame.MainGame
             else
             {
                 sprite.Visible = Visible;
-                sprite.Palette = _palette.Value;
+
+                if (Status == WorldSpriteStatus.Dying)
+                    sprite.Palette = 3;
+                else 
+                    sprite.Palette = _palette.Value;
+
                 sprite.X = (byte)(X % _specs.NameTablePixelWidth);
                 sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
             }

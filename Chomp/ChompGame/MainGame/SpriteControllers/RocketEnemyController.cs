@@ -38,22 +38,23 @@ namespace ChompGame.MainGame.SpriteControllers
             _player = player;
             _bulletControllers = bulletControllers;
 
-            _thrust = new GameBit(_state.Address, Bit.Bit4, memoryBuilder.Memory);
-            _thrustCount = new MaskedByte(_state.Address, Bit.Right3, memoryBuilder.Memory);
-            _variation = new GameBit(_state.Address, Bit.Bit3, memoryBuilder.Memory);
+            throw new System.NotImplementedException();
+          //  _thrust = new GameBit(_state.Address, Bit.Bit4, memoryBuilder.Memory);
+          //  _thrustCount = new MaskedByte(_state.Address, Bit.Right3, memoryBuilder.Memory);
+          //  _variation = new GameBit(_state.Address, Bit.Bit3, memoryBuilder.Memory);
             Palette = 0;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
             bool variation = _variation.Value;
-            _state.Value = 0;
+            _stateTimer.Value = 0;
             Palette = 0;
 
             _variation.Value = variation;
         }
 
-        protected override void UpdateBehavior()
+        protected override void UpdateActive()
         {
             if (!_thrust.Value)
             {

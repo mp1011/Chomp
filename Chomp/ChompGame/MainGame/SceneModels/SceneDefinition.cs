@@ -5,6 +5,7 @@ using ChompGame.MainGame.SceneModels.Themes;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using System;
+using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -104,7 +105,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public bool IsMidBossScene => _enemies.Value == EnemyGroup.MidBoss;
 
-        public int GroundFillStart => _enemies.Value == EnemyGroup.LevelBoss ? 8 : 16;
+        public int GroundFillStart => _enemies.Value == EnemyGroup.LevelBoss ? 24 : 32;
 
         public int GroundFillEnd => GroundFillStart + 1;
 
@@ -185,24 +186,32 @@ namespace ChompGame.MainGame.SceneModels
                     ScrollStyle.Vertical => FallCheck.None,
                     _ => FallCheck.WrapAround };
 
-        public bool HasSprite(SpriteType spriteType)
-        {
-            if (spriteType == SpriteType.Player)
-                return true;
-
-            return _enemies.Value switch {
-                EnemyGroup.Lizard_Bird => spriteType == SpriteType.Bird || spriteType == SpriteType.Lizard,
-                EnemyGroup.Rocket_Bird => spriteType == SpriteType.Bird || spriteType == SpriteType.Rocket,
-                EnemyGroup.PlaneTakeoff => spriteType == SpriteType.Plane,
-                EnemyGroup.MidBoss => spriteType == SpriteType.Chomp,
-                EnemyGroup.LevelBoss => spriteType == SpriteType.LevelBoss,
-                _ => false
+        public SpriteType[] Sprites =>
+            _enemies.Value switch {
+                EnemyGroup.Lizard_Bird => new[] { 
+                    SpriteType.Player, 
+                    SpriteType.Lizard, 
+                    SpriteType.Bird },
+                EnemyGroup.Rocket_Bird => new[] {
+                    SpriteType.Player,
+                    SpriteType.Rocket,
+                    SpriteType.Bird,
+                    SpriteType.Chomp },
+                EnemyGroup.PlaneTakeoff => new[] {
+                    SpriteType.Player,
+                    SpriteType.Plane },
+                EnemyGroup.MidBoss => new[] {
+                    SpriteType.Player,
+                    SpriteType.Chomp },
+                EnemyGroup.LevelBoss => new[] {
+                    SpriteType.Player,
+                    SpriteType.LevelBoss },
+                _ => new[] { SpriteType.Player }
             };
-        }
 
-        public byte BgRow => 2;
+        public bool HasSprite(SpriteType spriteType) => Sprites.Contains(spriteType);
 
-        public byte CollidableTileBeginIndex => (byte)(IsLevelBossScene ? 7 : 14);
+        public byte CollidableTileBeginIndex => (byte)(IsLevelBossScene ? 0 : 29);
 
         public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar) =>
             layer switch {
@@ -486,13 +495,14 @@ namespace ChompGame.MainGame.SceneModels
         }
 
         public int LevelTileWidth =>
-            ScrollStyle switch {
-                ScrollStyle.None => _specs.ScreenWidth / _specs.TileWidth,
-                ScrollStyle.Vertical => _specs.ScreenWidth / _specs.TileWidth,
-                ScrollStyle.NameTable => _specs.NameTableWidth,
-                ScrollStyle.Horizontal => (_specs.ScreenWidth / _specs.TileWidth) * 4,
-                _ => throw new NotImplementedException()
-            };
+            HasSprite(SpriteType.Plane) ? (_specs.ScreenWidth / _specs.TileWidth) * 3
+            :   ScrollStyle switch {
+                    ScrollStyle.None => _specs.ScreenWidth / _specs.TileWidth,
+                    ScrollStyle.Vertical => _specs.ScreenWidth / _specs.TileWidth,
+                    ScrollStyle.NameTable => _specs.NameTableWidth,
+                    ScrollStyle.Horizontal => (_specs.ScreenWidth / _specs.TileWidth) * 4,
+                    _ => throw new NotImplementedException()
+                };
 
         public int LevelTileHeight =>
              ScrollStyle switch {

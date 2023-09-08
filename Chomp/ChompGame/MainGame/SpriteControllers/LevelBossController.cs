@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class LevelBossController : EnemyController
     {
+        private readonly RandomModule _rng;
         private const int BossHP = 4;
         private AcceleratedMotion _motion;
         private IMotionController _motionController;
@@ -80,6 +81,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _jawSpriteDefinition = new SpriteDefinition(SpriteType.BossJaw, memoryBuilder.Memory);
             _internalTimer = memoryBuilder.AddByte();
             _jawPosition = memoryBuilder.AddByte();
+            _rng = gameModule.RandomModule;
 
             var motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.LevelBoss, WorldSprite);
             _motion = motionController.Motion;
@@ -101,7 +103,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _hitPoints.Value = BossHP;
-            _state.Value = 0;
+            _stateTimer.Value = 0;
         }
 
         protected override bool HandleDestroy()
@@ -225,7 +227,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void SetBossTiles()
         {
-            _tileModule.NameTable.SetFromString(0, 15,
+            _tileModule.NameTable.SetFromString(0, 15,0,
             @"13335
                     9$BBD
                     @#BBA
@@ -234,7 +236,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void EraseBossTiles()
         {
-            _tileModule.NameTable.SetFromString(0, 15,
+            _tileModule.NameTable.SetFromString(0, 15, 0,
                    @"00000
                            00000
                            00000
@@ -361,7 +363,7 @@ namespace ChompGame.MainGame.SpriteControllers
             jawSprite.Y = (byte)(sprite.Y + 8 + _jawPosition.Value);
         }
 
-        protected override void UpdateBehavior()
+        protected override void UpdateActive()
         {
             if (_phase.Value >= Phase.BossAppear || _internalTimer.Value >= BossLightningAppearValue)
             {
@@ -636,9 +638,8 @@ namespace ChompGame.MainGame.SpriteControllers
             if (explosion != null)
             {
                 explosion.Explode();
-                var rng = new RandomHelper(_levelTimer.Value);
-                explosion.WorldSprite.X = WorldSprite.X + rng.RandomItem(-8, -4, 0, 4, 8);
-                explosion.WorldSprite.Y = WorldSprite.Y + 4 + rng.RandomItem(-8, -4, 0, 4, 8);
+                explosion.WorldSprite.X = WorldSprite.X + _rng.RandomItem(-8, -4, 0, 4, 8);
+                explosion.WorldSprite.Y = WorldSprite.Y + 4 + _rng.RandomItem(-8, -4, 0, 4, 8);
             }
         }
     }

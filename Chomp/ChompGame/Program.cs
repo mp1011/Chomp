@@ -160,6 +160,7 @@ namespace ChompGame
 
             Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
                 (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+                s => new RandomModule(s),
                 s => new BankAudioModule(s),
                 s => new ChompAudioService(s.GetModule<BankAudioModule>()),
                 s => new SpritesModule(s),

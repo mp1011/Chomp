@@ -184,15 +184,8 @@ namespace ChompGame.GameSystem
                 var palette = GetSpritePalette(sprite.Palette);
 
                 bool shouldDraw = false;
-                if (sprite.Tile == Constants.DoorTile)
-                {
-                    shouldDraw = !priority;
-                }
-                else
-                {
-                    shouldDraw = sprite.Priority == priority;
-                }
-
+                shouldDraw = sprite.Priority == priority;
+                
                 if(shouldDraw)
                 { 
                     for (int x = 0; x < sprite.Width; x++)

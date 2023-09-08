@@ -67,7 +67,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 Destroy();
             else if (_state.Value > 40)
             {
-                sprite.Tile = (byte)(6 + (_levelTimer.Value % 2));
+                var explosionTile = _spriteTileTable.GetTile(SpriteTileIndex.Explosion);
+                sprite.Tile = (byte)(explosionTile + (_levelTimer.Value % 2));
             }
         }
 

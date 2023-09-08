@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly CollisionDetector _collisionDetector;
         private readonly ICollidableSpriteControllerPool _lizardBulletControllers;
         private readonly WorldSprite _player;
-
+      
         public LizardEnemyController(
             ICollidableSpriteControllerPool lizardBulletControllers,
             SpriteTileIndex tileIndex,
@@ -28,62 +28,56 @@ namespace ChompGame.MainGame.SpriteControllers
             Palette = 2;
         }
 
+
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _motion.TargetXSpeed = _motionController.WalkSpeed;
             _motion.XSpeed = _motionController.WalkSpeed;
             _motion.XAcceleration = _motionController.WalkAccel;
-            _hitPoints.Value = 0;
-            _state.Value = 0;
+            _hitPoints.Value = 1;
+            _stateTimer.Value = 0;
         }
 
-        protected override void UpdateBehavior()
+        protected override void UpdateActive()
         {
             _motionController.Update();
             var collision = _collisionDetector.DetectCollisions(WorldSprite, _motion);
             _motionController.AfterCollision(collision);
 
-           
-            if (_state.Value == SpriteIndex && !collision.LeftLedge && !collision.RightLedge)
+            if (_motion.TargetXSpeed == 0 || _levelTimer.IsMod(16))
             {
-                _state.Value++;
-                if (_motion.TargetXSpeed < 0)
+                _stateTimer.Value++;
+
+                if (_stateTimer.Value == 8 && !collision.LeftLedge && !collision.RightLedge)
                 {
-                    _motion.TargetXSpeed = _motionController.WalkSpeed;
-                    _motion.XSpeed = _motionController.WalkSpeed;
-                }
-                else
-                {
-                    _motion.TargetXSpeed = -_motionController.WalkSpeed;
-                    _motion.XSpeed = -_motionController.WalkSpeed;
-                }
-            }
-            else if (_state.Value == 16 + SpriteIndex)
-            {
-                _state.Value++;
-                int distanceToPlayer = Math.Abs(WorldSprite.X - _player.X);
-                if (distanceToPlayer < 64)
-                {
-                    var fireball = _lizardBulletControllers.TryAddNew();
-                    if (fireball != null)
+                    if (_motion.TargetXSpeed < 0)
                     {
-                        _audioService.PlaySound(ChompAudioService.Sound.Fireball);
-                        var thisSprite = WorldSprite;
-                        fireball.WorldSprite.X = thisSprite.X;
-                        fireball.WorldSprite.Y = thisSprite.Y;
-                        fireball.WorldSprite.FlipX = thisSprite.FlipX;
+                        _motion.TargetXSpeed = _motionController.WalkSpeed;
+                        _motion.XSpeed = _motionController.WalkSpeed;
+                    }
+                    else
+                    {
+                        _motion.TargetXSpeed = -_motionController.WalkSpeed;
+                        _motion.XSpeed = -_motionController.WalkSpeed;
+                    }
+                }
+                else if (_stateTimer.Value == 15 && _rng.RandomChance(50))
+                {
+                    int distanceToPlayer = Math.Abs(WorldSprite.X - _player.X);
+                    if (distanceToPlayer < 64)
+                    {
+                        var fireball = _lizardBulletControllers.TryAddNew();
+                        if (fireball != null)
+                        {
+                            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+                            var thisSprite = WorldSprite;
+                            fireball.WorldSprite.X = thisSprite.X;
+                            fireball.WorldSprite.Y = thisSprite.Y;
+                            fireball.WorldSprite.FlipX = thisSprite.FlipX;
+                        }
                     }
                 }
             }
-            else if (_state.Value == 32)
-            {
-                _state.Value = 0;
-            }
-            else if (_levelTimer.IsMod(8))
-                _state.Value++;
-
         }
-
-        protected override void UpdateDying() { }
     }
 }

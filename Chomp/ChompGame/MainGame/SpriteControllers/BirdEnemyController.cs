@@ -11,6 +11,15 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly WorldSprite _player;
 
         private GameByte _variation;
+        private NibbleEnum<BirdState> _state;
+
+        private enum BirdState : byte
+        {
+            Hover,
+            Attack,
+            Return
+        }
+
         public byte Variation
         {
             get => _variation.Value;
@@ -32,10 +41,11 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _player = player;
             _variation = memoryBuilder.AddByte();
+            _state = new NibbleEnum<BirdState>(new HighNibble(_stateTimer.Address, memoryBuilder.Memory));
             Palette = 1;
         }
 
-        protected override void UpdateBehavior() 
+        protected override void UpdateActive() 
         {
             _motionController.Update();
 
@@ -49,37 +59,54 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if ((_levelTimer % 32) == 0)
             {
-                _state.Value++;
+                _stateTimer.Value++;
 
                 int hoverTarget = _player.Y - 16;
 
-                if (_state < 8)
+                switch(_state.Value)
                 {
-                    if (WorldSprite.Y < hoverTarget)
-                        _motion.TargetYSpeed = _hoverSpeed;
-                    else
+                    case BirdState.Hover:
+                        if (WorldSprite.Y < hoverTarget)
+                            _motion.TargetYSpeed = _hoverSpeed;
+                        else
+                            _motion.TargetYSpeed = -_hoverSpeed;
+
+                        WorldSprite.FlipX = _player.X < WorldSprite.X;
+
+                        if(_stateTimer.Value == 8)
+                        {
+                            _stateTimer.Value = 0;
+                            _state.Value = BirdState.Attack;
+                        }
+
+                        return;
+
+                    case BirdState.Attack:
+                        
+                        if (_stateTimer.Value == 8 || WorldSprite.Y > _player.Y)
+                        {
+                            _stateTimer.Value = 0;
+                            _state.Value = BirdState.Attack;
+                        }
+                        else
+                        {
+                            _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
+                        }
+
+                        return;
+
+                    case BirdState.Return:
+                        _motion.TargetXSpeed = 0;
                         _motion.TargetYSpeed = -_hoverSpeed;
 
-                    WorldSprite.FlipX = _player.X < WorldSprite.X;
-                }
-                else if (_state >= 8 && _state < 14)
-                {
-                    if (WorldSprite.Y < _player.Y)
-                        _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
-                    else
-                        _state.Value = 0;
-                }
-                else if (_state >= 14)
-                {
-                    _motion.TargetXSpeed = 0;
-                    _motion.TargetYSpeed = -_hoverSpeed;
-
-                    if (WorldSprite.Y <= hoverTarget)
-                    {
-                        _state.Value = 0;
-                        _motion.TargetYSpeed = 0;
-                    }
-                }
+                        if (WorldSprite.Y <= hoverTarget)
+                        {
+                            _state.Value = BirdState.Hover;
+                            _stateTimer.Value = 0;
+                            _motion.TargetYSpeed = 0;
+                        }
+                        return;
+                }           
             }
         }
 
@@ -87,12 +114,12 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if ((_levelTimer % 32) == 0)
             {
-                _state.Value++;
+                _stateTimer.Value++;
 
                 if (_variation.Value == 2 && WorldSprite.X < 48)
                     return;
 
-                if (_state < 7)
+                if (_stateTimer.Value < 7)
                 {
                     _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
                 }
@@ -108,8 +135,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _motion.XAcceleration = _motionController.WalkAccel;
             _motion.YAcceleration = _motionController.WalkAccel;
 
-            _hitPoints.Value = 0;
-            _state.Value = 0;
+            _hitPoints.Value = 1;
+            _state.Value = BirdState.Hover;
         }
 
         public void AfterSpawn(ISpriteControllerPool pool) { }

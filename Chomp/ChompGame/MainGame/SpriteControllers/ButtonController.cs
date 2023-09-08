@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private ChompAudioService _audio;
         private GameByte _state;
 
+        public byte Palette => 0;
         public byte SpriteIndex
         {
             get => WorldSprite.SpriteIndex;

@@ -10,7 +10,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class PlaneTakeoffController : ActorController, ICollidableSpriteController
     {
         public const int HoverSpeed = 8;
-        public const int TakeoffSpeed = 32;
+        public const int TakeoffSpeed = 64;
         public const int TakeoffAccel = 8;
         public const int HoverAccel = 1;
 
@@ -59,7 +59,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 _motionController.Motion.SetYSpeed(0);
             }
 
-            if(_takeOff.Value)
+            if (!_takeOff.Value
+                    && _player.WorldSprite.X > WorldSprite.X + 8)
+            {
+                _player.WorldSprite.X = WorldSprite.X + 8;
+            }
+
+
+            if (_takeOff.Value)
             {
                 _motionController.Motion.TargetYSpeed = -HoverSpeed;
                 _motionController.Motion.XAcceleration = TakeoffAccel;
@@ -69,7 +76,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _player.WorldSprite.Y = WorldSprite.Y-4;
             }
             else if (_levelTimer.Value.IsMod(12))
-            {
+            {               
                 if (WorldSprite.Y < _yPos)
                 {
                     _motionController.Motion.TargetYSpeed = HoverSpeed;

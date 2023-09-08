@@ -6,12 +6,12 @@ using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
     class SceneSpriteControllers
     {
-        private GameByteEnum<Level> _currentLevel;
         private ChompGameModule _gameModule;
         private PlayerController _playerController;
         private SpriteControllerPool<BombController> _bombControllers;
@@ -21,10 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private SpriteControllerPool<PlatformController> _platformControllers;
         private SpriteControllerPool<ExplosionController> _explosionControllers;
 
-        private ICollidableSpriteControllerPool _enemyAControllers;
-        private ICollidableSpriteControllerPool _enemyBControllers;
-        private ICollidableSpriteControllerPool _extra1Controllers;
-        private ICollidableSpriteControllerPool _extra2Controllers;
+        private ICollidableSpriteControllerPool[] _spriteControllers;
 
         private SceneDefinition _scene;
 
@@ -46,10 +43,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SpriteControllerPool<ButtonController> buttonControllers,
             SpriteControllerPool<PlatformController> platformControllers,
             SpriteControllerPool<ExplosionController> explosionControllers,
-            ICollidableSpriteControllerPool enemyAControllers, 
-            ICollidableSpriteControllerPool enemyBControllers, 
-            ICollidableSpriteControllerPool extra1Controllers, 
-            ICollidableSpriteControllerPool extra2Controllers)
+            params ICollidableSpriteControllerPool[] spriteControllerPools)
         {
             _gameModule = chompGameModule;
             _playerController = playerController;
@@ -59,10 +53,9 @@ namespace ChompGame.MainGame.SpriteControllers
             _prizeControllers = prizeControllers;
             _doorControllers = doorControllers;
             _buttonControllers = buttonControllers;
-            _enemyAControllers = enemyAControllers ?? EmptyEnemyController.Instance;
-            _enemyBControllers = enemyBControllers ?? EmptyEnemyController.Instance;
-            _extra1Controllers = extra1Controllers ?? EmptyEnemyController.Instance;
-            _extra2Controllers = extra2Controllers ?? EmptyEnemyController.Instance;
+            _spriteControllers = spriteControllerPools
+                .Where(p => p != null)
+                .ToArray();
         }
 
         public void Initialize(SceneDefinition scene, 
@@ -122,13 +115,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 _doorControllers.Execute(c => c.Update());
                 _buttonControllers.Execute(c => c.Update());
                 _platformControllers.Execute(c => c.Update());
+                _prizeControllers.Execute(c => c.Update());
+
             }
 
             _explosionControllers.Execute(c => c.Update());
-            _enemyAControllers?.Execute(c => c.Update());
-            _enemyBControllers?.Execute(c => c.Update());
-            _extra1Controllers?.Execute(c => c.Update());
-            _extra2Controllers?.Execute(c => c.Update());
+
+            foreach (var spriteController in _spriteControllers)
+                spriteController.Execute(c => c.Update());
         }
 
         public void CheckBombCarry(GameBit isCarryingBomb)
@@ -157,10 +151,9 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             _explosionControllers.Execute(c => c.WorldSprite.UpdateSprite());
-            _enemyAControllers.Execute(c => c.WorldSprite.UpdateSprite());
-            _enemyBControllers.Execute(c => c.WorldSprite.UpdateSprite());
-            _extra1Controllers.Execute(c => c.WorldSprite.UpdateSprite());
-            _extra2Controllers.Execute(c => c.WorldSprite.UpdateSprite());
+
+            foreach (var spriteController in _spriteControllers)
+                spriteController.Execute(c => c.WorldSprite.UpdateSprite());
 
             CheckSpriteSpawn();
         }
@@ -334,8 +327,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
             scenePartType switch {
                 ScenePartType.Bomb => _bombControllers,
-                ScenePartType.EnemyType1 => _enemyAControllers,
-                ScenePartType.EnemyType2 => _enemyBControllers,
+                ScenePartType.EnemyType1 => _spriteControllers[0],
+                ScenePartType.EnemyType2 => _spriteControllers[1],
+                ScenePartType.AutoScrollEnemyType3 => _spriteControllers[3],
                 ScenePartType.DoorBackExit => _doorControllers,
                 ScenePartType.DoorFowardExit => _doorControllers,
                 ScenePartType.Platform_Falling => _platformControllers,
@@ -349,10 +343,9 @@ namespace ChompGame.MainGame.SpriteControllers
         
         public void CheckCollissions()
         {
-            _playerController.CheckEnemyOrBulletCollisions(_enemyAControllers);
-            _playerController.CheckEnemyOrBulletCollisions(_enemyBControllers);
-            _playerController.CheckEnemyOrBulletCollisions(_extra1Controllers);
-            _playerController.CheckEnemyOrBulletCollisions(_extra2Controllers);
+            foreach(var c in _spriteControllers)
+                _playerController.CheckEnemyOrBulletCollisions(c);
+
             _playerController.CheckBombPickup(_bombControllers);
             _playerController.CheckPrizePickup(_prizeControllers);
 
@@ -369,8 +362,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _prizeControllers.Execute(b => b.CheckPlayerCollision(_playerController));
             _bombControllers.Execute(b =>
             {
-                b.CheckEnemyCollisions(_enemyAControllers);
-                b.CheckEnemyCollisions(_enemyBControllers);
+                foreach (var c in _spriteControllers)
+                {
+                    b.CheckEnemyCollisions(c);
+                }
             });
         }
     }

@@ -51,9 +51,9 @@ namespace ChompGame.GameSystem
         {
             if (level >= Level.Level1_1_Start && level <= Level.Level1_10_Stair)
                 CurrentSong = SongName.Adventure;
-            else if (level >= Level.Level1_12_Horizontal2 && level < Level.Level2_2_Fly)
+            else if (level >= Level.Level1_12_Horizontal2 && level < Level.Level2_1_Intro)
                 CurrentSong = SongName.Adventure2;
-            else if (level >= Level.Level2_2_Fly)
+            else if (level >= Level.Level2_1_Intro)
                 CurrentSong = SongName.Flight;
             else
                 CurrentSong = SongName.None;

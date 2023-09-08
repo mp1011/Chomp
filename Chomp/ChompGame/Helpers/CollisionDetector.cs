@@ -53,7 +53,7 @@ namespace ChompGame.Helpers
 
         public int Bytes => _realMap.Bytes;
 
-        public byte ValueFromChar(char s) => _realMap.ValueFromChar(s);
+        public byte ValueFromChar(char s, int offset) => _realMap.ValueFromChar(s, offset);
     }
 
     class CollisionDetector 

@@ -32,6 +32,8 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        public byte Palette => 0;
+
         public byte SpriteIndex
         {
             get => WorldSprite.SpriteIndex;
@@ -68,8 +70,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _audio = gameModule.AudioService;
             _exitsModule = gameModule.ExitsModule;
 
-            _openState = memoryBuilder.AddMaskedByte(Bit.Right6);
-            _doorType = new GameBit(_openState.Address, Bit.Bit6, memoryBuilder.Memory);
+            _openState = memoryBuilder.AddMaskedByte(Bit.Right5);
+            _doorType = new GameBit(_openState.Address, Bit.Bit5, memoryBuilder.Memory);
                 
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
@@ -79,7 +81,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 spritesModule: _spritesModule,
                 scroller: gameModule.WorldScroller,
                 index: SpriteTileIndex.Door,
-                palette: null);
+                palette: new TwoBit(memoryBuilder.Memory, _openState.Address,6));
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();
@@ -87,7 +89,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             var sprite = GetSprite();
             WorldSprite.ConfigureSprite(sprite);
-            sprite.Palette = 0; //todo
+            sprite.Palette = 0;
             sprite.FlipX = false;
             sprite.FlipY = false;
             sprite.Priority = true;
@@ -95,6 +97,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update()
         {
+            _playerController.EnsureInFrontOf(this);
             HideIfOutOfBounds();
 
             byte baseTile = _spriteTileTable.DoorTile; 
@@ -123,18 +126,18 @@ namespace ChompGame.MainGame.SpriteControllers
                 sprite.Visible = true;
                 sprite.Tile = (byte)(baseTile + 1);
             }
-            else if (_openState == 30)
+            else if (_openState == 25)
             {
                 var sprite = GetSprite();
                 sprite.Tile = baseTile;
             }
-            else if (_openState == 40)
+            else if (_openState == 31)
             {
                 _exitsModule.OnDoorEntered(DoorType);
                 _openState.Value = 0;
             }
 
-            if ((_levelTimer.Value % 2) == 0)
+            if ((_levelTimer.Value % 3) == 0)
                 _openState.Value++;
         }
 

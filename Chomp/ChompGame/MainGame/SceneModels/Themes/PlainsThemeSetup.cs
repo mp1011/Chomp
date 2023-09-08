@@ -44,7 +44,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             string layer1Row2 = "AB89859C";
 
             //mountain layer 1
-            nameTable.SetFromString(0, mountain1Pos,
+            nameTable.SetFromString(0, mountain1Pos, 16,
                 $@"{layer1Row1}{layer1Row1}{layer1Row1}{layer1Row1}
                          {layer1Row2}{layer1Row2}{layer1Row2}{layer1Row2}",
                 shouldReplace: b => b == 0);
@@ -54,7 +54,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
 
             //mountain layer 2
-            nameTable.SetFromString(0, mountain2Pos,
+            nameTable.SetFromString(0, mountain2Pos, 16,
               $@"{layer2Row1}{layer2Row1}
                        {layer2Row2}{layer2Row2}",
                 shouldReplace: b => b == 0);

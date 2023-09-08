@@ -20,11 +20,11 @@ namespace ChompGame.MainGame
         private GameRAM _ram;
         private Specs _specs;
 
-        private readonly byte _tileBlank = 8;
-        private readonly byte _tileCap = 9;
-        private readonly byte _tileEmpty = 10;
-        private readonly byte _tileHalf = 11;
-        private readonly byte _tileFull = 12;
+        private readonly byte _tileBlank = 16;
+        private readonly byte _tileCap = 17;
+        private readonly byte _tileEmpty = 18;
+        private readonly byte _tileHalf = 19;
+        private readonly byte _tileFull = 20;
 
         public int Score
         {
@@ -68,7 +68,7 @@ namespace ChompGame.MainGame
         {
             var blankline = "".PadRight(16, 'C');
             _tileModule.NameTable
-                   .SetFromString(@"0123000456730000" + Environment.NewLine + blankline);
+                   .SetFromString(0, @"0123000456730000" + Environment.NewLine + blankline);
 
             DrawScore();
             SetLives(_lives.Value);
@@ -81,9 +81,6 @@ namespace ChompGame.MainGame
             {
                 realScrollX.Value = _tileModule.Scroll.X;
                 realScrollY.Value = _tileModule.Scroll.Y;
-
-                _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = Constants.StatusBarTopRow;
             }
 
             if (_tileModule.ScreenPoint.Y < 8)
@@ -95,15 +92,6 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = realScrollX.Value;
                 _tileModule.Scroll.Y = realScrollY.Value;
-
-                _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = _gameModule.CurrentScene.BgRow;
-            }
-
-            if (_tileModule.ScreenPoint.Y == 4)
-            {
-                _tileModule.TileStartX = 0;
-                _tileModule.TileStartY = Constants.StatusBarBottomRow;
             }
         }
 
@@ -167,11 +155,11 @@ namespace ChompGame.MainGame
         private byte GetDigitTile(char c)
         {
             if (c <= '7')
-                return (byte)(c -'0');
+                return (byte)(8 + (c -'0'));
             else if (c == '8')
-                return 14;
+                return 22;
             else
-                return 15;
+                return 23;
         }
     }
 }
