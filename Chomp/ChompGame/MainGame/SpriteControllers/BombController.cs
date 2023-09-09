@@ -86,9 +86,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motion);
                 _motionController.AfterCollision(collisionInfo);
 
-                if(collisionInfo.DynamicBlockCollision)
-                {
-                    _dynamicBlockController.HandleBombCollision(collisionInfo);
+                if(collisionInfo.DynamicBlockCollision 
+                    &&_dynamicBlockController.HandleBombCollision(collisionInfo))
+                { 
+                    _motion.XSpeed = -_motion.XSpeed/2;
+                    _motion.TargetXSpeed = 0;
+                    _motion.XAcceleration = 10;
                 }
                 
                 if ((int)_bombState.Value < 2 && (collisionInfo.YCorrection < 0 || collisionInfo.IsOnGround))
@@ -129,6 +132,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void DoThrow()
         {
+            _motion.XAcceleration = 0;
             _bombState.Value = BombState.Idle;
             _isThrown.Value = true;
 

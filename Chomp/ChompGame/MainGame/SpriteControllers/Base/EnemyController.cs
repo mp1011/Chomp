@@ -49,6 +49,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 {
                     _statusBar.AddToScore(100); //todo - score per enemy type                    
                     WorldSprite.Destroy();
+                    _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
                 }
                 else
                 {
@@ -56,8 +57,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 }
             }
         }
-
-        protected virtual bool HandleDestroy() => true;
 
         public CollisionResult HandlePlayerCollision(WorldSprite player)
         {

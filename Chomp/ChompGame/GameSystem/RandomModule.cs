@@ -14,6 +14,7 @@ namespace ChompGame.GameSystem
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _randomValue = memoryBuilder.AddByte();
+            _randomValue.Value = 1;
         }
 
         public override void OnStartup()
@@ -24,7 +25,15 @@ namespace ChompGame.GameSystem
         {
             var randomValue = _randomValue.Value;
 
-            _randomValue.Value = (byte)((_randomValue + 177) << 3);
+            var b1 = (randomValue & 1) > 0 ? 1 : 0;
+            var b2 = (randomValue & 2) > 0 ? 1 : 0;
+            var b3 = (randomValue & 3) > 0 ? 1 : 0;
+            var b4 = (randomValue & 7) > 0 ? 1 : 0;
+
+            var add = b1 ^ b2 ^ b3 ^ b4;
+
+            _randomValue.Value = (byte)(_randomValue >> 1);
+            _randomValue.Value = (byte)(_randomValue + (add << 7));
 
             return randomValue;
         }

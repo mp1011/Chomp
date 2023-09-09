@@ -87,6 +87,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _motion = motionController.Motion;
 
             _motionController = motionController;
+
+            Palette = 2;
         }
 
         protected override void BeforeInitializeSprite()
@@ -106,7 +108,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _stateTimer.Value = 0;
         }
 
-        protected override bool HandleDestroy()
+        protected override void UpdateDying() 
         {
             if (_phase.Value < Phase.Dying)
             {
@@ -217,17 +219,16 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     if (_internalTimer.Value == 36)
                     {                        
-                        return true;
+                        return;
                     }
                 }
             }
-
-            return false;
         }
 
         private void SetBossTiles()
         {
-            _tileModule.NameTable.SetFromString(0, 15,0,
+            var tileStart = 47;
+            _tileModule.NameTable.SetFromString(0, 15, tileStart,
             @"13335
                     9$BBD
                     @#BBA

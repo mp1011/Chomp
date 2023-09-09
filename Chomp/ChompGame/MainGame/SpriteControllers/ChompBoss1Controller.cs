@@ -68,6 +68,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionTarget = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddByte();
+
+            Palette = 2;
         }
 
         private void HideTail()
@@ -115,7 +117,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _tailSprites[i] = spriteIndex;
 
                 var sprite = _spritesModule.GetSprite(spriteIndex);
-                sprite.Tile = 7;
+                sprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Enemy1) + 4);
                 sprite.SizeX = 1;
                 sprite.SizeY = 1;
                 sprite.Palette = 2;
@@ -268,8 +270,29 @@ namespace ChompGame.MainGame.SpriteControllers
             });
         }
 
-        protected override bool HandleDestroy()
+
+        private void FireBullet(int xSpeed)
         {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.WorldSprite.Center = WorldSprite.Center;
+            bullet.Motion.YSpeed = 15;
+            bullet.Motion.XSpeed= xSpeed;
+        }
+
+        protected override void UpdateDying()
+        {
+            if(_hitPoints.Value > 0)
+            {
+                base.UpdateDying();
+                if (WorldSprite.Status == WorldSpriteStatus.Active)
+                    GetSprite().Palette = Palette;
+
+                return;
+            }
+
             if (_phase.Value < Phase.DestroyBegin)
             {
                 _phase.Value = Phase.DestroyBegin;
@@ -282,7 +305,8 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 HideTail();
                 OpenPath();
-                return true;
+                _stateTimer.Value = 0;
+                base.UpdateDying();
             }
 
             GetSprite().Visible = _levelTimer.IsMod(2);
@@ -307,22 +331,6 @@ namespace ChompGame.MainGame.SpriteControllers
                     bullet.Explode();
                 }
             }
-
-            return false;
-
         }
-
-        private void FireBullet(int xSpeed)
-        {
-            var bullet = _bullets.TryAddNew();
-            if (bullet == null)
-                return;
-
-            bullet.WorldSprite.Center = WorldSprite.Center;
-            bullet.Motion.YSpeed = 15;
-            bullet.Motion.XSpeed= xSpeed;
-        }
-
-        protected override void UpdateDying() { }
     }
 }

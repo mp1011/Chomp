@@ -388,10 +388,10 @@ namespace ChompGame.MainGame
             return 0;
         }
 
-        public void HandleBombCollision(CollisionInfo collisionInfo)
+        public bool HandleBombCollision(CollisionInfo collisionInfo)
         {
             if (!collisionInfo.DynamicBlockCollision)
-                return;
+                return false;
 
             int address = _partCount.Address + 1;
 
@@ -424,10 +424,13 @@ namespace ChompGame.MainGame
                     _gameModule.ScenePartsDestroyed.SetDestroyed(block.DestructionBitOffset);
 
                     _gameModule.WorldScroller.ModifyTiles((t,a) => SetTiles(block, t, a));
+                    return true;
                 }
               
                 address += block.ByteLength;
             }
+
+            return false;
         }
       
         private void SpawnExplosion(DynamicBlock block, int xMod, int yMod)

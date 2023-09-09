@@ -725,6 +725,11 @@ namespace ChompGame.MainGame.SceneModels
 
             var builder = new VramBuilder(masterPatternTable, vramPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
+            if (_sceneDefinition.IsLevelBossScene)
+                builder.SpriteYBegin = 4;
+            else
+                builder.SpriteYBegin = 5;
+
             builder.AddStatusBarTiles();            
             _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, vramPatternTable, memory);
 
@@ -783,9 +788,10 @@ namespace ChompGame.MainGame.SceneModels
             {
                 builder.AddSprite(SpriteTileIndex.Prize, 7, 0, 1, 1);
             }
-                
-            builder.AddDynamicTile(SpriteTileIndex.Block, 13, 6, 1, 1);
-            builder.AddDynamicTile(SpriteTileIndex.Coin, 15, 0, 1, 1);
+
+            builder.SpriteYBegin = 3;
+            builder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
+            builder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
         }
          
     }

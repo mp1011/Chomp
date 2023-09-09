@@ -11,6 +11,9 @@ namespace ChompGame.MainGame.SceneModels
         private readonly SpriteTileTable _spriteTileTable;
         private readonly SystemMemory _memory;
         private readonly Specs _specs;
+                
+        public int SpriteYBegin { get; set; }
+        private readonly int _dynamicTileY;
 
         private bool _enemy1Used, _extra1Used;
         public VramBuilder(
@@ -27,9 +30,9 @@ namespace ChompGame.MainGame.SceneModels
             _memory = memory;
         }
 
-        public byte AddSprite(int x, int y, int width, int height, int minY=5)
+        public byte AddSprite(int x, int y, int width, int height)
         {
-            Point spriteDestination = CalcSpriteDestination(width, height, minY);
+            Point spriteDestination = CalcSpriteDestination(width, height);
 
             _masterPatternTable.CopyTilesTo(
                    destination: _vramPatternTable,
@@ -44,9 +47,9 @@ namespace ChompGame.MainGame.SceneModels
             return (byte)(index);
         }
 
-        private Point CalcSpriteDestination(int width, int height, int minY)
+        private Point CalcSpriteDestination(int width, int height)
         {
-            Point destination = new Point(0, minY);
+            Point destination = new Point(0, SpriteYBegin);
 
             while(true)
             {
@@ -85,30 +88,25 @@ namespace ChompGame.MainGame.SceneModels
             return isClear;
         }
 
-        public byte AddEnemySprite(int x, int y, int width, int height, int yBegin=5)
+        public byte AddEnemySprite(int x, int y, int width, int height)
         {
-            var result = AddSprite(_enemy1Used ? SpriteTileIndex.Enemy2 : SpriteTileIndex.Enemy1, x, y, width, height, yBegin);
+            var result = AddSprite(_enemy1Used ? SpriteTileIndex.Enemy2 : SpriteTileIndex.Enemy1, x, y, width, height);
             _enemy1Used = true;
             return result;
         }
 
-        public byte AddExtraSprite(int x, int y, int width, int height, int yBegin = 5)
+        public byte AddExtraSprite(int x, int y, int width, int height)
         {
-            var result = AddSprite(_extra1Used ? SpriteTileIndex.Extra2 : SpriteTileIndex.Extra1, x, y, width, height, yBegin);
+            var result = AddSprite(_extra1Used ? SpriteTileIndex.Extra2 : SpriteTileIndex.Extra1, x, y, width, height);
             _extra1Used = true;
             return result;
         }
 
-        public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height, int yBegin = 5)
+        public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height)
         {
-            var tile = AddSprite(x, y, width, height, yBegin);
+            var tile = AddSprite(x, y, width, height);
             _spriteTileTable.SetTile(spriteIndex, tile);
             return tile;
-        }
-
-        public byte AddDynamicTile(SpriteTileIndex spriteIndex, int x, int y, int width, int height)
-        {
-            return AddSprite(spriteIndex, x, y, width, height, 3);
         }
 
         public void AddStatusBarTiles()
@@ -146,6 +144,16 @@ namespace ChompGame.MainGame.SceneModels
                 _memory);
         }
 
+        private void AddBossBodyTiles()
+        {
+            _masterPatternTable.CopyTilesTo(
+               destination: _vramPatternTable,
+               source: new InMemoryByteRectangle(8, 9, 8, 2),
+               destinationPoint: new Point(0, 6),
+               _specs,
+               _memory);
+        }
+
         public void AddBossSprites(Level currentLevel)
         {
             switch(currentLevel)
@@ -153,18 +161,18 @@ namespace ChompGame.MainGame.SceneModels
                 case Level.Level1_11_Boss:
 
                     AddSprite(SpriteTileIndex.Enemy1, 8, 1, 4, 2);
-                    AddSprite(SpriteTileIndex.Enemy2, 7, 1, 1, 1);
+                    AddSprite(SpriteTileIndex.Enemy2, 7, 1, 1, 1);                    
                     AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1);
-                    AddSprite(SpriteTileIndex.Extra2, 5, 0, 3, 1);
+                    AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     return;
 
                 case Level.Level1_17_Boss:
-                    AddSprite(SpriteTileIndex.Enemy1, 11, 9, 5, 3);
-                    AddSprite(SpriteTileIndex.Enemy2, 11, 12, 2, 2);
-                    var bulletTile = AddSprite(SpriteTileIndex.Extra1, 4, 0, 4, 1);
-                    _spriteTileTable.SetTile(SpriteTileIndex.Explosion, (byte)(bulletTile + 1));
-
+                    AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
+                    AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
+                    AddSprite(SpriteTileIndex.Extra1, 4, 0, 1, 1);
+                    AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
+                    AddBossBodyTiles();
                     return;
             }
            

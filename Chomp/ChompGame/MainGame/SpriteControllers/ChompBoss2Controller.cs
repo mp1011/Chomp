@@ -68,11 +68,6 @@ namespace ChompGame.MainGame.SpriteControllers
            
         }
        
-        protected override bool HandleDestroy()
-        {           
-            return false;
-        }
-
         protected override void UpdateDying() { }
     }
 }

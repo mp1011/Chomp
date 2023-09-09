@@ -155,12 +155,6 @@ namespace ChompGame.MainGame
             else
             {
                 sprite.Visible = Visible;
-
-                if (Status == WorldSpriteStatus.Dying)
-                    sprite.Palette = 3;
-                else 
-                    sprite.Palette = _palette.Value;
-
                 sprite.X = (byte)(X % _specs.NameTablePixelWidth);
                 sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
             }
@@ -188,6 +182,7 @@ namespace ChompGame.MainGame
             sprite.SizeX = _spriteDefinition.SizeX;
             sprite.SizeY = _spriteDefinition.SizeY;
             sprite.Visible = true;
+            sprite.Palette = _palette.Value;
             Visible = true;
 
             GameDebug.DebugLog($"Configure sprite #{SpriteIndex} Tile={sprite.Tile}", DebugLogFlags.SpriteSpawn);
