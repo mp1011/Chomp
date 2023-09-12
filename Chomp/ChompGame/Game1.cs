@@ -1,13 +1,12 @@
-﻿using ChompGame.Data;
-using ChompGame.Extensions;
+﻿using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame;
+using ChompGame.MainGame.Editors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ChompGame
@@ -86,20 +85,9 @@ namespace ChompGame
             if (ks.IsKeyDown(Keys.D8))
                 _paletteIndex = 7;
 
-
-            var ms = Mouse.GetState();
-            if(ms.LeftButton == ButtonState.Pressed)
-            {
-                if (!_wasMouseDown)
-                {
-                    _wasMouseDown = true;
-                    WriteMouseTile(ms.X, ms.Y);
-                }
-            }
-            else
-            {
-                _wasMouseDown = false;
-            }
+#if DEBUG
+            EditorInputHelper.Update(_screenRenderSize, _gameSystem.GetModule<TileModule>());
+#endif
 
             _gameSystem.OnLogicUpdate();
             base.Update(gameTime);

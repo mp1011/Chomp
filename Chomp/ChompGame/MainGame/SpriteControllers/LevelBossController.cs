@@ -156,8 +156,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                     HideBoss();
+                    Visible = false;
                     _spritesModule.GetSprite(_jawSpriteIndex).Visible = false;
-                    GetSprite().Visible = false;
                     _internalTimer.Value = 1;
                     _bossDeathTimer.Value = 1;
                 }
@@ -218,7 +218,8 @@ namespace ChompGame.MainGame.SpriteControllers
                         _internalTimer.Value++;
 
                     if (_internalTimer.Value == 36)
-                    {                        
+                    {
+                        Destroy();
                         return;
                     }
                 }
@@ -230,9 +231,9 @@ namespace ChompGame.MainGame.SpriteControllers
             var tileStart = 47;
             _tileModule.NameTable.SetFromString(0, 15, tileStart,
             @"13335
-                    9$BBD
-                    @#BBA
-                    00$D0");
+                    98BBD
+                    67BBA
+                    00CA0");
         }
 
         private void EraseBossTiles()

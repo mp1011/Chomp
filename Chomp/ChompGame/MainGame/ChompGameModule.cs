@@ -4,6 +4,7 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.Helpers;
+using ChompGame.MainGame.Editors;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -33,7 +34,8 @@ namespace ChompGame.MainGame
             LoadScene,
             PlayScene,
             Test,
-            GameOver
+            GameOver,
+            TileEditor
         }
 
 
@@ -65,6 +67,7 @@ namespace ChompGame.MainGame
         private BossBackgroundHandler _bossBackgroundHandler;
         private SceneDefinition _currentScene;
         private ScenePartsDestroyed _scenePartsDestroyed;
+        private TileEditor _tileEditor;
 
         public BossBackgroundHandler BossBackgroundHandler => _bossBackgroundHandler;
         public ScenePartsDestroyed ScenePartsDestroyed => _scenePartsDestroyed;
@@ -123,6 +126,7 @@ namespace ChompGame.MainGame
             _statusBar = new StatusBar(this, GameRAM);
             SpriteTileTable = new SpriteTileTable();
             _dynamicBlockController = new DynamicBlockController(this, SpriteTileTable);
+            _tileEditor = new TileEditor(_tileModule);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -223,12 +227,19 @@ namespace ChompGame.MainGame
                     LoadScene();
                     break;
                 case GameState.PlayScene:
-                    PlayScene();
+                    if (_tileEditor.CheckActivation())
+                        _gameState.Value = GameState.TileEditor;
+                    else 
+                        PlayScene();
                     break;
                 case GameState.Test:
                     break;
                 case GameState.GameOver:
                     GameOver();
+                    break;
+                case GameState.TileEditor:
+                    if(!_tileEditor.Update())
+                        _gameState.Value = GameState.PlayScene;
                     break;
             }
         }
@@ -484,8 +495,12 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
-            _rasterInterrupts.OnHBlank();
-            _bossBackgroundHandler.OnHBlank();
+            if (!_tileEditor.IsRunning)
+            {
+                _rasterInterrupts.OnHBlank();
+                _bossBackgroundHandler.OnHBlank();
+            }
+
             PaletteModule.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
