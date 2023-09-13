@@ -319,7 +319,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level1_17_Boss;
+            _currentLevel.Value = Level.Level2_2_Fly;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

@@ -20,7 +20,8 @@ namespace ChompGame.MainGame.SpriteModels
         Door,
         Platform,
         Prize,
-        Plane
+        Plane,
+        AutoscrollEnemy3
     }
 
     class SpriteTileTable

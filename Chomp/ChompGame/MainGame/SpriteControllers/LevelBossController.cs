@@ -110,6 +110,13 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateDying() 
         {
+            if(_hitPoints.Value > 0)
+            {
+                base.UpdateDying();
+                GetSprite().Palette = Palette;
+                return;
+            }
+
             if (_phase.Value < Phase.Dying)
             {
                 _internalTimer.Value = 0;

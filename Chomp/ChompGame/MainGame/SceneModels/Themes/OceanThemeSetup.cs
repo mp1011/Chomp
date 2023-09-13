@@ -19,9 +19,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
                                   0000000000000000
                                   0000000000000000";
 
-            nameTable.SetFromString(0, bgPos+1, 0, waterBlock, shouldReplace: b => b == 0);
-            nameTable.SetFromString(16, bgPos + 1, 0, waterBlock, shouldReplace: b => b == 0);
-            nameTable.SetFromString(48, bgPos + 1, 0, waterBlock, shouldReplace: b => b == 0);
+            nameTable.SetFromString(0, bgPos+1, 16, waterBlock, shouldReplace: b => b == 0);
+            nameTable.SetFromString(16, bgPos + 1, 16, waterBlock, shouldReplace: b => b == 0);
+            nameTable.SetFromString(48, bgPos + 1, 16, waterBlock, shouldReplace: b => b == 0);
         }
 
         public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)

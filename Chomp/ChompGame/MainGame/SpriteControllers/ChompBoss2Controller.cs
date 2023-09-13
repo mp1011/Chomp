@@ -40,7 +40,7 @@ namespace ChompGame.MainGame.SpriteControllers
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
+            : base(SpriteType.Chomp, SpriteTileIndex.AutoscrollEnemy3, gameModule, memoryBuilder)
         {
             _player = player;
             _audioService = gameModule.AudioService;
@@ -65,7 +65,10 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void UpdateActive()
         {
             _motionController.Update();
-           
+
+            _motion.XSpeed = -20;
+            _motion.TargetXSpeed = 0;
+            _motion.XAcceleration = 10;
         }
        
         protected override void UpdateDying() { }

@@ -38,10 +38,9 @@ namespace ChompGame.MainGame.SpriteControllers
             _player = player;
             _bulletControllers = bulletControllers;
 
-            throw new System.NotImplementedException();
-          //  _thrust = new GameBit(_state.Address, Bit.Bit4, memoryBuilder.Memory);
-          //  _thrustCount = new MaskedByte(_state.Address, Bit.Right3, memoryBuilder.Memory);
-          //  _variation = new GameBit(_state.Address, Bit.Bit3, memoryBuilder.Memory);
+            _thrust = new GameBit(_stateTimer.Address, Bit.Bit4, memoryBuilder.Memory);
+            _thrustCount = new MaskedByte(_stateTimer.Address, Bit.Right3, memoryBuilder.Memory);
+            _variation = new GameBit(_stateTimer.Address, Bit.Bit5, memoryBuilder.Memory);
             Palette = 0;
         }
 
@@ -49,6 +48,8 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             bool variation = _variation.Value;
             _stateTimer.Value = 0;
+            _thrust.Value = false;
+            _thrustCount.Value = 0;
             Palette = 0;
 
             _variation.Value = variation;
@@ -90,7 +91,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _thrust.Value = true;
             }
-            else if (_thrustCount.Value <= 3)
+            else if (_thrustCount.Value <= 2)
             {
                 if (_variation.Value && _motion.XSpeed == 0)
                 {
@@ -109,7 +110,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else
             {
-                Palette = 3;
+                GetSprite().Palette = 3;
                 _motion.TargetXSpeed = 0;
                 _motion.TargetYSpeed = 0;
                 _motion.XAcceleration = Brake * 2;

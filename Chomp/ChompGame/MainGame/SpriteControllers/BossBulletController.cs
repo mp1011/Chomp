@@ -63,6 +63,8 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _state.Value = 0;
+            Palette = 3;
+            GetSprite().Palette = 3;
         }
 
         protected override void UpdateDying()
@@ -96,6 +98,9 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_state.Value >= 40)
                 return;
 
+            Palette = 3;
+            GetSprite().Palette = 3;
+
             _audioService.PlaySound(ChompAudioService.Sound.Break);
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
@@ -110,6 +115,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             Palette = 0;
+            GetSprite().Palette = 0;
+
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 50;
             _motionController.Motion.XSpeed = 0;

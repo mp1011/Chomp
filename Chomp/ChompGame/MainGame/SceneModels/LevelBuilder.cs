@@ -737,9 +737,8 @@ namespace ChompGame.MainGame.SceneModels
             {
                 //player sprite
                 builder.AddSprite(SpriteTileIndex.Player, 0, 0, 1, 1);
-                builder.AddSprite(SpriteTileIndex.Prize, 15, 0, 1, 1);
                 builder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);
-                builder.AddSprite(SpriteTileIndex.Bomb, 5, 1, 1, 1);
+                builder.AddSprite(SpriteTileIndex.Bomb, 4, 1, 1, 1);
             }
             else if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
@@ -769,7 +768,8 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
             {
                 builder.AddEnemySprite(5, 1, 2, 1);
-                builder.AddExtraSprite(5, 0, 2, 1);
+                builder.AddExtraSprite(4, 1, 1, 1);
+                builder.AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
