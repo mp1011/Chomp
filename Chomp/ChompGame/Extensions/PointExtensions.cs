@@ -1,4 +1,5 @@
 ﻿
+using ChompGame.Helpers;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -16,12 +17,32 @@ namespace ChompGame.Extensions
             return new Point(p.X + x, p.Y + y);
         }
 
+        public static Vector2 Normalize(this Point p)
+        {
+            var v = new Vector2(p.X, p.Y);
+            v.Normalize();
+            return v;
+        }
+
+        public static Point AdjustLength(this Point p, int length)
+        {
+            var normalized = p.Normalize();
+            return new Point((int)(normalized.X * length), (int)(normalized.Y * length));
+        }
+
         public static int DistanceSquared(this Point start, Point target)
         {
             var xx = (start.X - target.X) * (start.X - target.X);
             var yy = (start.Y - target.Y) * (start.Y - target.Y);
 
             return xx + yy;
+        }
+
+        public static int Magnitude(this Point p)
+        {
+            var xx = p.X * p.X;
+            var yy = p.Y * p.Y;
+            return (int)Math.Sqrt(xx + yy);
         }
 
         public static Point GetVectorTo(this Point start, Point target, int speed)
@@ -42,5 +63,14 @@ namespace ChompGame.Extensions
             var deg = (int)MathHelper.ToDegrees((float)rad);
             return deg.NMod(360);
         }
+
+        public static Point RotateDeg(this Point pt, int degrees)
+        {
+            var deg = (pt.Degrees() + degrees).NMod(360);
+            var length = pt.Magnitude();
+            
+            return GameMathHelper.PointFromAngle(deg, length);             
+        }
+
     }
 }

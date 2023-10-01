@@ -7,7 +7,7 @@
 
         public int TargetXSpeed => 0;
 
-        public void Apply(WorldSprite sprite) { }
+        public void Apply(IWithPosition sprite) { }
 
         public void Stop() { }
     }

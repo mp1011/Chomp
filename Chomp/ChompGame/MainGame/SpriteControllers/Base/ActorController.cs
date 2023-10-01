@@ -233,22 +233,22 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         public void EnsureInFrontOf(ISpriteController other)
         {
-            if (SpriteIndex < other.SpriteIndex)
-            {
-                var otherSpriteIndex = other.SpriteIndex;
-                other.SpriteIndex = SpriteIndex;
-                SpriteIndex = otherSpriteIndex;
+            if (SpriteIndex >= other.SpriteIndex)
+                return;
 
-                var thisSprite = GetSprite();
-                thisSprite.Palette = Palette;
-                WorldSprite.ConfigureSprite(thisSprite);
-                WorldSprite.UpdateSprite();
+            var otherSpriteIndex = other.SpriteIndex;
+            other.SpriteIndex = SpriteIndex;
+            SpriteIndex = otherSpriteIndex;
 
-                var otherSprite = other.GetSprite();
-                otherSprite.Palette = other.Palette;
-                other.WorldSprite.ConfigureSprite(otherSprite);
-                other.WorldSprite.UpdateSprite();
-            }
+            var thisSprite = GetSprite();
+            thisSprite.Palette = Palette;
+            WorldSprite.ConfigureSprite(thisSprite);
+            WorldSprite.UpdateSprite();
+
+            var otherSprite = other.GetSprite();
+            otherSprite.Palette = other.Palette;
+            other.WorldSprite.ConfigureSprite(otherSprite);
+            other.WorldSprite.UpdateSprite();
         }
 
         protected abstract void UpdateActive();

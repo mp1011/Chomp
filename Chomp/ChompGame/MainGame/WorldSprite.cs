@@ -22,7 +22,7 @@ namespace ChompGame.MainGame
         FarOutOfBounds=2
     }
 
-    class WorldSprite 
+    class WorldSprite : IWithPosition
     {
         private SpriteTileTable _spriteTileTable;
         protected readonly Specs _specs;

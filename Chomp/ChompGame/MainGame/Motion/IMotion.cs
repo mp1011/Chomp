@@ -10,6 +10,6 @@
 
         void Stop();
 
-        void Apply(WorldSprite sprite);
+        void Apply(IWithPosition sprite);
     }
 }

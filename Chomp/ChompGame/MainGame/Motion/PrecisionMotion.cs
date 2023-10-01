@@ -5,6 +5,9 @@ namespace ChompGame.MainGame
 {
     class PrecisionMotion : IMotion
     {
+        public const int Bytes = 4;
+        public int Address { get; }
+
         private byte _motionScale = 4;
         private ByteVector _motion;
         private GameByte _subPixelX;
@@ -26,12 +29,21 @@ namespace ChompGame.MainGame
 
         public PrecisionMotion(SystemMemoryBuilder memoryBuilder)
         {
+            Address = memoryBuilder.CurrentAddress;
             _motion = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
             _subPixelX = memoryBuilder.AddByte();
             _subPixelY = memoryBuilder.AddByte();
         }
 
-        public void Apply(WorldSprite sprite)
+        public PrecisionMotion(SystemMemory memory, int address)
+        {
+            Address = address;
+            _motion = new ByteVector(new GameByte(address, memory), new GameByte(address + 1, memory));
+            _subPixelX = new GameByte(address + 2, memory);
+            _subPixelY = new GameByte(address + 3, memory);
+        }
+
+        public void Apply(IWithPosition sprite)
         {
             int sx = _subPixelX.Value;
             sx += _motion.X * _motionScale;

@@ -13,6 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class ChompBoss1Controller : EnemyController
     {
         public const int BossHp = 3;
+        public const int NumTailSections = 4;
 
         private readonly WorldSprite _player;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
@@ -20,13 +21,12 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly MusicModule _music;
         private readonly WorldScroller _scroller;
         private readonly Specs _specs;
-        private readonly GameByteArray _tailSprites;
         private readonly NibblePoint _motionTarget;
+        private ChompTail _tail;
 
         private const int MaxY = 32;
         private const int MinY = 12;
 
-        private const int TailSections = 4;
 
         private Point Target => new Point(8 + _motionTarget.X * 4, 8 + _motionTarget.Y * 2);
      
@@ -63,8 +63,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _phase = new GameByteEnum<Phase>(_phaseByte);
             _scroller = gameModule.WorldScroller;
             _specs = gameModule.Specs;
-            _tailSprites = new GameByteArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            memoryBuilder.AddBytes(TailSections);
+
+            _tail = new ChompTail(memoryBuilder, NumTailSections, _spritesModule, _spriteTileTable);
 
             _motionTarget = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddByte();
@@ -74,9 +74,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void HideTail()
         {
-            for (int i = 0; i < TailSections; i++)
+            for (int i = 0; i < NumTailSections; i++)
             {
-                var sprite = _spritesModule.GetSprite(_tailSprites[i]);
+                var sprite = _tail.GetSprite(i);
                 sprite.Y = 0;
             }
         }
@@ -85,47 +85,20 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Point anchor = new Point(30, 16);
 
-            int intervalX = (WorldSprite.X - anchor.X) / TailSections;
-            int intervalY = (WorldSprite.Y - anchor.Y) / TailSections;
+            int intervalX = (WorldSprite.X - anchor.X) / NumTailSections;
+            int intervalY = (WorldSprite.Y - anchor.Y) / NumTailSections;
 
-            for (int i = 0; i < TailSections; i++)
+            for (int i = 0; i < NumTailSections; i++)
             {
-                var sprite = _spritesModule.GetSprite(_tailSprites[i]);
+                var sprite = _tail.GetSprite(i);
                 sprite.X = (byte)(anchor.X + (intervalX * i));
                 sprite.Y = (byte)(anchor.Y + (intervalY * i));
             }
         }
 
-        protected override void BeforeInitializeSprite() 
+        protected override void BeforeInitializeSprite()
         {
-            if (_stateTimer.Value == 0)
-                CreateTail();
-        }
-
-        private void CreateTail()
-        {
-            for (int i = 0; i < TailSections; i++)
-            {
-                var spriteIndex = _spritesModule.GetFreeSpriteIndex();
-                if (spriteIndex < SpriteIndex)
-                {
-                    _tailSprites[i] = SpriteIndex;
-                    SpriteIndex = spriteIndex;
-                    spriteIndex = _tailSprites[i];
-                }
-                else
-                    _tailSprites[i] = spriteIndex;
-
-                var sprite = _spritesModule.GetSprite(spriteIndex);
-                sprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Enemy1) + 4);
-                sprite.SizeX = 1;
-                sprite.SizeY = 1;
-                sprite.Palette = 2;
-                sprite.Visible = true;
-                sprite.X = 0;
-                sprite.Y = 0;
-            }
-
+            _tail.CreateTail();
             SpriteIndex = _spritesModule.GetFreeSpriteIndex();
         }
 

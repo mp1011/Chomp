@@ -73,7 +73,7 @@ namespace ChompGame.MainGame
             TargetYSpeed = speed;
         }
 
-        public void Apply(WorldSprite sprite)
+        public void Apply(IWithPosition sprite)
         {
             if ((_timer.Value % 4) == 0)
             {
@@ -123,7 +123,16 @@ namespace ChompGame.MainGame
 
             var currentAngle = new Point(XSpeed, YSpeed);
 
-            var angleDifference = targetAngle.Degrees() - currentAngle.Degrees();
+            if(XSpeed == 0 && YSpeed == 0)
+            {
+                SetXSpeed(targetAngle.X);
+                SetYSpeed(targetAngle.Y);
+                return;
+            }
+
+            var angleDifferenceA = (targetAngle.Degrees() - currentAngle.Degrees()).NMod(360);
+            var angleDifferenceB = (currentAngle.Degrees() - targetAngle.Degrees()).NMod(360);
+            var angleDifference = angleDifferenceA < angleDifferenceB ? angleDifferenceA : angleDifferenceB;
 
             Point newAngle = Point.Zero;
             if (angleDifference < turnAngle)

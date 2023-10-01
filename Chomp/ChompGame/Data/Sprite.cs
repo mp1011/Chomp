@@ -1,10 +1,11 @@
 ﻿using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame;
 
 namespace ChompGame.Data
 {
-    public class Sprite
+    public class Sprite : IWithPosition
     {
         public const int ByteLength = 4;
         public int Address { get; }
@@ -158,6 +159,7 @@ namespace ChompGame.Data
             get => _palette.Value;
             set => _palette.Value = value;
         }
-
+        int IWithPosition.X { get => X; set => X = (byte)value; }
+        int IWithPosition.Y { get => Y; set => Y = (byte)value; }
     }
 }
