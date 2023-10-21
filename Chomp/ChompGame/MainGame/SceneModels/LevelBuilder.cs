@@ -501,7 +501,7 @@ namespace ChompGame.MainGame.SceneModels
             
             foreach(var sprite in _sceneDefinition.Sprites)
             {
-                AssignSpriteControllers(sprite, spritePools, memoryBuilder, playerController);
+                AssignSpriteControllers(sprite, spritePools, memoryBuilder, playerController, prizeControllers);
             }
 
             return new SceneSpriteControllers(_gameModule, playerController,
@@ -517,7 +517,8 @@ namespace ChompGame.MainGame.SceneModels
         private void AssignSpriteControllers(SpriteType spriteType, 
             ICollidableSpriteControllerPool[] spritePools,
             SystemMemoryBuilder memoryBuilder,
-            PlayerController playerController)
+            PlayerController playerController,
+            SpriteControllerPool<PrizeController> prizeControllers)
         {
             int enemyIndex = spritePools[0] == null ? 0 : 1;
             int extraIndex = spritePools[2] == null ? 2 : 3;
@@ -550,7 +551,7 @@ namespace ChompGame.MainGame.SceneModels
                     var bulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                       8,
                       _gameModule.SpritesModule,
-                      () => new BossBulletController(_gameModule, memoryBuilder));
+                      () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision:false));
 
                     spritePools[extraIndex] = bulletControllers;
 
@@ -571,14 +572,15 @@ namespace ChompGame.MainGame.SceneModels
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
 
-                    AssignBossSpriteControllers(spritePools, memoryBuilder, playerController);
+                    AssignBossSpriteControllers(spritePools, memoryBuilder, playerController, prizeControllers);
                     break;
             }
         }
 
         private void AssignBossSpriteControllers(ICollidableSpriteControllerPool[] spritePools,
             SystemMemoryBuilder memoryBuilder,
-            PlayerController playerController)
+            PlayerController playerController,
+            SpriteControllerPool<PrizeController> prizeControllers)
         {
             int enemyIndex = spritePools[0] == null ? 0 : 1;
             int extraIndex = spritePools[2] == null ? 2 : 3;
@@ -590,7 +592,7 @@ namespace ChompGame.MainGame.SceneModels
                     var bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                           3,
                           _gameModule.SpritesModule,
-                          () => new BossBulletController(_gameModule, memoryBuilder));
+                          () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
 
                     spritePools[extraIndex] = bullets;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompBoss1Controller>(
@@ -604,7 +606,7 @@ namespace ChompGame.MainGame.SceneModels
                     var bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                         6,
                         _gameModule.SpritesModule,
-                        () => new BossBulletController(_gameModule, memoryBuilder));
+                        () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: false));
 
                     spritePools[extraIndex] = bossBulletControllers;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
@@ -618,7 +620,11 @@ namespace ChompGame.MainGame.SceneModels
                     spritePools[3] = new EnemyOrBulletSpriteControllerPool<ChompBoss2Controller>(
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
-                            () => new ChompBoss2Controller(playerController.WorldSprite, bossBulletControllers, _gameModule, memoryBuilder));
+                            () => new ChompBoss2Controller(playerController.WorldSprite, 
+                                bossBulletControllers,
+                                prizeControllers,
+                                _gameModule,
+                                memoryBuilder));
 
                     break;
             }

@@ -15,9 +15,12 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private readonly WorldSprite _player;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
+        private readonly SpriteControllerPool<PrizeController> _prizes;
+
         private readonly ChompAudioService _audioService;
         private readonly Specs _specs;
         private readonly ChompTail _tail;
+        private readonly RandomModule _randomModule;
         private readonly NibblePoint _motionTarget;
         private const int NumTailSections = 6;
         private PrecisionMotion _firstTailSectionMotion;
@@ -28,16 +31,20 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Init=0,
             Chase=1,
-            Pause=2
+            Pause=2,
+            Loop=3,
+            ReCenter=4
         }
 
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
+        protected override bool AlwaysActive => true;
 
         private GameByteEnum<Phase> _phase;
 
         public ChompBoss2Controller(WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
+            SpriteControllerPool<PrizeController> prizes,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Chomp, SpriteTileIndex.AutoscrollEnemy3, gameModule, memoryBuilder)
@@ -45,6 +52,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _player = player;
             _audioService = gameModule.AudioService;
             _bullets = bullets;
+            _prizes = prizes;
+            _randomModule = gameModule.RandomModule;
 
             var phase = new MaskedByte(_stateTimer.Address, Bit.Left4, memoryBuilder.Memory, 4);
             _phase = new GameByteEnum<Phase>(phase);
@@ -81,13 +90,30 @@ namespace ChompGame.MainGame.SpriteControllers
             _phase.Value = p;
         }
 
+        private void CheckRecenter()
+        {
+            if(WorldSprite.X < 0
+                || WorldSprite.X > _specs.ScreenWidth
+                || WorldSprite.Y < 0
+                || WorldSprite.Y > _specs.ScreenHeight)
+            {
+                SetPhase(Phase.ReCenter);
+            }
+        }
+
         protected override void UpdateActive()
         {
             _motionController.Update();
             if (_levelTimer.IsMod(16))
                 _stateTimer.Value++;
 
+            if (_levelTimer.Value == 0)
+                SpawnCoins();
+
             UpdateTail();
+
+            if(_phase.Value != Phase.Init)
+                CheckRecenter();
 
             switch (_phase.Value)
             {
@@ -104,7 +130,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     return;
                 case Phase.Chase:
-                    var speed = 60 - _stateTimer.Value*3;
+                    var speed = 60 - _stateTimer.Value * 3;
                     _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
 
                     if (_stateTimer.Value == 10)
@@ -118,10 +144,74 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.YAcceleration = 2;
 
                     if (_stateTimer.Value == 6)
-                        SetPhase(Phase.Chase);
+                    {
+                        if (_randomModule.RandomChance(70))
+                            SetPhase(Phase.Chase);
+                        else
+                            SetPhase(Phase.Loop);
+                    }
+                    return;
+
+                case Phase.Loop:
+
+                    if (_stateTimer.Value == 0)
+                    {
+                        _motion.TargetXSpeed = 20;
+                        _motion.XAcceleration = 5;
+                    }
+
+                    if (_stateTimer.Value > 1)
+                    {
+                        _motion.Turn(8, 40);
+
+                        if (_levelTimer.IsMod(16))
+                            FireBullet();
+                    }
+            
+                    if (_stateTimer.Value == 15)
+                        SetPhase(Phase.Pause);
+
+                    return;
+
+                case Phase.ReCenter:
+                    var target = new Point(32, 32);
+                    _motion.TargetTowards(WorldSprite, target, 20);
+
+                    var pos = new Point(WorldSprite.X, WorldSprite.Y);
+                    if (pos.DistanceSquared(target) < 64)
+                        SetPhase(Phase.Pause);
+
                     return;
             }
 
+        }
+
+        private void SpawnCoins()
+        {
+            if (!_prizes.CanAddNew())
+                return;
+
+            var prize = _prizes.TryAddNew();
+            if (prize == null)
+                return;
+
+            prize.WorldSprite.X = _specs.ScreenWidth;
+            prize.WorldSprite.Y = 16 + (_rng.Next() % (_specs.ScreenHeight - 20)) ;
+            prize.Variation = PrizeController.Coin3;
+            prize.AfterSpawn(_prizes);
+        }
+
+        private void FireBullet()
+        {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            bullet.WorldSprite.Center = WorldSprite.Center;
+            bullet.Motion.YSpeed = _motion.YSpeed;
+            bullet.Motion.XSpeed = _motion.XSpeed;
         }
 
         private void InitTail()

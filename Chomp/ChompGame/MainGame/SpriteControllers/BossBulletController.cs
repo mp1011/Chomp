@@ -13,6 +13,8 @@ namespace ChompGame.MainGame.SpriteControllers
     class BossBulletController : ActorController, ICollidesWithPlayer, ICollidableSpriteController
     {
         private GameByte _state;
+        private GameBit _destroyOnCollision;
+
         private IMotionController _motionController; 
         private readonly CollisionDetector _collisionDetector;
         private readonly ChompAudioService _audioService;
@@ -25,19 +27,21 @@ namespace ChompGame.MainGame.SpriteControllers
         public BossBulletController(
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder,
+            bool destroyOnCollision,
             SpriteType spriteType = SpriteType.BossBullet) : base(spriteType, gameModule, memoryBuilder, SpriteTileIndex.Extra1)
         {
             _collisionDetector = gameModule.CollissionDetector;
             _audioService = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _specs = gameModule.Specs;
-            _state = memoryBuilder.AddByte();
-
+            _state = memoryBuilder.AddMaskedByte(Bit.Right7);
+            _destroyOnCollision = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
             var motionController = new SimpleMotionController(memoryBuilder, WorldSprite,
                 new SpriteDefinition(spriteType, memoryBuilder.Memory));
 
             PrecisionMotion = motionController.Motion;
             _motionController = motionController;
+            _destroyOnCollision.Value = destroyOnCollision;
             Palette = 3;
         }
 
@@ -52,11 +56,13 @@ namespace ChompGame.MainGame.SpriteControllers
             if(_levelTimer.Value.IsMod(4))
                 _state.Value++;
 
-
-            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motionController.Motion);
-            if(collisionInfo.XCorrection != 0 || collisionInfo.YCorrection != 0)
+            if (_destroyOnCollision.Value)
             {
-                Explode();
+                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motionController.Motion);
+                if (collisionInfo.XCorrection != 0 || collisionInfo.YCorrection != 0)
+                {
+                    Explode();
+                }
             }
         }
 

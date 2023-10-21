@@ -116,6 +116,15 @@ namespace ChompGame.MainGame
             TargetTowards(source, destination.Bounds.Center, speed);
         }
 
+        public void Turn(int turnAngle, int speed)
+        {
+            var currentAngle = new Point(XSpeed, YSpeed);
+            var newAngleDegrees = (currentAngle.Degrees() + turnAngle).NMod(360);
+            var newAngle = GameMathHelper.PointFromAngle(newAngleDegrees, speed);
+            SetXSpeed(newAngle.X);
+            SetYSpeed(newAngle.Y);
+        }
+
         public void TurnTowards(WorldSprite source, Point destination, int turnAngle, int speed)
         {
             var targetAngle = source.Bounds.Center
