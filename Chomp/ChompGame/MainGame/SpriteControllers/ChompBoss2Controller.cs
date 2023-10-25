@@ -107,7 +107,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_levelTimer.IsMod(16))
                 _stateTimer.Value++;
 
-            if (_levelTimer.Value == 0)
+            if (_rng.RandomChance(50) && _levelTimer.Value.IsMod(64))
                 SpawnCoins();
 
             UpdateTail();
@@ -240,9 +240,14 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             var sectionPos = new Point(section.X, section.Y);
             var distSq = sectionPos.DistanceSquared(target);
-
             int speed = 60 - (sectionNumber * 6);
 
+            if (distSq > 24 * 24)
+            {
+                speed = 120;
+            }
+
+           
             PrecisionMotion sectionMotion = new PrecisionMotion(_spritesModule.GameSystem.Memory,
                 _firstTailSectionMotion.Address + (sectionNumber * PrecisionMotion.Bytes));
            
@@ -263,6 +268,16 @@ namespace ChompGame.MainGame.SpriteControllers
             return new Point(section.X + targetOffset.X, section.Y + targetOffset.Y);
         }
        
-        protected override void UpdateDying() { }
+        protected override void UpdateDying() 
+        {
+            if (_hitPoints.Value > 0)
+            {
+                base.UpdateDying();
+                if (WorldSprite.Status == WorldSpriteStatus.Active)
+                    GetSprite().Palette = Palette;
+
+                return;
+            }
+        }
     }
 }

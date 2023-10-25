@@ -12,21 +12,22 @@ namespace ChompGame.MainGame.SpriteControllers
     class BombController : ActorController
     {
         private readonly ScenePartsDestroyed _scenePartsDestroyed;
-        private readonly CollisionDetector _collisionDetector;
-        private readonly PlayerController _playerController;
+        protected readonly CollisionDetector _collisionDetector;
+        protected readonly PlayerController _playerController;
         private readonly DynamicBlockController _dynamicBlockController;
-        private readonly GameBit _isThrown;
-        private readonly GameByteEnum<BombState> _bombState;
+        protected readonly GameBit _isThrown;
+        protected readonly GameByteEnum<BombState> _bombState;
 
 
-        private IMotionController _motionController;
-        private AcceleratedMotion _motion;
+        protected IMotionController _motionController;
+        protected AcceleratedMotion _motion;
 
         public AcceleratedMotion AcceleratedMotion => _motion;
 
-        enum BombState : byte
+        protected enum BombState : byte
         {
             Idle=0,
+            IdleMid=5,
             RiseBegin=10,
             RiseEnd=14,
             Explode=20,
@@ -44,7 +45,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _collisionDetector = gameModule.CollissionDetector;
             _playerController = playerController;
             _dynamicBlockController = gameModule.DynamicBlocksController;
-
             var state = memoryBuilder.AddByte();
             _bombState = new GameByteEnum<BombState>(new MaskedByte(state.Address, Bit.Right5, memoryBuilder.Memory));
             _isThrown = new GameBit(state.Address, Bit.Bit5, memoryBuilder.Memory);

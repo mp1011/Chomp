@@ -123,6 +123,7 @@ namespace ChompGame.MainGame
             return sound switch {
                 Sound.Break => _audioModule.GetChannel(1),
                 Sound.PlayerDie => _audioModule.GetChannel(1),
+                Sound.Reward => _audioModule.GetChannel(1),
                 _ => _audioModule.GetChannel(0)
             };
         }

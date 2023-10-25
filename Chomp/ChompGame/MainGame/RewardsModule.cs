@@ -62,6 +62,9 @@ namespace ChompGame.MainGame
 
         public void CheckRewards(int coinsAdded)
         {
+            if (_currentScene.IsAutoScroll)
+                coinsAdded *= 2;
+
             if(coinsAdded >= _nextReward.Value)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Reward);
@@ -76,15 +79,31 @@ namespace ChompGame.MainGame
 
         private void AddReward(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)
         {
-            if (_currentScene.IsLevelBossScene || _currentScene.IsMidBossScene || statusBar.Health == StatusBar.FullHealth)
+            if (_currentScene.IsLevelBossScene 
+                    || _currentScene.IsMidBossScene 
+                    || _currentScene.IsAutoScroll
+                    || statusBar.Health == StatusBar.FullHealth)
             {
                 var bomb = sceneSpriteControllers.BombControllers.TryAddNew();
                 if (bomb != null)
                 {
-                    bomb.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X;
-                    bomb.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
-                    bomb.AcceleratedMotion.SetYSpeed(-80);
-                    bomb.FallCheck = _currentScene.SpriteFallCheck;
+                   
+                    if (_currentScene.IsAutoScroll)
+                    {
+                        bomb.WorldSprite.X = 64;
+                        bomb.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y;
+
+                        bomb.AcceleratedMotion.SetXSpeed(0);
+                        bomb.AcceleratedMotion.SetYSpeed(0);
+                    }
+                    else
+                    {
+                        bomb.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X;
+                        bomb.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
+
+                        bomb.AcceleratedMotion.SetYSpeed(-80);
+                        bomb.FallCheck = _currentScene.SpriteFallCheck;
+                    }
                     _rewardSpriteIndex.Value = bomb.SpriteIndex;
                 }
             }

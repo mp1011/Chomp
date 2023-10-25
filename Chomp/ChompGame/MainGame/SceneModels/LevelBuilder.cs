@@ -458,7 +458,7 @@ namespace ChompGame.MainGame.SceneModels
                 bombControllers = new SpriteControllerPool<BombController>(
                    size: 2,
                    _gameModule.SpritesModule,
-                   () => new BombController(_gameModule, playerController, memoryBuilder));
+                   () => new PlaneBombController(_gameModule, playerController, memoryBuilder));
 
                 prizeControllers = new SpriteControllerPool<PrizeController>(size: 10, _gameModule.SpritesModule,
                     () => new PrizeController(_gameModule, memoryBuilder));
