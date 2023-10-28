@@ -7,6 +7,10 @@ namespace ChompGame.Extensions
 {
     public static class PointExtensions
     {
+        public static Point ClampTo(this Point p, int width, int height, int pad) =>
+            new Point(p.X.Clamp(-pad, width + pad),
+                p.Y.Clamp(-pad, height + pad));
+
         public static Point Divide(this Point p, int i)
         {
             return new Point(p.X / i, p.Y / i);

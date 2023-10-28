@@ -24,16 +24,14 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly NibblePoint _motionTarget;
         private const int NumTailSections = 6;
         private PrecisionMotion _firstTailSectionMotion;
-
-        private Point Target => new Point(8 + _motionTarget.X * 4, 8 + _motionTarget.Y * 2);
-     
         enum Phase : byte 
         {
             Init=0,
             Chase=1,
             Pause=2,
             Loop=3,
-            ReCenter=4
+            ReCenter=4,
+            Dying=5
         }
 
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -103,6 +101,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateActive()
         {
+            if (_phase.Value > Phase.Init)
+            {
+                if (WorldSprite.X < -4)
+                    WorldSprite.X = -4;
+                if (WorldSprite.X > _specs.ScreenWidth + 4)
+                    WorldSprite.X = _specs.ScreenWidth + 4;
+            }
+
             _motionController.Update();
             if (_levelTimer.IsMod(16))
                 _stateTimer.Value++;
@@ -133,7 +139,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     var speed = 60 - _stateTimer.Value * 3;
                     _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
 
-                    if (_stateTimer.Value == 10)
+                    if (_stateTimer.Value == 10 || WorldSprite.X <= 0)
                         SetPhase(Phase.Pause);
                     return;
 
@@ -238,13 +244,19 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private Point UpdateTailSection(Sprite section, Point target, int sectionNumber)
         {
+            target = target.ClampTo(_specs.ScreenWidth, _specs.ScreenHeight, 0);
+
             var sectionPos = new Point(section.X, section.Y);
             var distSq = sectionPos.DistanceSquared(target);
             int speed = 60 - (sectionNumber * 6);
 
             if (distSq > 24 * 24)
             {
-                speed = 120;
+                var offset = target.GetVectorTo(sectionPos, 6);
+                section.X = (target.X + offset.X).ByteClamp(_specs.ScreenWidth);
+                section.Y = (target.Y + offset.Y).ByteClamp(_specs.ScreenHeight);
+
+                return new Point(section.X, section.Y);
             }
 
            
@@ -256,6 +268,9 @@ namespace ChompGame.MainGame.SpriteControllers
             sectionMotion.YSpeed = angleTo.Y;
 
             sectionMotion.Apply(section);
+
+            section.X = section.X.ByteClamp(_specs.ScreenWidth);
+            section.Y = section.Y.ByteClamp(_specs.ScreenHeight);
 
             if (_phase.Value == Phase.Pause)
                 return target;
@@ -277,6 +292,60 @@ namespace ChompGame.MainGame.SpriteControllers
                     GetSprite().Palette = Palette;
 
                 return;
+            }
+
+            if(_phase.Value != Phase.Dying)            
+                SetPhase(Phase.Dying);
+
+            _stateTimer.Value++;
+
+            if(_stateTimer.Value == 15)
+            {
+                _stateTimer.Value = 0;
+                if (!DestroyNextTail())
+                {
+                    CreateExplosion(WorldSprite.X, WorldSprite.Y);
+                    CreateExplosion(WorldSprite.X + 4, WorldSprite.Y + 4);
+                    CreateExplosion(WorldSprite.X + 2, WorldSprite.Y);
+                    CreateExplosion(WorldSprite.X + 2, WorldSprite.Y + 2);
+
+                    base.UpdateDying();
+                }
+            }            
+        }
+
+        private bool DestroyNextTail()
+        {
+            int index = NumTailSections - 1;
+
+            while(_tail.IsErased(index))
+            {
+                index--;
+                if (index < 0)
+                    return false;
+            }
+
+            var tail = _tail.GetSprite(index);
+            var x = tail.X;
+            var y = tail.Y;
+            _tail.Erase(index);
+
+            _audioService.PlaySound(ChompAudioService.Sound.Break);
+            CreateExplosion(x, y);
+           
+            return true;
+        }
+
+        private void CreateExplosion(int x, int y)
+        {
+            var explosion = _bullets.TryAddNew();
+            if (explosion != null)
+            {
+                explosion.EnsureInFrontOf(this);
+                explosion.WorldSprite.Center = new Point(x, y);
+                explosion.Motion.YSpeed = 0;
+                explosion.Motion.XSpeed = 0;
+                explosion.Explode();
             }
         }
     }

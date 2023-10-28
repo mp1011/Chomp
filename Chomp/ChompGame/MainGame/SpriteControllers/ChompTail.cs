@@ -30,6 +30,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public Sprite GetSprite(int index) => _spritesModule.GetSprite(_tailSprites[index]);
 
+        public void Erase(int index)
+        {
+            var sprite = GetSprite(index);
+            sprite.Tile = 0;
+            _tailSprites[index] = 255;
+        }
+
+        public bool IsErased(int index) => _tailSprites[index] == 255;
+
         public void CreateTail()
         {
             for (int i = 0; i < _numSections; i++)

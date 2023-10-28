@@ -66,5 +66,27 @@ namespace ChompGame.Extensions
             else
                 return i;
         }
+
+        public static byte Clamp(this byte i, byte min, byte max)
+        {
+            if (i < min)
+                return min;
+            if (i > max)
+                return max;
+            else
+                return i;
+        }
+
+        public static byte ByteClamp(this int i, byte max) =>
+            (byte)i.Clamp(0, max);
+
+        public static byte ByteClamp(this int i, int max) =>
+          (byte)i.Clamp(0, max);
+
+        public static byte ByteClamp(this byte i, byte max) =>
+           i.Clamp(0, max);
+
+        public static byte ByteClamp(this byte i, int max) =>
+          (byte)i.Clamp(0, (byte)max);
     }
 }
