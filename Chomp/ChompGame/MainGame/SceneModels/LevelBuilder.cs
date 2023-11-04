@@ -620,7 +620,7 @@ namespace ChompGame.MainGame.SceneModels
                     spritePools[3] = new EnemyOrBulletSpriteControllerPool<ChompBoss2Controller>(
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
-                            () => new ChompBoss2Controller(playerController.WorldSprite, 
+                            () => new ChompBoss2Controller(playerController, 
                                 bossBulletControllers,
                                 prizeControllers,
                                 _gameModule,

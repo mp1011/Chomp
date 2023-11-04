@@ -24,6 +24,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public AcceleratedMotion AcceleratedMotion => _motion;
 
+        protected override bool DestroyWhenFarOutOfBounds => true;
+        protected override bool DestroyWhenOutOfBounds => true;
+
         protected enum BombState : byte
         {
             Idle=0,
@@ -172,6 +175,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _motion.XSpeed = 0;
             _motion.YSpeed = 0;
             _bombState.Value = BombState.Idle;
+            _isThrown.Value = false;
         }
 
         public void SetPickup()

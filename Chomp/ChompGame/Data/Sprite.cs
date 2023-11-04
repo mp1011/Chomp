@@ -2,6 +2,7 @@
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.Data
 {
@@ -161,5 +162,9 @@ namespace ChompGame.Data
         }
         int IWithPosition.X { get => X; set => X = (byte)value; }
         int IWithPosition.Y { get => Y; set => Y = (byte)value; }
+
+        public Rectangle Bounds =>
+            new Rectangle(X, Y, Width, Height);
+ 
     }
 }

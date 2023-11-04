@@ -47,7 +47,11 @@ namespace ChompGame.MainGame.SceneModels
                 return;
 
             if (_gameModule.CurrentScene.IsAutoScroll)
+            {
+                CheckAutoscrollLevelEnd(player);
                 return;
+            }
+                
 
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
@@ -90,6 +94,14 @@ namespace ChompGame.MainGame.SceneModels
                     return;
                 }
             }
+        }
+
+        private void CheckAutoscrollLevelEnd(PlayerController player)
+        {
+            if (player.WorldSprite.X < _gameModule.Specs.ScreenWidth)
+                return;
+
+            ActiveExit.SetForAutoscrollLevelEnd();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace ChompGame.MainGame.SpriteControllers
             set => _variation.Value = value;
         }
         protected override bool DestroyWhenOutOfBounds => true;
-
+       
         public void AfterSpawn(ISpriteControllerPool pool)
         {
             _delay.Value = 0;
@@ -145,7 +145,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void CheckPlayerCollision(PlayerController playerController)
         {
-            if(playerController.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
+            if(playerController.CollidesWith(WorldSprite))
             {
                 Destroy();
 

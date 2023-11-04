@@ -25,8 +25,8 @@ namespace ChompGame.MainGame.SceneModels
         Level1_16_BeforeBoss,
         Level1_17_Boss,
         Level2_1_Intro,
-        Level2_2_Fly
-
+        Level2_2_Fly,
+        Level2_3_Beach
     }
 
     class SceneBuilder
@@ -256,6 +256,17 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 0,
                 bgPosition1: 3
             );
+
+            //Level2_3_Beach,
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                theme: ThemeType.Ocean,
+                variance: LevelShape.Flat,
+                enemyGroup: EnemyGroup.Lizard_Bird,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 1,
+                bgPosition1: 3);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -511,6 +522,7 @@ namespace ChompGame.MainGame.SceneModels
                  b => new PitScenePart(b, 33, 15, scene),
                  b => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
             scene = new SceneDefinition(Level.Level2_2_Fly, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
@@ -548,10 +560,17 @@ namespace ChompGame.MainGame.SceneModels
                 //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
                 //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
                 b => new AutoscrollScenePart(b, ScenePartType.AutoScrollEnemyType3, position: 9, delay: 15, variation: 1, scene)
-
-
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
+
+            scene = new SceneDefinition(Level.Level2_3_Beach, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 15, y: 12, definition: scene),                 
+                 b => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
+
         }
     }
 }

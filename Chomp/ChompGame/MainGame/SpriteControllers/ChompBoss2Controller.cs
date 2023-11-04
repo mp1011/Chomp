@@ -13,7 +13,8 @@ namespace ChompGame.MainGame.SpriteControllers
         public const int TurnAngle = 4;
         public const int BossHp = 3;
 
-        private readonly WorldSprite _player;
+        private readonly PlayerController _playerController;
+        private WorldSprite _player => _playerController.WorldSprite;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
         private readonly SpriteControllerPool<PrizeController> _prizes;
 
@@ -40,14 +41,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private GameByteEnum<Phase> _phase;
 
-        public ChompBoss2Controller(WorldSprite player,
+        public ChompBoss2Controller(PlayerController player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
             SpriteControllerPool<PrizeController> prizes,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Chomp, SpriteTileIndex.AutoscrollEnemy3, gameModule, memoryBuilder)
         {
-            _player = player;
+            _playerController = player;
             _audioService = gameModule.AudioService;
             _bullets = bullets;
             _prizes = prizes;
@@ -309,6 +310,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     CreateExplosion(WorldSprite.X + 2, WorldSprite.Y);
                     CreateExplosion(WorldSprite.X + 2, WorldSprite.Y + 2);
 
+                    _playerController.OnBossDead();
                     base.UpdateDying();
                 }
             }            

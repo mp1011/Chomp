@@ -31,6 +31,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private GameBit _bombPickup;
         private GameBit _openingDoor;
+        protected GameBit _bossDead;
+
         private GameBit _onPlatform;
         private GameBit _onPlane;
 
@@ -57,7 +59,10 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _onPlane = new GameBit(state.Address, Bit.Bit4, memoryBuilder.Memory);
             _onPlatform = new GameBit(state.Address, Bit.Bit5, memoryBuilder.Memory);
+
             _openingDoor = new GameBit(state.Address, Bit.Bit6, memoryBuilder.Memory);
+            _bossDead = new GameBit(state.Address, Bit.Bit6, memoryBuilder.Memory);
+
             _bombPickup = new GameBit(state.Address, Bit.Bit7, memoryBuilder.Memory);
 
             _afterHitInvincibility = new MaskedByte(state.Address, Bit.Right4, memoryBuilder.Memory);
@@ -76,6 +81,8 @@ namespace ChompGame.MainGame.SpriteControllers
             GameDebug.Watch1 = new DebugWatch("P Tx", () => WorldSprite.X / 4);
             GameDebug.Watch2 = new DebugWatch("P Ty", () => WorldSprite.Y / 4);
         }
+
+        public virtual void OnBossDead() { }
 
         public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType,
             SceneSpriteControllers sceneSpriteControllers)
@@ -188,26 +195,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
             }
 
-            if(_afterHitInvincibility.Value > 0)
-            {
-                var sprite = WorldSprite.GetSprite();               
-                
-                if(_levelTimer.IsMod(4))
-                {
-                    Visible = !Visible;
-                }
-
-                if (_levelTimer.IsMod(8))
-                {
-                    _afterHitInvincibility.Value--;
-                }
-
-                if (_afterHitInvincibility.Value == 0)
-                {
-                    Visible = true;
-                }
-            }
-
+            CheckAfterHitInvincability();
+           
             _motionController.Update();
             var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, Motion);
             _motionController.AfterCollision(collisionInfo);
@@ -257,6 +246,29 @@ namespace ChompGame.MainGame.SpriteControllers
             _onPlatform.Value = false;
         }
 
+        protected void CheckAfterHitInvincability()
+        {
+            if (_afterHitInvincibility.Value > 0)
+            {
+                var sprite = WorldSprite.GetSprite();
+
+                if (_levelTimer.IsMod(4))
+                {
+                    Visible = !Visible;
+                }
+
+                if (_levelTimer.IsMod(8))
+                {
+                    _afterHitInvincibility.Value--;
+                }
+
+                if (_afterHitInvincibility.Value == 0)
+                {
+                    Visible = true;
+                }
+            }
+        }
+
         public void CheckBombPickup(SpriteControllerPool<BombController> bombs)
         {
             if (IsHoldingBomb)
@@ -275,14 +287,6 @@ namespace ChompGame.MainGame.SpriteControllers
             });
         }
 
-        public void CheckPrizePickup(SpriteControllerPool<PrizeController> prizes)
-        {
-            prizes.Execute(p =>
-            {
-
-            });
-        }
-
         public void CheckBombThrow(BombController bombController)
         {
             if (_inputModule.Player1.BKey != GameKeyState.Pressed)
@@ -291,6 +295,9 @@ namespace ChompGame.MainGame.SpriteControllers
             _bombPickup.Value = false;
             bombController.DoThrow();
         }
+
+        public virtual bool CollidesWith(WorldSprite other) =>
+            other.Bounds.Intersects(WorldSprite.Bounds);
 
         public void CheckEnemyOrBulletCollisions(ICollidableSpriteControllerPool sprites)
         {
@@ -302,7 +309,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             sprites.Execute(p =>
             {
-                if(p.CollisionEnabled && p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds))
+                if(p.CollisionEnabled && CollidesWith(p.WorldSprite))
                 {
                     if (p.HandlePlayerCollision(WorldSprite) == CollisionResult.HarmPlayer)
                     {

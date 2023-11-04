@@ -27,6 +27,15 @@ namespace ChompGame.MainGame.SpriteControllers
             head.Palette = 1;
         }
 
+        public override bool CollidesWith(WorldSprite other)
+        {
+            if (base.CollidesWith(other))
+                return true;
+
+            var headSprite = _spritesModule.GetSprite(_headSpriteIndex.Value);
+            return other.Bounds.Intersects(headSprite.Bounds);
+        }
+
         private void CheckInput()
         {
             _inputModule.OnLogicUpdate();
@@ -61,6 +70,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 AcceleratedMotion.TargetXSpeed = 0;
                 AcceleratedMotion.XAcceleration = _motionController.BrakeAccel;
             }
+        }
+
+        public override void OnBossDead()
+        {
+            _bossDead.Value = true;
         }
 
         private void PositionHeadSprite()
@@ -99,12 +113,30 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateActive()
         {
+            if(_bossDead)
+            {
+                AcceleratedMotion.TargetYSpeed = 0;
+                AcceleratedMotion.YAcceleration = _motionController.BrakeAccel;
+                AcceleratedMotion.TargetXSpeed = _motionController.WalkSpeed*2;
+                AcceleratedMotion.XAcceleration = _motionController.WalkAccel;
+
+                _motionController.Update();
+                WorldSprite.UpdateSprite();
+                PositionHeadSprite();
+
+                return;
+            }
+
             CheckInput();
             _motionController.Update();
             CheckBounds();
 
             WorldSprite.UpdateSprite();
             PositionHeadSprite();
+
+            CheckAfterHitInvincability();
+            var headSprite = _spritesModule.GetSprite(_headSpriteIndex.Value);
+            headSprite.Visible = Visible;
         }
     }
 }

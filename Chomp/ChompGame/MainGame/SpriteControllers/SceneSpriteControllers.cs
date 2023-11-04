@@ -347,7 +347,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 _playerController.CheckEnemyOrBulletCollisions(c);
 
             _playerController.CheckBombPickup(_bombControllers);
-            _playerController.CheckPrizePickup(_prizeControllers);
 
             //should do this better
             if (!_scene.IsAutoScroll)
