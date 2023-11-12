@@ -569,6 +569,12 @@ namespace ChompGame.MainGame.SceneModels
                     () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, enemyTileIndex));
                     break;
 
+                case SpriteType.Crocodile:
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<CrocodileController>(
+                   2,
+                   _gameModule.SpritesModule,
+                   () => new CrocodileController(playerController.WorldSprite, enemyTileIndex, _gameModule, memoryBuilder));
+                    break;
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
 
@@ -731,7 +737,7 @@ namespace ChompGame.MainGame.SceneModels
 
             var builder = new VramBuilder(masterPatternTable, vramPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
-            if (_sceneDefinition.IsLevelBossScene)
+            if (_sceneDefinition.IsBossScene)
                 builder.SpriteYBegin = 4;
             else
                 builder.SpriteYBegin = 5;
@@ -781,10 +787,10 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
                 builder.AddEnemySprite(8, 0, 4, 1);
 
-            if (_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
-            {
-            }
-            else
+            if (_sceneDefinition.HasSprite(SpriteType.Crocodile))
+                builder.AddEnemySprite(4, 2, 4, 1);
+
+            if(_sceneDefinition.SpriteGroup == SpriteGroup.Normal)
             {
                 builder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);
                 builder.AddSprite(SpriteTileIndex.Button, 11, 6, 2, 1);

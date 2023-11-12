@@ -79,8 +79,7 @@ namespace ChompGame.MainGame
 
         private void AddReward(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)
         {
-            if (_currentScene.IsLevelBossScene 
-                    || _currentScene.IsMidBossScene 
+            if (_currentScene.IsBossScene 
                     || _currentScene.IsAutoScroll
                     || statusBar.Health == StatusBar.FullHealth)
             {

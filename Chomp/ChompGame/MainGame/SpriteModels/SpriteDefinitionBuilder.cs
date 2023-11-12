@@ -205,6 +205,39 @@ namespace ChompGame.MainGame.SpriteModels
               animationStyle: AnimationStyle.NoAnimation,
               collidesWithBackground: true,
               flipXWhenMovingLeft: false);
+
+            //ogre
+            new SpriteDefinition(memoryBuilder,
+              secondTileOffset: 0,
+              sizeX: 2,
+              sizeY: 2,
+              gravityStrength: GravityStrength.Medium,
+              movementSpeed: MovementSpeed.VerySlow,
+              animationStyle: AnimationStyle.AnimateWhenMoving,
+              collidesWithBackground: true,
+              flipXWhenMovingLeft: true);
+
+            //ogre bullet
+            new SpriteDefinition(memoryBuilder,
+              secondTileOffset: 0,
+              sizeX: 1,
+              sizeY: 1,
+              gravityStrength: GravityStrength.Low,
+              movementSpeed: MovementSpeed.Fast,
+              animationStyle: AnimationStyle.NoAnimation,
+              collidesWithBackground: false,
+              flipXWhenMovingLeft: false);
+
+            //crocodile
+            new SpriteDefinition(memoryBuilder,
+              secondTileOffset: 0,
+              sizeX: 2,
+              sizeY: 1,
+              gravityStrength: GravityStrength.High,
+              movementSpeed: MovementSpeed.Fast,
+              animationStyle: AnimationStyle.AnimateWhenMoving,
+              collidesWithBackground: true,
+              flipXWhenMovingLeft: true);
         }
     }
 }

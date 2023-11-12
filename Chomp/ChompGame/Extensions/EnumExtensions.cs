@@ -1,4 +1,5 @@
 ﻿using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteModels;
 using System;
 
 namespace ChompGame.Extensions
@@ -24,6 +25,19 @@ namespace ChompGame.Extensions
                 ScenePartType.DestructibleBlock => 1,
                 ScenePartType.Coin => 4,
                 _ => 0
+            };
+
+        public static SpriteType ToSpriteType(this EnemyIndex e) =>
+            e switch
+            {
+                EnemyIndex.Bird => SpriteType.Bird,
+                EnemyIndex.Boulder => SpriteType.Boulder,
+                EnemyIndex.Crocodile => SpriteType.Crocodile,
+                EnemyIndex.Lizard => SpriteType.Lizard,
+                EnemyIndex.Ogre => SpriteType.Ogre,
+                EnemyIndex.Rocket => SpriteType.Rocket,
+                EnemyIndex.Ufo => SpriteType.Ufo,
+                _ => SpriteType.Mage,
             };
     }
 }

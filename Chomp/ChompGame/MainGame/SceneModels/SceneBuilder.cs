@@ -2,6 +2,7 @@
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -26,7 +27,8 @@ namespace ChompGame.MainGame.SceneModels
         Level1_17_Boss,
         Level2_1_Intro,
         Level2_2_Fly,
-        Level2_3_Beach
+        Level2_3_Beach,
+        Level2_4_Beach2
     }
 
     class SceneBuilder
@@ -37,7 +39,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                specs: specs,
                theme: ThemeType.Plains,
-               enemyGroup: EnemyGroup.Lizard_Bird,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Bird,
+               spriteGroup: SpriteGroup.Normal,
                memoryBuilder: memoryBuilder,
                top: 0,
                bottom: 1,
@@ -51,7 +55,9 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.MediumVariance,
                 theme: ThemeType.Plains,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 2,
@@ -62,7 +68,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollCornerStairs(
                 specs: specs,
                 theme: ThemeType.Plains,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 left:0,
                 top: 0,
@@ -76,7 +84,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
               specs: specs,
               theme: ThemeType.Plains,
-              enemyGroup: EnemyGroup.Lizard_Bird,
+              enemy1: EnemyIndex.Lizard,
+              enemy2: EnemyIndex.Bird,
+              spriteGroup: SpriteGroup.Normal,
               memoryBuilder: memoryBuilder,
               top: 0,
               bottom: 2,
@@ -90,7 +100,9 @@ namespace ChompGame.MainGame.SceneModels
               specs: specs,
               shape: LevelShape.ZigZag,
               theme: ThemeType.Plains,
-              enemyGroup: EnemyGroup.Lizard_Bird,
+              enemy1: EnemyIndex.Lizard,
+              enemy2: EnemyIndex.Bird,
+              spriteGroup: SpriteGroup.Normal,
               memoryBuilder: memoryBuilder,
               left: 1,
               right: 1
@@ -101,7 +113,9 @@ namespace ChompGame.MainGame.SceneModels
                specs: specs,
                variance: LevelShape.HighVariance,
                theme: ThemeType.Plains,
-               enemyGroup: EnemyGroup.Lizard_Bird,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Bird,
+               spriteGroup: SpriteGroup.Normal,
                memoryBuilder: memoryBuilder,
                top: 0,
                bottom: 2,
@@ -112,7 +126,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                specs: specs,
                theme: ThemeType.Plains,
-               enemyGroup: EnemyGroup.Lizard_Bird,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Bird,
+               spriteGroup: SpriteGroup.Normal,
                memoryBuilder: memoryBuilder,
                top: 1,
                bottom: 1,
@@ -125,7 +141,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollCornerStairs(
                specs: specs,
                theme: ThemeType.Plains,
-               enemyGroup: EnemyGroup.Lizard_Bird,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Bird,
+               spriteGroup: SpriteGroup.Normal,
                memoryBuilder: memoryBuilder,
                cornerStairStyle: CornerStairStyle.TwoBlockDouble,
                top: 1,
@@ -140,7 +158,9 @@ namespace ChompGame.MainGame.SceneModels
               specs: specs,
               variance: LevelShape.HighVariance,
               theme: ThemeType.Plains,
-              enemyGroup: EnemyGroup.Lizard_Bird,
+              enemy1: EnemyIndex.Lizard,
+              enemy2: EnemyIndex.Bird,
+              spriteGroup: SpriteGroup.Normal,
               memoryBuilder: memoryBuilder,
               top: 0,
               bottom: 2,
@@ -151,7 +171,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollBigStairs(
              specs: specs,
              theme: ThemeType.Plains,
-             enemyGroup: EnemyGroup.Lizard_Bird,
+             enemy1: EnemyIndex.Lizard,
+             enemy2: EnemyIndex.Bird,
+             spriteGroup: SpriteGroup.Normal,
              memoryBuilder: memoryBuilder,
              top: 0,
              bottom: 2,
@@ -164,7 +186,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                     specs: specs,
                     theme: ThemeType.Plains,
-                    enemyGroup: EnemyGroup.MidBoss,
+                    enemy1: EnemyIndex.Lizard,
+                    enemy2: EnemyIndex.Bird,
+                    spriteGroup: SpriteGroup.Normal,
                     memoryBuilder: memoryBuilder,
                     top: 1,
                     left: 0,
@@ -177,7 +201,9 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.HighVariance,
                 theme: ThemeType.PlainsEvening,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2:EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
@@ -189,7 +215,9 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.PlainsEvening,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
@@ -201,7 +229,9 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.PlainsEvening,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 shape: LevelShape.Flat,
                 top: 0,
                 bottom: 2,
@@ -213,7 +243,9 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.PlainsEvening,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 shape: LevelShape.ZigZag,
                 left: 2,
                 right: 2);
@@ -223,7 +255,9 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.PlainsEvening,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
                 cornerStairStyle: CornerStairStyle.OneBlockDouble,
                 left:1,
                 top:1,
@@ -239,7 +273,9 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 theme: ThemeType.Ocean,
                 variance: LevelShape.Flat,
-                enemyGroup: EnemyGroup.PlaneTakeoff,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.PlaneTakeoff,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
@@ -250,7 +286,9 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.OceanAutoscroll,
-                enemyGroup: EnemyGroup.Rocket_Bird,
+                enemy1:EnemyIndex.Bird,
+                enemy2: EnemyIndex.Rocket,
+                spriteGroup: SpriteGroup.Plane,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 0,
@@ -261,12 +299,27 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                 specs: specs,
                 theme: ThemeType.Ocean,
+                variance: LevelShape.MediumVariance,
+                enemy1: EnemyIndex.Bird,
+                enemy2: EnemyIndex.Crocodile,
+                spriteGroup: SpriteGroup.Simple,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 3,
+                bgPosition1: 1);
+
+            //Level2_4_Beach2,
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                theme: ThemeType.Ocean,
                 variance: LevelShape.Flat,
-                enemyGroup: EnemyGroup.Lizard_Bird,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Crocodile,
+                spriteGroup: SpriteGroup.Simple,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
-                bgPosition1: 3);
+                bgPosition1: 1);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -526,51 +579,72 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level2_2_Fly, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 2, variation: PrizeController.Coin3, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 6, variation: PrizeController.Coin3, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 6, variation: PrizeController.Coin5Diag, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 4, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 0, variation: PrizeController.Coin5Diag2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 15, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 4, variation: PrizeController.Coin3, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 0, variation: PrizeController.Coin3, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 10, delay: 8, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 6, variation: PrizeController.Coin5Diag, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 6, delay: 4, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 14, delay: 4, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 8, variation: PrizeController.Coin5Diag2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 6, variation: PrizeController.Coin3, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 0, variation: PrizeController.Coin3, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 8, variation: PrizeController.Coin5Diag2, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 8, variation: PrizeController.Coin5Diag, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 6, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 6, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
-                //b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 2, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 6, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 6, variation: PrizeController.Coin5Diag, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 6, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 4, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 0, variation: PrizeController.Coin5Diag2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 15, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 4, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 0, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 10, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 6, variation: PrizeController.Coin5Diag, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 6, delay: 4, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 14, delay: 4, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 8, variation: PrizeController.Coin5Diag2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 12, delay: 8, variation: 0, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 6, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 0, variation: PrizeController.Coin3, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 8, variation: PrizeController.Coin5Diag2, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 8, variation: PrizeController.Coin5Diag, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 6, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 6, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
                 b => new AutoscrollScenePart(b, ScenePartType.AutoScrollEnemyType3, position: 9, delay: 15, variation: 1, scene)
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
-
             scene = new SceneDefinition(Level.Level2_3_Beach, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 15, y: 12, definition: scene),                 
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 4, scene),
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 8, scene),
+                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 8, definition: scene),
+                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 8, definition: scene),
+                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 14, y: 8, definition: scene),
+                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 42, y: 8, definition: scene),
+                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 44, y: 8, definition: scene),
+                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 46, y: 10, definition: scene),
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 40, 8, scene),
+                 b => new SpriteScenePart(b, ScenePartType.Bomb, 10, 8, scene),
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 4, scene),
                  b => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
             destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
 
+            scene = new SceneDefinition(Level.Level2_4_Beach2, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 10, 12, scene),
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 8, scene),
+                 b => new PrefabScenePart(b, scene, 12, PrefabSize.Full, PrefabSize.Half, PrefabOrigin.BottomOrLeft, PrefabShape.StairBoth),
+                 b => new PitScenePart(b, 40, 4, scene),
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 12, scene),
+                 b => new PitScenePart(b, 52, 2, scene),
+                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
+                 b => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+            destroyBitsNeeded += header.DestroyBitsNeeded(scene, builder.Specs);
         }
     }
 }

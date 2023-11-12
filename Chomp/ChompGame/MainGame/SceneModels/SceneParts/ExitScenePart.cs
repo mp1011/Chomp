@@ -71,7 +71,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         public void SetForAutoscrollLevelEnd()
         {
             _exitType.Value = ExitType.Right;
-            _exitOffset.Value = 1;
+            _exitOffset.Value = 0;
         }
     }
 }

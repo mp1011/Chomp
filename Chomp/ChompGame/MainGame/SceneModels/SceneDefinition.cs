@@ -1,10 +1,12 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.Themes;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels
@@ -28,13 +30,11 @@ namespace ChompGame.MainGame.SceneModels
         Foreground
     }
 
-    public enum EnemyGroup : byte
+    public enum PlayerSpriteGroup : byte
     {
-        Lizard_Bird,
-        Rocket_Bird,
-        MidBoss,
-        LevelBoss,
-        PlaneTakeoff
+        Normal,       
+        PlaneTakeoff,
+        PlaneAutoscroll
     }
 
 
@@ -72,7 +72,7 @@ namespace ChompGame.MainGame.SceneModels
 
     class SceneDefinition
     {
-        public const int Bytes = 3;
+        public const int Bytes = 4;
 
         public int StatusBarTiles => Constants.StatusBarTiles;
 
@@ -88,10 +88,14 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle; //shared with bg2
 
         //byte 1
-        private NibbleEnum<ThemeType> _theme;
-        private NibbleEnum<EnemyGroup> _enemies;
+        private GameByteEnum<ThemeType> _theme;
 
-        //byte 2 (four TwoBits or two Nibbles)
+        //byte 2
+        private GameByteEnum<EnemyIndex> _enemy1; //3
+        private MaskedByte _enemy2; //2
+        private GameByteEnum<SpriteGroup> _spriteGroup; //3
+             
+        //byte 3 (four TwoBits or two Nibbles)
         private TwoBit _left;
         private TwoBit _top;
         private TwoBit _right;
@@ -101,11 +105,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public int Address => _scrollStyle.Address;
 
-        public bool IsLevelBossScene => _enemies.Value == EnemyGroup.LevelBoss;
+        public bool IsBossScene => _spriteGroup.Value == SpriteGroup.Boss;
 
-        public bool IsMidBossScene => _enemies.Value == EnemyGroup.MidBoss;
-
-        public int GroundFillStart => _enemies.Value == EnemyGroup.LevelBoss ? 24 : 32;
+        public int GroundFillStart => IsBossScene ? 24 : 32;
 
         public int GroundFillEnd => GroundFillStart + 1;
 
@@ -125,7 +127,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public ScrollStyle ScrollStyle => _scrollStyle.Value;
 
-        public bool IsAutoScroll => _theme.Value == ThemeType.OceanAutoscroll;
+        public SpriteGroup SpriteGroup => _spriteGroup.Value;
+
+        public bool IsAutoScroll => _spriteGroup.Value == SpriteGroup.Plane;
 
         public int LeftTiles => _scrollStyle.Value switch {
             ScrollStyle.Vertical => _begin.Value * 2,
@@ -186,32 +190,34 @@ namespace ChompGame.MainGame.SceneModels
                     ScrollStyle.Vertical => FallCheck.None,
                     _ => FallCheck.WrapAround };
 
-        public SpriteType[] Sprites =>
-            _enemies.Value switch {
-                EnemyGroup.Lizard_Bird => new[] { 
-                    SpriteType.Player, 
-                    SpriteType.Lizard, 
-                    SpriteType.Bird },
-                EnemyGroup.Rocket_Bird => new[] {
-                    SpriteType.Player,
-                    SpriteType.Rocket,
-                    SpriteType.Bird,
-                    SpriteType.Chomp },
-                EnemyGroup.PlaneTakeoff => new[] {
-                    SpriteType.Player,
-                    SpriteType.Plane },
-                EnemyGroup.MidBoss => new[] {
-                    SpriteType.Player,
-                    SpriteType.Chomp },
-                EnemyGroup.LevelBoss => new[] {
-                    SpriteType.Player,
-                    SpriteType.LevelBoss },
-                _ => new[] { SpriteType.Player }
-            };
+        public IEnumerable<SpriteType> Sprites
+        {
+            get
+            {
+                yield return SpriteType.Player;
 
+                switch(_spriteGroup.Value)
+                {
+                    case SpriteGroup.Normal:
+                    case SpriteGroup.Simple:
+                        yield return _enemy1.Value.ToSpriteType();
+                        yield return (_enemy1.Value + _enemy2.Value + 1).ToSpriteType();
+                        break;
+                    case SpriteGroup.PlaneTakeoff:
+                    case SpriteGroup.Plane:
+                        yield return SpriteType.Plane;
+                        yield return _enemy1.Value.ToSpriteType();
+                        yield return (_enemy1.Value + _enemy2.Value + 1).ToSpriteType();
+                        yield return SpriteType.Chomp;
+                        break;
+                    case SpriteGroup.Boss:
+                        throw new Exception("tbd");
+                }
+            }
+        }
         public bool HasSprite(SpriteType spriteType) => Sprites.Contains(spriteType);
 
-        public byte CollidableTileBeginIndex => (byte)(IsLevelBossScene ? 24 : 29);
+        public byte CollidableTileBeginIndex => (byte)(IsBossScene ? 24 : 29);
 
         public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar) =>
             layer switch {
@@ -230,7 +236,9 @@ namespace ChompGame.MainGame.SceneModels
             SystemMemoryBuilder memoryBuilder,
             Specs specs, 
             ThemeType theme, 
-            EnemyGroup enemyGroup,
+            SpriteGroup spriteGroup,
+            EnemyIndex enemy1,
+            EnemyIndex enemy2,
             byte left, 
             byte top, 
             byte right, 
@@ -242,7 +250,9 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.None, 
                 LevelShape.Flat,
                 theme,
-                enemyGroup,
+                enemy1,
+                enemy2,
+                spriteGroup,
                 left,
                 top,
                 right,
@@ -254,7 +264,9 @@ namespace ChompGame.MainGame.SceneModels
            SystemMemoryBuilder memoryBuilder,
            Specs specs,
            ThemeType theme,
-           EnemyGroup enemyGroup,
+           EnemyIndex enemy1,
+           EnemyIndex enemy2,
+           SpriteGroup spriteGroup,
            byte left,
            byte top,
            byte right,
@@ -267,7 +279,9 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.None,
                 LevelShape.CornerStairs,
                 theme,
-                enemyGroup,
+                enemy1,
+                enemy2,
+                spriteGroup,
                 left,
                 top,
                 right,
@@ -280,7 +294,9 @@ namespace ChompGame.MainGame.SceneModels
            SystemMemoryBuilder memoryBuilder,
            Specs specs,
            ThemeType theme,
-           EnemyGroup enemyGroup,
+           EnemyIndex enemy1,
+           EnemyIndex enemy2,
+           SpriteGroup spriteGroup,
            byte left,
            byte top,
            byte right,
@@ -292,7 +308,9 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.None,
                 LevelShape.BigStair,
                 theme,
-                enemyGroup,
+                enemy1,
+                enemy2,
+                spriteGroup,
                 left,
                 top,
                 right,
@@ -305,7 +323,9 @@ namespace ChompGame.MainGame.SceneModels
             Specs specs,
             ThemeType theme,
             LevelShape variance,
-            EnemyGroup enemyGroup,
+            EnemyIndex enemy1,
+            EnemyIndex enemy2,
+            SpriteGroup spriteGroup,
             byte top,
             byte bottom,
             byte bgPosition1)
@@ -315,7 +335,9 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.Horizontal,
                 variance,
                 theme,
-                enemyGroup,
+                enemy1,
+                enemy2,
+                spriteGroup,
                 0,
                 top,
                 0,
@@ -327,7 +349,9 @@ namespace ChompGame.MainGame.SceneModels
             Specs specs,
             ThemeType theme,
             LevelShape shape,
-            EnemyGroup enemyGroup,
+            EnemyIndex enemy1,
+            EnemyIndex enemy2,
+            SpriteGroup spriteGroup,
             byte left,
             byte right)
         {
@@ -336,7 +360,9 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.Vertical,
                 shape,
                 theme,
-                enemyGroup,
+                enemy1,
+                enemy2,
+                spriteGroup,
                 left,
                 0,
                 right,
@@ -353,7 +379,9 @@ namespace ChompGame.MainGame.SceneModels
                ScrollStyle.NameTable,
                LevelShape.Flat,
                theme,
-               EnemyGroup.LevelBoss,
+               EnemyIndex.Bird,//todo
+               EnemyIndex.Ufo,//todo
+               SpriteGroup.Boss,
                0,
                0,
                0,
@@ -365,7 +393,9 @@ namespace ChompGame.MainGame.SceneModels
             Specs specs,
             ThemeType theme,
             LevelShape shape,
-            EnemyGroup enemyGroup,
+            EnemyIndex enemy1,
+            EnemyIndex enemy2,
+            SpriteGroup spriteGroup,
             byte left,
             byte top, 
             byte right,
@@ -376,7 +406,9 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.NameTable,
                 shape, 
                 theme,
-                enemyGroup,
+                enemy1,
+                enemy2,
+                spriteGroup,
                 left,
                 top,
                 right,
@@ -388,7 +420,9 @@ namespace ChompGame.MainGame.SceneModels
             ScrollStyle scrollStyle,
             LevelShape levelShape,
             ThemeType theme,
-            EnemyGroup enemyGroup,
+            EnemyIndex enemy1,
+            EnemyIndex enemy2,
+            SpriteGroup spriteGroup,
             byte left=0,
             byte top=0,
             byte right=0,
@@ -407,8 +441,11 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddByte();
 
-            _theme = new NibbleEnum<ThemeType>(new LowNibble(memoryBuilder));
-            _enemies = new NibbleEnum<EnemyGroup>(new HighNibble(memoryBuilder));
+            _theme = new GameByteEnum<ThemeType>(memoryBuilder.AddByte());
+
+            _enemy1 = new GameByteEnum<EnemyIndex>(new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right3, memoryBuilder.Memory));
+            _enemy2 = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)24, memoryBuilder.Memory, leftShift: 3);
+            _spriteGroup = new GameByteEnum<SpriteGroup>(new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left3, memoryBuilder.Memory, leftShift: 5));
             memoryBuilder.AddByte();
 
             _begin = new LowNibble(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
@@ -424,7 +461,12 @@ namespace ChompGame.MainGame.SceneModels
             _scrollStyle.Value = scrollStyle;
             _levelShape.Value = levelShape;
             _theme.Value = theme;
-            _enemies.Value = enemyGroup;
+
+            _spriteGroup.Value = spriteGroup;
+            _enemy1.Value = enemy1;
+            _enemy2.Value = (byte)((enemy2 - enemy1) - 1);
+            if (enemy2 <= enemy1)
+                throw new Exception("Second enemy must have higher index");
              
             if (scrollStyle == ScrollStyle.Horizontal)
             {
@@ -458,16 +500,19 @@ namespace ChompGame.MainGame.SceneModels
             _bgPosition2 = new TwoBit(systemMemory, address, 6);
             _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(systemMemory, address, 6);
 
-            _theme = new NibbleEnum<ThemeType>(new LowNibble(address + 1, systemMemory));
-            _enemies = new NibbleEnum<EnemyGroup>(new HighNibble(address + 1, systemMemory));
-      
-            _begin = new LowNibble(address + 2, systemMemory);
-            _end = new HighNibble(address + 2, systemMemory);
+            _theme = new GameByteEnum<ThemeType>(new GameByte(address+1, systemMemory));
 
-            _left = new TwoBit(systemMemory, address + 2, 0);
-            _top = new TwoBit(systemMemory, address + 2, 2);
-            _right = new TwoBit(systemMemory, address + 2, 4);
-            _bottom = new TwoBit(systemMemory, address + 2, 6);
+            _enemy1 = new GameByteEnum<EnemyIndex>(new MaskedByte(address + 2, Bit.Right3, systemMemory));
+            _enemy2 = new MaskedByte(address + 2, (Bit)24, systemMemory, leftShift: 3);
+            _spriteGroup = new GameByteEnum<SpriteGroup>(new MaskedByte(address + 2, Bit.Left3, systemMemory, leftShift: 5));
+      
+            _begin = new LowNibble(address + 3, systemMemory);
+            _end = new HighNibble(address + 3, systemMemory);
+
+            _left = new TwoBit(systemMemory, address + 3, 0);
+            _top = new TwoBit(systemMemory, address + 3, 2);
+            _right = new TwoBit(systemMemory, address + 3, 4);
+            _bottom = new TwoBit(systemMemory, address + 3, 6);
         }
 
         public SceneDefinition(Level level, SystemMemory memory, Specs specs)

@@ -22,7 +22,34 @@ namespace ChompGame.MainGame.SpriteModels
         PlayerHead,
         Plane,
         Rocket,
+        Ogre,
+        OgreBullet,
+        Crocodile,
+        Boulder,
+        Mage,
+        Ufo, //22
         Max=31
+    }
+
+    public enum EnemyIndex : byte
+    {        
+        Lizard=0,
+        Bird,
+        Rocket,
+        Crocodile,
+        Ogre,
+        Boulder,
+        Mage,
+        Ufo
+    }
+
+    public enum SpriteGroup : byte
+    {
+        Normal,
+        Simple,
+        PlaneTakeoff,
+        Plane,
+        Boss
     }
 
     public enum GravityStrength : byte

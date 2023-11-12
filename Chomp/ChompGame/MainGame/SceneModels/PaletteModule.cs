@@ -299,7 +299,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_currentScene == null)
                 return;
 
-            if(_currentScene.IsLevelBossScene)
+            if(_currentScene.IsBossScene)
             {
                 OnHBlank_LevelBoss();
                 return;
