@@ -107,6 +107,10 @@
         public static byte Blue2 => Blue(1).Value;
         public static byte Blue3 => Blue(2).Value;
         public static byte Blue4 => Blue(3).Value;
+        public static byte Blue5 => Blue(4).Value;
+        public static byte Blue6 => Blue(5).Value;
+        public static byte Blue7 => Blue(6).Value;
+        public static byte Blue8 => Blue(7).Value;
 
 
         public static byte LightTan => Brown(7).Value;

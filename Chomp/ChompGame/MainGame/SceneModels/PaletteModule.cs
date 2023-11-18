@@ -164,7 +164,7 @@ namespace ChompGame.MainGame.SceneModels
 
 
             DefinePalette(PaletteKey.OceanSky,
-             ColorIndex.LightBlue,
+             ColorIndex.Blue6,
              ColorIndex.Green1,
              ColorIndex.BlueGray3,
              ColorIndex.BlueGray4);

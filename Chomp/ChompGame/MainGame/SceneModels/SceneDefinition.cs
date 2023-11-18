@@ -318,6 +318,35 @@ namespace ChompGame.MainGame.SceneModels
                 bgPosition);
         }
 
+        public static SceneDefinition NoScrollTShape(
+           SystemMemoryBuilder memoryBuilder,
+           Specs specs,
+           ThemeType theme,
+           EnemyIndex enemy1,
+           EnemyIndex enemy2,
+           SpriteGroup spriteGroup,
+           byte pitBegin,
+           byte pitWidth,
+           byte top,
+           byte bottom,
+           byte bgPosition)
+        {
+            return new SceneDefinition(memoryBuilder,
+                specs,
+                ScrollStyle.None,
+                LevelShape.TShape,
+                theme,
+                enemy1,
+                enemy2,
+                spriteGroup,
+                pitBegin,
+                top,
+                pitWidth,
+                bottom,
+                bgPosition,
+                0);
+        }
+
         public static SceneDefinition HorizontalScroll(
             SystemMemoryBuilder memoryBuilder,
             Specs specs,

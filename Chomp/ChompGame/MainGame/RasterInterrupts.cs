@@ -62,7 +62,8 @@ namespace ChompGame.MainGame
 
             if (_sceneDefinition.IsAutoScroll)
                 HandleAutoScroll();
-            else if (_sceneDefinition.Theme == ThemeType.Ocean)
+            else if (_sceneDefinition.Theme == ThemeType.Ocean 
+                && _sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleOcean();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();

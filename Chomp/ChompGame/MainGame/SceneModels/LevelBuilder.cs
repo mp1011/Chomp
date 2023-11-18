@@ -131,6 +131,22 @@ namespace ChompGame.MainGame.SceneModels
             int xStart = (nameTable.Width / 2) - 2;
             int width = 4;
 
+            bool needsExit = true;
+
+            nameTable.ForEach((x, y, b) =>
+            {
+
+                if (x >= xStart
+                    && x < xStart + width
+                    && y >= nameTable.Height - _sceneDefinition.BottomTiles)
+                {
+                    if (nameTable[x, y] == 0)
+                        needsExit = false;
+                }
+            });
+
+            if (!needsExit)
+                return nameTable;
             nameTable.ForEach((x, y, b) =>
             {
 
@@ -258,8 +274,8 @@ namespace ChompGame.MainGame.SceneModels
             int floorY = ceilingY + (_sceneDefinition.BottomTiles * 2);
 
             //todo, add variation
-            int pitBegin = 4 + _sceneDefinition.LeftTiles*2;
-            int pitEnd = pitBegin + _sceneDefinition.RightTiles*2;
+            int pitBegin = (_sceneDefinition.LeftTiles+1)*2;
+            int pitEnd = pitBegin + ((_sceneDefinition.RightTiles+1)*2);
 
             nameTable.ForEach((x, y, b) =>
             {
@@ -267,7 +283,7 @@ namespace ChompGame.MainGame.SceneModels
                     nameTable[x, y] = 1;
                 else if (y >= floorY)
                 {
-                    if (x <= pitBegin || x >= pitEnd)
+                    if (x < pitBegin || x >= pitEnd)
                         nameTable[x, y] = 1;
                     else
                         nameTable[x, y] = 0;
@@ -541,6 +557,9 @@ namespace ChompGame.MainGame.SceneModels
                     break;
 
                 case SpriteType.Plane:
+                    if (_sceneDefinition.SpriteGroup != SpriteGroup.PlaneTakeoff)
+                        break;
+
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<PlaneTakeoffController>(
                          1,
                         _gameModule.SpritesModule,
@@ -777,15 +796,15 @@ namespace ChompGame.MainGame.SceneModels
                 _spriteTileTable.SetTile(SpriteTileIndex.Explosion, (byte)(fireballTile + 1));
             }
 
+            if (_sceneDefinition.HasSprite(SpriteType.Bird))
+                builder.AddEnemySprite(8, 0, 4, 1);
+
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
             {
                 builder.AddEnemySprite(5, 1, 2, 1);
                 builder.AddExtraSprite(4, 1, 1, 1);
                 builder.AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
             }
-
-            if (_sceneDefinition.HasSprite(SpriteType.Bird))
-                builder.AddEnemySprite(8, 0, 4, 1);
 
             if (_sceneDefinition.HasSprite(SpriteType.Crocodile))
                 builder.AddEnemySprite(4, 2, 4, 1);

@@ -51,7 +51,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _thrust.Value = false;
             _thrustCount.Value = 0;
             Palette = 0;
-
+            _hitPoints.Value = 1;
             _variation.Value = variation;
         }
 
