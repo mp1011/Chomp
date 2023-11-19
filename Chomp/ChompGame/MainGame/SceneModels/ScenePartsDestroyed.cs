@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.MainGame.SceneModels.SceneParts;
+using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -21,16 +22,25 @@ namespace ChompGame.MainGame.SceneModels
         public ScenePartsDestroyed(SystemMemoryBuilder memoryBuilder)
         {
             _sceneOffset = memoryBuilder.AddByte();
-
-            _switchBlocksOff = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
             _partsDestroyed = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            memoryBuilder.AddBytes(32); //todo, figure out how much we need
+            _switchBlocksOff = new GameBit(memoryBuilder.CurrentAddress + 15, Bit.Bit7, memoryBuilder.Memory);
+            memoryBuilder.AddBytes(16);            
+        }
+
+        public void Reset(SystemMemory memory)
+        {
+            for (int i = 0; i < 16; i++)
+                memory[_partsDestroyed.Address + i] = 0;
         }
 
         public void SetCurrentLevel(Level level, SystemMemory memory)
         {
+            Level transitionLevel = level;
+            while (!SceneBuilder.TransitionLevels.Contains(transitionLevel))
+                transitionLevel--;
+
             byte sceneOffset=1;
-            for (Level l = (Level)0; l < level; l++)
+            for (Level l = transitionLevel; l < level; l++)
             {
                 ScenePartsHeader header = new ScenePartsHeader(l, memory);
                 for(int i = 0; i < header.PartsCount;i++)

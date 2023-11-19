@@ -47,6 +47,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.PlainsBoss => new PlainsBossThemeSetup(),
                 ThemeType.Ocean => new OceanThemeSetup(),
                 ThemeType.OceanAutoscroll => new OceanAutoscrollThemeSetup(),
+                ThemeType.OceanBoss => new OceanBossThemeSetup(),
                 _ => throw new NotImplementedException()
             };
 

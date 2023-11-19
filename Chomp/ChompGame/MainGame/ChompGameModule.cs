@@ -11,6 +11,7 @@ using ChompGame.MainGame.SpriteModels;
 using ChompGame.MainGame.WorldScrollers;
 using ChompGame.ROM;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace ChompGame.MainGame
 {
@@ -319,7 +320,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level2_9_Pit;
+            _currentLevel.Value = Level.Level2_1_Intro;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -445,7 +446,12 @@ namespace ChompGame.MainGame
                 GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}", DebugLogFlags.LevelTransition);
 
                 _gameState.Value = GameState.LoadScene;
-                CurrentLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
+                var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
+                if(newLevel > CurrentLevel && SceneBuilder.TransitionLevels.Contains(newLevel))
+                {
+                    _scenePartsDestroyed.Reset(GameSystem.Memory);
+                }
+                CurrentLevel = newLevel;
                 GameDebug.DebugLog($"Entering level {CurrentLevel}", DebugLogFlags.LevelTransition);
 
 

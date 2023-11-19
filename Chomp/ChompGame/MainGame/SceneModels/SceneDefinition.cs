@@ -211,7 +211,8 @@ namespace ChompGame.MainGame.SceneModels
                         yield return SpriteType.Chomp;
                         break;
                     case SpriteGroup.Boss:
-                        throw new Exception("tbd");
+                        //tbd
+                        break;
                 }
             }
         }

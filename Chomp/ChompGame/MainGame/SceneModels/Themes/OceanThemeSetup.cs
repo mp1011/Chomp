@@ -8,6 +8,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
     {
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
+                return;
+
             var bgPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);
 
 

@@ -3,12 +3,13 @@ using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
-    class PlainsBossThemeSetup : ThemeSetup
+    abstract class BossThemeSetup : ThemeSetup
     {
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-
         }
+
+        protected abstract ByteRectangleBase FloorTiles { get; }
 
         public override void SetupVRAMPatternTable(
          NBitPlane masterPatternTable,
@@ -17,7 +18,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {          
             masterPatternTable.CopyTilesTo(
                     destination: vramPatternTable,
-                    source: new InMemoryByteRectangle(0, 12, 6, 1),
+                    source: FloorTiles,
                     destinationPoint: new Point(0, 3),
                     _specs,
                     memory);          
@@ -36,5 +37,15 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
             return attributeTable;
         }
+    }
+
+    class PlainsBossThemeSetup : BossThemeSetup
+    {
+        protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 12, 6, 1);
+    }
+
+    class OceanBossThemeSetup : BossThemeSetup
+    {
+        protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 13, 6, 1);
     }
 }

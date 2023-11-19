@@ -10,13 +10,13 @@ namespace ChompGame.MainGame.SceneModels
         PlainsBoss,
         Ocean,
         OceanAutoscroll,
+        OceanBoss,
         Forest,
         Desert,
         City,
         Space,
         TechBase,
         GlitchCore,
-        Max = 15
     }
 
     static class ThemeBuilder
@@ -68,6 +68,14 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Bullet);
 
+            //OceanBoss
+            new Theme(memoryBuilder,
+               bomb: PaletteKey.Bomb,
+               bg1: PaletteKey.PlainsFarMountains,
+               bg2: PaletteKey.Water,
+               fg: PaletteKey.Sand,
+               enemy1: PaletteKey.GreenEnemy3,
+               enemy2: PaletteKey.Bullet);
 
             //Forest 
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);

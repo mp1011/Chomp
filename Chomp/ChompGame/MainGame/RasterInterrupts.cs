@@ -62,8 +62,8 @@ namespace ChompGame.MainGame
 
             if (_sceneDefinition.IsAutoScroll)
                 HandleAutoScroll();
-            else if (_sceneDefinition.Theme == ThemeType.Ocean 
-                && _sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+            else if (_sceneDefinition.Theme == ThemeType.Ocean
+                && _sceneDefinition.ScrollStyle != ScrollStyle.NameTable)
                 HandleOcean();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
@@ -112,7 +112,8 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
             }
-            else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin && _coreGraphicsModule.ScreenPoint.Y < waterBegin + 16)
+            else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin 
+                && _coreGraphicsModule.ScreenPoint.Y < waterBegin + 8)
             {                
                 int y = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
 
