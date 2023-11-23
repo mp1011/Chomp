@@ -133,7 +133,7 @@ namespace ChompGame.MainGame.SpriteControllers
             WorldSprite.Y = _playerController.WorldSprite.Y - 5;
         }
 
-        public void DoThrow()
+        public virtual void DoThrow()
         {
             _motion.XAcceleration = 0;
             _bombState.Value = BombState.Idle;

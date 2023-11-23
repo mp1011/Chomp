@@ -38,10 +38,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
                 else
                 {
-                    if (_motion.YSpeed < 0)
-                        _motion.YSpeed = 0;
-                    _motion.YAcceleration = 5;
-                    _motion.TargetYSpeed = 20;
+                    _motion.YSpeed = 0;
+                    _motion.YAcceleration = 0;
+                    _motion.TargetYSpeed = 0;
                 }
 
                 _motionController.Update();
@@ -57,6 +56,17 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _playerController.CheckBombThrow(this);
             }
+        }
+
+        public override void DoThrow()
+        {
+            _motion.XAcceleration = 0;
+            _bombState.Value = BombState.Idle;
+            _isThrown.Value = true;
+          
+            _motion.YSpeed = 0;
+            _motion.YAcceleration = 0;
+            _motion.XSpeed = _playerController.WorldSprite.FlipX ? -30 : 30;           
         }
     }
 }

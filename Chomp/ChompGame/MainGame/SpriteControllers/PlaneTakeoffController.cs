@@ -65,15 +65,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 _player.WorldSprite.X = WorldSprite.X + 8;
             }
 
-
             if (_takeOff.Value)
             {
                 _motionController.Motion.TargetYSpeed = -HoverSpeed;
                 _motionController.Motion.XAcceleration = TakeoffAccel;
                 _motionController.Motion.TargetXSpeed = TakeoffSpeed;
-
-                _player.WorldSprite.X = WorldSprite.X+2;
-                _player.WorldSprite.Y = WorldSprite.Y-4;
             }
             else if (_levelTimer.Value.IsMod(12))
             {               
@@ -90,6 +86,12 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             _motionController.Update();
+            if (_takeOff.Value)
+            {
+                _player.WorldSprite.X = WorldSprite.X + 2;
+                _player.WorldSprite.Y = WorldSprite.Y - 4;
+                _player.WorldSprite.UpdateSprite();
+            }
         }
     }
 }

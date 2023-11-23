@@ -310,7 +310,16 @@ namespace ChompGame.MainGame.SpriteControllers
 
             var sprite = pool.TryAddNew();
             if (sprite == null)
+            {
+                GameDebug.DebugLog($"No free sprites available for {sp.Type}, attempting to claim a slot", DebugLogFlags.SpriteSpawn);
+                sprite = TryClaimFreeSlot(pool);
+            }
+
+            if (sprite == null)
+            {
+                GameDebug.DebugLog($"Unable to spawn sprite of type {sp.Type}", DebugLogFlags.SpriteSpawn);
                 return;
+            }
 
             sprite.WorldSprite.X = Specs.ScreenWidth;
             sprite.WorldSprite.Y = sp.Y * Specs.TileHeight;
@@ -321,6 +330,27 @@ namespace ChompGame.MainGame.SpriteControllers
                 a.Variation = sp.Variation;
                 a.AfterSpawn(pool);
             }
+        }
+
+        private ISpriteController TryClaimFreeSlot(ISpriteControllerPool pool)
+        {
+            var screenBounds = new Rectangle(0, 0, _gameModule.Specs.ScreenWidth, _gameModule.Specs.ScreenHeight);
+            bool foundMatch = false;
+
+            pool.Execute(sc =>
+            {
+                if (foundMatch)
+                    return;
+
+                if (!sc.WorldSprite.Bounds.Intersects(screenBounds))
+                {
+                    sc.WorldSprite.Destroy();
+                    foundMatch = true;
+                }
+
+            });
+
+            return pool.TryAddNew();
         }
 
         private ISpriteControllerPool GetPool(ScenePartType scenePartType) =>

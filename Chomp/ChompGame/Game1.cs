@@ -85,6 +85,11 @@ namespace ChompGame
             if (ks.IsKeyDown(Keys.D8))
                 _paletteIndex = 7;
 
+            if (ks.IsKeyDown(Keys.OemComma))
+                TargetElapsedTime = TimeSpan.FromMilliseconds(200);
+            else
+                TargetElapsedTime = TimeSpan.FromMilliseconds(16.7);
+
 #if DEBUG
             EditorInputHelper.Update(_screenRenderSize, _gameSystem.GetModule<TileModule>());
 #endif

@@ -185,7 +185,7 @@ namespace ChompGame.MainGame
             sprite.Palette = _palette.Value;
             Visible = true;
 
-            GameDebug.DebugLog($"Configure sprite #{SpriteIndex} Tile={sprite.Tile}", DebugLogFlags.SpriteSpawn);
+            GameDebug.DebugLog($"Configure sprite #{SpriteIndex}, Tile={sprite.Tile}, SX={sprite.SizeX}, SY={sprite.SizeY}, T20={sprite.Tile2Offset},,,", DebugLogFlags.SpriteSpawn);
         }
 
         public void Show()
@@ -230,6 +230,5 @@ namespace ChompGame.MainGame
 
             Status = WorldSpriteStatus.Inactive;
         }
-
     }
 }

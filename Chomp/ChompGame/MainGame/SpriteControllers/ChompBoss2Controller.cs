@@ -91,6 +91,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void CheckRecenter()
         {
+            if (_phase.Value == Phase.ReCenter)
+                return;
+
             if(WorldSprite.X < 0
                 || WorldSprite.X > _specs.ScreenWidth
                 || WorldSprite.Y < 0
@@ -105,7 +108,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_phase.Value > Phase.Init)
             {
                 if (WorldSprite.X < -4)
+                {
                     WorldSprite.X = -4;
+                    SetPhase(Phase.ReCenter);
+                }
+
                 if (WorldSprite.X > _specs.ScreenWidth + 4)
                     WorldSprite.X = _specs.ScreenWidth + 4;
             }
