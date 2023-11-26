@@ -23,7 +23,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private const byte _recoilSpeed = 30;
         private const byte _fallSpringSpeed = 120;
 
-        private readonly StatusBar _statusBar;
+        protected readonly StatusBar _statusBar;
         private readonly ChompAudioService _audioService;
         private readonly CollisionDetector _collisionDetector;
         protected readonly InputModule _inputModule;

@@ -32,7 +32,8 @@ namespace ChompGame.MainGame.SpriteControllers
             Pause=2,
             Loop=3,
             ReCenter=4,
-            Dying=5
+            Dying=5,
+            Dead=6
         }
 
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -302,6 +303,24 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
             }
 
+            if(_phase.Value == Phase.Dead)
+            {
+                if (_stateTimer.Value == 14)
+                {
+                    _playerController.OnBossDead();
+                    _statusBar.AddToScore(100); //todo - score per enemy type                    
+                    WorldSprite.Destroy();
+                    _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
+                    _stateTimer.Value = 15;
+                }
+                else if (_stateTimer.Value < 14)
+                {
+                    if (_levelTimer.IsMod(4))
+                        _stateTimer.Value++;
+                }
+                return;
+            }
+
             if(_phase.Value != Phase.Dying)            
                 SetPhase(Phase.Dying);
 
@@ -317,8 +336,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     CreateExplosion(WorldSprite.X + 2, WorldSprite.Y);
                     CreateExplosion(WorldSprite.X + 2, WorldSprite.Y + 2);
 
-                    _playerController.OnBossDead();
-                    base.UpdateDying();
+                    SetPhase(Phase.Dead);
                 }
             }            
         }

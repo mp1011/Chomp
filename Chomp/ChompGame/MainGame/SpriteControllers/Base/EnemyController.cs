@@ -11,8 +11,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     {
         protected LowNibble _stateTimer;
         protected readonly ChompAudioService _audioService;
-        private ScenePartsDestroyed _scenePartsDestroyed;
-        private StatusBar _statusBar;
+        protected ScenePartsDestroyed _scenePartsDestroyed;
+        protected StatusBar _statusBar;
 
         protected MaskedByte _hitPoints;
         protected ActorMotionController _motionController;

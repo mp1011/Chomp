@@ -44,7 +44,7 @@ namespace ChompGame.MainGame.SpriteControllers
             var collision = _collisionDetector.DetectCollisions(WorldSprite, _motion);
             _motionController.AfterCollision(collision);
 
-            if (_motion.TargetXSpeed == 0 || _levelTimer.IsMod(16))
+            if (_motion.TargetXSpeed == 0 || _levelTimer.IsMod(4))
             {
                 _stateTimer.Value++;
 
@@ -61,7 +61,7 @@ namespace ChompGame.MainGame.SpriteControllers
                         _motion.XSpeed = -_motionController.WalkSpeed;
                     }
                 }
-                else if (_stateTimer.Value == 15 && _rng.RandomChance(50))
+                else if (_stateTimer.Value == 15 && _rng.RandomChance(75))
                 {
                     int distanceToPlayer = Math.Abs(WorldSprite.X - _player.X);
                     if (distanceToPlayer < 64)

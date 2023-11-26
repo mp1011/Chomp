@@ -29,6 +29,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public override bool CollidesWith(WorldSprite other)
         {
+            if (_statusBar.Health == 0)
+                return false;
+
             if (base.CollidesWith(other))
                 return true;
 
@@ -113,7 +116,18 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateActive()
         {
-            if(_bossDead)
+            if (_statusBar.Health == 0)
+            {
+                AcceleratedMotion.TargetYSpeed = _motionController.WalkSpeed;
+                AcceleratedMotion.YAcceleration = _motionController.WalkAccel;
+                Motion.XSpeed = 0;
+                AcceleratedMotion.TargetXSpeed = 0;
+                _motionController.Update();
+                PositionHeadSprite();
+                return;
+            }
+
+            if (_bossDead)
             {
                 AcceleratedMotion.TargetYSpeed = 0;
                 AcceleratedMotion.YAcceleration = _motionController.BrakeAccel;

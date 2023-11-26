@@ -8,7 +8,7 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
-        public const bool Enabled = false;
+        public const bool Enabled = true;
 
         private readonly ContentManager _contentManager;
 
@@ -55,7 +55,7 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.Adventure2;
             else if (level >= Level.Level2_1_Intro && level < Level.Level2_3_Beach)
                 CurrentSong = SongName.Flight;
-            else if (level >= Level.Level2_3_Beach && level < Level.Level2_10_Boss)
+            else if (level >= Level.Level2_3_Beach && level < Level.Level2_12_Boss)
                 CurrentSong = SongName.SeaDreams;
             else
                 CurrentSong = SongName.None;

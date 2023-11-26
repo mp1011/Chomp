@@ -11,6 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private readonly WorldSprite _player;
         private readonly CollisionDetector _collisionDetector;
+
         public CrocodileController(
             WorldSprite player,
             SpriteTileIndex index, 
@@ -30,19 +31,39 @@ namespace ChompGame.MainGame.SpriteControllers
             _hitPoints.Value = 1;
             _stateTimer.Value = 0;
         }
+
         protected override void UpdateActive()
         {
             _motionController.Update();
             var collision = _collisionDetector.DetectCollisions(WorldSprite, _motion);
+            if (collision.HitLeftWall)
+            {
+                _stateTimer.Value = 15;
+                _motion.TargetXSpeed = _motionController.WalkSpeed;
+            }
+            else if(collision.HitRightWall)
+            {
+                _stateTimer.Value = 15;
+                _motion.TargetXSpeed = -_motionController.WalkSpeed;
+            }
+
             _motionController.AfterCollision(collision);
 
-            if(_levelTimer.Value.IsMod(32))
+            if (_levelTimer.Value.IsMod(32))
+                _audioService.PlaySound(ChompAudioService.Sound.CrocodileBark);
+
+            if(_stateTimer.Value > 0 )
+            {
+                if (_levelTimer.IsMod(2))
+                    _stateTimer.Value--;         
+            }
+            else if (_motion.XSpeed == 0 || _levelTimer.Value.IsMod(32))
             {
                 _motion.XAcceleration = _motionController.WalkAccel;
                 if (_player.X < WorldSprite.X)                
                     _motion.TargetXSpeed = -_motionController.WalkSpeed;
                 else
-                    _motion.TargetYSpeed = _motionController.WalkSpeed;
+                    _motion.TargetXSpeed = _motionController.WalkSpeed;
             }
         }
     }

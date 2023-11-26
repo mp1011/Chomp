@@ -19,7 +19,8 @@ namespace ChompGame.MainGame
             Reward,
             ButtonPress,
             PlayerDie,
-            Max= PlayerDie
+            CrocodileBark,
+            Max= CrocodileBark
         }
 
         private readonly BankAudioModule _audioModule;
@@ -89,6 +90,10 @@ namespace ChompGame.MainGame
                 noteDuration: 24,
                 soundData: "+ G F# E D# D C#");
 
+            index = DefineSound(index,
+                Sound.CrocodileBark,
+                noteDuration: 4,
+                soundData: "+ G D C + A F# C B");
 
             _audioModule.PrepareSounds();
         }
@@ -124,6 +129,7 @@ namespace ChompGame.MainGame
                 Sound.Break => _audioModule.GetChannel(1),
                 Sound.PlayerDie => _audioModule.GetChannel(1),
                 Sound.Reward => _audioModule.GetChannel(1),
+                Sound.CrocodileBark => _audioModule.GetChannel(1),
                 _ => _audioModule.GetChannel(0)
             };
         }
