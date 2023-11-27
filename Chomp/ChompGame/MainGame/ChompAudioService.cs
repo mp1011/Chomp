@@ -20,7 +20,8 @@ namespace ChompGame.MainGame
             ButtonPress,
             PlayerDie,
             CrocodileBark,
-            Max= CrocodileBark
+            PlaneTakeoff,
+            Max = PlaneTakeoff
         }
 
         private readonly BankAudioModule _audioModule;
@@ -94,6 +95,11 @@ namespace ChompGame.MainGame
                 Sound.CrocodileBark,
                 noteDuration: 4,
                 soundData: "+ G D C + A F# C B");
+
+            index = DefineSound(index,
+               Sound.PlaneTakeoff,
+               noteDuration: 20,
+               soundData: "* A A# B C C# D D# E F G");
 
             _audioModule.PrepareSounds();
         }

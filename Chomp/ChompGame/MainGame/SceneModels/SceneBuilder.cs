@@ -859,6 +859,7 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level2_12_Boss, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 16, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),

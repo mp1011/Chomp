@@ -211,7 +211,7 @@ namespace ChompGame.MainGame.SceneModels
                         yield return SpriteType.Chomp;
                         break;
                     case SpriteGroup.Boss:
-                        //tbd
+                        yield return SpriteType.LevelBoss;
                         break;
                 }
             }

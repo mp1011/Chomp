@@ -179,6 +179,10 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.AutoscrollEnemy3, 8, 1, 4, 2);
                     AddSprite(SpriteTileIndex.Extra2, 7, 1, 1, 1);
                     return;
+
+                case Level.Level2_12_Boss:
+                    AddBossBodyTiles();
+                    return;
             }
            
         }

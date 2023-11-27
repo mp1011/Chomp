@@ -160,6 +160,7 @@ namespace ChompGame.MainGame.SpriteControllers
             var sprite = WorldSprite.GetSprite();
             sprite.SizeY = 1;
             sprite.FlipX = false;
+            _audioService.PlaySound(ChompAudioService.Sound.PlaneTakeoff);
         }
 
         protected override void HandleFall()

@@ -48,8 +48,11 @@ namespace ChompGame.MainGame
         {
             if (_timer.Value > 0)
             {
-                if(_timer.Value == FlashDuration)
-                    AddReward(statusBar, sceneSpriteControllers);
+                if(_timer.Value == FlashDuration 
+                    && !AddReward(statusBar, sceneSpriteControllers))
+                {
+                    return;
+                }
 
                 var sprite = _spritesModule.GetSprite(_rewardSpriteIndex.Value);
                 sprite.Palette = (sprite.Palette + 1).NModByte(_specs.NumSpritePalettes);
@@ -77,7 +80,7 @@ namespace ChompGame.MainGame
             }
         }
 
-        private void AddReward(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)
+        private bool AddReward(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)
         {
             if (_currentScene.IsBossScene 
                     || _currentScene.IsAutoScroll
@@ -104,6 +107,7 @@ namespace ChompGame.MainGame
                         bomb.FallCheck = _currentScene.SpriteFallCheck;
                     }
                     _rewardSpriteIndex.Value = bomb.SpriteIndex;
+                    return true;
                 }
             }
             else
@@ -114,8 +118,11 @@ namespace ChompGame.MainGame
                     prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 16;
                     prize.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
                     _rewardSpriteIndex.Value = prize.SpriteIndex;
+                    return true;
                 }
             }
+
+            return false;
         }
     }
 }

@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
+using ChompGame.MainGame.SpriteControllers.Bosses;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
@@ -631,13 +632,13 @@ namespace ChompGame.MainGame.SceneModels
                     var bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                         6,
                         _gameModule.SpritesModule,
-                        () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: false));
+                        () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
 
                     spritePools[extraIndex] = bossBulletControllers;
-                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<LevelBossController>(
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<Level1BossController>(
                           size: 1,
                           spritesModule: _gameModule.SpritesModule,
-                          () => new LevelBossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
+                          () => new Level1BossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
                     break;
 
                 case Level.Level2_2_Fly:
@@ -651,6 +652,19 @@ namespace ChompGame.MainGame.SceneModels
                                 _gameModule,
                                 memoryBuilder));
 
+                    break;
+                case Level.Level2_12_Boss:
+
+                    bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                        6,
+                        _gameModule.SpritesModule,
+                        () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+
+                    spritePools[extraIndex] = bossBulletControllers;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<Level2BossController>(
+                         size: 1,
+                         spritesModule: _gameModule.SpritesModule,
+                         () => new Level2BossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
                     break;
             }
         }

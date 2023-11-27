@@ -29,11 +29,12 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Init=0,
             Chase=1,
-            Pause=2,
-            Loop=3,
-            ReCenter=4,
-            Dying=5,
-            Dead=6
+            SlowChase=2,
+            Pause=3,
+            Loop=4,
+            ReCenter=5,
+            Dying=6,
+            Dead=7
         }
 
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -141,7 +142,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.XAcceleration = 5;
 
                     if (WorldSprite.X < 48)
-                        SetPhase(Phase.Chase);
+                        SetPhase(Phase.SlowChase);
 
                     return;
                 case Phase.Chase:
@@ -150,6 +151,13 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     if (_stateTimer.Value == 10 || WorldSprite.X <= 0)
                         SetPhase(Phase.Pause);
+                    return;
+                case Phase.SlowChase:
+                    speed = 20;
+                    _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
+
+                    if (_stateTimer.Value == 10)
+                        SetPhase(Phase.Chase);
                     return;
 
                 case Phase.Pause:
@@ -161,7 +169,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     if (_stateTimer.Value == 6)
                     {
                         if (_randomModule.RandomChance(70))
-                            SetPhase(Phase.Chase);
+                            SetPhase(Phase.SlowChase);
                         else
                             SetPhase(Phase.Loop);
                     }

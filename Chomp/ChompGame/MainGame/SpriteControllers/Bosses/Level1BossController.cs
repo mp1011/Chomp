@@ -3,47 +3,15 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
-using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
-using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
-namespace ChompGame.MainGame.SpriteControllers
+namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
-    class LevelBossController : EnemyController
+    class Level1BossController : LevelBossController
     {
-        private readonly RandomModule _rng;
-        private const int BossHP = 4;
-        private AcceleratedMotion _motion;
-        private IMotionController _motionController;
-
-        public override IMotion Motion => _motion;
-        private const byte BossLightningAppearValue = 100;
-        private const byte FloatSpeed = 20;
-        private const byte FloatTurnAngle = 16;
-
-        private DynamicBlockController _dynamicBlockController;
-        private SpriteDefinition _jawSpriteDefinition;
-        private CoreGraphicsModule _graphicsModule;
-        private EnemyOrBulletSpriteControllerPool<BossBulletController> _bulletControllers;
-        private TileModule _tileModule;
-        private PaletteModule _paletteModule;
-        private GameByteGridPoint _position;
-        private GameByte _levelBossBackgroundEnd;
-        private GameByte _bossDeathTimer;
-        private WorldSprite _player;
-        private GameByte _jawSpriteIndex;
-        private GameByte _jawPosition;
-        private GameByte _internalTimer;
-        private MusicModule _musicModule;
-
-        protected override bool DestroyWhenFarOutOfBounds => false;
-        protected override bool DestroyWhenOutOfBounds => false;
-
-        protected override bool AlwaysActive => true;
-
         private enum Phase : byte
         {
             Init,
@@ -58,200 +26,60 @@ namespace ChompGame.MainGame.SpriteControllers
             FadeOut
         }
 
-        private GameByteEnum<Phase> _phase;
+        private const byte BossLightningAppearValue = 100;
+        private const byte FloatSpeed = 20;
+        private const byte FloatTurnAngle = 16;
 
-        public LevelBossController(ChompGameModule gameModule,
-            WorldSprite player,
-            EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers,
-            SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.LevelBoss, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
+        private GameByteEnum<Phase> _phase;
+        private GameByte _jawSpriteIndex;
+        private GameByte _jawPosition;
+        private SpriteDefinition _jawSpriteDefinition;
+
+        protected override string BossTiles { get; } =
+            @"13335
+              98BBD
+              67BBA
+              00CA0";
+
+        protected override string BlankBossTiles { get; } =
+            @"00000
+              00000
+              00000
+              00000";
+
+        public Level1BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
         {
-            _player = player;
-            _dynamicBlockController = gameModule.DynamicBlocksController;
-            _bulletControllers = bulletControllers;
-            _musicModule = gameModule.MusicModule;
-            _graphicsModule = gameModule.GameSystem.CoreGraphicsModule;
-            _tileModule = gameModule.TileModule;
-            _paletteModule = gameModule.PaletteModule;
-            _position = gameModule.BossBackgroundHandler.BossPosition;
-            _levelBossBackgroundEnd = gameModule.BossBackgroundHandler.BossBackgroundEnd;
-            _bossDeathTimer = gameModule.BossBackgroundHandler.BossDeathTimer;
             _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
             _jawSpriteIndex = memoryBuilder.AddByte();
             _jawSpriteDefinition = new SpriteDefinition(SpriteType.BossJaw, memoryBuilder.Memory);
             _internalTimer = memoryBuilder.AddByte();
             _jawPosition = memoryBuilder.AddByte();
-            _rng = gameModule.RandomModule;
-
-            var motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.LevelBoss, WorldSprite);
-            _motion = motionController.Motion;
-
-            _motionController = motionController;
-
-            Palette = 2;
         }
 
-        protected override void BeforeInitializeSprite()
+        protected override void UpdatePartPositions()
         {
-            _position.X = 200;
-            _position.Y = 16;
+            _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
+            _position.Y = (byte)(WorldSprite.Y - 66);
+
+            var sprite = GetSprite();
+            var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
+            jawSprite.X = (byte)(sprite.X - 7);
+            jawSprite.Y = (byte)(sprite.Y + 8 + _jawPosition.Value);
+        }
+        private void PositionBossAbovePlayer()
+        {
+            WorldSprite.X = _player.X + 16;
+            int maxX = (_tileModule.NameTable.Width - 4) * _spritesModule.Specs.TileWidth;
+            if (WorldSprite.X > maxX)
+                WorldSprite.X = maxX;
 
             WorldSprite.Y = 80;
-            WorldSprite.X = 16;
 
-            _bossDeathTimer.Value = 0;
+            Visible = true;
+            var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
+            jawSprite.Visible = true;
+
         }
-
-        protected override void OnSpriteCreated(Sprite sprite)
-        {
-            _hitPoints.Value = BossHP;
-            _stateTimer.Value = 0;
-        }
-
-        protected override void UpdateDying() 
-        {
-            if(_hitPoints.Value > 0)
-            {
-                base.UpdateDying();
-                GetSprite().Palette = Palette;
-                return;
-            }
-
-            if (_phase.Value < Phase.Dying)
-            {
-                _internalTimer.Value = 0;
-                _phase.Value = Phase.Dying;
-            }
-
-            UpdatePartPositions();
-
-            if (_phase.Value == Phase.Dying)
-            {
-                CollisionEnabled = false;
-
-                if (_internalTimer.Value == 0)
-                {
-                    _musicModule.CurrentSong = MusicModule.SongName.None;
-                    _motion.SetXSpeed(0);
-                    _motion.SetYSpeed(0);
-                    _internalTimer.Value++;
-                }
-
-                if (WorldSprite.Y > 84)
-                {
-                    _motion.SetYSpeed(-10);
-                    _motionController.Update();
-                }
-                else
-                    _motion.SetYSpeed(0);
-
-                if (_levelTimer.IsMod(16))
-                {
-                    _internalTimer.Value++;
-                    CreateExplosion();
-                }
-
-                if (_internalTimer.Value == 20)
-                {
-                    _internalTimer.Value = 0;
-                    _phase.Value = Phase.FadeOut;
-                }
-            }
-            else if(_phase.Value == Phase.FadeOut)
-            {
-                if(_internalTimer.Value==0)
-                {
-                    _audioService.PlaySound(ChompAudioService.Sound.Lightning);
-                    HideBoss();
-                    Visible = false;
-                    _spritesModule.GetSprite(_jawSpriteIndex).Visible = false;
-                    _internalTimer.Value = 1;
-                    _bossDeathTimer.Value = 1;
-                }
-
-                if (_internalTimer.Value <= 25)
-                {
-                    if (_levelTimer.IsMod(2))
-                    {
-                        _bossDeathTimer.Value++;
-                        if (_bossDeathTimer.Value == 255)
-                            _bossDeathTimer.Value = 1;
-                    }
-                }
-                else
-                {
-                    _bossDeathTimer.Value = 0;
-                }
-
-                if (_internalTimer.Value <= 7)
-                {
-                    _paletteModule.BgColor = ColorIndex.LightGray(7 - _internalTimer.Value).Value;
-                    if (_levelTimer.IsMod(8))
-                        _internalTimer.Value++;
-                }
-                else if(_internalTimer.Value <= 25)
-                {
-                    if (_levelTimer.IsMod(8))
-                    {
-                        _internalTimer.Value++;
-                        int fadeStart = 10;
-                        if (_internalTimer.Value >= fadeStart && _internalTimer.Value < fadeStart + 14)
-                        {
-                            var bossPalette = _paletteModule.BgPalette2;
-                            byte color = (byte)(_internalTimer.Value - fadeStart);
-                            if (color > 8)
-                                color = 8;
-                            bossPalette.SetColor(1, color);
-                            bossPalette.SetColor(2, color);
-                            bossPalette.SetColor(3, color);
-                        }
-                    }
-                }
-                else
-                {
-                    EraseBossTiles();
-
-                    if (_internalTimer.Value <= 32)
-                    {
-                        byte skyColor = (byte)(32 - _internalTimer.Value);
-                        _paletteModule.BgColor = skyColor;
-                    }
-                    else
-                    {
-                        _paletteModule.BgColor = 0;
-                    }
-
-                    if (_levelTimer.IsMod(16))
-                        _internalTimer.Value++;
-
-                    if (_internalTimer.Value == 36)
-                    {
-                        Destroy();
-                        return;
-                    }
-                }
-            }
-        }
-
-        private void SetBossTiles()
-        {
-            var tileStart = 47;
-            _tileModule.NameTable.SetFromString(0, 15, tileStart,
-            @"13335
-                    98BBD
-                    67BBA
-                    00CA0");
-        }
-
-        private void EraseBossTiles()
-        {
-            _tileModule.NameTable.SetFromString(0, 15, 0,
-                   @"00000
-                           00000
-                           00000
-                           00000");
-        }
-
         private void CreateBoss()
         {
             _paletteModule.BgColor = ColorIndex.Black;
@@ -277,33 +105,6 @@ namespace ChompGame.MainGame.SpriteControllers
             WorldSprite.FlipX = false;
         }
 
-        private void HideBoss()
-        {
-            var spritePalette = _graphicsModule.GetSpritePalette(2);
-            spritePalette.SetColor(1, 0);
-            spritePalette.SetColor(2, 0);
-            spritePalette.SetColor(3, 0);
-
-            var bossPalette = _paletteModule.BgPalette2;
-            bossPalette.SetColor(1, 0);
-            bossPalette.SetColor(2, 0);
-            bossPalette.SetColor(3, 0);
-        }
-
-        private void PositionBossAbovePlayer()
-        {
-            WorldSprite.X = _player.X + 16;
-            int maxX = (_tileModule.NameTable.Width - 4) * _spritesModule.Specs.TileWidth;
-            if (WorldSprite.X > maxX)
-                WorldSprite.X = maxX;
-
-            WorldSprite.Y = 80;
-
-            Visible = true;
-            var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
-            jawSprite.Visible = true;
-
-        }
 
         private void BossTest()
         {
@@ -322,55 +123,13 @@ namespace ChompGame.MainGame.SpriteControllers
             spritePalette.SetColor(1, (byte)targetSpritePalette.GetColorIndex(1));
             spritePalette.SetColor(2, (byte)targetSpritePalette.GetColorIndex(2));
             spritePalette.SetColor(3, (byte)targetSpritePalette.GetColorIndex(3));
-       
+
             var bossPalette = _paletteModule.BgPalette2;
             bossPalette.SetColor(1, (byte)targetBossPalette.GetColorIndex(1));
             bossPalette.SetColor(2, (byte)targetBossPalette.GetColorIndex(2));
             bossPalette.SetColor(3, (byte)targetBossPalette.GetColorIndex(3));
         }
 
-        private void FireBullet()
-        {
-            var bullet = _bulletControllers.TryAddNew();
-            if (bullet != null)
-            {
-                bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
-                bullet.WorldSprite.X = WorldSprite.X - 8;
-                bullet.WorldSprite.Y = WorldSprite.Y + 8;
-                bullet.WorldSprite.FlipX = true;
-                bullet.Motion.XSpeed = -40;
-                _audioService.PlaySound(ChompAudioService.Sound.Fireball);
-            }
-        }
-
-        private ISpriteController CreateFirebomb()
-        {
-            var bullet = _bulletControllers.TryAddNew();
-            if (bullet != null)
-            {
-                bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
-                bullet.WorldSprite.X = WorldSprite.X + 16;
-                bullet.WorldSprite.Y = WorldSprite.Y + 8;
-                _audioService.PlaySound(ChompAudioService.Sound.Fireball);
-
-                bullet.WorldSprite.Y = 64;
-                bullet.WorldSprite.X = _player.X;
-                bullet.Motion.YSpeed = 40;
-            }
-
-            return bullet;
-        }
-
-        private void UpdatePartPositions()
-        {
-            _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
-            _position.Y = (byte)(WorldSprite.Y - 66);
-
-            var sprite = GetSprite();
-            var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
-            jawSprite.X = (byte)(sprite.X - 7);
-            jawSprite.Y = (byte)(sprite.Y + 8 + _jawPosition.Value);
-        }
 
         protected override void UpdateActive()
         {
@@ -391,7 +150,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_phase.Value == Phase.Init)
             {
                 CollisionEnabled = false;
-                _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 2));
+                SetBossBackgroundEnd(2);
 
                 _musicModule.CurrentSong = MusicModule.SongName.None;
                 WorldSprite.X = 0;
@@ -403,7 +162,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _phase.Value = Phase.Lightning;
                 }
 
-               // BossTest();
+                // BossTest();
             }
             else if (_phase.Value == Phase.Lightning)
             {
@@ -560,7 +319,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
                 else
                 {
-                    if(_jawPosition.Value > 0 && _levelTimer.IsMod(16))
+                    if (_jawPosition.Value > 0 && _levelTimer.IsMod(16))
                     {
                         _jawPosition.Value--;
                     }
@@ -568,20 +327,20 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.TargetXSpeed = -50;
                     _motion.XAcceleration = 8;
 
-                    if(WorldSprite.X < 8)
+                    if (WorldSprite.X < 8)
                     {
                         _internalTimer.Value = 0;
                         _phase.Value = Phase.FireRain;
                     }
                 }
             }
-            else if(_phase.Value == Phase.FireRain)
+            else if (_phase.Value == Phase.FireRain)
             {
                 _dynamicBlockController.PositionFreeCoinBlocksNearPlayer(
                     (byte)(_player.X / _spritesModule.Specs.TileWidth),
                     (byte)(_spritesModule.Specs.NameTableHeight - 6));
 
-                if(_internalTimer.Value == 0)
+                if (_internalTimer.Value == 0)
                 {
                     CollisionEnabled = false;
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
@@ -590,7 +349,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.SetYSpeed(0);
                     HideBoss();
 
-                    _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 4));
+                    SetBossBackgroundEnd(4);
                 }
 
 
@@ -619,7 +378,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     {
                         _internalTimer.Value++;
 
-                        if(_internalTimer.Value == 45)
+                        if (_internalTimer.Value == 45)
                         {
                             _phase.Value = Phase.BossAppear;
 
@@ -628,28 +387,175 @@ namespace ChompGame.MainGame.SpriteControllers
                             jawSprite.Visible = true;
 
                             _dynamicBlockController.ResetCoinsForLevelBoss();
-                            _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * 2));
+                            SetBossBackgroundEnd(2);
+
                             SetBossTiles();
                             _internalTimer.Value = 0;
                         }
-                        else if(_internalTimer.Value >= 20 && _internalTimer.Value < 40)
+                        else if (_internalTimer.Value >= 20 && _internalTimer.Value < 40)
                         {
                             CreateFirebomb();
                         }
                     }
                 }
-            }           
-        }
-   
-        private void CreateExplosion()
-        {
-            var explosion = _bulletControllers.TryAddNew();
-            if (explosion != null)
-            {
-                explosion.Explode();
-                explosion.WorldSprite.X = WorldSprite.X + _rng.RandomItem(-8, -4, 0, 4, 8);
-                explosion.WorldSprite.Y = WorldSprite.Y + 4 + _rng.RandomItem(-8, -4, 0, 4, 8);
             }
         }
+        private void FireBullet()
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet != null)
+            {
+                bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
+                bullet.WorldSprite.X = WorldSprite.X - 8;
+                bullet.WorldSprite.Y = WorldSprite.Y + 8;
+                bullet.WorldSprite.FlipX = true;
+                bullet.Motion.XSpeed = -40;
+                _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+            }
+        }
+
+        private ISpriteController CreateFirebomb()
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet != null)
+            {
+                bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
+                bullet.WorldSprite.X = WorldSprite.X + 16;
+                bullet.WorldSprite.Y = WorldSprite.Y + 8;
+                _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+                bullet.WorldSprite.Y = 64;
+                bullet.WorldSprite.X = _player.X;
+                bullet.Motion.YSpeed = 40;
+            }
+
+            return bullet;
+        }
+
+        protected override void UpdateDying()
+        {
+            if (_hitPoints.Value > 0)
+            {
+                base.UpdateDying();
+                GetSprite().Palette = Palette;
+                return;
+            }
+
+            if (_phase.Value < Phase.Dying)
+            {
+                _internalTimer.Value = 0;
+                _phase.Value = Phase.Dying;
+            }
+
+            UpdatePartPositions();
+
+            if (_phase.Value == Phase.Dying)
+            {
+                CollisionEnabled = false;
+
+                if (_internalTimer.Value == 0)
+                {
+                    _musicModule.CurrentSong = MusicModule.SongName.None;
+                    _motion.SetXSpeed(0);
+                    _motion.SetYSpeed(0);
+                    _internalTimer.Value++;
+                }
+
+                if (WorldSprite.Y > 84)
+                {
+                    _motion.SetYSpeed(-10);
+                    _motionController.Update();
+                }
+                else
+                    _motion.SetYSpeed(0);
+
+                if (_levelTimer.IsMod(16))
+                {
+                    _internalTimer.Value++;
+                    CreateExplosion();
+                }
+
+                if (_internalTimer.Value == 20)
+                {
+                    _internalTimer.Value = 0;
+                    _phase.Value = Phase.FadeOut;
+                }
+            }
+            else if (_phase.Value == Phase.FadeOut)
+            {
+                if (_internalTimer.Value == 0)
+                {
+                    _audioService.PlaySound(ChompAudioService.Sound.Lightning);
+                    HideBoss();
+                    Visible = false;
+                    _spritesModule.GetSprite(_jawSpriteIndex).Visible = false;
+                    _internalTimer.Value = 1;
+                    _bossDeathTimer.Value = 1;
+                }
+
+                if (_internalTimer.Value <= 25)
+                {
+                    if (_levelTimer.IsMod(2))
+                    {
+                        _bossDeathTimer.Value++;
+                        if (_bossDeathTimer.Value == 255)
+                            _bossDeathTimer.Value = 1;
+                    }
+                }
+                else
+                {
+                    _bossDeathTimer.Value = 0;
+                }
+
+                if (_internalTimer.Value <= 7)
+                {
+                    _paletteModule.BgColor = ColorIndex.LightGray(7 - _internalTimer.Value).Value;
+                    if (_levelTimer.IsMod(8))
+                        _internalTimer.Value++;
+                }
+                else if (_internalTimer.Value <= 25)
+                {
+                    if (_levelTimer.IsMod(8))
+                    {
+                        _internalTimer.Value++;
+                        int fadeStart = 10;
+                        if (_internalTimer.Value >= fadeStart && _internalTimer.Value < fadeStart + 14)
+                        {
+                            var bossPalette = _paletteModule.BgPalette2;
+                            byte color = (byte)(_internalTimer.Value - fadeStart);
+                            if (color > 8)
+                                color = 8;
+                            bossPalette.SetColor(1, color);
+                            bossPalette.SetColor(2, color);
+                            bossPalette.SetColor(3, color);
+                        }
+                    }
+                }
+                else
+                {
+                    EraseBossTiles();
+
+                    if (_internalTimer.Value <= 32)
+                    {
+                        byte skyColor = (byte)(32 - _internalTimer.Value);
+                        _paletteModule.BgColor = skyColor;
+                    }
+                    else
+                    {
+                        _paletteModule.BgColor = 0;
+                    }
+
+                    if (_levelTimer.IsMod(16))
+                        _internalTimer.Value++;
+
+                    if (_internalTimer.Value == 36)
+                    {
+                        Destroy();
+                        return;
+                    }
+                }
+            }
+        }
+
     }
 }

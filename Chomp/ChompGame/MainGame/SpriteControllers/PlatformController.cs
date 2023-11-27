@@ -40,6 +40,7 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         protected override bool DestroyWhenFarOutOfBounds => false;
+        protected override bool AlwaysActive => true;
 
         public PlatformController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Platform, gameModule, memoryBuilder, SpriteTileIndex.Platform)
@@ -64,6 +65,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
+            GameDebug.DebugLog("Platform created", DebugLogFlags.SpriteSpawn);
             Motion.Stop();
 
             if (_platformType.Value == PlatformType.UpDown)
