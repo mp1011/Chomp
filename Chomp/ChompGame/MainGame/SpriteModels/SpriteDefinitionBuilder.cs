@@ -151,6 +151,17 @@ namespace ChompGame.MainGame.SpriteModels
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
 
+            //boss arm 
+            new SpriteDefinition(memoryBuilder,
+               secondTileOffset: 0,
+               sizeX: 1,
+               sizeY: 1,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.Slow,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: false);
+
             ////level boss fireball
             //new SpriteDefinition(memoryBuilder,
             //    secondTileOffset: 0,

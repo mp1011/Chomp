@@ -70,11 +70,11 @@ namespace ChompGame.MainGame.SceneModels
 
             //OceanBoss
             new Theme(memoryBuilder,
-               bomb: PaletteKey.Bomb,
-               bg1: PaletteKey.PlainsFarMountains,
-               bg2: PaletteKey.Water,
+               bomb: PaletteKey.BombLight,
+               bg1: PaletteKey.Test,
+               bg2: PaletteKey.BlueEnemy2,
                fg: PaletteKey.Sand,
-               enemy1: PaletteKey.GreenEnemy3,
+               enemy1: PaletteKey.BlueEnemy,
                enemy2: PaletteKey.Bullet);
 
             //Forest 

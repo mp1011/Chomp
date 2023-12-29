@@ -68,7 +68,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _firstTailSectionMotion = new PrecisionMotion(memoryBuilder);
             memoryBuilder.AddBytes(PrecisionMotion.Bytes * NumTailSections - 1);
-
         }
 
         protected override void BeforeInitializeSprite()

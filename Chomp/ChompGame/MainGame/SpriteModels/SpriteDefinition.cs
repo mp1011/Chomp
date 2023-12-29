@@ -18,6 +18,7 @@ namespace ChompGame.MainGame.SpriteModels
         BossBullet,
         LevelBoss,
         BossJaw,
+        BossArm,
         Prize,
         PlayerHead,
         Plane,

@@ -2,9 +2,6 @@
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -39,7 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public bool IsErased(int index) => _tailSprites[index] == 255;
 
-        public void CreateTail()
+        public void CreateTail(SpriteTileIndex tileIndex = SpriteTileIndex.Extra2)
         {
             for (int i = 0; i < _numSections; i++)
             {
@@ -47,7 +44,7 @@ namespace ChompGame.MainGame.SpriteControllers
                _tailSprites[i] = spriteIndex;
 
                 var sprite = _spritesModule.GetSprite(spriteIndex);
-                sprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Extra2));
+                sprite.Tile = (byte)(_spriteTileTable.GetTile(tileIndex));
                 sprite.SizeX = 1;
                 sprite.SizeY = 1;
                 sprite.Palette = 2;

@@ -47,7 +47,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               00000
               00000";
 
-        public Level1BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
+        public Level1BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) 
+            : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
             _jawSpriteIndex = memoryBuilder.AddByte();

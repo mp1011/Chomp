@@ -6,6 +6,7 @@ using ChompGame.Graphics;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.Bosses;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -115,15 +116,13 @@ namespace ChompGame.MainGame.SpriteControllers
             bossPalette.SetColor(3, 0);
         }
 
-       
-
-      
-      
+        protected BossPart CreatePart(SystemMemoryBuilder memoryBuilder, SpriteDefinition spriteDefinition)
+        {
+            return new BossPart(memoryBuilder, _spritesModule, _spriteTileTable, spriteDefinition);
+        }
 
         protected abstract void UpdatePartPositions();
-       
 
-    
         protected void CreateExplosion()
         {
             var explosion = _bulletControllers.TryAddNew();
