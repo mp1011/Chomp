@@ -18,18 +18,37 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             private ChompTail _arm;
             private GameByte _curl;
 
-            public byte Curl
+            private GameBit _curlTarget;
+            private MaskedByte _curlSpeed;
+
+            public bool TargetRight
             {
-                get => _curl.Value;
-                set => _curl.Value = value;
+                get => _curlTarget.Value;
+                set => _curlTarget.Value = value;
+            }
+
+            public byte CurlSpeed
+            {
+                get => _curlSpeed.Value;
+                set => _curlSpeed.Value = value;
+            }
+
+            public int Curl
+            {
+                get => _curl.Value - 128;
+                set => _curl.Value = (byte)(value + 128);
             }
 
             public Tentacle(SystemMemoryBuilder memoryBuilder, 
                 SpritesModule spritesModule, 
-                SpriteTileTable spriteTileTable)
+                SpriteTileTable spriteTileTable,
+                GameBit curlTarget,
+                MaskedByte curlSpeed)
             {
                 _arm = new ChompTail(memoryBuilder, NumSections, spritesModule, spriteTileTable);
                 _curl = memoryBuilder.AddByte();
+                _curlTarget = curlTarget;
+                _curlSpeed = curlSpeed;
             }
 
             public void Initialize()
@@ -37,21 +56,42 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _arm.CreateTail(SpriteTileIndex.Enemy2);
             }
 
-            public void Update(Sprite anchor, bool isLeft)
+            public bool Update()
+            {
+                if (_curlSpeed == 0)
+                    return false;
+
+                int newCurl = _curlTarget.Value ? (Curl + _curlSpeed.Value) : (Curl - _curlSpeed.Value);
+                if (newCurl >= 127)
+                {
+                    Curl = 127;
+                    return true;
+                }
+                else if(newCurl <= -128)
+                {
+                    Curl = 128;
+                    return true;
+                }
+
+                Curl = newCurl;
+                return false;
+            }
+
+            public void UpdatePosition(Sprite anchor)
             {
                 var target = anchor;
                 for (int i = 0; i < NumSections; i++)
                 {
-                    target = UpdateSection(target, _arm.GetSprite(i), i, isLeft);
+                    target = UpdateSection(target, _arm.GetSprite(i), i);
                 }
             }
 
-            private Sprite UpdateSection(Sprite anchor, Sprite section, int sectionNumber, bool isLeft)
+            private Sprite UpdateSection(Sprite anchor, Sprite section, int sectionNumber)
             {
-                var mod = isLeft ? 8 : -8;
+                int mod = Curl / 4;
 
-                var offset = new Point(0, 4);
-                offset = offset.RotateDeg((_curl.Value-128) + sectionNumber* mod);
+                var offset = new Point(0, 6);
+                offset = offset.RotateDeg(Curl + sectionNumber * mod);
                 section.X = (byte)(anchor.X + offset.X);
                 section.Y = (byte)(anchor.Y + offset.Y);
                 return section;
@@ -67,8 +107,16 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _arm1 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossArm, memoryBuilder.Memory));
             _arm2 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossArm, memoryBuilder.Memory));
 
-            _tentacle1 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable);
-            _tentacle2 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable);
+            var address = memoryBuilder.CurrentAddress;
+            memoryBuilder.AddByte();
+
+            _tentacle1 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable, 
+                new GameBit(address, Bit.Bit0, memoryBuilder.Memory),
+                new MaskedByte(address, (Bit)28, memoryBuilder.Memory, 2));
+
+            _tentacle2 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable,
+                new GameBit(address, Bit.Bit1, memoryBuilder.Memory),
+                new MaskedByte(address, (Bit)224, memoryBuilder.Memory, 5));
         }
 
         protected override string BossTiles { get; } =
@@ -95,12 +143,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 SetupBoss();
             }
-
-            _tentacle1.Curl++;
-            _tentacle2.Curl--;
-
-
+           
             UpdatePartPositions();
+
+            if (_tentacle1.Update())
+                _tentacle1.TargetRight = !_tentacle1.TargetRight;
+
+            if(_tentacle2.Update())
+                _tentacle2.TargetRight = !_tentacle2.TargetRight;
         }
 
         private void SetupBoss()
@@ -142,6 +192,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle1.Initialize();
             _tentacle2.Initialize();
 
+            _tentacle1.TargetRight = true;
+            _tentacle2.TargetRight = false;
+            _tentacle1.CurlSpeed = 7;
+            _tentacle2.CurlSpeed = 3;
+
 
             _paletteModule.BgColor = 0;
         }
@@ -158,8 +213,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _arm1.UpdatePosition(bossSprite);
             _arm2.UpdatePosition(bossSprite);
 
-            _tentacle1.Update(_arm1.Sprite, true);
-            _tentacle2.Update(_arm2.Sprite, false);
+            _tentacle1.UpdatePosition(_arm1.Sprite);
+            _tentacle2.UpdatePosition(_arm2.Sprite);
         }
     }
 }
