@@ -82,5 +82,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             return true;
         }
+
+        public virtual bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);
     }
 }

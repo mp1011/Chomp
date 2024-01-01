@@ -9,12 +9,22 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level2BossController : LevelBossController
     {
+        private WorldSprite _collisionSprite;
         private BossPart _eye2, _eye3, _eye4, _arm1, _arm2;
         private Tentacle _tentacle1, _tentacle2;
+        private GameByteEnum<Phase> _phase;
+
+        private enum Phase : byte
+        {
+            Init,
+            Float
+        }
+
+
 
         class Tentacle
         {
-            private const int NumSections = 6;
+            public const int NumSections = 6;
             private ChompTail _arm;
             private GameByte _curl;
 
@@ -39,6 +49,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 set => _curl.Value = (byte)(value + 128);
             }
 
+            public Sprite GetSprite(int index) => _arm.GetSprite(index);
+
             public Tentacle(SystemMemoryBuilder memoryBuilder, 
                 SpritesModule spritesModule, 
                 SpriteTileTable spriteTileTable,
@@ -54,6 +66,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             public void Initialize()
             {
                 _arm.CreateTail(SpriteTileIndex.Enemy2);
+                Curl = 0;
             }
 
             public bool Update()
@@ -98,7 +111,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
         }
 
-        public Level2BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) 
+        public Level2BossController(
+            ChompGameModule gameModule, 
+            WorldSprite player, 
+            EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers,
+            SystemMemoryBuilder memoryBuilder) 
             : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _eye2 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
@@ -117,6 +134,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle2 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable,
                 new GameBit(address, Bit.Bit1, memoryBuilder.Memory),
                 new MaskedByte(address, (Bit)224, memoryBuilder.Memory, 5));
+
+            _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
         }
 
         protected override string BossTiles { get; } =
@@ -139,20 +158,49 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               0000000000";
         protected override void UpdateActive()
         {
-            if(_stateTimer.Value == 0)
+            if(_phase.Value == Phase.Init)
             {
                 SetupBoss();
+                SetPhase(Phase.Float);
             }
-           
+            else if(_phase.Value == Phase.Float)
+            {
+                if (_tentacle1.Update())
+                    _tentacle1.TargetRight = !_tentacle1.TargetRight;
+
+                if (_tentacle2.Update())
+                    _tentacle2.TargetRight = !_tentacle2.TargetRight;
+
+                if(_levelTimer.IsMod(8))
+                    _motion.Turn(8, 8);
+
+                _motionController.Update();
+            }
+
+            if(_levelTimer.IsMod(8))
+                _stateTimer.Value++;
+            
             UpdatePartPositions();
-
-            if (_tentacle1.Update())
-                _tentacle1.TargetRight = !_tentacle1.TargetRight;
-
-            if(_tentacle2.Update())
-                _tentacle2.TargetRight = !_tentacle2.TargetRight;
         }
 
+        private void SetPhase(Phase phase)
+        {
+            _stateTimer.Value = 0;
+            _phase.Value = phase;
+
+            if(phase == Phase.Float)
+            {
+                _tentacle1.TargetRight = true;
+                _tentacle2.TargetRight = false;
+                _tentacle1.CurlSpeed = 1;
+                _tentacle2.CurlSpeed = 1;
+            }
+        }
+        protected override void BeforeInitializeSprite()
+        {
+            _phase.Value = Phase.Init;
+            base.BeforeInitializeSprite();
+        }
         private void SetupBoss()
         {
             WorldSprite.X = 40;
@@ -192,13 +240,34 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle1.Initialize();
             _tentacle2.Initialize();
 
-            _tentacle1.TargetRight = true;
-            _tentacle2.TargetRight = false;
-            _tentacle1.CurlSpeed = 7;
-            _tentacle2.CurlSpeed = 3;
-
-
             _paletteModule.BgColor = 0;
+        }
+
+        public override bool CollidesWithPlayer(PlayerController player)
+        {
+            int x = WorldSprite.X;
+            int y = WorldSprite.Y;
+
+            var spots = (Tentacle.NumSections * 2);
+            var spotValue = _levelTimer.Value % spots;
+
+            if(spotValue < Tentacle.NumSections)
+            {
+                var s = _tentacle1.GetSprite(spotValue);
+                WorldSprite.X = s.X;
+                WorldSprite.Y = s.Y;
+            }
+            else
+            {
+                var s = _tentacle2.GetSprite(spotValue - Tentacle.NumSections);
+                WorldSprite.X = s.X;
+                WorldSprite.Y = s.Y;
+            }
+
+            var result = player.CollidesWith(WorldSprite);
+            WorldSprite.X = x;
+            WorldSprite.Y = y;
+            return result;
         }
 
         protected override void UpdatePartPositions()
@@ -216,5 +285,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle1.UpdatePosition(_arm1.Sprite);
             _tentacle2.UpdatePosition(_arm2.Sprite);
         }
+
     }
 }

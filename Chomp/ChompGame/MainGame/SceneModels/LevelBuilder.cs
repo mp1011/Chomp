@@ -664,7 +664,8 @@ namespace ChompGame.MainGame.SceneModels
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<Level2BossController>(
                          size: 1,
                          spritesModule: _gameModule.SpritesModule,
-                         () => new Level2BossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
+                         () => new Level2BossController(_gameModule, playerController.WorldSprite, 
+                            bossBulletControllers, memoryBuilder));
                     break;
             }
         }

@@ -310,7 +310,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             sprites.Execute(p =>
             {
-                if(p.CollisionEnabled && CollidesWith(p.WorldSprite))
+                if(p.CollisionEnabled && p.CollidesWithPlayer(this))
                 {
                     if (p.HandlePlayerCollision(WorldSprite) == CollisionResult.HarmPlayer)
                     {

@@ -1,6 +1,7 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteControllers.Base;
 using System;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace ChompGame.Data
 
     interface ICollidableSpriteControllerPool : ISpriteControllerPool
     {
-        void Execute(Action<ICollidableSpriteController> action, bool skipIfInactive = true);       
+        void Execute(Action<ICollidableSpriteController> action, bool skipIfInactive = true);  
     }
 
     class SpriteControllerPool<T> : ISpriteControllerPool
@@ -106,6 +107,8 @@ namespace ChompGame.Data
             : base(size, spritesModule, generateController)
         {
         }
+
+        public bool CollidesWithPlayer(PlayerController player, WorldSprite sprite) => player.CollidesWith(sprite);
 
         public void Execute(Action<ICollidableSpriteController> action, bool skipIfInactive = true)
         {

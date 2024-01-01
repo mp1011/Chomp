@@ -93,5 +93,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 _player.WorldSprite.UpdateSprite();
             }
         }
+        public bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);
     }
 }
