@@ -183,7 +183,7 @@ namespace ChompGame.MainGame.SceneModels
                 case Level.Level2_12_Boss:
                     AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
                     AddSprite(SpriteTileIndex.Enemy2, 7, 1, 1, 1); //arm
-                    AddSprite(SpriteTileIndex.Extra1, 4, 0, 1, 1);
+                    AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1);
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
                     AddBossBodyTiles();

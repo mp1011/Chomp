@@ -28,5 +28,6 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     {
         bool CollisionEnabled { get; }
         bool CollidesWithPlayer(PlayerController player);
+        bool CollidesWithBomb(WorldSprite bomb);
     }
 }

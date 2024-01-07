@@ -89,5 +89,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public bool HandleBombCollision(WorldSprite player) => false;
         public bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);
+        public bool CollidesWithBomb(WorldSprite bomb) => false;
     }
 }

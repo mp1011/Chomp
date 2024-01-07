@@ -12,12 +12,27 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private WorldSprite _collisionSprite;
         private BossPart _eye2, _eye3, _eye4, _arm1, _arm2;
         private Tentacle _tentacle1, _tentacle2;
-        private GameByteEnum<Phase> _phase;
+        private NibbleEnum<Phase> _phase;
+
+        private NibbleEnum<CollisionIndex> _bombCollisionIndex;
+
+        private enum CollisionIndex : byte
+        {
+            None,
+            Eye1,
+            Eye2,
+            Eye3,
+            Eye4,
+            LeftArm,
+            RightArm
+        }
 
         private enum Phase : byte
         {
             Init,
-            Float
+            Sway,
+            PrepareShoot,
+            Shoot
         }
 
 
@@ -37,6 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 set => _curlTarget.Value = value;
             }
 
+            //0-7
             public byte CurlSpeed
             {
                 get => _curlSpeed.Value;
@@ -135,7 +151,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 new GameBit(address, Bit.Bit1, memoryBuilder.Memory),
                 new MaskedByte(address, (Bit)224, memoryBuilder.Memory, 5));
 
-            _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
+            _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
+            _bombCollisionIndex = new NibbleEnum<CollisionIndex>(new HighNibble(memoryBuilder));
+
+            memoryBuilder.AddByte();
         }
 
         protected override string BossTiles { get; } =
@@ -158,29 +177,100 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               0000000000";
         protected override void UpdateActive()
         {
-            if(_phase.Value == Phase.Init)
+            if (WorldSprite.Y < 64)
+                WorldSprite.Y = 64;
+
+            if (_phase.Value == Phase.Init)
             {
                 SetupBoss();
-                SetPhase(Phase.Float);
+                SetPhase(Phase.Sway);
             }
-            else if(_phase.Value == Phase.Float)
+            else if (_phase.Value == Phase.Sway)
             {
+                _motion.XAcceleration = 1;
+                _motion.YAcceleration = 1;
+
+                if (WorldSprite.X > 100)
+                    _motion.TargetXSpeed = -16;
+
+                if (WorldSprite.X < 30 || _motion.TargetXSpeed == 0)
+                    _motion.TargetXSpeed = 16;
+
+                if (WorldSprite.Y < 70)
+                    _motion.TargetYSpeed = 4;
+                else if (WorldSprite.Y > 78)
+                    _motion.TargetYSpeed = -4;
+
                 if (_tentacle1.Update())
+                {
                     _tentacle1.TargetRight = !_tentacle1.TargetRight;
+                    _tentacle1.CurlSpeed = (byte)(_tentacle1.TargetRight ? 1 : 2);
+                }
 
                 if (_tentacle2.Update())
+                {
                     _tentacle2.TargetRight = !_tentacle2.TargetRight;
+                    _tentacle2.CurlSpeed = (byte)(_tentacle2.TargetRight ? 2 : 1);
+                }
 
-                if(_levelTimer.IsMod(8))
-                    _motion.Turn(8, 8);
+                _motionController.Update();
+
+                if (_levelTimer.IsMod(32))
+                    _stateTimer.Value++;
+
+                if (_stateTimer.Value == 15)
+                    SetPhase(Phase.PrepareShoot);
+            }
+            else if (_phase.Value == Phase.PrepareShoot)
+            {
+                if (_tentacle1.Update() & _tentacle2.Update() & _motion.XSpeed == 0 & _motion.YSpeed == 0)
+                    SetPhase(Phase.Shoot);
 
                 _motionController.Update();
             }
+            else if (_phase.Value == Phase.Shoot)
+            {
+                _dynamicBlockController.PositionFreeCoinBlocksNearPlayer(
+                    (byte)(_player.X / _spritesModule.Specs.TileWidth),
+                    (byte)(_spritesModule.Specs.NameTableHeight - 6));
 
-            if(_levelTimer.IsMod(8))
-                _stateTimer.Value++;
+                if (_levelTimer.IsMod(16))
+                {
+                    var e = _stateTimer.Value % 6;
+                    if (e == 0)
+                        FireBullet(WorldSprite.GetSprite());
+                    else if (e == 1)
+                        FireBullet(_eye2.Sprite);
+                    else if(e == 2)
+                        FireBullet(_eye3.Sprite);
+                    else if(e == 3)
+                        FireBullet(_eye4.Sprite);
+
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                        SetPhase(Phase.Sway);
+                }
+            }
             
             UpdatePartPositions();
+        }
+
+        private void FireBullet(Sprite source)
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
+            bullet.WorldSprite.X = source.X;
+            bullet.WorldSprite.Y = source.Y;
+            bullet.WorldSprite.FlipX = true;
+
+            var angle = bullet.WorldSprite.Center.GetVectorTo(_player.Center, 32);
+            bullet.Motion.XSpeed = angle.X;
+            bullet.Motion.YSpeed = angle.Y;
+
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
         }
 
         private void SetPhase(Phase phase)
@@ -188,12 +278,21 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _stateTimer.Value = 0;
             _phase.Value = phase;
 
-            if(phase == Phase.Float)
+            if(phase == Phase.Sway)
             {
                 _tentacle1.TargetRight = true;
-                _tentacle2.TargetRight = false;
+                _tentacle2.TargetRight = true;
                 _tentacle1.CurlSpeed = 1;
                 _tentacle2.CurlSpeed = 1;
+            }
+            else if (phase == Phase.PrepareShoot)
+            {
+                _tentacle1.TargetRight = false;
+                _tentacle2.TargetRight = true;
+                _tentacle1.CurlSpeed = 2;
+                _tentacle2.CurlSpeed = 2;
+                _motion.TargetXSpeed = 0;
+                _motion.TargetYSpeed = 0;
             }
         }
         protected override void BeforeInitializeSprite()
@@ -204,8 +303,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private void SetupBoss()
         {
             WorldSprite.X = 40;
-            WorldSprite.Y = _player.Y - 32;
-            SetBossBackgroundEnd(2);
+            WorldSprite.Y = _player.Y - 48;
+            SetBossBackgroundEnd(4);
             SetBossTiles();
             _stateTimer.Value = 1;
 
@@ -241,6 +340,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle2.Initialize();
 
             _paletteModule.BgColor = 0;
+
+
+            GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
+            GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
+            GameDebug.Watch3 = new DebugWatch("ST", () => _stateTimer.Value);
+
         }
 
         public override bool CollidesWithPlayer(PlayerController player)
@@ -270,6 +375,47 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             return result;
         }
 
+        public override bool CollidesWithBomb(WorldSprite bomb)
+        {
+            int x = WorldSprite.X;
+            int y = WorldSprite.Y;
+
+            var spots = (Tentacle.NumSections * 2);
+            var spotValue = _levelTimer.Value % spots;
+
+            if (spotValue < Tentacle.NumSections)
+            {
+                var s = _tentacle1.GetSprite(spotValue);
+                WorldSprite.X = s.X;
+                WorldSprite.Y = s.Y;
+            }
+            else
+            {
+                var s = _tentacle2.GetSprite(spotValue - Tentacle.NumSections);
+                WorldSprite.X = s.X;
+                WorldSprite.Y = s.Y;
+            }
+
+            var result = base.CollidesWithBomb(bomb);
+            if(result)
+            {
+                if (spotValue < Tentacle.NumSections)
+                {
+                    _bombCollisionIndex.Value = CollisionIndex.LeftArm;
+                    _tentacle1.CurlSpeed = 0;
+                }
+                else
+                {
+                    _bombCollisionIndex.Value = CollisionIndex.RightArm;
+                    _tentacle2.CurlSpeed = 0;
+                }
+            }
+
+            WorldSprite.X = x;
+            WorldSprite.Y = y;
+            return result;
+        }
+
         protected override void UpdatePartPositions()
         {
             _position.X = (byte)(WorldSprite.X - 28 - _tileModule.Scroll.X);
@@ -284,6 +430,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             _tentacle1.UpdatePosition(_arm1.Sprite);
             _tentacle2.UpdatePosition(_arm2.Sprite);
+        }
+
+        public override bool HandleBombCollision(WorldSprite player)
+        {
+            return false;
         }
 
     }

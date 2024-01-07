@@ -161,7 +161,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             sprites.Execute(p =>
             {
-                if (p.CollisionEnabled && p.WorldSprite.Bounds.Intersects(WorldSprite.Bounds)
+                if (p.CollisionEnabled && p.CollidesWithBomb(WorldSprite)
                     && p.HandleBombCollision(WorldSprite))
                 {
                     _isThrown.Value = false;

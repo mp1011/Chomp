@@ -68,7 +68,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             Destroy();
         }
 
-        public bool HandleBombCollision(WorldSprite player)
+        public virtual bool HandleBombCollision(WorldSprite player)
         {
             if (WorldSprite.Status != WorldSpriteStatus.Active || _hitPoints.Value == 0)
                 return false;
@@ -84,5 +84,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         }
 
         public virtual bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);
+
+        public virtual bool CollidesWithBomb(WorldSprite bomb) => WorldSprite.Bounds.Intersects(bomb.Bounds);
+
     }
 }
