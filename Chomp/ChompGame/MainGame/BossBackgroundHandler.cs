@@ -6,6 +6,13 @@ using System;
 
 namespace ChompGame.MainGame
 {
+    public enum BackgroundEffectType : byte
+    {
+        None,
+        SineWave,
+        DissolveFromBottom
+    }
+
     class BossBackgroundHandler : IHBlankHandler
     {
         private Specs _specs;
@@ -15,12 +22,24 @@ namespace ChompGame.MainGame
         private TileModule _tileModule;
         private GameByteGridPoint _bossPosition;
         private GameByte _bossBackgroundEnd;
-        private GameByte _bossDeathTimer;
+        private GameByte _bossBgEffectValue;
+        private GameByteEnum<BackgroundEffectType> _bossBgEffectType;
+        private RandomModule _rng;
 
         public GameByteGridPoint BossPosition => _bossPosition;
         public GameByte BossBackgroundEnd => _bossBackgroundEnd;
 
-        public GameByte BossDeathTimer => _bossDeathTimer;
+        public byte BossBgEffectValue
+        {
+            get => _bossBgEffectValue.Value;
+            set => _bossBgEffectValue.Value = value;
+        }
+
+        public BackgroundEffectType BossBgEffectType
+        {
+            get => _bossBgEffectType.Value;
+            set => _bossBgEffectType.Value = value;
+        }
 
         public BossBackgroundHandler(ChompGameModule gameModule, RasterInterrupts rasterInterrupts)
         {
@@ -29,18 +48,20 @@ namespace ChompGame.MainGame
             _specs = gameModule.Specs;
             _coreGraphicsModule = gameModule.GameSystem.CoreGraphicsModule;
             _tileModule = gameModule.TileModule;
+            _rng = gameModule.RandomModule;
         }
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _bossPosition = new GameByteGridPoint(memoryBuilder.AddByte(), memoryBuilder.AddByte(), 255, 255);
             _bossBackgroundEnd = memoryBuilder.AddByte();
-            _bossDeathTimer = memoryBuilder.AddByte();
+            _bossBgEffectValue = memoryBuilder.AddByte();
+            _bossBgEffectType = new GameByteEnum<BackgroundEffectType>(memoryBuilder.AddByte());
         }
 
         public void OnHBlank()
         {
-            if (_bossDeathTimer.Value == 255)
+            if (_bossBgEffectValue.Value == 255)
                 return;
 
             var groundPosition = _bossBackgroundEnd.Value;
@@ -54,19 +75,12 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.Y = (byte)((4 * 15) - _bossPosition.Y);
             }
 
-            if(_bossDeathTimer.Value > 0)
+            if(_bossBgEffectValue.Value > 0)
             {
-                int effectY = _coreGraphicsModule.ScreenPoint.Y - _bossPosition.Y;
-                if(effectY >= 0 && effectY <= 32)
-                {
-                    double pct = (effectY + _bossDeathTimer.Value) / 16.0;
-
-                    if(effectY.IsMod(2))
-                        _tileModule.Scroll.X += (byte)(_bossDeathTimer.Value * 1 * Math.Sin(pct * 2.0));
-                    else
-                        _tileModule.Scroll.X -= (byte)(_bossDeathTimer.Value * 1 * Math.Sin(pct * 2.0));
-                }
-                    
+                if (BossBgEffectType == BackgroundEffectType.SineWave)
+                    OnHBlank_UpdateSineWave();
+                else if (BossBgEffectType == BackgroundEffectType.DissolveFromBottom)
+                    OnHBlank_UpdateDissolveFromBottom();
             }
 
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
@@ -76,6 +90,60 @@ namespace ChompGame.MainGame
             }
         }
 
+        private void OnHBlank_UpdateSineWave()
+        {
+            int effectY = _coreGraphicsModule.ScreenPoint.Y - _bossPosition.Y;
+            if (effectY >= 0 && effectY <= 32)
+            {
+                double pct = (effectY + _bossBgEffectValue.Value) / 16.0;
+
+                if (effectY.IsMod(2))
+                    _tileModule.Scroll.X += (byte)(_bossBgEffectValue.Value * 1 * Math.Sin(pct * 2.0));
+                else
+                    _tileModule.Scroll.X -= (byte)(_bossBgEffectValue.Value * 1 * Math.Sin(pct * 2.0));
+            }
+        }
+
+        private void OnHBlank_UpdateDissolveFromBottom()
+        {
+            int effectY = _coreGraphicsModule.ScreenPoint.Y - _bossPosition.Y;
+            if (effectY < 0 || effectY > 32)
+                return;
+
+
+            if(effectY == 32 - BossBgEffectValue - 3)
+            {
+                for (int i = 0; i < _specs.ScreenWidth; i++)
+                {
+                    if(_rng.RandomChance(10))
+                        _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = 0;
+                }
+            }
+            if (effectY == 32 - BossBgEffectValue - 2)
+            {
+                for (int i = 0; i < _specs.ScreenWidth; i++)
+                {
+                    if (_rng.RandomChance(50))
+                        _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = 0;
+                }
+            }
+            if (effectY == 32 - BossBgEffectValue - 1)
+            {
+                for (int i = 0; i < _specs.ScreenWidth; i++)
+                {
+                    if (_rng.RandomChance(90))
+                        _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = 0;
+                }
+            }
+            else if (effectY >= 32 - BossBgEffectValue)
+            {
+                for (int i = 0; i < _specs.ScreenWidth; i++)
+                {
+                    _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = 0;
+                }
+            }
+            
+        }
         public void OnStartup() 
         {
         }

@@ -98,6 +98,9 @@ namespace ChompGame.Helpers
 
             _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
+                if (_currentScene.IsBossScene && y < _levelTileMap.Height - 4)
+                    return;
+
                 if (t < collidableTileBeginIndex)
                     return;
 

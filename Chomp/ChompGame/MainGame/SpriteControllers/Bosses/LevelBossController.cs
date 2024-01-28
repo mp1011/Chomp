@@ -15,7 +15,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     abstract class LevelBossController : EnemyController
     {
-        private const int BossHP = 4;
+        protected abstract int BossHP { get; }
 
         public override IMotion Motion => _motion;
 
@@ -25,10 +25,12 @@ namespace ChompGame.MainGame.SpriteControllers
         protected TileModule _tileModule;
         protected PaletteModule _paletteModule;
         protected GameByteGridPoint _position;
-        protected GameByte _bossDeathTimer;
+       
         protected WorldSprite _player;
         protected GameByte _internalTimer;
         protected MusicModule _musicModule;
+        protected WorldScroller _worldScroller;
+        protected BossBackgroundHandler _bossBackgroundHandler;
 
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
@@ -47,6 +49,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.LevelBoss, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _player = player;
+            _worldScroller = gameModule.WorldScroller;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _bulletControllers = bulletControllers;
             _musicModule = gameModule.MusicModule;
@@ -55,9 +58,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _paletteModule = gameModule.PaletteModule;
             _position = gameModule.BossBackgroundHandler.BossPosition;
             _levelBossBackgroundEnd = gameModule.BossBackgroundHandler.BossBackgroundEnd;
-            _bossDeathTimer = gameModule.BossBackgroundHandler.BossDeathTimer;
-           
-          
+            _bossBackgroundHandler = gameModule.BossBackgroundHandler;
+                     
             var motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.LevelBoss, WorldSprite);
             _motion = motionController.Motion;
 
@@ -79,12 +81,13 @@ namespace ChompGame.MainGame.SpriteControllers
             WorldSprite.Y = 80;
             WorldSprite.X = 16;
 
-            _bossDeathTimer.Value = 0;
+            _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+            _bossBackgroundHandler.BossBgEffectValue = 0;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _hitPoints.Value = BossHP;
+            _hitPoints.Value = (byte)BossHP;
             _stateTimer.Value = 0;
         }
 
@@ -92,8 +95,14 @@ namespace ChompGame.MainGame.SpriteControllers
         protected void SetBossTiles()
         {
             var tileStart = 47;
-            _tileModule.NameTable.SetFromString(0, 15, tileStart,
+            //_tileModule.NameTable.SetFromString(0, 15, tileStart,
+            //    BossTiles);
+
+            _worldScroller.ModifyTiles((nt, _) =>
+            {
+                nt.SetFromString(0, 13, tileStart,
                 BossTiles);
+            });
         }
 
         protected void EraseBossTiles()
@@ -125,12 +134,19 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected void CreateExplosion()
         {
+            CreateExplosion(
+                WorldSprite.X + _rng.RandomItem(-8, -4, 0, 4, 8),
+                WorldSprite.Y + 4 + _rng.RandomItem(-8, -4, 0, 4, 8));            
+        }
+
+        protected void CreateExplosion(int x, int y)
+        {
             var explosion = _bulletControllers.TryAddNew();
             if (explosion != null)
             {
                 explosion.Explode();
-                explosion.WorldSprite.X = WorldSprite.X + _rng.RandomItem(-8, -4, 0, 4, 8);
-                explosion.WorldSprite.Y = WorldSprite.Y + 4 + _rng.RandomItem(-8, -4, 0, 4, 8);
+                explosion.WorldSprite.X = x;
+                explosion.WorldSprite.Y = y;
             }
         }
     }

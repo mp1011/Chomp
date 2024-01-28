@@ -79,7 +79,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _state.Value++;
 
             var sprite = GetSprite();
-            if (_state.Value == 60)
+            if (_state.Value == 50)
             {
                 var spriteBounds = WorldSprite.Bounds;
 

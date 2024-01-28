@@ -11,18 +11,16 @@ namespace ChompGame.MainGame.SpriteControllers
     class ChompBoss2Controller : EnemyController
     {
         public const int TurnAngle = 4;
-        public const int BossHp = 3;
+        public const int BossHp = 4;
 
         private readonly PlayerController _playerController;
         private WorldSprite _player => _playerController.WorldSprite;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
         private readonly SpriteControllerPool<PrizeController> _prizes;
 
-        private readonly ChompAudioService _audioService;
         private readonly Specs _specs;
         private readonly ChompTail _tail;
         private readonly RandomModule _randomModule;
-        private readonly NibblePoint _motionTarget;
         private const int NumTailSections = 6;
         private PrecisionMotion _firstTailSectionMotion;
         enum Phase : byte 
@@ -51,7 +49,6 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.Chomp, SpriteTileIndex.AutoscrollEnemy3, gameModule, memoryBuilder)
         {
             _playerController = player;
-            _audioService = gameModule.AudioService;
             _bullets = bullets;
             _prizes = prizes;
             _randomModule = gameModule.RandomModule;
@@ -61,9 +58,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _specs = gameModule.Specs;
             _tail = new ChompTail(memoryBuilder, NumTailSections, _spritesModule, _spriteTileTable);
          
-            _motionTarget = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            memoryBuilder.AddByte();
-
             Palette = 2;
 
             _firstTailSectionMotion = new PrecisionMotion(memoryBuilder);

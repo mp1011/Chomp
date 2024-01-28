@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level1BossController : LevelBossController
     {
+        protected override int BossHP => 4;
         private enum Phase : byte
         {
             Init,
@@ -491,21 +492,22 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     Visible = false;
                     _spritesModule.GetSprite(_jawSpriteIndex).Visible = false;
                     _internalTimer.Value = 1;
-                    _bossDeathTimer.Value = 1;
+                    _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.SineWave;
+                    _bossBackgroundHandler.BossBgEffectValue = 1;
                 }
 
                 if (_internalTimer.Value <= 25)
                 {
                     if (_levelTimer.IsMod(2))
                     {
-                        _bossDeathTimer.Value++;
-                        if (_bossDeathTimer.Value == 255)
-                            _bossDeathTimer.Value = 1;
+                        _bossBackgroundHandler.BossBgEffectValue++;
+                        if (_bossBackgroundHandler.BossBgEffectValue == 255)
+                            _bossBackgroundHandler.BossBgEffectValue = 1;
                     }
                 }
                 else
                 {
-                    _bossDeathTimer.Value = 0;
+                    _bossBackgroundHandler.BossBgEffectValue = 0;
                 }
 
                 if (_internalTimer.Value <= 7)

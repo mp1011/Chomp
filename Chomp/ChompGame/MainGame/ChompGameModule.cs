@@ -319,8 +319,8 @@ namespace ChompGame.MainGame
 
         private void InitGame()
         {
-            _bossBackgroundHandler.BossDeathTimer.Value = 255;
-            _currentLevel.Value = Level.Level2_1_Intro;
+            _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+            _currentLevel.Value = Level.Level2_12_Boss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -504,12 +504,14 @@ namespace ChompGame.MainGame
             if (!_tileEditor.IsRunning)
             {
                 _rasterInterrupts.OnHBlank();
-                _bossBackgroundHandler.OnHBlank();
+              //  _bossBackgroundHandler.OnHBlank();
             }
 
             PaletteModule.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();
+
+            _bossBackgroundHandler.OnHBlank();
         }
     }
 }
