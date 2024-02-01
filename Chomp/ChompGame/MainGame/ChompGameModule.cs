@@ -504,7 +504,7 @@ namespace ChompGame.MainGame
             if (!_tileEditor.IsRunning)
             {
                 _rasterInterrupts.OnHBlank();
-              //  _bossBackgroundHandler.OnHBlank();
+                _bossBackgroundHandler.OnHBlank();
             }
 
             PaletteModule.OnHBlank();

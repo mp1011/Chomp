@@ -7,34 +7,31 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class BossPart
     {
-        private readonly SpritesModule _spritesModule;
-        private readonly SpriteTileTable _spriteTileTable;
-        private GameByte _spriteIndex;
-        
+        private SimpleWorldSprite _worldSprite;
+        private readonly SpriteTileTable _spriteTileTable;       
         private SpriteDefinition _spriteDefinition;
-        private GameByte _xPosition, _yPosition;
+        private GameByte _xOffset, _yOffset;
 
-        public Sprite Sprite => _spritesModule.GetSprite(_spriteIndex);
+        public Sprite Sprite => _worldSprite.Sprite;
+        public SimpleWorldSprite WorldSprite => _worldSprite;
 
         public BossPart(
+            ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder,
-            SpritesModule spritesModule, 
-            SpriteTileTable spriteTileTable,
             SpriteDefinition spriteDefinition)
         {
-            _spriteIndex = memoryBuilder.AddByte();
-            _xPosition = memoryBuilder.AddByte(128);
-            _yPosition = memoryBuilder.AddByte(128);
+            _worldSprite = new SimpleWorldSprite(gameModule, memoryBuilder);
+            _xOffset = memoryBuilder.AddByte(128);
+            _yOffset = memoryBuilder.AddByte(128);
 
-            _spritesModule = spritesModule;
-            _spriteTileTable = spriteTileTable;
+            _spriteTileTable = gameModule.SpriteTileTable;
             _spriteDefinition = spriteDefinition;
         }
 
         public Sprite PrepareSprite(SpriteTileIndex tileIndex)
         {
-            _spriteIndex.Value = _spritesModule.GetFreeSpriteIndex();           
-            var partSprite = _spritesModule.GetSprite(_spriteIndex);
+            _worldSprite.AssignSpriteIndex();
+            var partSprite = _worldSprite.Sprite;
             partSprite.Tile = _spriteTileTable.GetTile(tileIndex);
             partSprite.SizeX = _spriteDefinition.SizeX;
             partSprite.SizeY = _spriteDefinition.SizeY;
@@ -45,23 +42,23 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             return partSprite;
         }
 
-        public int XPosition
+        public int XOffset
         {
-            get => _xPosition.Value - 128;
-            set => _xPosition.Value = (byte)(value + 128);
+            get => _xOffset.Value - 128;
+            set => _xOffset.Value = (byte)(value + 128);
         }
 
-        public int YPosition
+        public int YOffset
         {
-            get => _yPosition.Value - 128;
-            set => _yPosition.Value = (byte)(value + 128);
+            get => _yOffset.Value - 128;
+            set => _yOffset.Value = (byte)(value + 128);
         }
 
         public void UpdatePosition(WorldSprite bossCore)
         {
             var partSprite = Sprite;
-            partSprite.X = (byte)(bossCore.X + XPosition);
-            partSprite.Y = (byte)(bossCore.Y + YPosition);
+            partSprite.X = (byte)(bossCore.X + XOffset);
+            partSprite.Y = (byte)(bossCore.Y + YOffset);
         }
     }
 }

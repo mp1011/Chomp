@@ -64,7 +64,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _scroller = gameModule.WorldScroller;
             _specs = gameModule.Specs;
 
-            _tail = new ChompTail(memoryBuilder, NumTailSections, _spritesModule, _spriteTileTable);
+            _tail = new ChompTail(memoryBuilder, NumTailSections, gameModule);
 
             _motionTarget = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddByte();

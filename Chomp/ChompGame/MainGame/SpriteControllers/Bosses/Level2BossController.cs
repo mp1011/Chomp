@@ -10,27 +10,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
     class Level2BossController : LevelBossController
     {
         protected override int BossHP => 1;
-        private WorldSprite _collisionSprite;
         private BossPart _eye2, _eye3, _eye4, _arm1, _arm2;
         private Tentacle _tentacle1, _tentacle2;
-        private NibbleEnum<Phase> _phase;
-        
-        private NibbleEnum<CollisionIndex> _bombCollisionIndex;
+        private NibbleEnum<Phase> _phase;      
         private NibbleArray _eyeState;
 
         private MaskedByte _bulletCounter;
         private TwoBit _eyeHit;
-
-        private enum CollisionIndex : byte
-        {
-            None,
-            Eye1,
-            Eye2,
-            Eye3,
-            Eye4,
-            LeftArm,
-            RightArm
-        }
 
         private enum Phase : byte
         {
@@ -43,13 +29,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             Dying
         }
 
-
-
         class Tentacle
         {
             public const int NumSections = 6;
             private ChompTail _arm;
             private GameByte _curl;
+            private Specs _specs;
 
             private GameBit _curlTarget;
             private MaskedByte _curlSpeed;
@@ -77,14 +62,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             public Sprite GetSprite(int index) => _arm.GetSprite(index);
 
             public Tentacle(SystemMemoryBuilder memoryBuilder, 
-                SpritesModule spritesModule, 
-                SpriteTileTable spriteTileTable,
+                ChompGameModule gameModule,
                 GameBit curlTarget,
                 MaskedByte curlSpeed,
                 GameByte levelTimer)
             {
                 _levelTimer = levelTimer;
-                _arm = new ChompTail(memoryBuilder, NumSections, spritesModule, spriteTileTable);
+                _specs = gameModule.Specs;
+                _arm = new ChompTail(memoryBuilder, NumSections, gameModule);
                 _curl = memoryBuilder.AddByte();
                 _curlTarget = curlTarget;
                 _curlSpeed = curlSpeed;
@@ -126,23 +111,24 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 return false;
             }
 
-            public void UpdatePosition(Sprite anchor)
+            public void UpdatePosition(BossPart anchor)
             {
-                var target = anchor;
+                var target = anchor.WorldSprite;
                 for (int i = 0; i < NumSections; i++)
-                {
-                    target = UpdateSection(target, _arm.GetSprite(i), i);
-                }
+                    target = UpdateSection(target, _arm.GetWorldSprite(i), i);
+
             }
 
-            private Sprite UpdateSection(Sprite anchor, Sprite section, int sectionNumber)
+            private SimpleWorldSprite UpdateSection(SimpleWorldSprite anchor, SimpleWorldSprite section, int sectionNumber)
             {
                 int mod = Curl / 4;
 
                 var offset = new Point(0, 6);
                 offset = offset.RotateDeg(Curl + sectionNumber * mod);
-                section.X = (byte)(anchor.X + offset.X);
-                section.Y = (byte)(anchor.Y + offset.Y);
+                section.X = anchor.X + offset.X;
+                section.Y = anchor.Y + offset.Y;
+
+                section.Sprite.Visible = section.X <= 256;
                 return section;
             }
 
@@ -180,16 +166,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             var address = memoryBuilder.CurrentAddress;
             memoryBuilder.AddByte();
 
-            _tentacle1 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable, 
+            _tentacle1 = new Tentacle(memoryBuilder, gameModule, 
                 new GameBit(address, Bit.Bit0, memoryBuilder.Memory),
                 new MaskedByte(address, (Bit)28, memoryBuilder.Memory, 2), _levelTimer);
 
-            _tentacle2 = new Tentacle(memoryBuilder, _spritesModule, _spriteTileTable,
+            _tentacle2 = new Tentacle(memoryBuilder, gameModule,
                 new GameBit(address, Bit.Bit1, memoryBuilder.Memory),
                 new MaskedByte(address, (Bit)224, memoryBuilder.Memory, 5), _levelTimer);
 
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
-            _bombCollisionIndex = new NibbleEnum<CollisionIndex>(new HighNibble(memoryBuilder));
             memoryBuilder.AddByte();
 
             _eyeState = new NibbleArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
@@ -275,7 +260,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (WorldSprite.X < 30 || _motion.TargetXSpeed == 0)
                     _motion.TargetXSpeed = 16;
 
-                if (WorldSprite.Y < 70)
+                if (WorldSprite.Y < 70 || _motion.TargetYSpeed == 0)
                     _motion.TargetYSpeed = 4;
                 else if (WorldSprite.Y > 78)
                     _motion.TargetYSpeed = -4;
@@ -294,7 +279,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 _motionController.Update();
 
-                if (_levelTimer.IsMod(32))
+                if (_levelTimer.IsMod(64))
                     _stateTimer.Value++;
 
                 if (_stateTimer.Value == 15)
@@ -571,30 +556,30 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             var e2 = _eye2.PrepareSprite(SpriteTileIndex.Enemy1);
             e2.Tile2Offset = 1;
             e2.FlipX = true;
-            _eye2.XPosition = -22;
-            _eye2.YPosition = 0;
+            _eye2.XOffset = -22;
+            _eye2.YOffset = 0;
 
             var e3 = _eye3.PrepareSprite(SpriteTileIndex.Enemy1);
             e3.Tile2Offset = 1;
             e3.FlipX = true;
-            _eye3.XPosition = -18;
-            _eye3.YPosition = 8;
+            _eye3.XOffset = -18;
+            _eye3.YOffset = 8;
 
             var e4 = _eye4.PrepareSprite(SpriteTileIndex.Enemy1);
             e4.Tile2Offset = 1;
             e4.FlipX = false;
-            _eye4.XPosition = -4;
-            _eye4.YPosition = 8;
+            _eye4.XOffset = -4;
+            _eye4.YOffset = 8;
 
             var a1 = _arm1.PrepareSprite(SpriteTileIndex.Enemy2);
             a1.FlipX = false;
-            _arm1.XPosition = -22;
-            _arm1.YPosition = 20;
+            _arm1.XOffset = -22;
+            _arm1.YOffset = 20;
 
             var a2 = _arm2.PrepareSprite(SpriteTileIndex.Enemy2);
             a2.FlipX = false;
-            _arm2.XPosition = 4;
-            _arm2.YPosition = 20;
+            _arm2.XOffset = 4;
+            _arm2.YOffset = 20;
 
             _tentacle1.Initialize();
             _tentacle2.Initialize();
@@ -610,21 +595,25 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             var spots = (Tentacle.NumSections * 2);
             var spotValue = _levelTimer.Value % spots;
+            bool collisionEnabled = false;
 
             if(spotValue < Tentacle.NumSections)
             {
                 var s = _tentacle1.GetSprite(spotValue);
+                collisionEnabled = s.Visible;
                 WorldSprite.X = s.X;
                 WorldSprite.Y = s.Y;
             }
             else
             {
                 var s = _tentacle2.GetSprite(spotValue - Tentacle.NumSections);
+                collisionEnabled = s.Visible;
+                WorldSprite.X = s.X;
                 WorldSprite.X = s.X;
                 WorldSprite.Y = s.Y;
             }
-
-            var result = player.CollidesWith(WorldSprite);
+            
+            var result = collisionEnabled && player.CollidesWith(WorldSprite);
             WorldSprite.X = x;
             WorldSprite.Y = y;
             return result;
@@ -671,8 +660,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _arm1.UpdatePosition(WorldSprite);
             _arm2.UpdatePosition(WorldSprite);
 
-            _tentacle1.UpdatePosition(_arm1.Sprite);
-            _tentacle2.UpdatePosition(_arm2.Sprite);
+            _tentacle1.UpdatePosition(_arm1);
+            _tentacle2.UpdatePosition(_arm2);
         }
 
         public override bool HandleBombCollision(WorldSprite player)

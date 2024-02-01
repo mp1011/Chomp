@@ -56,7 +56,7 @@ namespace ChompGame.MainGame.SpriteControllers
             var phase = new MaskedByte(_stateTimer.Address, Bit.Left4, memoryBuilder.Memory, 4);
             _phase = new GameByteEnum<Phase>(phase);
             _specs = gameModule.Specs;
-            _tail = new ChompTail(memoryBuilder, NumTailSections, _spritesModule, _spriteTileTable);
+            _tail = new ChompTail(memoryBuilder, NumTailSections, gameModule);
          
             Palette = 2;
 

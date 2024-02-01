@@ -19,6 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public override IMotion Motion => _motion;
 
+        protected readonly ChompGameModule _gameModule;
         protected DynamicBlockController _dynamicBlockController;
         protected CoreGraphicsModule _graphicsModule;
         protected EnemyOrBulletSpriteControllerPool<BossBulletController> _bulletControllers;
@@ -49,6 +50,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.LevelBoss, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _player = player;
+            _gameModule = gameModule;
             _worldScroller = gameModule.WorldScroller;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _bulletControllers = bulletControllers;
@@ -127,7 +129,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected BossPart CreatePart(SystemMemoryBuilder memoryBuilder, SpriteDefinition spriteDefinition)
         {
-            return new BossPart(memoryBuilder, _spritesModule, _spriteTileTable, spriteDefinition);
+            return new BossPart(_gameModule, memoryBuilder, spriteDefinition);
         }
 
         protected abstract void UpdatePartPositions();

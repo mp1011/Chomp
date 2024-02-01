@@ -49,12 +49,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateActive() 
         {
-            var sprite = GetSprite();
-
             _motionController.Update();
-
-            if(_levelTimer.Value.IsMod(4))
-                _state.Value++;
 
             if (_destroyOnCollision.Value)
             {
