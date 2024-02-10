@@ -54,7 +54,7 @@ namespace ChompGame.GameSystem
 
             for (int i =0; i < Specs.ScreenWidth; i++)
             {
-                _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
+                _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = _coreGraphicsModule.BackgroundPatternTable[patternTablePoint.Index];
 
                 remainingTilePixels--;
                 if(remainingTilePixels == 0)

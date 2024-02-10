@@ -84,7 +84,12 @@ namespace ChompGame.MainGame.SceneModels
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
 
             //City 
-            new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.Test,
+                bg2: PaletteKey.GreenEnemy,
+                fg: PaletteKey.PlainsNight,
+                enemy1: PaletteKey.BlueGrayEnemy,
+                enemy2: PaletteKey.BlueGrayEnemy);
 
             //Space
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);

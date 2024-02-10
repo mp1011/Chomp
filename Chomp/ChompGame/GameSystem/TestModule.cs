@@ -47,7 +47,7 @@ namespace ChompGame.GameSystem
             var patternTableLoader = new DiskNBitPlaneLoader();
             patternTableLoader.Load(
                 new DiskFile(ContentFolder.PatternTables, "test_4color.pt"),
-                graphicsModule.PatternTable);
+                graphicsModule.SpritePatternTable);
         }
 
         private bool wasLeftDown;

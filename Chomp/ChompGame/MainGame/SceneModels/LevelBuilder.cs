@@ -764,80 +764,83 @@ namespace ChompGame.MainGame.SceneModels
 
         public void SetupVRAMPatternTable(
            NBitPlane masterPatternTable,
-           NBitPlane vramPatternTable,
+           NBitPlane bgPatternTable,
+           NBitPlane spritePatternTable,
            SystemMemory memory)
-        {           
-            vramPatternTable.Reset();
+        {
+            bgPatternTable.Reset();
+            spritePatternTable.Reset();
 
-            var builder = new VramBuilder(masterPatternTable, vramPatternTable, _spriteTileTable, memory, _gameModule.Specs);
+            var spriteBuilder = new VramBuilder(masterPatternTable, spritePatternTable, _spriteTileTable, memory, _gameModule.Specs);
+            var bgBuilder = new VramBuilder(masterPatternTable, bgPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
             if (_sceneDefinition.IsBossScene)
-                builder.SpriteYBegin = 4;
+                spriteBuilder.SpriteYBegin = 4;
             else
-                builder.SpriteYBegin = 5;
+                spriteBuilder.SpriteYBegin = 5;
 
-            builder.AddStatusBarTiles();            
-            _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, vramPatternTable, memory);
+            bgBuilder.AddStatusBarTiles();            
+            _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, bgPatternTable, memory);
 
             if(_sceneDefinition.IsAutoScroll)
             {
                 //player sprite
-                builder.AddSprite(SpriteTileIndex.Player, 0, 0, 1, 1);
-                builder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);
-                builder.AddSprite(SpriteTileIndex.Bomb, 4, 1, 1, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Player, 0, 0, 1, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Bomb, 4, 1, 1, 1);
             }
             else if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
-                builder.AddSprite(SpriteTileIndex.Player, 0, 0, 2, 2);
-                builder.AddSprite(SpriteTileIndex.Bomb, 4, 1, 1, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Player, 0, 0, 2, 2);
+                spriteBuilder.AddSprite(SpriteTileIndex.Bomb, 4, 1, 1, 1);
            
                 if(_sceneDefinition.HasSprite(SpriteType.Plane))
-                    builder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);                 
+                    spriteBuilder.AddSprite(SpriteTileIndex.Plane, 13, 2, 2, 1);                 
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
             {
-                builder.AddBossSprites(_gameModule.CurrentLevel);
+                spriteBuilder.AddBossSprites(_gameModule.CurrentLevel);
             }
             else
             {
-                builder.AddSprite(SpriteTileIndex.Door, 14, 5, 2, 2);
+                spriteBuilder.AddSprite(SpriteTileIndex.Door, 14, 5, 2, 2);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
-                builder.AddEnemySprite(2, 0, 2, 2);
-                var fireballTile = builder.AddExtraSprite(4, 0, 3, 1);
+                spriteBuilder.AddEnemySprite(2, 0, 2, 2);
+                var fireballTile = spriteBuilder.AddExtraSprite(4, 0, 3, 1);
                 _spriteTileTable.SetTile(SpriteTileIndex.Explosion, (byte)(fireballTile + 1));
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
-                builder.AddEnemySprite(8, 0, 4, 1);
+                spriteBuilder.AddEnemySprite(8, 0, 4, 1);
 
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
             {
-                builder.AddEnemySprite(5, 1, 2, 1);
-                builder.AddExtraSprite(4, 1, 1, 1);
-                builder.AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
+                spriteBuilder.AddEnemySprite(5, 1, 2, 1);
+                spriteBuilder.AddExtraSprite(4, 1, 1, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Crocodile))
-                builder.AddEnemySprite(4, 2, 4, 1);
+                spriteBuilder.AddEnemySprite(4, 2, 4, 1);
 
             if(_sceneDefinition.SpriteGroup == SpriteGroup.Normal)
             {
-                builder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);
-                builder.AddSprite(SpriteTileIndex.Button, 11, 6, 2, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Button, 11, 6, 2, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Player))
             {
-                builder.AddSprite(SpriteTileIndex.Prize, 7, 0, 1, 1);
+                spriteBuilder.AddSprite(SpriteTileIndex.Prize, 7, 0, 1, 1);
             }
 
-            builder.SpriteYBegin = 3;
-            builder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
-            builder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
+            bgBuilder.SpriteYBegin = 7;
+            bgBuilder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
+            bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
         }
          
     }

@@ -116,7 +116,7 @@ namespace ChompGame.GameSystem
 
 
             var graphicsModule = GameSystem.CoreGraphicsModule;
-            _romPatternTable.CopyTo(graphicsModule.PatternTable, GameSystem.Memory);
+            _romPatternTable.CopyTo(graphicsModule.SpritePatternTable, GameSystem.Memory);
             _romNameTable.CopyTo(_tileModule.NameTable, GameSystem.Memory);
 
             var snakeHead = _spritesModule.GetSprite(1);

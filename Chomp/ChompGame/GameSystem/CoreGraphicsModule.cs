@@ -24,7 +24,9 @@ namespace ChompGame.GameSystem
 
         private Color[] _screenData;
         public GameByteGridPoint ScreenPoint { get; private set; }
-        public NBitPlane PatternTable { get; private set; }      
+        public NBitPlane BackgroundPatternTable { get; private set; }
+        public NBitPlane SpritePatternTable { get; private set; }
+
         public ScanlineDrawBuffer BackgroundScanlineDrawBuffer { get; private set; }
         public ScanlineDrawBuffer SpriteScanlineDrawBuffer { get; private set; }
 
@@ -45,7 +47,8 @@ namespace ChompGame.GameSystem
         {
             _graphicsMemoryBegin = builder.CurrentAddress;
             builder.AddBytes(Specs.NumPalettes * Specs.BytesPerPalette);
-            PatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
+            BackgroundPatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
+            SpritePatternTable = builder.AddNBitPlane(Specs.PatternTablePlanes, Specs.PatternTableWidth, Specs.PatternTableHeight);
             
             ScreenPoint = builder.AddGridPoint((byte)Specs.ScreenWidth, (byte)Specs.ScreenHeight, Specs.ScreenPointMask);
 
@@ -66,7 +69,7 @@ namespace ChompGame.GameSystem
         {
             for(int i = 0; i < Specs.TileWidth; i++)
             {
-                BackgroundScanlineDrawBuffer[startIndex + i] = PatternTable[patternTablePoint.PixelIndex];
+                BackgroundScanlineDrawBuffer[startIndex + i] = BackgroundPatternTable[patternTablePoint.PixelIndex];
                 patternTablePoint.PixelIndex++;
             }
         }
@@ -83,17 +86,21 @@ namespace ChompGame.GameSystem
             _tileModule = GameSystem.GetModule<TileModule>();
         }
 
-        public void DrawVram(SpriteBatch spriteBatch, Texture2D canvas, byte paletteIndex)
+        public void DrawVram(SpriteBatch spriteBatch, Texture2D canvas, byte paletteIndex, bool spriteVram)
         {
+            if (spriteVram)
+                paletteIndex += 4;
+
             ScreenPoint.Reset();
             var palette = GetPalette(paletteIndex);
+            var patternTable = spriteVram ? SpritePatternTable : BackgroundPatternTable;
 
             for (int i = 0; i < _screenData.Length; i++)
             {
                 if (ScreenPoint.X < Specs.PatternTableWidth
                     && ScreenPoint.Y < Specs.PatternTableHeight)
                 {
-                    var color = palette.GetColor(PatternTable[ScreenPoint.X, ScreenPoint.Y], FadeAmount);
+                    var color = palette.GetColor(patternTable[ScreenPoint.X, ScreenPoint.Y], FadeAmount);
                     _screenData[i] = color;
                 }
                 else

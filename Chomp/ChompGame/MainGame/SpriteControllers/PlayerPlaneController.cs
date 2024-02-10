@@ -138,6 +138,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.UpdateSprite();
                 PositionHeadSprite();
 
+                if(WorldSprite.X > _specs.ScreenWidth)
+                {
+                    AcceleratedMotion.SetXSpeed(0);
+                    WorldSprite.Y = _specs.ScreenHeight;
+                }
                 return;
             }
 

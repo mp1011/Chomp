@@ -84,7 +84,7 @@ namespace ChompGame.GameSystem
             var graphicsModule = GameSystem.CoreGraphicsModule;
 
             _romNameTable.CopyTo(tileModule.NameTable, GameSystem.Memory);
-            _romPatternTable.CopyTo(graphicsModule.PatternTable, GameSystem.Memory);
+            _romPatternTable.CopyTo(graphicsModule.SpritePatternTable, GameSystem.Memory);
         }
 
         public void UpdatePaddle(Sprite playerPaddle, GameInput input)

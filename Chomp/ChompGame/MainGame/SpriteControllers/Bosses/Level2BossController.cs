@@ -432,6 +432,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     {
                         EraseBossTiles();
                         Destroy();
+                        _player.Y = _gameModule.Specs.ScreenHeight + 8;
                     }
                 }
             }

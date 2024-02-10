@@ -95,7 +95,7 @@ namespace ChompGame.GameSystem
                 for (int col = 0; col < sprite.Width; col++)
                 {
                     int adjCol = sprite.FlipX ? sprite.Width - (col + 1) : col;
-                    var pixel = _coreGraphicsModule.PatternTable[patternTablePoint.Index];
+                    var pixel = _coreGraphicsModule.SpritePatternTable[patternTablePoint.Index];
 
                     _coreGraphicsModule.SpriteScanlineDrawBuffer[scanlineSpriteOffset +adjCol] = pixel;
                     patternTablePoint.X++;

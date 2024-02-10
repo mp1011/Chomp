@@ -68,7 +68,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
                 return (byte)((-offset - 1) | 8);
         }
 
-        public void SetForAutoscrollLevelEnd()
+        public void SetForBossExit()
         {
             _exitType.Value = ExitType.Right;
             _exitOffset.Value = 0;

@@ -64,6 +64,9 @@ namespace ChompGame.MainGame
             if (_bossBgEffectValue.Value == 255)
                 return;
 
+            if (!_gameModule.CurrentScene.IsBossScene)
+                return;
+
             var groundPosition = _bossBackgroundEnd.Value;
 
             if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight

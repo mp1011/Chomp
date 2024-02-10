@@ -249,7 +249,7 @@ namespace ChompGame.MainGame
         {
             if(_deathTimer.Value == 0)
             {
-                GameSystem.CoreGraphicsModule.PatternTable.Reset();
+                GameSystem.CoreGraphicsModule.BackgroundPatternTable.Reset();
                 TileModule.NameTable.Reset();
                 TileModule.AttributeTable.Reset();
 
@@ -261,14 +261,14 @@ namespace ChompGame.MainGame
                 palette.SetColor(2, ColorIndex.Red1);
 
                 _masterPatternTable.CopyTilesTo(
-                    destination: GameSystem.CoreGraphicsModule.PatternTable,
+                    destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
                     source: new InMemoryByteRectangle(4, 3, 7, 1),
                     destinationPoint: new Point(1, 0),
                     Specs,
                     GameSystem.Memory);
 
                 _masterPatternTable.CopyTilesTo(
-                   destination: GameSystem.CoreGraphicsModule.PatternTable,
+                   destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
                    source: new InMemoryByteRectangle(11, 3, 5, 1),
                    destinationPoint: new Point(0, 1),
                    Specs,
@@ -320,7 +320,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level2_12_Boss;
+            _currentLevel.Value = Level.Level2_1_Intro;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -368,12 +368,21 @@ namespace ChompGame.MainGame
 
             _levelBuilder.SetupVRAMPatternTable(
                 _masterPatternTable,
-                GameSystem.CoreGraphicsModule.PatternTable,
+                GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+                GameSystem.CoreGraphicsModule.SpritePatternTable,
                 GameSystem.Memory);
 
             PatternTableExporter.ExportPatternTable(
                 GameSystem.GraphicsDevice, 
-                GameSystem.CoreGraphicsModule.PatternTable);
+                GameSystem.CoreGraphicsModule.SpritePatternTable,
+                "spritePatternTable.png");
+
+            PatternTableExporter.ExportPatternTable(
+                GameSystem.GraphicsDevice,
+                GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+                "backgroundPatternTable.png");
+
+
 
             PaletteModule.SetScene(_currentScene, _currentLevel.Value, GameSystem.Memory);
             RewardsModule.SetScene(_currentScene);

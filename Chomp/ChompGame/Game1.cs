@@ -66,7 +66,9 @@ namespace ChompGame
         {
             var ks = Keyboard.GetState();
 
-            _showVram = ks.IsKeyDown(Keys.V);
+            _showBgVram = ks.IsKeyDown(Keys.V) && !ks.IsKeyDown(Keys.LeftAlt);
+            _showSpriteVram = ks.IsKeyDown(Keys.V) && ks.IsKeyDown(Keys.LeftAlt);
+
 
             if (ks.IsKeyDown(Keys.D1))
                 _paletteIndex = 0;
@@ -76,15 +78,7 @@ namespace ChompGame
                 _paletteIndex = 2;
             if (ks.IsKeyDown(Keys.D4))
                 _paletteIndex = 3;
-            if (ks.IsKeyDown(Keys.D5))
-                _paletteIndex = 4;
-            if (ks.IsKeyDown(Keys.D6))
-                _paletteIndex = 5;
-            if (ks.IsKeyDown(Keys.D7))
-                _paletteIndex = 6;
-            if (ks.IsKeyDown(Keys.D8))
-                _paletteIndex = 7;
-
+            
             if (ks.IsKeyDown(Keys.OemComma))
                 TargetElapsedTime = TimeSpan.FromMilliseconds(200);
             else
@@ -98,7 +92,9 @@ namespace ChompGame
             base.Update(gameTime);
         }
 
-        private bool _showVram;
+        private bool _showBgVram;
+        private bool _showSpriteVram;
+
         private byte _paletteIndex;
 
         private Stopwatch _renderTimer = new Stopwatch();
@@ -176,9 +172,11 @@ namespace ChompGame
 
             _spriteBatch.Begin();
 
-            if (_showVram)
-                _gameSystem.CoreGraphicsModule.DrawVram(_spriteBatch, _canvas, _paletteIndex);
-            else 
+            if (_showBgVram)
+                _gameSystem.CoreGraphicsModule.DrawVram(_spriteBatch, _canvas, _paletteIndex, false);
+            else if (_showSpriteVram)
+                _gameSystem.CoreGraphicsModule.DrawVram(_spriteBatch, _canvas, _paletteIndex, true);
+            else
                 _gameSystem.CoreGraphicsModule.DrawFrame(_spriteBatch, _canvas);
 
             _spriteBatch.End();

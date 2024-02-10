@@ -77,7 +77,7 @@ namespace ChompGame.GameSystem
             var graphicsModule = GameSystem.CoreGraphicsModule;
 
             _romNameTable.CopyTo(tileModule.NameTable, GameSystem.Memory);
-            _romPatternTable.CopyTo(graphicsModule.PatternTable, GameSystem.Memory);
+            _romPatternTable.CopyTo(graphicsModule.SpritePatternTable, GameSystem.Memory);
 
             var sprite0 = _spritesModule.GetSprite(0);
             sprite0.X = 40;

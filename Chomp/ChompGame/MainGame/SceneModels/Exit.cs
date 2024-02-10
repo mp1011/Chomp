@@ -46,9 +46,9 @@ namespace ChompGame.MainGame.SceneModels
             if (ActiveExit.ExitType != ExitType.None)
                 return;
 
-            if (_gameModule.CurrentScene.IsAutoScroll)
+            if (_gameModule.CurrentScene.IsAutoScroll || _gameModule.CurrentScene.IsBossScene)
             {
-                CheckAutoscrollLevelEnd(player);
+                CheckBossLevelEnd(player);
                 return;
             }
                 
@@ -96,12 +96,12 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
-        private void CheckAutoscrollLevelEnd(PlayerController player)
+        private void CheckBossLevelEnd(PlayerController player)
         {
-            if (player.WorldSprite.X < _gameModule.Specs.ScreenWidth)
+            if (player.WorldSprite.Y > _gameModule.Specs.ScreenHeight)
                 return;
 
-            ActiveExit.SetForAutoscrollLevelEnd();
+            ActiveExit.SetForBossExit();
         }
     }
 }

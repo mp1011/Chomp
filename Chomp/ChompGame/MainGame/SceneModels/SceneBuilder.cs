@@ -39,7 +39,7 @@ namespace ChompGame.MainGame.SceneModels
         Level2_10_Beach3,
         Level2_11_Beach4,
         Level2_12_Boss,
-
+        Level3_1_City
     }
 
     class SceneBuilder
@@ -50,7 +50,8 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level1_10_Stair,
             Level.Level1_17_Boss,
             Level.Level2_1_Intro,
-            Level.Level2_3_Beach
+            Level.Level2_3_Beach,
+            Level.Level3_1_City
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -439,6 +440,21 @@ namespace ChompGame.MainGame.SceneModels
 
             //Level2_12_Boss
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.OceanBoss);
+
+            //Level3_1_City
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.City,
+                spriteGroup: SpriteGroup.Simple,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top:0,
+                bgPosition: 1);
+                
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -867,6 +883,12 @@ namespace ChompGame.MainGame.SceneModels
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene)
             );
             CheckDestroyBits(Level.Level2_12_Boss, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
+
+            scene = new SceneDefinition(Level.Level3_1_City, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+            CheckDestroyBits(Level.Level1_1_Start, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
         }
 
