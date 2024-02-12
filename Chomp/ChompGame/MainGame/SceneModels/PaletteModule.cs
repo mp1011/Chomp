@@ -31,7 +31,10 @@ namespace ChompGame.MainGame.SceneModels
         DynamicBlocks,
         Water,
         Sand,
-        Max= Sand
+        CitySky,
+        CityBg,
+        CityFg,
+        Max= CityFg
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -255,6 +258,24 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.Brown6,
                 ColorIndex.Brown7);
 
+
+            DefinePalette(PaletteKey.CitySky,
+                ColorIndex.Orange,
+                ColorIndex.Brown5,
+                ColorIndex.Brown6,
+                ColorIndex.Brown7);
+
+            DefinePalette(PaletteKey.CityBg,
+              ColorIndex.White,
+              ColorIndex.Brown5,
+              ColorIndex.Brown2,
+              ColorIndex.Brown2);
+
+            DefinePalette(PaletteKey.CityFg,
+             ColorIndex.White,
+             ColorIndex.BlueGray1,
+             ColorIndex.BlueGray2,
+             ColorIndex.BlueGray3);
 
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)

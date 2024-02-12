@@ -442,18 +442,17 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.OceanBoss);
 
             //Level3_1_City
-            SceneDefinition.NoScrollFlat(
+            SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
+                variance: LevelShape.LowVariance,
                 theme: ThemeType.City,
                 spriteGroup: SpriteGroup.Simple,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
-                left: 0,
-                right: 0,
                 bottom: 1,
                 top:0,
-                bgPosition: 1);
+                bgPosition1: 1);
                 
         }
 
