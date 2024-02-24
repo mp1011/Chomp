@@ -217,9 +217,6 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
         public bool HasSprite(SpriteType spriteType) => Sprites.Contains(spriteType);
-
-        public byte CollidableTileBeginIndex => (byte)(IsBossScene ? 24 : 29);
-
         public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar) =>
             layer switch {
                 BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,

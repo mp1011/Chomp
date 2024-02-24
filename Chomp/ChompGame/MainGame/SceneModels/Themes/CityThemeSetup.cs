@@ -1,5 +1,7 @@
 ﻿using ChompGame.Data;
+using ChompGame.MainGame.SceneModels.SmartBackground;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
@@ -21,6 +23,14 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 shouldReplace: b => b == 0);
         }
 
+        public override IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks
+        {
+            get
+            {
+                yield return new CityBuildingBlock(_sceneDefinition);
+            }
+        }
+
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
         {
             //bg buildings
@@ -30,6 +40,21 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 destinationPoint: new Point(0, 3),
                 _specs,
                 memory);
+
+            // fg buildings
+            masterPatternTable.CopyTilesTo(
+               destination: vramPatternTable,
+               source: new InMemoryByteRectangle(0, 8, 8, 1),
+               destinationPoint: new Point(0, 5),
+               _specs,
+               memory);
+
+            masterPatternTable.CopyTilesTo(
+              destination: vramPatternTable,
+              source: new InMemoryByteRectangle(8, 8, 4, 1),
+              destinationPoint: new Point(0, 6),
+              _specs,
+              memory);
 
             //fg
             masterPatternTable.CopyTilesTo(

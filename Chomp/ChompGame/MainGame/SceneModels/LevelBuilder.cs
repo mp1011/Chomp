@@ -29,6 +29,9 @@ namespace ChompGame.MainGame.SceneModels
 
             _sceneDefinition.ThemeSetup.BuildBackgroundNameTable(nameTable);
 
+            foreach (var b in _sceneDefinition.ThemeSetup.SmartBackgroundBlocks)
+                b.Apply(nameTable);
+
             var vramNametable = _gameModule.TileModule.NameTable;
 
             nameTable.CopyTo(
@@ -52,7 +55,12 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
-            return _sceneDefinition.ThemeSetup.BuildAttributeTable(attributeTable, nameTable);
+            attributeTable = _sceneDefinition.ThemeSetup.BuildAttributeTable(attributeTable, nameTable);
+
+            foreach (var b in _sceneDefinition.ThemeSetup.SmartBackgroundBlocks)
+                b.ApplyAttributes(attributeTable);
+
+            return attributeTable;
         }
 
         public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, int seed)
@@ -419,6 +427,11 @@ namespace ChompGame.MainGame.SceneModels
             int groundLower = nameTable.Height;
 
             int groundPosition = rng.Next(groundUpper, groundLower);
+            if (_sceneDefinition.Theme == ThemeType.City)
+            {
+                groundPosition = (groundPosition / 2) * 2;
+                groundLower = nameTable.Height - 2;
+            }
 
             for (var col = 0; col < nameTable.Width; col++)
             {
@@ -429,11 +442,17 @@ namespace ChompGame.MainGame.SceneModels
                     {
                         nextSectionBegin = nextSectionBegin + GetNextGroundSectionWidth(rng);
                         int nextGroundPosition = rng.Next(groundUpper, groundLower);
+                        if (_sceneDefinition.Theme == ThemeType.City)
+                            nextGroundPosition = (nextGroundPosition / 2) * 2;
+
                         if (nextGroundPosition == groundPosition)
                         {
-                            nextGroundPosition = groundPosition - 1;
+                            nextGroundPosition = groundPosition - (_sceneDefinition.Theme == ThemeType.City ? 2 : 1);
                             if (nextGroundPosition < groundUpper)
-                                nextGroundPosition = groundPosition + 1;
+                                nextGroundPosition = groundPosition + (_sceneDefinition.Theme == ThemeType.City ? 2 : 1);
+
+                            if (nextGroundPosition > groundLower)
+                                nextGroundPosition = groundLower;
                         }
 
                         groundPosition = nextGroundPosition;

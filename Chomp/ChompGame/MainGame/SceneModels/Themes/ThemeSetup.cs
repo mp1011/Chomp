@@ -1,6 +1,8 @@
 ﻿using ChompGame.Data;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels.SmartBackground;
 using System;
+using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
@@ -15,7 +17,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
           SystemMemory memory);
 
         public abstract void BuildBackgroundNameTable(NBitPlane nameTable);
-
+        public virtual IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks => Array.Empty<SmartBackgroundBlock>();
         public virtual NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
         {
             int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) / _specs.AttributeTableBlockSize;

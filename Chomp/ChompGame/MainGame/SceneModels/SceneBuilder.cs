@@ -450,7 +450,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Simple,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
-                bottom: 1,
+                bottom: 2,
                 top:0,
                 bgPosition1: 1);
                 

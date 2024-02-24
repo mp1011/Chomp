@@ -32,6 +32,12 @@
 /processorParam:Quality=Best
 /build:Music/Adventure2.ogg
 
+#begin Music/City.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/City.ogg
+
 #begin Music/Flight.ogg
 /importer:OggImporter
 /processor:SongProcessor

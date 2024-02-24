@@ -58,6 +58,9 @@ namespace ChompGame.Helpers
 
     class CollisionDetector 
     {
+        private const byte CollidableTileBegin = 32;
+        private const byte CollidableTileEnd = 39;
+
         private readonly Specs _specs;
         private BitPlaneForCollision _levelTileMap;
         private SceneDefinition _currentScene;
@@ -80,9 +83,11 @@ namespace ChompGame.Helpers
             return s1.Bounds.Intersects(s2.Bounds);
         }
 
+        public static bool IsTileSolid(byte index) => index >= CollidableTileBegin
+            && index < CollidableTileEnd;
+
         public CollisionInfo DetectCollisions(WorldSprite actor, IMotion motion)
         {
-            int collidableTileBeginIndex = _currentScene.CollidableTileBeginIndex;
             var collisionInfo = new CollisionInfo();
 
             var topLeftTile = actor.TopLeft
@@ -101,7 +106,7 @@ namespace ChompGame.Helpers
                 if (_currentScene.IsBossScene && y < _levelTileMap.Height - 4)
                     return;
 
-                if (t < collidableTileBeginIndex)
+                if (t < CollidableTileBegin || t > CollidableTileEnd)
                     return;
 
                 var tileBounds = new Rectangle(
@@ -129,7 +134,7 @@ namespace ChompGame.Helpers
                 if (!tileBounds.Intersects(actorBounds))
                 {
                     if (collisionInfo.IsOnGround
-                        || tileAbove >= collidableTileBeginIndex)
+                        || IsTileSolid(tileAbove))
                     {
                         if (t == _spriteTileTable.DestructibleBlockTile)
                         {
@@ -192,10 +197,10 @@ namespace ChompGame.Helpers
                 if (t == _spriteTileTable.CoinTile)
                     return;
 
-                bool checkLeftCollision = motion.XSpeed > 0 && (tileLeft < collidableTileBeginIndex || tileLeft == _spriteTileTable.CoinTile);
-                bool checkRightCollision = motion.XSpeed < 0 && (tileRight < collidableTileBeginIndex || tileRight == _spriteTileTable.CoinTile);
-                bool checkAbove = motion.YSpeed >= 0 && (tileAbove < collidableTileBeginIndex || tileAbove == _spriteTileTable.CoinTile);
-                bool checkBelow = motion.YSpeed < 0 && (tileBelow < collidableTileBeginIndex || tileBelow == _spriteTileTable.CoinTile);
+                bool checkLeftCollision = motion.XSpeed > 0 && (!IsTileSolid(tileLeft) || tileLeft == _spriteTileTable.CoinTile);
+                bool checkRightCollision = motion.XSpeed < 0 && (!IsTileSolid(tileRight) || tileRight == _spriteTileTable.CoinTile);
+                bool checkAbove = motion.YSpeed >= 0 && (!IsTileSolid(tileAbove) || tileAbove == _spriteTileTable.CoinTile);
+                bool checkBelow = motion.YSpeed < 0 && (!IsTileSolid(tileBelow) || tileBelow == _spriteTileTable.CoinTile);
 
                 int leftMove = actorBounds.Right - tileBounds.Left;
                 int rightMove = tileBounds.Right - actorBounds.Left;
@@ -249,8 +254,8 @@ namespace ChompGame.Helpers
             int ledgeX = x;
             int ledgeY = y;
 
-            if (thisTile >= _currentScene.CollidableTileBeginIndex 
-                && leftTile < _currentScene.CollidableTileBeginIndex
+            if (IsTileSolid(thisTile) 
+                && !IsTileSolid(leftTile)
                 && actorBounds.Left <= tileBounds.Left)
             {
                 ledgeX = x - 1;
@@ -258,8 +263,8 @@ namespace ChompGame.Helpers
             }
 
 
-            if (thisTile >= _currentScene.CollidableTileBeginIndex 
-                && rightTile < _currentScene.CollidableTileBeginIndex
+            if (IsTileSolid(thisTile)
+                && !IsTileSolid(rightTile)
                 && actorBounds.Right >= tileBounds.Right)
             {
                 ledgeX = x + 1;
@@ -270,7 +275,7 @@ namespace ChompGame.Helpers
                 collisionInfo.LedgeHeight = 0;
             else
             {
-                while (_levelTileMap[ledgeX, ledgeY] < _currentScene.CollidableTileBeginIndex
+                while (!IsTileSolid(_levelTileMap[ledgeX, ledgeY])
                     && ledgeY < _levelTileMap.Height)
                 {
                     ledgeY++;

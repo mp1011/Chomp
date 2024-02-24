@@ -299,9 +299,9 @@ namespace ChompGame.MainGame.SceneModels
             _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
 
             LoadPalette(levelTheme.Background1, backgroundPalette);
-            LoadPalette(levelTheme.Foreground, foregroundPalette);
+            LoadPalette(levelTheme.Foreground1, foregroundPalette);
             LoadPalette(PaletteKey.Coins, coinPalette);
-            LoadPalette(PaletteKey.DynamicBlocks, dynamicBlockPalette);
+            LoadPalette(levelTheme.Foreground2, dynamicBlockPalette);
 
             LoadPalette(levelTheme.Bomb, bombPalette);
             LoadPalette(PaletteKey.Player, playerPalette);
