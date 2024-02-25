@@ -1,10 +1,17 @@
 ﻿using ChompGame.Data;
+using ChompGame.GameSystem;
+using ChompGame.Helpers;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.SmartBackground
 {
     class CityBuildingBlock : SmartBackgroundBlock
     {
+        private const int MinWidth = 5;
+        private const int Height = 4;
+
+
         public CityBuildingBlock(SceneDefinition sceneDefinition) : base(sceneDefinition)
         {
         }
@@ -21,6 +28,50 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         private const int Door = 49;
         private const int Building = 50;
 
+        protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
+        {
+            var lastGroundY = 0;
+            Point lastGroundStart = Point.Zero;
+
+            for(int leftEdge = 0; leftEdge < nameTable.Width - MinWidth; leftEdge += 2)
+            {
+                var groundY = nameTable
+                    .Find(new Point(leftEdge, nameTable.Height - 1), 0, -1, p => !CollisionDetector.IsTileSolid(p)).Y + 1;
+           
+                if(leftEdge == 0 || groundY != lastGroundY)
+                {
+                    var groundStart = new Point(leftEdge, groundY); 
+
+                    if(leftEdge > 0)
+                    {
+                        int availableWidth = groundStart.X - lastGroundStart.X;
+                        int x = lastGroundStart.X;
+                        int width = (availableWidth / 2) * 2;
+                       
+                        if(RandomModule.FixedRandom((byte)(leftEdge * groundY)) > 128)
+                        {
+                            x += 2;
+                            width -= 2;
+                        }
+
+                        if (RandomModule.FixedRandom((byte)(leftEdge + groundY)) > 128)
+                        {
+                            width -= 2;
+                        }
+
+                        if (availableWidth >= MinWidth)
+                        {
+                            yield return new Rectangle(x, lastGroundStart.Y - Height,
+                                (width / 2) * 2, Height);
+                        }
+                    }
+
+                    lastGroundStart = groundStart;
+                }
+
+                lastGroundY = groundY;
+            }            
+        }
 
         protected override void AddBlock(Rectangle region, NBitPlane nameTable)
         {

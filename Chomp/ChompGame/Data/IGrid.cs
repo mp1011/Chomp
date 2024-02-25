@@ -29,6 +29,23 @@ namespace ChompGame.Data
             }
         }
 
+        public static Point Find<T>(this IGrid<T> grid, Point begin, int changeX, int changeY, Predicate<T> condition)
+        {
+            var position = begin;
+            while(position.X >= 0 && 
+                position.Y >= 0 &&
+                position.X < grid.Width &&
+                position.Y < grid.Height)
+            {
+                if (condition(grid[position.X, position.Y]))
+                    return position;
+
+                position = new Point(position.X + changeX, position.Y + changeY);
+            }
+
+            return new Point(255, 255);
+        }
+
         public static void ForEach<T>(this IGrid<T> grid, Action<int, int, T> action)
         {
             grid.ForEach(Point.Zero, new Point(grid.Width, grid.Height), action);

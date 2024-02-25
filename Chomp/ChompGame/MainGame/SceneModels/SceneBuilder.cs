@@ -39,7 +39,26 @@ namespace ChompGame.MainGame.SceneModels
         Level2_10_Beach3,
         Level2_11_Beach4,
         Level2_12_Boss,
-        Level3_1_City
+        Level3_1_City,
+        Level3_2_Building1,
+        Level3_3_Building1_Room1,
+        Level3_4_Building1_Room2,
+        Level3_5_City2,
+        Level3_6_City3,
+        Level3_7_Building2,
+        Level3_8_Building2_Room1,
+        Level3_9_Building2_Room2,
+        Level3_10_Building3,
+        Level3_11_Building3_Room1,
+        Level3_12_Building3_Room2,
+        Level3_13_Building3_Room3,
+        Level3_14_Building3_Room4,
+        Level3_15_Building3_Room5,
+        Level3_16_Building3_Room6,
+        Level3_17_Building3_Room7,
+        Level3_18_Building3_Room8,
+        Level3_19_Building3_Room9,
+        Level3_20_Building3_Room10
     }
 
     class SceneBuilder
@@ -453,7 +472,46 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 2,
                 top:0,
                 bgPosition1: 1);
-                
+
+            //Level3_2_Building1
+            SceneDefinition.VerticalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                shape: LevelShape.Ladder,
+                theme: ThemeType.City,
+                spriteGroup: SpriteGroup.Simple,
+                left: 2,
+                right: 2,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird);
+
+            // Level3_3_Building1_Room1,
+            SceneDefinition.NoScrollTShape(
+                 memoryBuilder: memoryBuilder,
+                 specs: specs,
+                 theme: ThemeType.City,
+                 spriteGroup: SpriteGroup.Simple,
+                 pitBegin:1,
+                 pitWidth:2,
+                 top:2,
+                 bottom:2,
+                 bgPosition:0,
+                 enemy1: EnemyIndex.Lizard,
+                 enemy2: EnemyIndex.Bird);
+
+            //Level3_4_Building1_Room2,
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.City,
+                spriteGroup: SpriteGroup.Simple,
+                top: 2,
+                bottom: 2,
+                left: 1,
+                right: 1,
+                bgPosition: 0,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -887,7 +945,14 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
-            CheckDestroyBits(Level.Level1_1_Start, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
+            CheckDestroyBits(Level.Level3_1_City, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
+
+            scene = new SceneDefinition(Level.Level3_2_Building1, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,
+                b => new ExitScenePart(b, ExitType.Left, -1, scene),
+                b => new ExitScenePart(b, ExitType.Right, 3, scene)
+            );
+            CheckDestroyBits(Level.Level3_1_City, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
         }
 

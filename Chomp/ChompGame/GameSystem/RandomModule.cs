@@ -43,6 +43,21 @@ namespace ChompGame.GameSystem
             return (byte)(Next() % max);
         }
 
+        public static byte FixedRandom(byte seed)
+        {
+            var b1 = (seed & 1) > 0 ? 1 : 0;
+            var b2 = (seed & 2) > 0 ? 1 : 0;
+            var b3 = (seed & 3) > 0 ? 1 : 0;
+            var b4 = (seed & 7) > 0 ? 1 : 0;
+
+            var add = b1 ^ b2 ^ b3 ^ b4;
+
+            var result = (byte)(seed >> 1);
+            result = (byte)(result + (add << 7));
+
+            return result;
+        }
+
         public T RandomItem<T>(params T[] choices)
         {
             return choices[Next((byte)choices.Length)];

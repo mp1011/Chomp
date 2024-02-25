@@ -22,7 +22,7 @@ namespace ChompGame.MainGame.SceneModels
             _sceneDefinition = sceneDefinition;
         }
 
-        public void BuildBackgroundNametable(NBitPlane nameTable)
+        public void BuildBackgroundNametable(NBitPlane nameTable, NBitPlane attributeTable)
         {
             _gameModule.TileModule.NameTable.Reset();
             _gameModule.StatusBar.InitializeTiles();
@@ -30,7 +30,7 @@ namespace ChompGame.MainGame.SceneModels
             _sceneDefinition.ThemeSetup.BuildBackgroundNameTable(nameTable);
 
             foreach (var b in _sceneDefinition.ThemeSetup.SmartBackgroundBlocks)
-                b.Apply(nameTable);
+                b.Apply(nameTable, attributeTable);
 
             var vramNametable = _gameModule.TileModule.NameTable;
 
@@ -56,9 +56,6 @@ namespace ChompGame.MainGame.SceneModels
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
             attributeTable = _sceneDefinition.ThemeSetup.BuildAttributeTable(attributeTable, nameTable);
-
-            foreach (var b in _sceneDefinition.ThemeSetup.SmartBackgroundBlocks)
-                b.ApplyAttributes(attributeTable);
 
             return attributeTable;
         }

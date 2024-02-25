@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.SmartBackground
 {
@@ -12,17 +13,20 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
             _sceneDefinition = sceneDefinition;
         }
 
-        public void Apply(NBitPlane nameTable)
+        protected abstract IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable);
+
+        public void Apply(NBitPlane nameTable, NBitPlane attributeTable)
         {
-            AddBlock(new Rectangle(10, 8, 13, 4), nameTable);
+            foreach (var region in DetermineRegions(nameTable))
+            {
+                AddBlock(region, nameTable);
+                SetBlockAttr(3,
+                    new Rectangle(region.X / 2, region.Y / 2, region.Width / 2, region.Height / 2),
+                    attributeTable);
+            }
         }
 
         protected abstract void AddBlock(Rectangle region, NBitPlane nameTable);
-
-        public void ApplyAttributes(NBitPlane attributeTable)
-        {
-            SetBlockAttr(3, new Rectangle(5, 4, 7, 2), attributeTable);
-        }
 
         private void SetBlockAttr(byte attributeValue, Rectangle tileRegion, NBitPlane attributeTable)
         {

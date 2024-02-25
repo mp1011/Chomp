@@ -320,7 +320,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level3_1_City;
+            _currentLevel.Value = Level.Level3_2_Building1;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -399,7 +399,7 @@ namespace ChompGame.MainGame
 
             _levelBuilder.SetProperTiles(levelMap);
 
-            _levelBuilder.BuildBackgroundNametable(levelMap);
+            _levelBuilder.BuildBackgroundNametable(levelMap, levelAttributeTable);
 
             _sceneSpriteControllers.Initialize(_currentScene, levelMap, levelAttributeTable, _lastExitType.Value, _carryingBomb);
 
