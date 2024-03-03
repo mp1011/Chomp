@@ -128,19 +128,9 @@ namespace ChompGame.MainGame.WorldScrollers
         protected void CopyTileRow(byte worldRow, byte ntRow)
         {
             ntRow = (ntRow + 2).NModByte(_tileModule.NameTable.Height);
-            if (ntRow == 10 && worldRow != 40)
-            { 
-                GameDebug.DebugLog($"Update NT Row 10, world row = {worldRow}", DebugLogFlags.WorldScroller);
-             //   return;
-            }
-
             for (int col = 0; col < _levelNameTable.Width; col++)
             {
                 _tileModule.NameTable[col + _tilesPerScreen, ntRow] = _levelNameTable[col, worldRow];
-
-              
-                if (worldRow == 40 && col == 5)
-                    GameDebug.DebugLog($"World tile = {_levelNameTable[col, worldRow]}, NT Tile Y = {ntRow}", DebugLogFlags.WorldScroller);
 
                 var attrX = (col + _tilesPerScreen) / _specs.AttributeTableBlockSize;
                 var attrY = ntRow / _specs.AttributeTableBlockSize;
