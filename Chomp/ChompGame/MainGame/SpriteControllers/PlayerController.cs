@@ -234,6 +234,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 AcceleratedMotion.XAcceleration = _motionController.BrakeAccel;
             }
 
+            if(GameDebug.EnableFly && _inputModule.Player1.UpKey == GameKeyState.Down)
+            {
+                WorldSprite.Y -= 2;
+                Motion.YSpeed = 0;
+            }
+
             if ((collisionInfo.IsOnGround || _onPlatform.Value) 
                 && _inputModule.Player1.AKey == GameKeyState.Pressed)
             {

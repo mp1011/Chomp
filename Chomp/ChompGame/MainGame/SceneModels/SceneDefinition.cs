@@ -199,7 +199,6 @@ namespace ChompGame.MainGame.SceneModels
                 switch(_spriteGroup.Value)
                 {
                     case SpriteGroup.Normal:
-                    case SpriteGroup.Simple:
                         yield return _enemy1.Value.ToSpriteType();
                         yield return (_enemy1.Value + _enemy2.Value + 1).ToSpriteType();
                         break;

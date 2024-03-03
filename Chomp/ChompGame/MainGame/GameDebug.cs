@@ -27,10 +27,11 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
-        private const DebugLogFlags _debugLogFlags = DebugLogFlags.SpriteSpawn;
+        private const DebugLogFlags _debugLogFlags = DebugLogFlags.WorldScroller;
 
         private static List<string> _log = new List<string>();
 
+        public static bool EnableFly = true;
         public static DebugWatch Watch1 { get; set; }
         public static DebugWatch Watch2 { get; set; }
         public static DebugWatch Watch3 { get; set; }

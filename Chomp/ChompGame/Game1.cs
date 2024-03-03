@@ -14,6 +14,7 @@ namespace ChompGame
     public class Game1 : Game
     {
         private Specs _specs;
+        private TileInspector _tileInspector;
 
         private Func<GraphicsDevice, ContentManager, MainSystem> _createSystem;
         private MainSystem _gameSystem;
@@ -44,6 +45,8 @@ namespace ChompGame
         protected override void Initialize()
         {
             _gameSystem = _createSystem(GraphicsDevice, Content);
+
+            _tileInspector = new TileInspector(_gameSystem.GetModule<ChompGameModule>());
             _specs = _gameSystem.Specs;
             base.Initialize();
         }
@@ -86,6 +89,7 @@ namespace ChompGame
 
 #if DEBUG
             EditorInputHelper.Update(_screenRenderSize, _gameSystem.GetModule<TileModule>());
+            _tileInspector.Update();
 #endif
 
             _gameSystem.OnLogicUpdate();

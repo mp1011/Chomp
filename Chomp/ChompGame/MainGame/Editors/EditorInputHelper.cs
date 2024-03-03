@@ -1,4 +1,5 @@
 ﻿using ChompGame.GameSystem;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Linq;
 
@@ -11,6 +12,7 @@ namespace ChompGame.MainGame.Editors
 
         public static int MouseX { get; private set; }
         public static int MouseY { get; private set; }
+        public static Point MousePosition => new Point(MouseX, MouseY);
 
         public static bool LeftClicked { get; private set; }
         public static bool RightClicked { get; private set; }

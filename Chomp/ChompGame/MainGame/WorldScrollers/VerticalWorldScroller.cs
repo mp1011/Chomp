@@ -57,6 +57,7 @@ namespace ChompGame.MainGame.WorldScrollers
             byte worldRow = (byte)worldScrollBeginTile;
 
             var seamTile = (ntScrollBeginTile + _forwardSeamOffset).NModByte(_specs.NameTableHeight);
+            GameDebug.DebugLog($"Seam Refresh Down to {seamTile}", DebugLogFlags.WorldScroller);
 
             while (ntRow != seamTile)
             {
@@ -64,10 +65,12 @@ namespace ChompGame.MainGame.WorldScrollers
                 ntRow = (ntRow + 1).NModByte(_specs.NameTableHeight);
                 worldRow = (worldRow + 1).NModByte(_levelNameTable.Height);
             }
+            CopyTileRow(worldRow, ntRow);
 
-            seamTile = (ntScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableHeight);
+            seamTile = (ntScrollBeginTile - _backwardSeamOffset - 2).NModByte(_specs.NameTableHeight);
             ntRow = (ntScrollBeginTile - 1).NModByte(_specs.NameTableHeight);
             worldRow = (worldScrollBeginTile - 1).NModByte(_levelNameTable.Height);
+            GameDebug.DebugLog($"Seam Refresh Up to {seamTile}", DebugLogFlags.WorldScroller);
 
             while (ntRow != seamTile)
             {
@@ -75,10 +78,12 @@ namespace ChompGame.MainGame.WorldScrollers
                 ntRow = (ntRow - 1).NModByte(_specs.NameTableHeight);
                 worldRow = (worldRow - 1).NModByte(_levelNameTable.Height);
             }
+            CopyTileRow(worldRow, ntRow);
         }
 
         public override bool Update()
         {
+
             int worldScrollBegin = (_focusSprite.Y - _halfWindowSize).Clamp(0, ScrollYMax);
             int worldScrollBeginTile = worldScrollBegin / _specs.TileHeight;
             var ntScrollBegin = (worldScrollBegin).NModByte(_specs.NameTablePixelHeight);
@@ -101,19 +106,19 @@ namespace ChompGame.MainGame.WorldScrollers
                 if (worldSeamRow == _seamTile.Value)
                     return false;
 
-                var ntSeamColumn = (ntScrollBeginTile + _forwardSeamOffset).NModByte(_specs.NameTableHeight);
-                CopyTileRow(worldSeamRow, ntSeamColumn);
+                var ntSeamRow = (ntScrollBeginTile + _forwardSeamOffset).NModByte(_specs.NameTableHeight);
+                CopyTileRow(worldSeamRow, ntSeamRow);
                 _seamTile.Value = worldSeamRow;
                 return true;
             }
             else
             {
-                var worldSeamRow = (byte)(worldScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableHeight);
+                var worldSeamRow = (byte)(worldScrollBeginTile - _backwardSeamOffset).NModByte(_levelNameTable.Height);
                 if (worldSeamRow == _seamTile.Value)
                     return false;
 
-                var ntSeamColumn = (ntScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableHeight);
-                CopyTileRow(worldSeamRow, ntSeamColumn);
+                var ntSeamRow = (ntScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableHeight);
+                CopyTileRow(worldSeamRow, ntSeamRow);
                 _seamTile.Value = worldSeamRow;
                 return true;
             }
@@ -122,12 +127,20 @@ namespace ChompGame.MainGame.WorldScrollers
 
         protected void CopyTileRow(byte worldRow, byte ntRow)
         {
-           
             ntRow = (ntRow + 2).NModByte(_tileModule.NameTable.Height);
+            if (ntRow == 10 && worldRow != 40)
+            { 
+                GameDebug.DebugLog($"Update NT Row 10, world row = {worldRow}", DebugLogFlags.WorldScroller);
+             //   return;
+            }
 
             for (int col = 0; col < _levelNameTable.Width; col++)
             {
                 _tileModule.NameTable[col + _tilesPerScreen, ntRow] = _levelNameTable[col, worldRow];
+
+              
+                if (worldRow == 40 && col == 5)
+                    GameDebug.DebugLog($"World tile = {_levelNameTable[col, worldRow]}, NT Tile Y = {ntRow}", DebugLogFlags.WorldScroller);
 
                 var attrX = (col + _tilesPerScreen) / _specs.AttributeTableBlockSize;
                 var attrY = ntRow / _specs.AttributeTableBlockSize;

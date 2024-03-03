@@ -1,4 +1,5 @@
 ﻿
+using ChompGame.Data;
 using ChompGame.Helpers;
 using Microsoft.Xna.Framework;
 using System;
@@ -20,6 +21,17 @@ namespace ChompGame.Extensions
         {
             return new Point(p.X + x, p.Y + y);
         }
+
+        public static Point Subtract(this Point p, Point p2)
+        {
+            return new Point(p.X - p2.X, p.Y - p2.Y);
+        }
+
+        public static Point Subtract(this Point p, GameByteGridPoint p2)
+        {
+            return new Point(p.X - p2.X, p.Y - p2.Y);
+        }
+
 
         public static Vector2 Normalize(this Point p)
         {

@@ -209,7 +209,7 @@ namespace ChompGame.MainGame.SceneModels
                 ScrollStyle.Vertical => _sceneDefinition.LevelShape switch 
                 {
                     LevelShape.ZigZag => AddZigZagTiles(nameTable),
-                    LevelShape.Ladder => nameTable, //todo
+                    LevelShape.Ladder => AddLadderTiles(nameTable),
                     _ => nameTable 
                 },
                 ScrollStyle.NameTable => _sceneDefinition.LevelShape switch {
@@ -224,6 +224,29 @@ namespace ChompGame.MainGame.SceneModels
                 },
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        private NBitPlane AddLadderTiles(NBitPlane nameTable)
+        {
+            int sectionHeight = 10;
+            int stepWidth = 2;
+
+            Point p = new Point(0, _sceneDefinition.TopTiles + sectionHeight);
+            while (p.Y < nameTable.Height - _sceneDefinition.BottomTiles)
+            {
+                for(int i =0; i< stepWidth; i++)
+                {
+                    nameTable[_sceneDefinition.LeftTiles + i, p.Y] = 1;
+                    nameTable[_sceneDefinition.LeftTiles + i, p.Y + 1] = 1;
+
+                    nameTable[nameTable.Width - _sceneDefinition.RightEdgeFloorTiles - i - 1, p.Y] = 1;
+                    nameTable[nameTable.Width - _sceneDefinition.RightEdgeFloorTiles - i - 1, p.Y + 1] = 1;
+                }
+
+                p.Y += sectionHeight;
+            }
+
+            return nameTable;
         }
 
         private NBitPlane AddZigZagTiles(NBitPlane nameTable)

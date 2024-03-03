@@ -47,7 +47,6 @@ namespace ChompGame.MainGame.SpriteModels
     public enum SpriteGroup : byte
     {
         Normal,
-        Simple,
         PlaneTakeoff,
         Plane,
         Boss
