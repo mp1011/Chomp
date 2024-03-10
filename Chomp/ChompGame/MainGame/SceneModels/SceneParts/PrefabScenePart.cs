@@ -67,12 +67,20 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
             }
         }
 
+        private int WidthIncrement
+        {
+            get
+            {
+                return (_scene.LevelTileWidth - _scene.LeftTiles - _scene.RightTiles) / 4;
+            }
+        }
+
         public PrefabShape Shape => _shape.Value;
 
         public byte Width => _scene.ScrollStyle switch {
             ScrollStyle.Vertical => (byte)_scene.LevelTileWidth,
             ScrollStyle.Horizontal => (byte)(4 * ((byte)_width.Value + 1)),
-            ScrollStyle.NameTable => (byte)(4 * ((byte)_width.Value + 1)),
+            ScrollStyle.NameTable => (byte)(WidthIncrement + (WidthIncrement * (byte)_height.Value)),
             _ => 0 };
 
     
@@ -83,6 +91,16 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
             _ => 0
         };
 
+        /// <summary>
+        /// 0-31
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="scene"></param>
+        /// <param name="position"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="origin"></param>
+        /// <param name="shape"></param>
         public PrefabScenePart(SystemMemoryBuilder builder, 
             SceneDefinition scene, 
             byte position,  

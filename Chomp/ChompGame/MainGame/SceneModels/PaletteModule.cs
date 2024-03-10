@@ -34,7 +34,8 @@ namespace ChompGame.MainGame.SceneModels
         CitySky,
         CityBg,
         CityFg,
-        Max= CityFg
+        CityInterior,
+        Max= CityInterior
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -277,6 +278,11 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.BlueGray2,
              ColorIndex.BlueGray3);
 
+            DefinePalette(PaletteKey.CityInterior,
+            ColorIndex.DarkGray2,
+            ColorIndex.Red2,
+            ColorIndex.Green2,
+            ColorIndex.DarkGray1);
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {

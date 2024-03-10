@@ -220,7 +220,7 @@ namespace ChompGame.MainGame.SpriteModels
             //ogre
             new SpriteDefinition(memoryBuilder,
               secondTileOffset: 0,
-              sizeX: 2,
+              sizeX: 1,
               sizeY: 2,
               gravityStrength: GravityStrength.Medium,
               movementSpeed: MovementSpeed.VerySlow,

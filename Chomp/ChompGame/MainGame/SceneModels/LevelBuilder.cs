@@ -106,7 +106,27 @@ namespace ChompGame.MainGame.SceneModels
         {      
             nameTable.ForEach((x, y, b) =>
             {
-                if(y >= nameTable.Height - _sceneDefinition.RightEdgeFloorTiles - 4
+                if(_sceneDefinition.ScrollStyle == ScrollStyle.None && 
+                    _sceneDefinition.LevelShape == LevelShape.TShape)
+                {
+                    int leftWall = 2;
+                    int rightWall = nameTable.Width - 2;
+                    int leftCeiling = 2 + _sceneDefinition.LeftTiles;
+                    int rightCeiling = leftCeiling + _sceneDefinition.RightTiles;
+                    int pitX = 4 + _sceneDefinition.TopTiles;
+                    int hallSize = 2 + _sceneDefinition.BottomTiles;
+
+                    int leftFloor = leftCeiling + hallSize;
+                    int rightFloor = rightCeiling + hallSize;
+                    int pitFloor = nameTable.Height - 2;
+                    int pitRight = pitX + hallSize;
+
+                    if (x >= pitRight && y >= rightCeiling && y < rightFloor)
+                    {
+                        nameTable[x, y] = 0;
+                    }
+                }
+                else if(y >= nameTable.Height - _sceneDefinition.RightEdgeFloorTiles - 4
                     && y < nameTable.Height - _sceneDefinition.RightEdgeFloorTiles
                     && x >= nameTable.Width - _sceneDefinition.RightTiles)
                 {
@@ -121,7 +141,27 @@ namespace ChompGame.MainGame.SceneModels
         {
             nameTable.ForEach((x, y, b) =>
             {
-                if (y >= nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles - 4
+                if (_sceneDefinition.ScrollStyle == ScrollStyle.None &&
+                    _sceneDefinition.LevelShape == LevelShape.TShape)
+                {
+                    int leftWall = 2;
+                    int rightWall = nameTable.Width - 2;
+                    int leftCeiling = 2 + _sceneDefinition.LeftTiles;
+                    int rightCeiling = leftCeiling + _sceneDefinition.RightTiles;
+                    int pitX = 4 + _sceneDefinition.TopTiles;
+                    int hallSize = 2 + _sceneDefinition.BottomTiles;
+
+                    int leftFloor = leftCeiling + hallSize;
+                    int rightFloor = rightCeiling + hallSize;
+                    int pitFloor = nameTable.Height - 2;
+                    int pitRight = pitX + hallSize;
+
+                    if (x < pitX && y >= leftCeiling && y < leftFloor)
+                    {
+                        nameTable[x, y] = 0;
+                    }
+                }
+                else if (y >= nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles - 4
                     && y < nameTable.Height - _sceneDefinition.LeftEdgeFloorTiles
                     && x <= _sceneDefinition.LeftTiles)
                 {
@@ -139,9 +179,34 @@ namespace ChompGame.MainGame.SceneModels
 
             bool needsExit = true;
 
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.None &&
+                    _sceneDefinition.LevelShape == LevelShape.TShape)
+            {
+                int leftWall = 2;
+                int rightWall = nameTable.Width - 2;
+                int leftCeiling = 2 + _sceneDefinition.LeftTiles;
+                int rightCeiling = leftCeiling + _sceneDefinition.RightTiles;
+                int pitX = 4 + _sceneDefinition.TopTiles;
+                int hallSize = 2 + _sceneDefinition.BottomTiles;
+
+                int leftFloor = leftCeiling + hallSize;
+                int rightFloor = rightCeiling + hallSize;
+                int pitFloor = nameTable.Height - 2;
+                int pitRight = pitX + hallSize;
+
+                nameTable.ForEach((x, y, b) =>
+                {
+                    if (x >= pitX && x < pitRight && y > leftFloor)
+                    {
+                        nameTable[x, y] = 0;
+                    }
+                });
+                return nameTable;
+            }
+
+
             nameTable.ForEach((x, y, b) =>
             {
-
                 if (x >= xStart
                     && x < xStart + width
                     && y >= nameTable.Height - _sceneDefinition.BottomTiles)
@@ -153,6 +218,7 @@ namespace ChompGame.MainGame.SceneModels
 
             if (!needsExit)
                 return nameTable;
+
             nameTable.ForEach((x, y, b) =>
             {
 
@@ -213,6 +279,7 @@ namespace ChompGame.MainGame.SceneModels
                     _ => nameTable 
                 },
                 ScrollStyle.NameTable => _sceneDefinition.LevelShape switch {
+                    LevelShape.TwoHorizontalChambers => AddHorizontalChambers(nameTable),
                     _ => nameTable
                 },
                 ScrollStyle.None => _sceneDefinition.LevelShape switch {
@@ -224,6 +291,20 @@ namespace ChompGame.MainGame.SceneModels
                 },
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        private NBitPlane AddHorizontalChambers(NBitPlane nameTable)
+        {
+            int midFloorStart = (nameTable.Height / 2) - 2;
+            int midFloorEnd = midFloorStart + 4;
+
+            nameTable.ForEach((x, y, b) =>
+            {
+                if (y >= midFloorStart && y < midFloorEnd)
+                    nameTable[x, y] = 1;
+            });
+
+            return nameTable;
         }
 
         private NBitPlane AddLadderTiles(NBitPlane nameTable)
@@ -299,27 +380,32 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddTShape(NBitPlane nameTable)
         {
-            int ceilingY = _sceneDefinition.TopTiles * 2;
-            int floorY = ceilingY + (_sceneDefinition.BottomTiles * 2);
+            int leftWall = 2;
+            int rightWall = nameTable.Width - 2;
+            int leftCeiling = 2 + _sceneDefinition.LeftTiles;
+            int rightCeiling = leftCeiling +  _sceneDefinition.RightTiles;
+            int pitX = 4 + _sceneDefinition.TopTiles;
+            int hallSize = 2 + _sceneDefinition.BottomTiles;
 
-            //todo, add variation
-            int pitBegin = (_sceneDefinition.LeftTiles+1)*2;
-            int pitEnd = pitBegin + ((_sceneDefinition.RightTiles+1)*2);
-
+            int leftFloor = leftCeiling + hallSize;
+            int rightFloor = rightCeiling + hallSize;
+            int pitFloor = nameTable.Height - 2;
+            int pitRight = pitX + hallSize;
+          
             nameTable.ForEach((x, y, b) =>
             {
-                if (y <= ceilingY)
-                    nameTable[x, y] = 1;
-                else if (y >= floorY)
-                {
-                    if (x < pitBegin || x >= pitEnd)
-                        nameTable[x, y] = 1;
-                    else
-                        nameTable[x, y] = 0;
-                }
+                // left hall
+                if (x >= leftWall && x < pitRight && y >= leftCeiling && y < leftFloor)
+                    nameTable[x, y] = 0;
+                // right hall
+                else if (x >= pitRight && x < rightWall && y >= rightCeiling && y < rightFloor)
+                    nameTable[x, y] = 0;
+                // pit
+                else if (x >= pitX && x < pitRight && y >= leftCeiling && y < pitFloor)
+                    nameTable[x, y] = 0;
                 else
                 {
-                    nameTable[x, y] = 0;
+                    nameTable[x, y] = 1;
                 }
             });
 
@@ -406,7 +492,12 @@ namespace ChompGame.MainGame.SceneModels
                 if (stairTop < region.Y)
                     stairTop = region.Y;
 
-                for(int y = stairTop; y < region.Bottom; y++)
+                for (int y = stairTop-8; y < stairTop; y++)
+                {
+                    nameTable[x, y] = 0;
+                }
+
+                for (int y = stairTop; y < region.Bottom; y++)
                 {
                     nameTable[x, y] = 1;
                 }
@@ -634,6 +725,17 @@ namespace ChompGame.MainGame.SceneModels
                    _gameModule.SpritesModule,
                    () => new CrocodileController(playerController.WorldSprite, enemyTileIndex, _gameModule, memoryBuilder));
                     break;
+                case SpriteType.Ogre:
+                    spritePools[extraIndex] = new EnemyOrBulletSpriteControllerPool<OgreBulletController>(
+                                     3,
+                                     _gameModule.SpritesModule,
+                                     () => new OgreBulletController( _gameModule, memoryBuilder, extraTileIndex));
+
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<OgreController>(
+                        2,
+                        _gameModule.SpritesModule,
+                        () => new OgreController(spritePools[extraIndex], enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
+                    break;
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
 
@@ -813,11 +915,6 @@ namespace ChompGame.MainGame.SceneModels
             var spriteBuilder = new VramBuilder(masterPatternTable, spritePatternTable, _spriteTileTable, memory, _gameModule.Specs);
             var bgBuilder = new VramBuilder(masterPatternTable, bgPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
-            if (_sceneDefinition.IsBossScene)
-                spriteBuilder.SpriteYBegin = 4;
-            else
-                spriteBuilder.SpriteYBegin = 5;
-
             bgBuilder.AddStatusBarTiles();            
             _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, bgPatternTable, memory);
 
@@ -849,8 +946,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
                 spriteBuilder.AddEnemySprite(2, 0, 2, 2);
-                var fireballTile = spriteBuilder.AddExtraSprite(4, 0, 3, 1);
-                _spriteTileTable.SetTile(SpriteTileIndex.Explosion, (byte)(fireballTile + 1));
+                spriteBuilder.AddExtraSprite(4, 0, 3, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
@@ -866,7 +962,18 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Crocodile))
                 spriteBuilder.AddEnemySprite(4, 2, 4, 1);
 
-            if(_sceneDefinition.SpriteGroup == SpriteGroup.Normal)
+            if (_sceneDefinition.HasSprite(SpriteType.Ogre))
+            {
+                spriteBuilder.AddEnemySprite(12, 0, 2, 2);
+                spriteBuilder.AddExtraSprite(14, 0, 1, 1);
+            }
+
+            if (_sceneDefinition.HasSprite(SpriteType.Ogre) || _sceneDefinition.HasSprite(SpriteType.Lizard))
+            {
+                spriteBuilder.AddExplosionSprite();
+            }
+
+            if (_sceneDefinition.SpriteGroup == SpriteGroup.Normal)
             {
                 spriteBuilder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);
                 spriteBuilder.AddSprite(SpriteTileIndex.Button, 11, 6, 2, 1);
@@ -877,7 +984,6 @@ namespace ChompGame.MainGame.SceneModels
                 spriteBuilder.AddSprite(SpriteTileIndex.Prize, 7, 0, 1, 1);
             }
 
-            bgBuilder.SpriteYBegin = 7;
             bgBuilder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
             bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
         }

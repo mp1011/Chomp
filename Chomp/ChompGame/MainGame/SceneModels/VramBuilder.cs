@@ -12,9 +12,6 @@ namespace ChompGame.MainGame.SceneModels
         private readonly SystemMemory _memory;
         private readonly Specs _specs;
                 
-        public int SpriteYBegin { get; set; }
-        private readonly int _dynamicTileY;
-
         private bool _enemy1Used, _extra1Used;
         public VramBuilder(
             NBitPlane masterPatternTable,
@@ -49,7 +46,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private Point CalcSpriteDestination(int width, int height)
         {
-            Point destination = new Point(0, SpriteYBegin);
+            Point destination = new Point(0, 1);
 
             while(true)
             {
@@ -100,6 +97,11 @@ namespace ChompGame.MainGame.SceneModels
             var result = AddSprite(_extra1Used ? SpriteTileIndex.Extra2 : SpriteTileIndex.Extra1, x, y, width, height);
             _extra1Used = true;
             return result;
+        }
+
+        public byte AddExplosionSprite()
+        {
+            return AddSprite(SpriteTileIndex.Explosion, 6,1,2,1);
         }
 
         public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height)

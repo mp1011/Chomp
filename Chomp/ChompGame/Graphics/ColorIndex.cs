@@ -77,6 +77,8 @@
 
         public static byte LightBlue => Blue(7).Value;
         public static byte Black => DarkGray(0).Value;
+        public static byte DarkGray1 => DarkGray(1).Value;
+        public static byte DarkGray2 => DarkGray(2).Value;
 
         public static byte Gray1 => DarkGray(3).Value;
         public static byte Gray2 => DarkGray(4).Value;

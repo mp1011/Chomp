@@ -4,6 +4,7 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ChompGame.MainGame
 {
@@ -65,6 +66,12 @@ namespace ChompGame.MainGame
         {
             get => GetSprite().FlipX;
             set => GetSprite().FlipX = value;
+        }
+
+        public bool FlipY
+        {
+            get => GetSprite().FlipY;
+            set => GetSprite().FlipY = value;
         }
 
         private ExtendedPoint _position;
@@ -158,6 +165,11 @@ namespace ChompGame.MainGame
                 sprite.X = (byte)(X % _specs.NameTablePixelWidth);
                 sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
             }
+        }
+
+        public int XDistanceTo(WorldSprite other)
+        {
+            return Math.Abs(Center.X - other.Center.X);
         }
 
         public BoundsCheck CheckInBounds()

@@ -14,6 +14,7 @@ namespace ChompGame.MainGame.SceneModels
         Forest,
         Desert,
         City,
+        CityInterior,
         Space,
         TechBase,
         GlitchCore,
@@ -95,8 +96,17 @@ namespace ChompGame.MainGame.SceneModels
                 bg2: PaletteKey.CityBg,
                 fg1: PaletteKey.CityFg,
                 fg2: PaletteKey.Bomb,
+                enemy1: PaletteKey.GreenEnemy,
+                enemy2: PaletteKey.Bullet);
+
+            //CityInterior
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.CityInterior,
+                bg2: PaletteKey.CityInterior,
+                fg1: PaletteKey.CityFg,
+                fg2: PaletteKey.BombLight,
                 enemy1: PaletteKey.BlueGrayEnemy,
-                enemy2: PaletteKey.BlueGrayEnemy);
+                enemy2: PaletteKey.GreenEnemy3);
 
             //Space
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);

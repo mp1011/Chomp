@@ -21,7 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers.MotionControllers
         byte IMotionController.Speed => WalkSpeed;
         public byte WalkSpeed =>
             _spriteDefinition.MovementSpeed switch {
-                MovementSpeed.VerySlow => 1,
+                MovementSpeed.VerySlow => 5,
                 MovementSpeed.Slow => 10,
                 MovementSpeed.Fast => 40,
                 MovementSpeed.VeryFast => 60,

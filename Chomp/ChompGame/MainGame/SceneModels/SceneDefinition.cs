@@ -322,10 +322,10 @@ namespace ChompGame.MainGame.SceneModels
            EnemyIndex enemy1,
            EnemyIndex enemy2,
            SpriteGroup spriteGroup,
-           byte pitBegin,
-           byte pitWidth,
-           byte top,
-           byte bottom,
+           byte leftY,
+           byte rightY,
+           byte pitX,
+           byte hallSize,
            byte bgPosition)
         {
             return new SceneDefinition(memoryBuilder,
@@ -336,10 +336,10 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1,
                 enemy2,
                 spriteGroup,
-                pitBegin,
-                top,
-                pitWidth,
-                bottom,
+                leftY,
+                pitX,
+                rightY,
+                hallSize,
                 bgPosition,
                 0);
         }
