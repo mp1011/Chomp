@@ -99,7 +99,12 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
 
             for(int i = 0; i < windows; i++)
             {
-                if (i == windows / 2)
+                if (region.X < 4)
+                    break;
+
+                if(region.Width <= 10)
+                    AddWindow(2 + (i * 2), region, nameTable);
+                else if (i == windows / 2)
                     AddDoor(2 + (i * 2), region, nameTable);
                 else if (i < windows / 2)
                     AddWindow(2 + (i*2), region, nameTable);

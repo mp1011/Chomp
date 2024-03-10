@@ -54,6 +54,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 else
                 {
                     WorldSprite.Status = WorldSpriteStatus.Active;
+                    GetSprite().Palette = Palette;
                 }
             }
         }
@@ -68,19 +69,22 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             Destroy();
         }
 
-        public virtual bool HandleBombCollision(WorldSprite player)
+        public virtual BombCollisionResponse HandleBombCollision(WorldSprite player)
         {
             if (WorldSprite.Status != WorldSpriteStatus.Active || _hitPoints.Value == 0)
-                return false;
+                return BombCollisionResponse.None;
 
             _hitPoints.Value--;
             Motion.Stop();
             GetSprite().Palette = 3;
             WorldSprite.Status = WorldSpriteStatus.Dying;
-            _stateTimer.Value = 8;
-            _audioService.PlaySound(ChompAudioService.Sound.Break);
+            _stateTimer.Value = (byte)(_hitPoints.Value == 0 ? 8 : 4);
+            _audioService.PlaySound(_hitPoints.Value == 0 ? ChompAudioService.Sound.Break : ChompAudioService.Sound.EnemyHit);
 
-            return true;
+            if (_hitPoints.Value > 0)
+                return BombCollisionResponse.Bounce;
+            else
+                return BombCollisionResponse.Destroy;
         }
 
         public virtual bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);

@@ -31,7 +31,7 @@ namespace ChompGame.MainGame.WorldScrollers
             var rightDistance = ViewPane.X - r.Right;
             var leftDistance = r.Left - ViewPane.Right;
             var upDistance = ViewPane.Y - r.Bottom;
-            var downDistance = r.Left - ViewPane.Bottom;
+            var downDistance = r.Top - ViewPane.Bottom;
 
             if (rightDistance > 0)
                 return rightDistance;

@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 
@@ -665,7 +666,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle2.UpdatePosition(_arm2);
         }
 
-        public override bool HandleBombCollision(WorldSprite player)
+        public override BombCollisionResponse HandleBombCollision(WorldSprite player)
         {
             _eyeState[_eyeHit.Value] = 3;
             _audioService.PlaySound(ChompAudioService.Sound.Lightning);
@@ -678,7 +679,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 SetPhase(Phase.Dying);
             }
 
-            return true;
+            return BombCollisionResponse.Destroy;
         }
     }
 }

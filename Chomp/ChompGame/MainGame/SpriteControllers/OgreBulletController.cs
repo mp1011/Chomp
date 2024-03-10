@@ -25,7 +25,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public bool CollidesWithBomb(WorldSprite bomb) => false;
         public bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);
-        public bool HandleBombCollision(WorldSprite player) => false;
+        public BombCollisionResponse HandleBombCollision(WorldSprite player) => BombCollisionResponse.None;
         public CollisionResult HandlePlayerCollision(WorldSprite player)
         {
             return CollisionResult.HarmPlayer;

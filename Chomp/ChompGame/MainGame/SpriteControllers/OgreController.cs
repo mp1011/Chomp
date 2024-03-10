@@ -56,6 +56,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if (bullet == null)
                 return;
 
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
             bullet.WorldSprite.X = WorldSprite.X;
             bullet.WorldSprite.Y = WorldSprite.Y;
             bullet.WorldSprite.FlipX = WorldSprite.FlipX;

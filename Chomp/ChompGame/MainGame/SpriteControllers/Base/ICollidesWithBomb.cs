@@ -1,7 +1,14 @@
 ﻿namespace ChompGame.MainGame.SpriteControllers.Base
 {
+    enum BombCollisionResponse
+    {
+        None,
+        Destroy,
+        Bounce
+    }
+
     interface ICollidesWithBomb
     {
-        bool HandleBombCollision(WorldSprite player);
+        BombCollisionResponse HandleBombCollision(WorldSprite player);
     }
 }

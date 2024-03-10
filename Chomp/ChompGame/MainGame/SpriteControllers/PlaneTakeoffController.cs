@@ -38,7 +38,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _takeOff.Value = false;
         }
 
-        public bool HandleBombCollision(WorldSprite player) => false;
+        public BombCollisionResponse HandleBombCollision(WorldSprite player) => BombCollisionResponse.None;
         public CollisionResult HandlePlayerCollision(WorldSprite player)
         {
             if(_player.Motion.YSpeed > 0)

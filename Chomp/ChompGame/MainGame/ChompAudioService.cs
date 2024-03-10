@@ -21,7 +21,8 @@ namespace ChompGame.MainGame
             PlayerDie,
             CrocodileBark,
             PlaneTakeoff,
-            Max = PlaneTakeoff
+            EnemyHit,
+            Max = EnemyHit
         }
 
         private readonly BankAudioModule _audioModule;
@@ -100,6 +101,11 @@ namespace ChompGame.MainGame
                Sound.PlaneTakeoff,
                noteDuration: 20,
                soundData: "* A A# B C C# D D# E F G");
+
+            index = DefineSound(index,
+                Sound.EnemyHit,
+                noteDuration: 2,
+                soundData: "G C# B A# A");
 
             _audioModule.PrepareSounds();
         }

@@ -993,7 +993,9 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                 b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 2, 10, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 8, scene),
-                b => new SpriteScenePart(b, ScenePartType.Bomb, 8, 4, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 32, 4, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 44, 4, scene),
+                b => new SpriteScenePart(b, ScenePartType.Bomb, 16, 4, scene),
                 b => new ExitScenePart(b, ExitType.Left, -3, scene)
             );
             CheckDestroyBits(Level.Level3_5_City2, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);

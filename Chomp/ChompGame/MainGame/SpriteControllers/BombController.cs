@@ -161,12 +161,24 @@ namespace ChompGame.MainGame.SpriteControllers
 
             sprites.Execute(p =>
             {
-                if (p.CollisionEnabled && p.CollidesWithBomb(WorldSprite)
-                    && p.HandleBombCollision(WorldSprite))
+                if (!p.CollisionEnabled || !p.CollidesWithBomb(WorldSprite))
+                    return;
+
+                switch (p.HandleBombCollision(WorldSprite))
                 {
-                    _isThrown.Value = false;
-                    _bombState.Value = BombState.Explode;
-                }                
+                    case BombCollisionResponse.Destroy:
+                        _isThrown.Value = false;
+                        _bombState.Value = BombState.Explode;
+                        break;
+                    case BombCollisionResponse.Bounce:
+                        _isThrown.Value = false;
+                        if (_motion.YSpeed > 0)
+                            _motion.YSpeed = -Motion.YSpeed * 2;
+
+                        _motion.SetXSpeed(0);
+                        _bombState.Value = BombState.Idle;
+                        break;
+                }
             });
         }
 
