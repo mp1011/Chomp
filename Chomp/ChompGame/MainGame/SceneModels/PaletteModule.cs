@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -339,7 +340,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_currentScene == null)
                 return;
 
-            if(_currentScene.IsBossScene)
+            if(_currentScene.IsBossScene && _currentScene.HasSprite(SpriteType.LevelBoss))
             {
                 OnHBlank_LevelBoss();
                 return;

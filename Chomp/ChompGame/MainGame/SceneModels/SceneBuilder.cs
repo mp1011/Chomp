@@ -226,9 +226,9 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                     specs: specs,
                     theme: ThemeType.Plains,
-                    enemy1: EnemyIndex.Lizard,
-                    enemy2: EnemyIndex.Bird,
-                    spriteGroup: SpriteGroup.Normal,
+                    enemy1: EnemyIndex.Midboss,
+                    enemy2: EnemyIndex.Midboss,
+                    spriteGroup: SpriteGroup.Boss,
                     memoryBuilder: memoryBuilder,
                     top: 1,
                     left: 0,

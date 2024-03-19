@@ -44,7 +44,7 @@ namespace ChompGame.Helpers
         public byte this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public byte this[int x, int y]
         {
-            get => _realMap[x, y - _statusBarRows];
+            get => y < 2 ? (byte)0 : _realMap[x, y - _statusBarRows];
             set => _realMap[x, y - _statusBarRows] = value;
         }
         public int Width => _realMap.Width;
@@ -58,8 +58,8 @@ namespace ChompGame.Helpers
 
     class CollisionDetector 
     {
-        private const byte CollidableTileBegin = 32;
-        private const byte CollidableTileEnd = 39;
+        private const byte CollidableTileBegin = 8;
+        private const byte CollidableTileEnd = 23;
 
         private readonly Specs _specs;
         private BitPlaneForCollision _levelTileMap;

@@ -47,6 +47,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private GameByte _phaseByte;
         private GameByteEnum<Phase> _phase;
+        protected override bool DestroyBombOnCollision => true;
 
         public ChompBoss1Controller(WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,

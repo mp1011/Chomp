@@ -41,7 +41,9 @@ namespace ChompGame.MainGame.SpriteModels
         Ogre,
         Boulder,
         Mage,
-        Ufo
+        Ufo,
+        Midboss=0,
+        Boss=1,
     }
 
     public enum SpriteGroup : byte

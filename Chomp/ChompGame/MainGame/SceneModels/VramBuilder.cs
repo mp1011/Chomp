@@ -117,7 +117,7 @@ namespace ChompGame.MainGame.SceneModels
             _masterPatternTable.CopyTilesTo(
                 destination: _vramPatternTable,
                 source: new InMemoryByteRectangle(4, 3, 7, 1),
-                destinationPoint: new Point(1, 0),
+                destinationPoint: new Point(1, 5),
                 _specs,
                 _memory);
 
@@ -125,7 +125,7 @@ namespace ChompGame.MainGame.SceneModels
             _masterPatternTable.CopyTilesTo(
                 destination: _vramPatternTable,
                 source: new InMemoryByteRectangle(5, 4, 8, 1),
-                destinationPoint: new Point(0, 1),
+                destinationPoint: new Point(0, 6),
                 _specs,
                 _memory);
 
@@ -133,7 +133,7 @@ namespace ChompGame.MainGame.SceneModels
             _masterPatternTable.CopyTilesTo(
                 destination: _vramPatternTable,
                 source: new InMemoryByteRectangle(13, 4, 2, 1),
-                destinationPoint: new Point(6, 2),
+                destinationPoint: new Point(6, 7),
                 _specs,
                 _memory);
 
@@ -141,7 +141,7 @@ namespace ChompGame.MainGame.SceneModels
             _masterPatternTable.CopyTilesTo(
                 destination: _vramPatternTable,
                 source: new InMemoryByteRectangle(0, 4, 5, 1),
-                destinationPoint: new Point(1, 2),
+                destinationPoint: new Point(1, 7),
                 _specs,
                 _memory);
         }

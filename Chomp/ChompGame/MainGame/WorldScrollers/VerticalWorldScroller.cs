@@ -67,7 +67,7 @@ namespace ChompGame.MainGame.WorldScrollers
             }
             CopyTileRow(worldRow, ntRow);
 
-            seamTile = (ntScrollBeginTile - _backwardSeamOffset - 2).NModByte(_specs.NameTableHeight);
+            seamTile = (ntScrollBeginTile - _backwardSeamOffset).NModByte(_specs.NameTableHeight);
             ntRow = (ntScrollBeginTile - 1).NModByte(_specs.NameTableHeight);
             worldRow = (worldScrollBeginTile - 1).NModByte(_levelNameTable.Height);
             GameDebug.DebugLog($"Seam Refresh Up to {seamTile}", DebugLogFlags.WorldScroller);

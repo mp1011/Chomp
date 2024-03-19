@@ -19,6 +19,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected AcceleratedMotion _motion;
         public override IMotion Motion => _motion;
 
+        protected virtual bool DestroyBombOnCollision => false;
+
         protected EnemyController(SpriteType spriteType,
             SpriteTileIndex index,
             ChompGameModule gameModule,
@@ -81,7 +83,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _stateTimer.Value = (byte)(_hitPoints.Value == 0 ? 8 : 4);
             _audioService.PlaySound(_hitPoints.Value == 0 ? ChompAudioService.Sound.Break : ChompAudioService.Sound.EnemyHit);
 
-            if (_hitPoints.Value > 0)
+            if (!DestroyBombOnCollision && _hitPoints.Value > 0)
                 return BombCollisionResponse.Bounce;
             else
                 return BombCollisionResponse.Destroy;

@@ -492,8 +492,11 @@ namespace ChompGame.MainGame.SceneModels
                 if (stairTop < region.Y)
                     stairTop = region.Y;
 
-                for (int y = stairTop-8; y < stairTop; y++)
+                for (int y = stairTop - 8; y < stairTop; y++)
                 {
+                    if (y <= 0)
+                        break;
+
                     nameTable[x, y] = 0;
                 }
 

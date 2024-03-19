@@ -42,7 +42,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected abstract string BlankBossTiles { get; }
 
         private GameByte _levelBossBackgroundEnd;
-
+        protected override bool DestroyBombOnCollision => true;
         public LevelBossController(ChompGameModule gameModule,
             WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers,

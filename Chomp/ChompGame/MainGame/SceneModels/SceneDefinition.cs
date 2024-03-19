@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels
 {
-   
+
 
     public enum CornerStairStyle : byte
     {
@@ -107,7 +107,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public bool IsBossScene => _spriteGroup.Value == SpriteGroup.Boss;
 
-        public int GroundFillStart => IsBossScene ? 24 : 32;
+        public int GroundFillStart => 8;
 
         public int GroundFillEnd => GroundFillStart + 1;
 
@@ -210,7 +210,7 @@ namespace ChompGame.MainGame.SceneModels
                         yield return SpriteType.Chomp;
                         break;
                     case SpriteGroup.Boss:
-                        yield return SpriteType.LevelBoss;
+                        yield return _enemy1.Value.ToBossSpriteType();
                         break;
                 }
             }
@@ -491,7 +491,7 @@ namespace ChompGame.MainGame.SceneModels
             _spriteGroup.Value = spriteGroup;
             _enemy1.Value = enemy1;
             _enemy2.Value = (byte)((enemy2 - enemy1) - 1);
-            if (enemy2 <= enemy1)
+            if (enemy2 <= enemy1 && enemy1 != EnemyIndex.Boss && enemy1 != EnemyIndex.Midboss)
                 throw new Exception("Second enemy must have higher index");
              
             if (scrollStyle == ScrollStyle.Horizontal)

@@ -194,7 +194,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (FallCheck == FallCheck.None)
                 return;
 
-            if(FallCheck == FallCheck.ScreenHeight && WorldSprite.Y > _spritesModule.Specs.ScreenHeight + 16)
+            if(FallCheck == FallCheck.ScreenHeight && WorldSprite.Y > _spritesModule.Specs.ScreenHeight + 8)
             {
                 HandleFall();
                 return;

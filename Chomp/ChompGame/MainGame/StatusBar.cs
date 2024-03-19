@@ -20,11 +20,11 @@ namespace ChompGame.MainGame
         private GameRAM _ram;
         private Specs _specs;
 
-        private readonly byte _tileBlank = 16;
-        private readonly byte _tileCap = 17;
-        private readonly byte _tileEmpty = 18;
-        private readonly byte _tileHalf = 19;
-        private readonly byte _tileFull = 20;
+        private readonly byte _tileBlank = 56;
+        private readonly byte _tileCap = 57;
+        private readonly byte _tileEmpty = 58;
+        private readonly byte _tileHalf = 59;
+        private readonly byte _tileFull = 60;
 
         public int Score
         {
@@ -68,7 +68,7 @@ namespace ChompGame.MainGame
         {
             var blankline = "".PadRight(16, 'C');
             _tileModule.NameTable
-                   .SetFromString(0, @"0123000456730000" + Environment.NewLine + blankline);
+                   .SetFromString(40, @"0123000456730000" + Environment.NewLine + blankline);
 
             DrawScore();
             SetLives(_lives.Value);
@@ -155,11 +155,11 @@ namespace ChompGame.MainGame
         private byte GetDigitTile(char c)
         {
             if (c <= '7')
-                return (byte)(8 + (c -'0'));
+                return (byte)(48 + (c -'0'));
             else if (c == '8')
-                return 22;
+                return 62;
             else
-                return 23;
+                return 63;
         }
     }
 }

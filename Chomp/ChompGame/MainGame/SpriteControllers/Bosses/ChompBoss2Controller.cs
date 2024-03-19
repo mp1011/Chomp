@@ -40,7 +40,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override bool AlwaysActive => true;
 
         private GameByteEnum<Phase> _phase;
-
+        protected override bool DestroyBombOnCollision => true;
         public ChompBoss2Controller(PlayerController player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
             SpriteControllerPool<PrizeController> prizes,

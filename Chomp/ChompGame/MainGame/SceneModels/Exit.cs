@@ -46,11 +46,12 @@ namespace ChompGame.MainGame.SceneModels
             if (ActiveExit.ExitType != ExitType.None)
                 return;
 
-            if (_gameModule.CurrentScene.IsAutoScroll || _gameModule.CurrentScene.IsBossScene)
-            {
-                CheckBossLevelEnd(player);
-                return;
-            }
+            // redo this
+            //if (_gameModule.CurrentScene.IsAutoScroll || _gameModule.CurrentScene.IsBossScene)
+            //{
+            //    CheckBossLevelEnd(player);
+            //    return;
+            //}
                 
 
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
@@ -98,7 +99,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private void CheckBossLevelEnd(PlayerController player)
         {
-            if (player.WorldSprite.Y > _gameModule.Specs.ScreenHeight)
+            if (player.WorldSprite.Y < _gameModule.Specs.ScreenHeight)
                 return;
 
             ActiveExit.SetForBossExit();

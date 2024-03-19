@@ -39,5 +39,12 @@ namespace ChompGame.Extensions
                 EnemyIndex.Ufo => SpriteType.Ufo,
                 _ => SpriteType.Mage,
             };
+
+        public static SpriteType ToBossSpriteType(this EnemyIndex e) =>
+           e switch
+           {
+               EnemyIndex.Midboss => SpriteType.Chomp,
+               _ => SpriteType.LevelBoss,
+           };
     }
 }
