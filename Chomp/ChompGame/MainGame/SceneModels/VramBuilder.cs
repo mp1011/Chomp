@@ -27,13 +27,12 @@ namespace ChompGame.MainGame.SceneModels
             _memory = memory;
         }
 
-        public byte AddSprite(int x, int y, int width, int height)
+        public byte AddSprite(int x, int y, int width, int height, Point? destination = null)
         {
-            Point spriteDestination = CalcSpriteDestination(width, height);
-
+            Point spriteDestination = destination ?? CalcSpriteDestination(width, height);
             _masterPatternTable.CopyTilesTo(
                    destination: _vramPatternTable,
-                   source: new InMemoryByteRectangle(x,y,width,height),
+                   source: new InMemoryByteRectangle(x, y, width, height),
                    destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
                    _specs,
                    _memory);
@@ -104,9 +103,9 @@ namespace ChompGame.MainGame.SceneModels
             return AddSprite(SpriteTileIndex.Explosion, 6,1,2,1);
         }
 
-        public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height)
+        public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height, Point? destination=null)
         {
-            var tile = AddSprite(x, y, width, height);
+            var tile = AddSprite(x, y, width, height, destination);
             _spriteTileTable.SetTile(spriteIndex, tile);
             return tile;
         }
@@ -146,12 +145,12 @@ namespace ChompGame.MainGame.SceneModels
                 _memory);
         }
 
-        private void AddBossBodyTiles()
+        public void AddBossBodyTiles()
         {
             _masterPatternTable.CopyTilesTo(
                destination: _vramPatternTable,
                source: new InMemoryByteRectangle(8, 9, 8, 2),
-               destinationPoint: new Point(0, 6),
+               destinationPoint: new Point(0, 3),
                _specs,
                _memory);
         }
@@ -174,7 +173,6 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Extra1, 4, 0, 1, 1);
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
-                    AddBossBodyTiles();
                     return;
 
                 case Level.Level2_2_Fly:
@@ -188,7 +186,6 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1);
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
-                    AddBossBodyTiles();
                     return;
             }
            

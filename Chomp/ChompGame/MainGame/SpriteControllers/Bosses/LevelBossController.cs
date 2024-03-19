@@ -32,6 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected MusicModule _musicModule;
         protected WorldScroller _worldScroller;
         protected BossBackgroundHandler _bossBackgroundHandler;
+        protected ExitsModule _exitsModule;
 
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
@@ -51,6 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _player = player;
             _gameModule = gameModule;
+            _exitsModule = gameModule.ExitsModule;
             _worldScroller = gameModule.WorldScroller;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _bulletControllers = bulletControllers;
@@ -96,12 +98,10 @@ namespace ChompGame.MainGame.SpriteControllers
     
         protected void SetBossTiles()
         {
-            var tileStart = 47;
-            //_tileModule.NameTable.SetFromString(0, 15, tileStart,
-            //    BossTiles);
+            var tileStart = 23;
 
             _worldScroller.ModifyTiles((nt, _) =>
-            {
+            { 
                 nt.SetFromString(0, 13, tileStart,
                 BossTiles);
             });

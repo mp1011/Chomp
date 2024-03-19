@@ -19,7 +19,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             masterPatternTable.CopyTilesTo(
                     destination: vramPatternTable,
                     source: FloorTiles,
-                    destinationPoint: new Point(0, 3),
+                    destinationPoint: new Point(0, 1),
                     _specs,
                     memory);          
         }

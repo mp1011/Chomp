@@ -940,6 +940,9 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.LevelBoss) || _sceneDefinition.HasSprite(SpriteType.Chomp))
             {
                 spriteBuilder.AddBossSprites(_gameModule.CurrentLevel);
+
+                if(_sceneDefinition.HasSprite(SpriteType.LevelBoss))
+                    bgBuilder.AddBossBodyTiles();
             }
             else
             {
@@ -988,7 +991,7 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             bgBuilder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
-            bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
+            bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);           
         }
          
     }

@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SpriteModels;
 using System;
 
 namespace ChompGame.MainGame
@@ -61,10 +62,10 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
-            if (_bossBgEffectValue.Value == 255)
+            if (!_gameModule.CurrentScene.IsLevelBossScene)
                 return;
 
-            if (!_gameModule.CurrentScene.IsBossScene)
+            if (_bossBgEffectValue.Value == 255)
                 return;
 
             var groundPosition = _bossBackgroundEnd.Value;

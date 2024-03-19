@@ -554,6 +554,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     if (_internalTimer.Value == 36)
                     {
                         Destroy();
+                        _exitsModule.GotoNextLevel();
                         return;
                     }
                 }
