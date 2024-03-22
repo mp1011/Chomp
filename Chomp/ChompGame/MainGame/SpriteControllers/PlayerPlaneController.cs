@@ -1,16 +1,18 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerPlaneController : PlayerController
     {
         private GameByte _headSpriteIndex;
-
+        private ExitsModule _exitModule;
         public PlayerPlaneController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(gameModule, memoryBuilder, SpriteModels.SpriteType.Plane, SpriteModels.SpriteTileIndex.Plane)
         {
             _headSpriteIndex = memoryBuilder.AddByte();
+            _exitModule = gameModule.ExitsModule;
             Palette = 0;
         }
 
@@ -141,7 +143,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 if(WorldSprite.X > _specs.ScreenWidth)
                 {
                     AcceleratedMotion.SetXSpeed(0);
-                    WorldSprite.Y = _specs.ScreenHeight;
+                    _exitModule.GotoNextLevel();
                 }
                 return;
             }
