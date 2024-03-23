@@ -27,7 +27,9 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         protected override bool DestroyWhenFarOutOfBounds => _variation.Value > 0;
-        protected override bool DestroyWhenOutOfBounds => _variation.Value > 0;
+        protected override bool DestroyWhenOutOfBounds => false;
+
+        protected override bool AlwaysActive => true;
 
         public BirdEnemyController(
             WorldSprite player,
@@ -42,8 +44,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _player = player;
             _variation = memoryBuilder.AddByte();
             _state = new NibbleEnum<BirdState>(new HighNibble(_stateTimer.Address, memoryBuilder.Memory));
-            Palette = 1;
+            Palette = (byte)(gameModule.CurrentScene.Theme == SceneModels.ThemeType.City ? 2 : 1);
         }
+
+        protected override void HandleFall() { }
 
         protected override void UpdateActive() 
         {
@@ -57,6 +61,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void UpdateBehavior_Normal()
         {
+            if (WorldSprite.XDistanceTo(_player) > 64)
+                Hide();
+
             if ((_levelTimer % 32) == 0)
             {
                 _stateTimer.Value++;
@@ -86,7 +93,7 @@ namespace ChompGame.MainGame.SpriteControllers
                         if (_stateTimer.Value == 8 || WorldSprite.Y > _player.Y)
                         {
                             _stateTimer.Value = 0;
-                            _state.Value = BirdState.Attack;
+                            _state.Value = BirdState.Return;
                         }
                         else
                         {
@@ -108,6 +115,12 @@ namespace ChompGame.MainGame.SpriteControllers
                         return;
                 }           
             }
+        }
+
+        protected override void UpdateHidden()
+        {
+            if (WorldSprite.XDistanceTo(_player) < 48)
+                WorldSprite.Show();
         }
 
         private void UpdateBehavior_AutoScroll()

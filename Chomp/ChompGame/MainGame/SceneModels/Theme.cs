@@ -97,7 +97,7 @@ namespace ChompGame.MainGame.SceneModels
                 fg1: PaletteKey.CityFg,
                 fg2: PaletteKey.Bomb,
                 bomb: PaletteKey.BombLight,
-                enemy1: PaletteKey.GreenEnemy,
+                enemy1: PaletteKey.LightBlueEnemy,
                 enemy2: PaletteKey.Bullet);
 
             //CityInterior

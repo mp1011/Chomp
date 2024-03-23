@@ -16,17 +16,17 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         {
         }
 
-        private const int RoofLeft = 40;
-        private const int RoofTop = 41;
-        private const int Brick = 42;
-        private const int RoofRight = 43;
-        private const int WindowTopLeft = 44;
-        private const int WindowTopRight = 45;
-        private const int WindowBottomLeft = 46;
-        private const int WindowBottomRight = 47;
-        private const int DoorTop = 48;
-        private const int Door = 49;
-        private const int Building = 50;
+        private const int RoofLeft = 32;
+        private const int RoofTop = 33;
+        private const int Brick = 34;
+        private const int RoofRight = 35;
+        private const int WindowTopLeft = 36;
+        private const int WindowTopRight = 37;
+        private const int WindowBottomLeft = 38;
+        private const int WindowBottomRight = 39;
+        private const int DoorTop = 1;
+        private const int Door = 2;
+        private const int Building = 3;
 
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {

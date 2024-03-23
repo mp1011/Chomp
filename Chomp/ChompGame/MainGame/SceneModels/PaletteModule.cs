@@ -24,6 +24,7 @@ namespace ChompGame.MainGame.SceneModels
         GreenEnemy3,
         BlueEnemy,
         BlueEnemy2,
+        LightBlueEnemy,
         BlueGrayEnemy,
         ChompBoss,
         Bullet,
@@ -206,6 +207,13 @@ namespace ChompGame.MainGame.SceneModels
                ColorIndex.Blue1, //fill
                ColorIndex.Blue3, //outline
                ColorIndex.Green1);
+
+            DefinePalette(PaletteKey.LightBlueEnemy,
+                ColorIndex.Black,
+                ColorIndex.Blue4, //fill
+                ColorIndex.Orange, 
+                ColorIndex.LightYellow); //eye
+
 
             DefinePalette(PaletteKey.BlueGrayEnemy,
                 ColorIndex.BlueGray2,

@@ -187,7 +187,13 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
                 CheckFall();
             }
+            else if(WorldSprite.Status == WorldSpriteStatus.Hidden)
+            {
+                UpdateHidden();
+            }
         }
+
+        protected virtual void UpdateHidden() { }
 
         private void CheckFall()
         {
