@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -17,7 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _motion = new AcceleratedMotion(gameModule.LevelTimer, memoryBuilder);
             _rng = gameModule.RandomModule;
-            Palette = 3;
+            Palette = SpritePalette.Fire;
         }
 
         protected override bool DestroyWhenFarOutOfBounds => true;

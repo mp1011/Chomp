@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -58,7 +59,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _specs = gameModule.Specs;
             _tail = new ChompTail(memoryBuilder, NumTailSections, gameModule);
          
-            Palette = 2;
+            Palette = SpritePalette.Enemy1;
 
             _firstTailSectionMotion = new PrecisionMotion(memoryBuilder);
             memoryBuilder.AddBytes(PrecisionMotion.Bytes * NumTailSections - 1);

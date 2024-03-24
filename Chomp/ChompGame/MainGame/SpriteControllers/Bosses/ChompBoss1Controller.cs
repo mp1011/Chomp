@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -70,7 +71,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _motionTarget = new NibblePoint(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddByte();
 
-            Palette = 2;
+            Palette = SpritePalette.Enemy1;
         }
 
         private void HideTail()

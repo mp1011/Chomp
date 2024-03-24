@@ -69,7 +69,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (WorldSprite.Status == WorldSpriteStatus.Active)
                 {
                     var sprite = GetSprite();
-                    sprite.Palette = 3;
+                    sprite.Palette = SpritePalette.Fire;
                     sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
                 }
 

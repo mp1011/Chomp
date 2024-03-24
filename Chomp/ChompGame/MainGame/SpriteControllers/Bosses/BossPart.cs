@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
@@ -37,7 +38,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             partSprite.SizeY = _spriteDefinition.SizeY;
             partSprite.Tile2Offset = 0;
             partSprite.Visible = true;
-            partSprite.Palette = 2;
+            partSprite.Palette = SpritePalette.Enemy1;
             partSprite.FlipX = false;
             return partSprite;
         }

@@ -26,7 +26,7 @@ namespace ChompGame.MainGame.SpriteControllers
             head.FlipY = false;
             head.Tile = _spriteTileTable.GetTile(SpriteModels.SpriteTileIndex.Player);
             head.Visible = true;
-            head.Palette = 1;
+            head.Palette = SpritePalette.Player;
         }
 
         public override bool CollidesWith(WorldSprite other)
@@ -144,6 +144,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     AcceleratedMotion.SetXSpeed(0);
                     _exitModule.GotoNextLevel();
+                    WorldSprite.Y = _specs.ScreenHeight;
                 }
                 return;
             }

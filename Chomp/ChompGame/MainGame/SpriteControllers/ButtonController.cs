@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -14,7 +15,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private ChompAudioService _audio;
         private GameByte _state;
 
-        public byte Palette => 0;
+        public SpritePalette Palette => SpritePalette.Platform;
         public byte SpriteIndex
         {
             get => WorldSprite.SpriteIndex;
@@ -58,7 +59,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 spritesModule: gameModule.SpritesModule,
                 scroller: gameModule.WorldScroller,
                 index: SpriteTileIndex.Button,
-                palette: new TwoBit(memoryBuilder.Memory, 0,0));
+                palette: new TwoBitEnum<SpritePalette>(memoryBuilder.Memory, 0,0));
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();

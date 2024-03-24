@@ -55,7 +55,7 @@ namespace ChompGame.MainGame
                 }
 
                 var sprite = _spritesModule.GetSprite(_rewardSpriteIndex.Value);
-                sprite.Palette = (sprite.Palette + 1).NModByte(_specs.NumSpritePalettes);
+                sprite.Palette = (SpritePalette)((byte)sprite.Palette + 1).NModByte(_specs.NumSpritePalettes);
 
                 _timer.Value--;
                 if (_timer.Value == 0)

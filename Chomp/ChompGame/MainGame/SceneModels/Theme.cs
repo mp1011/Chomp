@@ -31,18 +31,18 @@ namespace ChompGame.MainGame.SceneModels
                 bg1: PaletteKey.PlainsFarMountains,
                 bg2: PaletteKey.PlainsCloseMountains, 
                 fg1: PaletteKey.PlainsGround,
-                fg2: PaletteKey.Bomb,
+                fg2: PaletteKey.Gray,
                 enemy1: PaletteKey.GreenEnemy,
-                enemy2: PaletteKey.Bullet);
+                enemy2: PaletteKey.Gray);
 
             //PlainsEvening
             new Theme(memoryBuilder,
                bg1: PaletteKey.PlainsEveningFarMountains,
                bg2: PaletteKey.PlainsEveningCloseMountains,
                fg1: PaletteKey.PlainsGround,
-               fg2: PaletteKey.Bomb,
+               fg2: PaletteKey.Gray,
                enemy1: PaletteKey.BlueGrayEnemy,
-               enemy2: PaletteKey.Bullet);
+               enemy2: PaletteKey.Gray);
 
             //PlainsBoss
             new Theme(memoryBuilder,
@@ -50,27 +50,27 @@ namespace ChompGame.MainGame.SceneModels
                bg1: PaletteKey.Test,
                bg2: PaletteKey.GreenEnemy2,
                fg1: PaletteKey.PlainsGround,
-               fg2: PaletteKey.Bomb,
+               fg2: PaletteKey.Gray,
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Bullet);
 
             //Ocean
             new Theme(memoryBuilder, 
-               bomb: PaletteKey.Bomb,
+               bomb: PaletteKey.Gray,
                bg1: PaletteKey.OceanSky,
                bg2: PaletteKey.Water,
                fg1: PaletteKey.Sand,
-               fg2: PaletteKey.Bomb,
+               fg2: PaletteKey.Gray,
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Bullet);
 
             //OceanAutoscroll
             new Theme(memoryBuilder,
-               bomb: PaletteKey.Bomb,
+               bomb: PaletteKey.Gray,
                bg1: PaletteKey.PlainsFarMountains,
                bg2: PaletteKey.Water,
                fg1: PaletteKey.Sand,
-               fg2: PaletteKey.Bomb,
+               fg2: PaletteKey.Gray,
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Bullet);
 
@@ -80,7 +80,7 @@ namespace ChompGame.MainGame.SceneModels
                bg1: PaletteKey.Test,
                bg2: PaletteKey.BlueEnemy2,
                fg1: PaletteKey.Sand,
-               fg2: PaletteKey.Bomb,
+               fg2: PaletteKey.Gray,
                enemy1: PaletteKey.BlueEnemy,
                enemy2: PaletteKey.Bullet);
 
@@ -95,10 +95,10 @@ namespace ChompGame.MainGame.SceneModels
                 bg1: PaletteKey.CitySky,
                 bg2: PaletteKey.CityBg,
                 fg1: PaletteKey.CityFg,
-                fg2: PaletteKey.Bomb,
+                fg2: PaletteKey.Gray,
                 bomb: PaletteKey.BombLight,
-                enemy1: PaletteKey.LightBlueEnemy,
-                enemy2: PaletteKey.Bullet);
+                enemy1: PaletteKey.GreenEnemy,
+                enemy2: PaletteKey.LightBlueEnemy);
 
             //CityInterior
             new Theme(memoryBuilder,
@@ -150,7 +150,7 @@ namespace ChompGame.MainGame.SceneModels
             PaletteKey fg2,
             PaletteKey enemy1, 
             PaletteKey enemy2,
-            PaletteKey bomb = PaletteKey.Bomb)
+            PaletteKey bomb = PaletteKey.Gray)
         {
             _bg1Palette = new GameByteEnum<PaletteKey>(memoryBuilder.AddByte());
             _bg2Palette = new GameByteEnum<PaletteKey>(memoryBuilder.AddByte());

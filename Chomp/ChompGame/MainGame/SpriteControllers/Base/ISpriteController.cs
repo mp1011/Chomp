@@ -21,7 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
         FallCheck FallCheck { get; set; }
 
-        byte Palette { get; }
+        SpritePalette Palette { get; }
     }
 
     interface ICollidableSpriteController : ISpriteController, ICollidesWithPlayer, ICollidesWithBomb

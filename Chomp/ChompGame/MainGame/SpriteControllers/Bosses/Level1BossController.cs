@@ -99,7 +99,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             jawSprite.SizeY = _jawSpriteDefinition.SizeY;
             jawSprite.Tile2Offset = 0;
             jawSprite.Visible = true;
-            jawSprite.Palette = 2;
+            jawSprite.Palette = SpritePalette.Enemy1;
             jawSprite.FlipX = false;
 
             HideBoss();
@@ -121,7 +121,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             var targetSpritePalette = _paletteModule.GetPalette(theme.Enemy1);
             var targetBossPalette = _paletteModule.GetPalette(theme.Background2);
 
-            var spritePalette = _graphicsModule.GetSpritePalette(2);
+            var spritePalette = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
             spritePalette.SetColor(1, (byte)targetSpritePalette.GetColorIndex(1));
             spritePalette.SetColor(2, (byte)targetSpritePalette.GetColorIndex(2));
             spritePalette.SetColor(3, (byte)targetSpritePalette.GetColorIndex(3));
@@ -216,7 +216,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     var targetSpritePalette = _paletteModule.GetPalette(theme.Enemy1);
                     var targetBossPalette = _paletteModule.GetPalette(theme.Background2);
 
-                    var spritePalette = _graphicsModule.GetSpritePalette(2);
+                    var spritePalette = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
                     _paletteModule.FadeColor(spritePalette, targetSpritePalette, 1);
                     _paletteModule.FadeColor(spritePalette, targetSpritePalette, 2);
                     _paletteModule.FadeColor(spritePalette, targetSpritePalette, 3);

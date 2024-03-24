@@ -32,7 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        public byte Palette => 0;
+        public SpritePalette Palette => SpritePalette.Platform;
 
         public byte SpriteIndex
         {
@@ -72,7 +72,10 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _openState = memoryBuilder.AddMaskedByte(Bit.Right5);
             _doorType = new GameBit(_openState.Address, Bit.Bit5, memoryBuilder.Memory);
-                
+
+            var palette = new TwoBitEnum<SpritePalette>(memoryBuilder.Memory, _openState.Address, 6);
+            palette.Value = Palette;
+
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
                 spriteTileTable: gameModule.SpriteTileTable,
@@ -81,7 +84,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 spritesModule: _spritesModule,
                 scroller: gameModule.WorldScroller,
                 index: SpriteTileIndex.Door,
-                palette: new TwoBit(memoryBuilder.Memory, _openState.Address,6));
+                palette: palette);
         }
 
         public Sprite GetSprite() => WorldSprite.GetSprite();
@@ -89,7 +92,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             var sprite = GetSprite();
             WorldSprite.ConfigureSprite(sprite);
-            sprite.Palette = 0;
+            sprite.Palette = Palette;
             sprite.FlipX = false;
             sprite.FlipY = false;
             sprite.Priority = true;

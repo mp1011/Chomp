@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -16,7 +17,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _timer = memoryBuilder.AddByte();
             _motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.Explosion, WorldSprite);
-            Palette = 3;
+            Palette = SpritePalette.Fire;
         }
 
         protected override void UpdateActive()

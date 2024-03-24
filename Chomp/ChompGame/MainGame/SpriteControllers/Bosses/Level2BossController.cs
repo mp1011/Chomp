@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -452,11 +453,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             var state = _eyeState[index];
             if (state == 3)
-                GetEyeSprite(index).Palette = 0;
+                GetEyeSprite(index).Palette = SpritePalette.Fire;
             else if (state == 0)
-                GetEyeSprite(index).Palette = 2;
+                GetEyeSprite(index).Palette = SpritePalette.Enemy1;
             else
-                GetEyeSprite(index).Palette = (byte)(_levelTimer.IsMod(2) ? 1 : 2);
+                GetEyeSprite(index).Palette = (SpritePalette)(_levelTimer.IsMod(2) ? 1 : 2);
         }
 
         private void IncEyeState(byte index)

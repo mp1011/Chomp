@@ -76,7 +76,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite);
             SpriteIndex = 0;
 
-            Palette = 1;
+            Palette = SpritePalette.Player;
         }
 
         public virtual void OnBossDead() { }

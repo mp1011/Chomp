@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.Motion;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Base
@@ -16,13 +17,14 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     abstract class ActorController : ISpriteController
     {
         protected readonly RandomModule _rng;
-        protected readonly TwoBit _palette;
+        protected readonly TwoBitEnum<SpritePalette> _palette;
         protected readonly GameByte _levelTimer;
         protected readonly SpritesModule _spritesModule;
         protected readonly SpriteTileTable _spriteTileTable;
         private readonly GameByte _destructionBitOffset;
         private readonly TwoBitEnum<FallCheck> _fallCheck;
         private readonly AnimationController _animationController;
+
         public FallCheck FallCheck
         {
             get => _fallCheck.Value;
@@ -48,7 +50,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             set => WorldSprite.Status = value;
         }
 
-        public byte Palette
+        public SpritePalette Palette
         {
             get => _palette.Value;
             set => _palette.Value = value;
@@ -80,7 +82,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _spriteTileTable = gameModule.SpriteTileTable;
             _destructionBitOffset = memoryBuilder.AddByte();
 
-            _palette = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 0);
+            _palette = new TwoBitEnum<SpritePalette>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 0);
             _fallCheck = new TwoBitEnum<FallCheck>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, shift: 2);
             _collisionEnabled = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             memoryBuilder.AddByte();

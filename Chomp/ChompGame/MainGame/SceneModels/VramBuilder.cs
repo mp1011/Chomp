@@ -100,7 +100,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte AddExplosionSprite()
         {
-            return AddSprite(SpriteTileIndex.Explosion, 6,1,2,1);
+            return AddSprite(SpriteTileIndex.Explosion, 6,0,2,1);
         }
 
         public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height, Point? destination=null)

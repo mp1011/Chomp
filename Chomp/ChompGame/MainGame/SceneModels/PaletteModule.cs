@@ -6,6 +6,24 @@ using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SceneModels
 {
+
+    public enum SpritePalette :byte
+    {
+        Fire=0,
+        Player=1,
+        Enemy1=2,
+        Enemy2=3,
+        Platform=3
+    }
+
+    public enum BgPalette : byte
+    {
+        Background=0,
+        Foreground=1,
+        Coin=2,
+        DynamicBlock=3
+    }
+
     public enum PaletteKey : byte
     {
         Test,
@@ -16,7 +34,7 @@ namespace ChompGame.MainGame.SceneModels
         PlainsEveningFarMountains,
         PlainsEveningCloseMountains,
         OceanSky,
-        Bomb,
+        Gray,
         BombLight,
         Player,
         GreenEnemy,
@@ -60,9 +78,9 @@ namespace ChompGame.MainGame.SceneModels
             set
             {
                 _bgColor.Value = value; 
-                var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);
-                var coinPalette = _graphicsModule.GetBackgroundPalette(2);
-                var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(3);
+                var foregroundPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Foreground);
+                var coinPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Coin);
+                var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(BgPalette.DynamicBlock);
                 dynamicBlockPalette.SetColor(0, _bgColor.Value);
                 coinPalette.SetColor(0, _bgColor.Value);
                 foregroundPalette.SetColor(0, _bgColor.Value);
@@ -177,7 +195,7 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.BlueGray3,
              ColorIndex.BlueGray4);
             
-            DefinePalette(PaletteKey.Bomb,
+            DefinePalette(PaletteKey.Gray,
                 ColorIndex.Black,
                 ColorIndex.Gray1,
                 ColorIndex.LightYellow);
@@ -300,15 +318,15 @@ namespace ChompGame.MainGame.SceneModels
                 return;
 
             Theme levelTheme = new Theme(memory, sceneDefinition.Theme);
-            var backgroundPalette = _graphicsModule.GetBackgroundPalette(0);
-            var foregroundPalette = _graphicsModule.GetBackgroundPalette(1);
-            var coinPalette = _graphicsModule.GetBackgroundPalette(2);
-            var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(3);
+            var backgroundPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Background);
+            var foregroundPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Foreground);
+            var coinPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Coin);
+            var dynamicBlockPalette = _graphicsModule.GetBackgroundPalette(BgPalette.DynamicBlock);
 
-            var bombPalette = _graphicsModule.GetSpritePalette(0);
-            var playerPalette = _graphicsModule.GetSpritePalette(1);
-            var enemy1Pallete = _graphicsModule.GetSpritePalette(2);
-            var enemy2Pallete = _graphicsModule.GetSpritePalette(3);
+            var bombPalette = _graphicsModule.GetSpritePalette(SpritePalette.Fire);
+            var playerPalette = _graphicsModule.GetSpritePalette(SpritePalette.Player);
+            var enemy1Pallete = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
+            var enemy2Pallete = _graphicsModule.GetSpritePalette(SpritePalette.Enemy2);
 
             LoadPalette(levelTheme.Background2, backgroundPalette);
             _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
@@ -428,14 +446,40 @@ namespace ChompGame.MainGame.SceneModels
             p.SetColor(3, c1);
         }
 
+        public void CycleFirePalette(Palette p)
+        {
+            byte c1 = (byte)p.GetColorIndex(2);
+
+            if(c1 == ColorIndex.Red1)
+            {
+                p.SetColor(2, ColorIndex.LightYellow);
+                p.SetColor(3, ColorIndex.Red2);
+            }
+            else if (c1 == ColorIndex.LightYellow)
+            {
+                p.SetColor(2, ColorIndex.White);
+                p.SetColor(3, ColorIndex.Red1);
+            }
+            else if (c1 == ColorIndex.White)
+            {
+                p.SetColor(2, ColorIndex.Red2);
+                p.SetColor(3, ColorIndex.LightYellow);
+            }
+            else
+            {
+                p.SetColor(2, ColorIndex.Red1);
+                p.SetColor(3, ColorIndex.White);
+            }
+        }
+
         public void Update()
         {
             if (_timer.Value % 8 == 0)
             {
-                var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(3);
-                CyclePalette(bulletPallete);
+                var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Fire);
+                CycleFirePalette(bulletPallete);
 
-                var coinPallete = GameSystem.CoreGraphicsModule.GetBackgroundPalette(2);
+                var coinPallete = GameSystem.CoreGraphicsModule.GetBackgroundPalette(BgPalette.Coin);
                 CyclePalette2(coinPallete);
             }
         }

@@ -25,7 +25,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _lizardBulletControllers = lizardBulletControllers;
             _player = player;
             _collisionDetector = chompGameModule.CollissionDetector;
-            Palette = 2;
+            Palette = SceneModels.SpritePalette.Enemy1;
         }
 
 

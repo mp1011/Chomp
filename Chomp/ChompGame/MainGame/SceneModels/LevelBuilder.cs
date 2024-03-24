@@ -952,7 +952,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
                 spriteBuilder.AddEnemySprite(2, 0, 2, 2);
-                spriteBuilder.AddExtraSprite(4, 0, 3, 1);
+                spriteBuilder.AddExtraSprite(4, 0, 1, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
@@ -962,7 +962,6 @@ namespace ChompGame.MainGame.SceneModels
             {
                 spriteBuilder.AddEnemySprite(5, 1, 2, 1);
                 spriteBuilder.AddExtraSprite(4, 1, 1, 1);
-                spriteBuilder.AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Crocodile))
@@ -974,11 +973,8 @@ namespace ChompGame.MainGame.SceneModels
                 spriteBuilder.AddExtraSprite(14, 0, 1, 1);
             }
 
-            if (_sceneDefinition.HasSprite(SpriteType.Ogre) || _sceneDefinition.HasSprite(SpriteType.Lizard))
-            {
-                spriteBuilder.AddExplosionSprite();
-            }
-
+            spriteBuilder.AddExplosionSprite();
+            
             if (_sceneDefinition.SpriteGroup == SpriteGroup.Normal)
             {
                 spriteBuilder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);

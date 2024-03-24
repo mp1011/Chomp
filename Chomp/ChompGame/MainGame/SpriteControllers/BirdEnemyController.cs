@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -44,7 +45,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _player = player;
             _variation = memoryBuilder.AddByte();
             _state = new NibbleEnum<BirdState>(new HighNibble(_stateTimer.Address, memoryBuilder.Memory));
-            Palette = (byte)(gameModule.CurrentScene.Theme == SceneModels.ThemeType.City ? 2 : 1);
+            Palette = gameModule.CurrentScene.Theme == ThemeType.City ? SpritePalette.Enemy2 : SpritePalette.Player;
         }
 
         protected override void HandleFall() { }

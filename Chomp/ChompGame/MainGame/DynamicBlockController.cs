@@ -3,7 +3,6 @@ using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
-using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;

@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -42,7 +43,7 @@ namespace ChompGame.MainGame.SpriteControllers
             PrecisionMotion = motionController.Motion;
             _motionController = motionController;
             _destroyOnCollision.Value = destroyOnCollision;
-            Palette = 3;
+            Palette = SpritePalette.Fire;
         }
 
         protected override bool DestroyWhenOutOfBounds => true;
@@ -64,8 +65,8 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _state.Value = 0;
-            Palette = 3;
-            GetSprite().Palette = 3;
+            Palette = SpritePalette.Fire;
+            GetSprite().Palette = SpritePalette.Fire;
         }
 
         protected override void UpdateDying()
@@ -99,8 +100,8 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_state.Value >= 40)
                 return;
 
-            Palette = 3;
-            GetSprite().Palette = 3;
+            Palette = SpritePalette.Fire;
+            GetSprite().Palette = SpritePalette.Fire;
 
             _audioService.PlaySound(ChompAudioService.Sound.Break);
 

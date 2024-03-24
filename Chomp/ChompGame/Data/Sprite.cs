@@ -2,6 +2,7 @@
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame;
+using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework;
 
 namespace ChompGame.Data
@@ -21,7 +22,7 @@ namespace ChompGame.Data
         private readonly MaskedByte _tile;
         private readonly TwoBit _secondTileOffset;
 
-        private readonly MaskedByte _palette;
+        private readonly GameByteEnum<SpritePalette> _palette;
         private readonly GameBit _sizeX;
         private readonly GameBit _sizeY;
         private readonly GameBit _priority;
@@ -56,11 +57,13 @@ namespace ChompGame.Data
             _tile = memoryBuilder.AddMaskedByte(Bit.Right6);
             _secondTileOffset = _secondTileOffset = new TwoBit(memoryBuilder.Memory, _tile.Address, 6);
 
-            _palette = memoryBuilder.AddMaskedByte(Bit.Right2);
-            _sizeX = new GameBit(_palette.Address, Bit.Bit2, memoryBuilder.Memory);
-            _sizeY = new GameBit(_palette.Address, Bit.Bit3, memoryBuilder.Memory);
-            _priority = new GameBit(_palette.Address, Bit.Bit4, memoryBuilder.Memory);
-            _visible = new GameBit(_palette.Address, Bit.Bit5, memoryBuilder.Memory);
+            var paletteByte = memoryBuilder.AddMaskedByte(Bit.Right2);
+            _palette = new GameByteEnum<SpritePalette>(paletteByte);
+
+            _sizeX = new GameBit(paletteByte.Address, Bit.Bit2, memoryBuilder.Memory);
+            _sizeY = new GameBit(paletteByte.Address, Bit.Bit3, memoryBuilder.Memory);
+            _priority = new GameBit(paletteByte.Address, Bit.Bit4, memoryBuilder.Memory);
+            _visible = new GameBit(paletteByte.Address, Bit.Bit5, memoryBuilder.Memory);
 
             _visible.Value = true;
             _priority.Value = true;
@@ -81,11 +84,13 @@ namespace ChompGame.Data
             _tile = new MaskedByte(address + 2, Bit.Right6, memory);
             _secondTileOffset = new TwoBit(memory, _tile.Address, 6);
 
-            _palette = new MaskedByte(address + 3, Bit.Right2, memory);
-            _sizeX = new GameBit(_palette.Address, Bit.Bit2, memory);
-            _sizeY = new GameBit(_palette.Address, Bit.Bit3, memory);
-            _priority = new GameBit(_palette.Address, Bit.Bit4, memory);
-            _visible = new GameBit(_palette.Address, Bit.Bit5, memory);
+            var paletteByte = new MaskedByte(address + 3, Bit.Right2, memory);
+            _palette = new GameByteEnum<SpritePalette>(paletteByte);
+
+            _sizeX = new GameBit(paletteByte.Address, Bit.Bit2, memory);
+            _sizeY = new GameBit(paletteByte.Address, Bit.Bit3, memory);
+            _priority = new GameBit(paletteByte.Address, Bit.Bit4, memory);
+            _visible = new GameBit(paletteByte.Address, Bit.Bit5, memory);
         }
 
         public int SizeX
@@ -155,7 +160,7 @@ namespace ChompGame.Data
             set => _secondTileOffset.Value = value;
         }
 
-        public byte Palette
+        public SpritePalette Palette
         {
             get => _palette.Value;
             set => _palette.Value = value;

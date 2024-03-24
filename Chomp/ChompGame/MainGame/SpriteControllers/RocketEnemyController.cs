@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -110,7 +111,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else
             {
-                GetSprite().Palette = 3;
+                GetSprite().Palette = SpritePalette.Fire;
                 _motion.TargetXSpeed = 0;
                 _motion.TargetYSpeed = 0;
                 _motion.XAcceleration = Brake * 2;
@@ -150,7 +151,7 @@ namespace ChompGame.MainGame.SpriteControllers
             if (bullet == null)
                 return;
 
-            bullet.Palette = 3;
+            bullet.Palette = SpritePalette.Fire;
             bullet.Motion.XSpeed = x;
             bullet.Motion.YSpeed = y;
             bullet.WorldSprite.X = WorldSprite.X;

@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
@@ -61,6 +62,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
                 new SpriteDefinition(SpriteType.Platform, memoryBuilder.Memory));
+
+            Palette = SpritePalette.Platform;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

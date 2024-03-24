@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -19,7 +20,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder) : base(SpriteType.Crocodile, index, gameModule, memoryBuilder)
         {
             _player = player;
-            Palette = 2;
+            Palette = SpritePalette.Enemy1;
             _collisionDetector = gameModule.CollissionDetector;
         }
 

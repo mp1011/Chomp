@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
@@ -19,7 +20,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _player = player;
             _collisionDetector = gameModule.CollissionDetector;
             _bulletControllers = bulletControllers;
-            Palette = 2;
+            Palette = SpritePalette.Enemy1;
         }
         protected override void OnSpriteCreated(Sprite sprite)
         {

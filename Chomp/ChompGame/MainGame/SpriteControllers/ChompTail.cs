@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
@@ -44,7 +45,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 sprite.Tile = (byte)(_spriteTileTable.GetTile(tileIndex));
                 sprite.SizeX = 1;
                 sprite.SizeY = 1;
-                sprite.Palette = 2;
+                sprite.Palette = SpritePalette.Enemy1;
                 sprite.Visible = true;
                 sprite.X = 0;
                 sprite.Y = 0;

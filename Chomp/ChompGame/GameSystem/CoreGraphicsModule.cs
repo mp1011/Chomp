@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Graphics;
 using ChompGame.MainGame;
+using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -30,9 +31,9 @@ namespace ChompGame.GameSystem
         public ScanlineDrawBuffer BackgroundScanlineDrawBuffer { get; private set; }
         public ScanlineDrawBuffer SpriteScanlineDrawBuffer { get; private set; }
 
-        public Palette GetBackgroundPalette(byte index) => GetPalette(index);
+        public Palette GetBackgroundPalette(BgPalette index) => GetPalette((byte)index);
 
-        public Palette GetSpritePalette(byte index) => GetPalette((byte)(Specs.BackgroundPalettes + index));
+        public Palette GetSpritePalette(SpritePalette index) => GetPalette((byte)(Specs.BackgroundPalettes + (byte)index));
 
         private Palette GetPalette(byte index) => new Palette(Specs, _graphicsMemoryBegin + (Specs.BytesPerPalette * index), GameSystem.Memory);
 

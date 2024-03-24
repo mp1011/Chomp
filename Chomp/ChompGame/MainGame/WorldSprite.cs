@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
@@ -30,7 +31,7 @@ namespace ChompGame.MainGame
         protected SpriteDefinition _spriteDefinition;
         protected readonly SpritesModule _spritesModule;
         protected readonly WorldScroller _scroller;
-        private readonly TwoBit _palette;
+        private readonly TwoBitEnum<SpritePalette> _palette;
         private readonly TwoBitEnum<WorldSpriteStatus> _status;
         private GameByteEnum<SpriteTileIndex> _tileIndex;
 
@@ -126,7 +127,7 @@ namespace ChompGame.MainGame
             SpritesModule spritesModule,
             WorldScroller scroller,
             SpriteTileIndex index,
-            TwoBit palette)
+            TwoBitEnum<SpritePalette> palette)
         {
             _spriteTileTable = spriteTileTable;
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);

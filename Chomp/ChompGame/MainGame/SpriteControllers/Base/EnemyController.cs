@@ -78,7 +78,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 
             _hitPoints.Value--;
             Motion.Stop();
-            GetSprite().Palette = 3;
+            GetSprite().Palette = SpritePalette.Fire;
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _stateTimer.Value = (byte)(_hitPoints.Value == 0 ? 8 : 4);
             _audioService.PlaySound(_hitPoints.Value == 0 ? ChompAudioService.Sound.Break : ChompAudioService.Sound.EnemyHit);

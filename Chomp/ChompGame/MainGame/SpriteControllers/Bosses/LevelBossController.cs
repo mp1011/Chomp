@@ -69,7 +69,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionController = motionController;
 
-            Palette = 2;
+            Palette = SpritePalette.Enemy1;
         }
 
         protected void SetBossBackgroundEnd(int tilesAboveBottom)
@@ -116,7 +116,7 @@ namespace ChompGame.MainGame.SpriteControllers
         
         protected void HideBoss()
         {
-            var spritePalette = _graphicsModule.GetSpritePalette(2);
+            var spritePalette = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
             spritePalette.SetColor(1, 0);
             spritePalette.SetColor(2, 0);
             spritePalette.SetColor(3, 0);
