@@ -120,6 +120,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateHidden()
         {
+            if (_variation.Value > 0)
+                Destroy();
+
             if (WorldSprite.XDistanceTo(_player) < 48)
                 WorldSprite.Show();
         }

@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _headSpriteIndex = memoryBuilder.AddByte();
             _exitModule = gameModule.ExitsModule;
-            Palette = 0;
+            Palette = SpritePalette.Platform;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

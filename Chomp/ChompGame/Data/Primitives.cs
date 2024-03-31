@@ -401,6 +401,8 @@ namespace ChompGame.Data
             _value = new TwoBit(memory, address, shift);
         }
 
+        public byte ByteValue => _value.Value;
+
         public T Value
         {
             get

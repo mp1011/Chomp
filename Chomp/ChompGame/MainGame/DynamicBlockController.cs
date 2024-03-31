@@ -95,6 +95,9 @@ namespace ChompGame.MainGame
             SpriteControllerPool<ExplosionController> explosionControllers)
         {
             _scene = scene;
+            if (_scene.IsAutoScroll)
+                return;
+
             _explosionControllers = explosionControllers;
 
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
@@ -208,6 +211,9 @@ namespace ChompGame.MainGame
 
         public void SpawnCoins(Rectangle region)
         {
+            if (_scene.IsAutoScroll)
+                return;
+
             int address = _partCount.Address + 1;
 
             for (int index = 0; index < _partCount.Value; index++)

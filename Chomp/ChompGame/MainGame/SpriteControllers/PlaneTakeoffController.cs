@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -30,6 +31,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _takeOff = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             memoryBuilder.AddByte();
             _motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.Plane, WorldSprite);
+            Palette = SpritePalette.Platform;
         }
 
         protected override void BeforeInitializeSprite()

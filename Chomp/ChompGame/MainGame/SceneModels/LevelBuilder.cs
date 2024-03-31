@@ -885,20 +885,22 @@ namespace ChompGame.MainGame.SceneModels
                 if (x >= part.X && x < part.XEnd
                     && y >= part.Y && y < part.YEnd)
                 {
-                    levelMap[x, y] = 1;
+                    levelMap[x, y] = (byte)(part.Shape == PrefabStyle.Block ? 1 : 0);
                 }
             });   
             
-            if(part.Shape == PrefabShape.StairLeft || part.Shape == PrefabShape.StairBoth)
+            if(part.Shape == PrefabStyle.StairDown)
             {
+                throw new NotImplementedException("fix me");
                 int stepSize = 2;
                 int steps = ((part.YEnd - part.Y) / stepSize);
                 AddStairs(levelMap, new Rectangle(part.X - steps * stepSize, part.Y, steps * stepSize, steps * stepSize),
                     stepSize, stepSize);
             }
 
-            if (part.Shape == PrefabShape.StairRight || part.Shape == PrefabShape.StairBoth)
+            if (part.Shape == PrefabStyle.StairUp)
             {
+                throw new NotImplementedException("fix me");
                 int stepSize = 2;
                 int steps = ((part.YEnd - part.Y) / stepSize) + 1;
                 AddStairs(levelMap, new Rectangle(part.XEnd, part.Y, steps * stepSize, steps * stepSize),
@@ -961,7 +963,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Rocket))
             {
                 spriteBuilder.AddEnemySprite(5, 1, 2, 1);
-                spriteBuilder.AddExtraSprite(4, 1, 1, 1);
+                spriteBuilder.AddExtraSprite(12, 2, 1, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Crocodile))

@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Helpers;
+using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
@@ -90,6 +91,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _collisionDetector = gameModule.CollissionDetector;
             _audioService = gameModule.AudioService;
             _statusBar = gameModule.StatusBar;
+            Palette = SpritePalette.Platform;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

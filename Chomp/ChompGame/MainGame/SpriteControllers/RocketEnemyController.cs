@@ -42,7 +42,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _thrust = new GameBit(_stateTimer.Address, Bit.Bit4, memoryBuilder.Memory);
             _thrustCount = new MaskedByte(_stateTimer.Address, Bit.Right3, memoryBuilder.Memory);
             _variation = new GameBit(_stateTimer.Address, Bit.Bit5, memoryBuilder.Memory);
-            Palette = 0;
+            Palette = SpritePalette.Platform;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
@@ -51,7 +51,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _stateTimer.Value = 0;
             _thrust.Value = false;
             _thrustCount.Value = 0;
-            Palette = 0;
+            Palette = SpritePalette.Platform;
             _hitPoints.Value = 1;
             _variation.Value = variation;
         }

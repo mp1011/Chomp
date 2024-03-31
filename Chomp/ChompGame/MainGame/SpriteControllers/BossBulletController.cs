@@ -116,11 +116,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_state.Value >= 40)
                 return;
 
-            Palette = 0;
-            GetSprite().Palette = 0;
+            Palette = SpritePalette.Platform;
+            GetSprite().Palette = SpritePalette.Platform;
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
-            _state.Value = 50;
+            _state.Value = 41;
             _motionController.Motion.XSpeed = 0;
             _motionController.Motion.YSpeed = 0;
         }

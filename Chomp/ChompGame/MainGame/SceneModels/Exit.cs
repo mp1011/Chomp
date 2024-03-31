@@ -61,7 +61,8 @@ namespace ChompGame.MainGame.SceneModels
 
             if (player.WorldSprite.X != 0
                 && player.WorldSprite.X != rightEdge
-                && player.WorldSprite.Y != bottomEdge)
+                && player.WorldSprite.Y != bottomEdge
+                && player.WorldSprite.Y != 8)
             {
                 return;
             }
@@ -90,6 +91,12 @@ namespace ChompGame.MainGame.SceneModels
                 }
                 else if (player.WorldSprite.Y == bottomEdge
                     && sp.ExitType == ExitType.Bottom)
+                {
+                    SetActiveExit(sp);
+                    return;
+                }
+                else if (player.WorldSprite.Y <= 8
+                    && sp.ExitType == ExitType.Top)
                 {
                     SetActiveExit(sp);
                     return;

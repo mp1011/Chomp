@@ -62,7 +62,7 @@ namespace ChompGame.MainGame.SceneModels
                fg1: PaletteKey.Sand,
                fg2: PaletteKey.Gray,
                enemy1: PaletteKey.GreenEnemy3,
-               enemy2: PaletteKey.Bullet);
+               enemy2: PaletteKey.Gray);
 
             //OceanAutoscroll
             new Theme(memoryBuilder,
@@ -72,7 +72,7 @@ namespace ChompGame.MainGame.SceneModels
                fg1: PaletteKey.Sand,
                fg2: PaletteKey.Gray,
                enemy1: PaletteKey.GreenEnemy3,
-               enemy2: PaletteKey.Bullet);
+               enemy2: PaletteKey.Gray);
 
             //OceanBoss
             new Theme(memoryBuilder,
