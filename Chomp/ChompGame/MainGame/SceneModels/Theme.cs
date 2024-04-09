@@ -108,7 +108,7 @@ namespace ChompGame.MainGame.SceneModels
                 fg2: PaletteKey.BombLight,
                 bomb: PaletteKey.BombLight,
                 enemy1: PaletteKey.BlueGrayEnemy,
-                enemy2: PaletteKey.GreenEnemy3);
+                enemy2: PaletteKey.BombLight);
 
             //Space
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);

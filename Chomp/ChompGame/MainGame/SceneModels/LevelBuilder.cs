@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteControllers.Bosses;
+using ChompGame.MainGame.SpriteControllers.Platforms;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
@@ -72,13 +73,12 @@ namespace ChompGame.MainGame.SceneModels
 
             nameTable = AddEdgeTiles(nameTable);
             nameTable = AddShapeTiles(nameTable, seed);
-            nameTable = AddExitTiles(nameTable);
 
             return nameTable;
         }
 
 
-        private NBitPlane AddExitTiles(NBitPlane nameTable)
+        public NBitPlane AddExitTiles(NBitPlane nameTable)
         {
             ScenePartsHeader header = new ScenePartsHeader(_gameModule.CurrentLevel, _gameModule.GameSystem.Memory);
 
@@ -102,8 +102,40 @@ namespace ChompGame.MainGame.SceneModels
             return nameTable;
         }
 
+        private bool NeedsRightExit(NBitPlane nameTable)
+        {
+            bool maybeExit = false;
+            var maybeExitBegin = 0;
+
+            for(int y = 2; y < nameTable.Height;y++)
+            {
+                //only checking the last row, 
+                //will adjust if that isn't good enough
+                int x = nameTable.Width - 1;
+                if (nameTable[x, y] == 1)
+                {
+                    if(maybeExit && (y - maybeExitBegin) >= 4)
+                        return false;
+
+                    maybeExit = false;
+                    continue;
+                }
+
+                if(!maybeExit)
+                {
+                    maybeExit = true;
+                    maybeExitBegin = y;
+                }
+            }
+
+            return true;
+        }
+
         private NBitPlane AddRightExit(NBitPlane nameTable)
-        {      
+        {
+            if (!NeedsRightExit(nameTable))
+                return nameTable;
+
             nameTable.ForEach((x, y, b) =>
             {
                 if(_sceneDefinition.ScrollStyle == ScrollStyle.None && 

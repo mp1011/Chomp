@@ -45,7 +45,7 @@ namespace ChompGame.Data
 
             for (byte i = 0; i < _items.Length; i++)
             {
-                if (_items[i].Status != WorldSpriteStatus.Inactive)
+                if (_items[i].Status >= WorldSpriteStatus.Active)
                     continue;
 
                 return true;
@@ -64,7 +64,7 @@ namespace ChompGame.Data
 
             for (byte i = 0; i < _items.Length; i++)
             {
-                if (_items[i].Status != WorldSpriteStatus.Inactive)
+                if (_items[i].Status >= WorldSpriteStatus.Active)
                     continue;
 
                 _items[i].SpriteIndex = freeSpriteIndex;

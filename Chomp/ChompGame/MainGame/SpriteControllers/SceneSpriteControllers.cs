@@ -4,6 +4,7 @@ using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers.Base;
+using ChompGame.MainGame.SpriteControllers.Platforms;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System.Linq;
@@ -248,7 +249,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     }
                     else if(sprite is PlatformController pc)
                     {
-                        pc.PlatformType = sp.Type switch 
+                        var platformType = sp.Type switch 
                         {
                             ScenePartType.Platform_LeftRight => PlatformType.LeftRight,
                             ScenePartType.Platform_Vanishing => PlatformType.Vanishing,
@@ -256,7 +257,7 @@ namespace ChompGame.MainGame.SpriteControllers
                             _ =>  PlatformType.Falling
                         };
 
-                        pc.SetInitialPosition(spawnX, spawnY, (sp as PlatformScenePart).Length);
+                        pc.Initialize(platformType, spawnX, spawnY, (sp as PlatformScenePart).Length);
                     }
 
                     if(sp.DestroyBitsRequired > 0)                    

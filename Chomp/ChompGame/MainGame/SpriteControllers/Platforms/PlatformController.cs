@@ -6,6 +6,7 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
+using ChompGame.MainGame.SpriteControllers.Platforms;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
@@ -19,51 +20,64 @@ namespace ChompGame.MainGame.SpriteControllers
         Vanishing
     }
 
+    interface IPlatformHandler
+    {
+        void InitMemory(SystemMemory memory, int address);
+        void OnSpriteCreated();
+        void UpdateActive(GameByte levelTimer);
+        void BeforeGetPlayerCollisionInfo(PlayerController playerController);
+        void SetInitialPosition(int spawnX, int spawnY, PlatformDistance length);
+        bool IsPlatformSolid { get; }
+    }
 
     class PlatformController : ActorController
     {
+        private IPlatformHandler _platformHandler;
         private IMotionController _motionController;
-        private GameBit _direction;
-        private GameBit _movedBack;
-        private GameBit _movedForward;
         private GameBit _playerOnPlatform;
-        private TwoBitEnum<PlatformDistance> _distance;
-        private GameByte _startPosition;
+        private TwoBitEnum<PlatformType> _platformType;
 
         public override IMotion Motion => _motionController.Motion;
-
-        private TwoBitEnum<PlatformType> _platformType;
 
         public PlatformType PlatformType
         {
             get => _platformType.Value;
-            set => _platformType.Value = value;
         }
 
+        public bool IsPlayerOnPlatform => _playerOnPlatform.Value;
+
         protected override bool DestroyWhenFarOutOfBounds => false;
-        protected override bool AlwaysActive => true;
+        protected override bool AlwaysActive => _platformType.Value != PlatformType.Vanishing;
 
         public PlatformController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Platform, gameModule, memoryBuilder, SpriteTileIndex.Platform)
         {
             int address = memoryBuilder.CurrentAddress;
             memoryBuilder.AddByte();
-            _distance = new TwoBitEnum<PlatformDistance>(memoryBuilder.Memory, address, 0);
-            _playerOnPlatform = new GameBit(address, Bit.Bit2, memoryBuilder.Memory);
-            _direction = new GameBit(address, Bit.Bit3, memoryBuilder.Memory);
-            _movedBack = new GameBit(address, Bit.Bit4, memoryBuilder.Memory);
-            _movedForward = new GameBit(address, Bit.Bit5, memoryBuilder.Memory);
-
+            memoryBuilder.AddByte();
+            _playerOnPlatform = new GameBit(address, Bit.Bit0, memoryBuilder.Memory);
             _platformType = new TwoBitEnum<PlatformType>(memoryBuilder.Memory,
                     address,
-                    6);
-
-            _startPosition = memoryBuilder.AddByte();
-
+                    1);
+            
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
                 new SpriteDefinition(SpriteType.Platform, memoryBuilder.Memory));
 
             Palette = SpritePalette.Platform;
+        }
+
+        public void Initialize(PlatformType platformType, int initX, int initY, PlatformDistance distance)
+        {
+            _platformType.Value = platformType;
+            _platformHandler = platformType switch {
+                PlatformType.LeftRight => new MovingPlatformHandler(this, _motionController),
+                PlatformType.UpDown => new MovingPlatformHandler(this, _motionController),
+                PlatformType.Vanishing => new VanishingPlatformHandler(this, _motionController),
+                _ => throw new System.NotImplementedException()
+            };
+
+            _platformHandler.InitMemory(_spritesModule.GameSystem.Memory, _playerOnPlatform.Address);
+            _platformHandler.SetInitialPosition(initX, initY, distance);
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
@@ -71,95 +85,19 @@ namespace ChompGame.MainGame.SpriteControllers
             GameDebug.DebugLog("Platform created", DebugLogFlags.SpriteSpawn);
             Motion.Stop();
 
-            if (_platformType.Value == PlatformType.UpDown)
-                WorldSprite.Y = _startPosition.Value;
-            else
-                WorldSprite.X = _startPosition.Value;
+            _platformHandler?.OnSpriteCreated();
         }
 
         protected override void UpdateActive()
         {
-            if (_platformType.Value == PlatformType.LeftRight)
-                Update_LeftRight();
-            else if (_platformType.Value == PlatformType.UpDown)
-                Update_UpDown();
-            else if (_platformType.Value == PlatformType.Vanishing)
-                Update_Vanishing();
-            else if (_platformType.Value == PlatformType.Falling)
-                Update_Falling();
-        }
-
-        private int GetTravelDistance()
-        {
-            return _distance.Value switch {
-                PlatformDistance.Len16 => 16,
-                PlatformDistance.Len24 => 24,
-                PlatformDistance.Len32 => 32,
-                PlatformDistance.Len48 => 48,
-                _ => 0
-            };
-        }
-
-        private void Update_LeftRight()
-        {
-            int startX = WorldSprite.X;
-            _motionController.Update();
-
-            _movedBack.Value = WorldSprite.X < startX;
-            _movedForward.Value = WorldSprite.X > startX;
-
-            if(WorldSprite.X <= _startPosition.Value)
-            {
-                _direction.Value = true;
-                _motionController.Motion.XSpeed = 8;
-            }
-            else if(WorldSprite.X > _startPosition.Value + GetTravelDistance())
-            {
-                _direction.Value = true;
-                _motionController.Motion.XSpeed = -8;
-            }
-        }
-
-        private void Update_UpDown()
-        {
-            int startY = WorldSprite.Y;
-            _motionController.Update();
-
-            _movedBack.Value = WorldSprite.Y < startY;
-            _movedForward.Value = WorldSprite.Y > startY;
-
-            if (WorldSprite.Y <= _startPosition.Value)
-            {
-                _direction.Value = true;
-                _motionController.Motion.YSpeed = 8;
-            }
-            else if (WorldSprite.Y > _startPosition.Value + GetTravelDistance())
-            {
-                _direction.Value = true;
-                _motionController.Motion.YSpeed = -8;
-            }
-        }
-
-        public void SetInitialPosition(int spawnX, int spawnY, PlatformDistance length)
-        {
-            if(_platformType.Value == PlatformType.UpDown)
-                _startPosition.Value = (byte)spawnY;
-            else
-                _startPosition.Value = (byte)spawnX;
-            _distance.Value = length;
-        }
-
-        private void Update_Vanishing()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private void Update_Falling()
-        {
+            _platformHandler.UpdateActive(_levelTimer);
         }
 
         public void CheckPlayerCollision(PlayerController playerController)
         {
+            if (!_platformHandler.IsPlatformSolid)
+                return;
+
             var collisionInfo = GetPlayerCollisionInfo(playerController);
 
             if(collisionInfo.IsOnGround 
@@ -178,30 +116,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private CollisionInfo GetPlayerCollisionInfo(PlayerController playerController)
         {
-            if (_playerOnPlatform.Value)
-            {
-                if (_platformType.Value == PlatformType.LeftRight)
-                {
-                    int xMove = 0;
-                    if (_movedBack.Value)
-                        xMove = -1;
-                    else if (_movedForward.Value)
-                        xMove = 1;
-
-                    playerController.WorldSprite.X += xMove;
-                }
-                else if (_platformType.Value == PlatformType.UpDown)
-                {
-                    int yMove = 0;
-                    if (_movedBack.Value)
-                        yMove = -1;
-                    else if (_movedForward.Value)
-                        yMove = 1;
-
-                    playerController.WorldSprite.Y += yMove;
-                }
-            }
-
+            _platformHandler.BeforeGetPlayerCollisionInfo(playerController);
+          
             var playerBounds = playerController.WorldSprite.Bounds;
             var platformBounds = WorldSprite.Bounds;
 

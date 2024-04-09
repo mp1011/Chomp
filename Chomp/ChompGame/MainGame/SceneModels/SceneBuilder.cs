@@ -546,7 +546,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 shape: LevelShape.Ladder,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityInterior,                
                 spriteGroup: SpriteGroup.Normal,
                 left: 2,
                 right: 2,
@@ -1086,7 +1086,21 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
                 b => new ExitScenePart(b, ExitType.Right, 2, scene),
-                b => new ExitScenePart(b, ExitType.Top, 3, scene),
+                b => new ExitScenePart(b, ExitType.Top, 3, scene), 
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 8, 58, scene),
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len48, 6, 54, scene),
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len24, 4, 50, scene),
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 8, 46, scene),
+                
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len32, 6, 38, scene),
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len24, 6, 34, scene),
+
+
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 4, 30, scene),
+                b => new PlatformScenePart(builder, ScenePartType.Platform_Vanishing, PlatformDistance.Len24, 8, 26, scene),
+                   
+                b => new PlatformScenePart(builder, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 8, 12, scene),
+
                 b => new PrefabScenePart(b, scene, 24, PrefabSize.Eight, PrefabSize.Four, PrefabOrigin.TopOrRight, PrefabStyle.Space),
                 b => new PrefabScenePart(b, scene, 6, PrefabSize.Eight, PrefabSize.Eight, PrefabOrigin.BottomOrLeft, PrefabStyle.Block),
 

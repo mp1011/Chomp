@@ -42,7 +42,7 @@ namespace ChompGame.Data
         private Bit _bit;
         private SystemMemory _memory;
 
-
+        public int Address => _address;
         public bool Value
         {
             get
