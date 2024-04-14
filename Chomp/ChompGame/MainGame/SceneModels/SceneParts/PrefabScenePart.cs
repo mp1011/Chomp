@@ -13,12 +13,6 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         Eight
     }
 
-    enum PrefabOrigin : byte
-    {
-        BottomOrLeft=0,
-        TopOrRight=1,
-    }
-
     enum PrefabStyle : byte
     {
         Block,
@@ -31,29 +25,27 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
     {
         private TwoBitEnum<PrefabSize> _width, _height;
 
-        private MaskedByte _position; //5
-        private GameBit _origin; //1
+        private MaskedByte _longPosition; //4
+        private MaskedByte _shortPosition; //6
+
+        private MaskedByte _ntX; //3
+        private MaskedByte _ntY; //3
+
+
         private TwoBitEnum<PrefabStyle> _shape;
 
-        public PrefabOrigin Origin => _origin.Value ? PrefabOrigin.TopOrRight : PrefabOrigin.BottomOrLeft;
+
 
         public override byte X => _scene.ScrollStyle switch {
-            ScrollStyle.Horizontal => (byte)(_position.Value * 2),
-            ScrollStyle.NameTable => (byte)(_position.Value * 2),
-            ScrollStyle.Vertical => 
-                (byte)(Origin == PrefabOrigin.BottomOrLeft ? 0 : _scene.LevelTileWidth - Width),
+            ScrollStyle.Horizontal => (byte)(_longPosition.Value * 4),
+            ScrollStyle.NameTable => (byte)(_ntX.Value * 4),
+            ScrollStyle.Vertical => (byte)(_shortPosition.Value * 4),
             _ => 0 };
 
         public override byte Y => _scene.ScrollStyle switch {
-            ScrollStyle.Vertical => (byte)(_position.Value * 2),
-            ScrollStyle.NameTable =>
-                Origin == PrefabOrigin.TopOrRight
-                    ? (byte)_scene.TopTiles
-                    : (byte)(_scene.LevelTileHeight - _scene.BottomTiles - Height),
-            ScrollStyle.Horizontal =>
-                Origin == PrefabOrigin.TopOrRight
-                    ? (byte)_scene.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false)
-                    : (byte)(_scene.LevelTileHeight - _scene.BottomTiles - Height),
+            ScrollStyle.Vertical => (byte)(_longPosition.Value * 4),
+            ScrollStyle.NameTable => (byte)(_ntY.Value * 4),
+            ScrollStyle.Horizontal => (byte)(_shortPosition.Value * 4),
             _ => 0
         };
 
@@ -80,32 +72,52 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         /// <param name="shape"></param>
         public PrefabScenePart(SystemMemoryBuilder builder, 
             SceneDefinition scene, 
-            byte position,  
+            byte x,
+            byte y,
             PrefabSize width,
             PrefabSize height,
-            PrefabOrigin origin,
             PrefabStyle shape)
             : base(builder, ScenePartType.Prefab, scene)
         {
-            _position = new MaskedByte(Address + 1, Bit.Right5, builder.Memory);           
+            _longPosition = new MaskedByte(Address + 1, Bit.Right4, builder.Memory);
+            _shortPosition = new MaskedByte(Address + 1, (Bit)48, builder.Memory, 4);
+            _ntX = new MaskedByte(Address + 1, Bit.Right3, builder.Memory);
+            _ntY = new MaskedByte(Address + 1, (Bit)56, builder.Memory, 3);
+
             _width = new TwoBitEnum<PrefabSize>(builder.Memory, Address, 4);
             _height = new TwoBitEnum<PrefabSize>(builder.Memory, Address, 6);
-            _origin = new GameBit(Address + 1, Bit.Bit5, builder.Memory);
             _shape = new TwoBitEnum<PrefabStyle>(builder.Memory, Address + 1, 6);
-            _position.Value = (byte)(position / 2);
             _width.Value = width;
             _height.Value = height;
-            _origin.Value = origin == PrefabOrigin.TopOrRight;
             _shape.Value = shape;
+
+            switch (_scene.ScrollStyle)
+            {
+                case ScrollStyle.Vertical:
+                    _shortPosition.Value = (byte)(x / 4);
+                    _longPosition.Value = (byte)(y / 4);
+                    break;
+                case ScrollStyle.NameTable:
+                    _ntX.Value = (byte)(x / 4);
+                    _ntY.Value = (byte)(y / 4);
+                    break;
+                default:
+                    _longPosition.Value = (byte)(x / 4);
+                    _shortPosition.Value = (byte)(y / 4);
+                    break;
+            }
         }
 
         public PrefabScenePart(SystemMemory memory, int address, SceneDefinition scene, Specs specs)
            : base(memory, address, scene, specs)
         {
-            _position = new MaskedByte(Address + 1, Bit.Right5, memory);           
+            _longPosition = new MaskedByte(Address + 1, Bit.Right4, memory);
+            _shortPosition = new MaskedByte(Address + 1, (Bit)48, memory, 4);
+            _ntX = new MaskedByte(Address + 1, Bit.Right3, memory);
+            _ntY = new MaskedByte(Address + 1, (Bit)56, memory, 3);
+
             _width = new TwoBitEnum<PrefabSize>(memory, Address, 4);
             _height = new TwoBitEnum<PrefabSize>(memory, Address, 6);
-            _origin = new GameBit(Address + 1, Bit.Bit5, memory);
             _shape = new TwoBitEnum<PrefabStyle>(memory, Address + 1, 6);
         }
     }

@@ -62,6 +62,18 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
+        public ScenePartsHeader(SystemMemoryBuilder memoryBuilder, SceneDefinition scene, params Func<SystemMemoryBuilder, SceneDefinition, IScenePart>[] parts)
+        {
+            _memory = memoryBuilder.Memory;
+            _partCount = memoryBuilder.AddByte();
+            _partCount.Value = (byte)parts.Length;
+
+            foreach (var part in parts)
+            {
+                part(memoryBuilder, scene);
+            }
+        }
+
         public ScenePartsHeader(int address, SystemMemory memory)
         {
             _partCount = new GameByte(address, memory);
