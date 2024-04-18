@@ -57,7 +57,7 @@ namespace ChompGame.MainGame.SceneModels
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
             int rightEdge = (sceneDefinition.LevelTileWidth - 1) * _gameModule.Specs.TileWidth;
-            int bottomEdge = (sceneDefinition.LevelTileHeight - 2) * _gameModule.Specs.TileWidth;
+            int bottomEdge = (sceneDefinition.LevelTileHeight) * _gameModule.Specs.TileHeight;
 
             if (player.WorldSprite.X != 0
                 && player.WorldSprite.X != rightEdge

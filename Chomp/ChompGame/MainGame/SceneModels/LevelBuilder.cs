@@ -131,6 +131,35 @@ namespace ChompGame.MainGame.SceneModels
             return true;
         }
 
+        private bool NeedsLeftExit(NBitPlane nameTable)
+        {
+            bool maybeExit = false;
+            var maybeExitBegin = 0;
+
+            for (int y = 2; y < nameTable.Height; y++)
+            {
+                //only checking the first row, 
+                //will adjust if that isn't good enough
+                int x = 0;
+                if (nameTable[x, y] == 1)
+                {
+                    if (maybeExit && (y - maybeExitBegin) >= 4)
+                        return false;
+
+                    maybeExit = false;
+                    continue;
+                }
+
+                if (!maybeExit)
+                {
+                    maybeExit = true;
+                    maybeExitBegin = y;
+                }
+            }
+
+            return true;
+        }
+
         private NBitPlane AddRightExit(NBitPlane nameTable)
         {
             if (!NeedsRightExit(nameTable))
@@ -171,6 +200,9 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddLeftExit(NBitPlane nameTable)
         {
+            if (!NeedsLeftExit(nameTable))
+                return nameTable;
+
             nameTable.ForEach((x, y, b) =>
             {
                 if (_sceneDefinition.ScrollStyle == ScrollStyle.None &&

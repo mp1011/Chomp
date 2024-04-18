@@ -606,6 +606,132 @@ namespace ChompGame.MainGame.SceneModels
                 top: 2,
                 right: 2,
                 bottom: 2);
+
+            _ = Level.Level3_12_Building3_Room2;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_13_Building3_Room3;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 0,
+                right: 1,
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_14_Building3_Room4;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_15_Building3_Room5;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 2,
+                bgPosition: 0);
+
+            _ = Level.Level3_16_Building3_Room6;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_17_Building3_Room7;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 0,
+                right: 1,
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_18_Building3_Room8;
+            SceneDefinition.NoScrollTShape(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                leftY: 0,
+                rightY: 2,
+                pitX: 2,
+                hallSize: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_19_Building3_Room9;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 1,
+                top: 0,
+                right: 1,
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level3_20_Building3_Room10;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.CityInterior,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                left: 2,
+                top: 0,
+                right: 2,
+                bottom: 1,
+                bgPosition: 0);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1182,42 +1308,43 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
               Level.Level3_12_Building3_Room2,
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+              (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, -2, scene)
            );
 
             AddLevel(
              Level.Level3_13_Building3_Room3,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+             (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene)
           );
 
             AddLevel(
             Level.Level3_14_Building3_Room4,
             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Bottom, 5, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene)
          );
 
             AddLevel(
              Level.Level3_15_Building3_Room5,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+             (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene)
           );
 
             AddLevel(
                 Level.Level3_16_Building3_Room6,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+                (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene)
             );
 
             AddLevel(
                 Level.Level3_17_Building3_Room7,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
 
@@ -1225,21 +1352,21 @@ namespace ChompGame.MainGame.SceneModels
                Level.Level3_18_Building3_Room8,
                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 2, scene)
+
            );
 
             AddLevel(
                Level.Level3_19_Building3_Room9,
                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene)
            );
 
             AddLevel(
              Level.Level3_20_Building3_Room10,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+             (b, scene) => new ExitScenePart(b, ExitType.Top, -2, scene)
             );         
         }
 
