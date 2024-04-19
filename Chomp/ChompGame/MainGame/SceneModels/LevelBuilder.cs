@@ -521,11 +521,11 @@ namespace ChompGame.MainGame.SceneModels
                     AddStairs(nameTable,
                         leftStair,
                         changeX: bigStep ?  2 : 1,
-                        changeY: bigStep ? -2 : -1);
+                        changeY: bigStep ?  2 : 1);
 
                     AddStairs(nameTable,
                         rightStair,
-                        changeX: bigStep ? -2 : -1,
+                        changeX: bigStep ? 2 : 1,
                         changeY: bigStep ? -2 : -1);
 
                     break;
@@ -562,39 +562,18 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddStairs(NBitPlane nameTable, Rectangle region, int changeX, int changeY)
         {
-            int stepHeight = 0;
-            if (changeY < 0)
-            {
-                stepHeight = region.Height;
-            }
-
-            int stepColumnsRemaining = changeX;
-
-            for(int x = region.X; x < region.Right; x++)
-            {
-                int stairTop = region.Bottom - stepHeight;
-                if (stairTop < region.Y)
-                    stairTop = region.Y;
-
-                for (int y = stairTop - 8; y < stairTop; y++)
+            nameTable.ForEach(new Point(region.Left, region.Top), new Point(region.Right, region.Bottom),
+                (x, y, b) =>
                 {
-                    if (y <= 0)
-                        break;
+                    int regionX = x - region.X;
+                    int regionY = y - region.Y;
+                    int stepNumber = regionX / changeX;
 
-                    nameTable[x, y] = 0;
-                }
+                    int stepHeight = changeY < 0 ? region.Height + ((stepNumber + 1) * changeY)
+                                                 : (stepNumber + 1) * changeY;
 
-                for (int y = stairTop; y < region.Bottom; y++)
-                {
-                    nameTable[x, y] = 1;
-                }
-
-                if (--stepColumnsRemaining == 0)
-                {
-                    stepColumnsRemaining = changeX;
-                    stepHeight += changeY;
-                }
-            }
+                    nameTable[x, y] = (byte)((regionY >= stepHeight) ? 1 : 0);
+                });
 
             return nameTable;
         }
@@ -969,25 +948,21 @@ namespace ChompGame.MainGame.SceneModels
                 if (x >= part.X && x < part.XEnd
                     && y >= part.Y && y < part.YEnd)
                 {
-                    levelMap[x, y] = (byte)(part.Shape == PrefabStyle.Block ? 1 : 0);
+                    levelMap[x, y] = (byte)(part.Shape == PrefabStyle.Space ? 0 : 1);
                 }
             });   
             
             if(part.Shape == PrefabStyle.StairDown)
             {
-                throw new NotImplementedException("fix me");
                 int stepSize = 2;
-                int steps = ((part.YEnd - part.Y) / stepSize);
-                AddStairs(levelMap, new Rectangle(part.X - steps * stepSize, part.Y, steps * stepSize, steps * stepSize),
+                AddStairs(levelMap, new Rectangle(part.X, part.Y, part.Width, part.Height),
                     stepSize, stepSize);
             }
 
             if (part.Shape == PrefabStyle.StairUp)
             {
-                throw new NotImplementedException("fix me");
                 int stepSize = 2;
-                int steps = ((part.YEnd - part.Y) / stepSize) + 1;
-                AddStairs(levelMap, new Rectangle(part.XEnd, part.Y, steps * stepSize, steps * stepSize),
+                AddStairs(levelMap, new Rectangle(part.X, part.Y, part.Width, part.Height),
                     stepSize, -stepSize);
             }
         }

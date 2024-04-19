@@ -169,7 +169,7 @@ namespace ChompGame.MainGame.SceneModels
         public int RightEdgeFloorTiles => _scrollStyle.Value switch {
             ScrollStyle.None => _levelShape.Value switch {
                 LevelShape.CornerStairs => _cornerStairStyle.Value switch {
-                    CornerStairStyle.OneBlockDouble => BottomTiles + 2,
+                    CornerStairStyle.OneBlockDouble => BottomTiles + 4,
                     CornerStairStyle.TwoBlockDouble => BottomTiles + 4,
                     CornerStairStyle.TwoBlockRight => BottomTiles + 4, //todo, check stair generation
                     _ => BottomTiles

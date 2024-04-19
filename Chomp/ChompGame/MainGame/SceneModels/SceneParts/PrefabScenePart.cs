@@ -40,13 +40,14 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
             ScrollStyle.Horizontal => (byte)(_longPosition.Value * 4),
             ScrollStyle.NameTable => (byte)(_ntX.Value * 4),
             ScrollStyle.Vertical => (byte)(_shortPosition.Value * 4),
-            _ => 0 };
+            _ => (byte)(_longPosition.Value * 4),
+        };
 
         public override byte Y => _scene.ScrollStyle switch {
             ScrollStyle.Vertical => (byte)(_longPosition.Value * 4),
             ScrollStyle.NameTable => (byte)(_ntY.Value * 4),
             ScrollStyle.Horizontal => (byte)(_shortPosition.Value * 4),
-            _ => 0
+            _ => (byte)(_shortPosition.Value * 4),
         };
 
         public byte XEnd => (byte)(X + Width);
