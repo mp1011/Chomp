@@ -886,12 +886,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 IScenePart sp = header.GetScenePart(i, _sceneDefinition, _gameModule.Specs);
 
-                if (sp.Type == ScenePartType.Pit)
-                {
-                    AddPit(sp as PitScenePart, levelMap);
-                    header.MarkActive(i);
-                }
-                else if(sp.Type == ScenePartType.Prefab)
+                if(sp.Type == ScenePartType.Prefab)
                 {
                     AddPrefab(sp as PrefabScenePart, levelMap);                   
                     header.MarkActive(i);
@@ -925,20 +920,6 @@ namespace ChompGame.MainGame.SceneModels
                 else
                     levelMap[x, y] = (byte)_sceneDefinition.GetGroundFillTile(x, y);
             });
-        }
-
-        private void AddPit(PitScenePart part, NBitPlane levelMap)
-        {
-            for(int x = part.X; x <= part.X + part.Width; x++)
-            {
-                for(int y = levelMap.Height-1; y > 0; y--)
-                {
-                    if (levelMap[x, y] == 0)
-                        break;
-
-                    levelMap[x, y] = 0;
-                }
-            }
         }
 
         private void AddPrefab(PrefabScenePart part, NBitPlane levelMap)

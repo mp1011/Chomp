@@ -813,10 +813,12 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                 b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene),
                 b => new ExitScenePart(b, ExitType.Left, exitOffset: 1, scene),
-                b => new PitScenePart(b, 30,10, scene),
+                b => PitScenePart(b, 20, PrefabSize.Four, scene),
+                b => PitScenePart(b, 32, PrefabSize.Eight, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 34, 8, scene),
-                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 10, 12, scene),
-                b => new PitScenePart(b, 10, 10, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len32, 10, 12, scene),
+                b => PitScenePart(b, 8, PrefabSize.Eight, scene),
+                b => PitScenePart(b, 16, PrefabSize.Four, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 48, 8, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 17, 6, scene),
                 b => new SpriteScenePart(b, ScenePartType.Bomb, 28,12, scene),
@@ -850,12 +852,12 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level1_9_Platforms2, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Left, exitOffset: -1, scene),
-                b => new PitScenePart(b, 10, 3, scene),
-                b => new PitScenePart(b, 22, 3, scene),
-                b => new PitScenePart(b, 29, 10, scene),
+                b => PitScenePart(b, 12, PrefabSize.Four, scene),
+                b => PitScenePart(b, 24, PrefabSize.Four, scene),
+                b => PitScenePart(b, 28, PrefabSize.Eight, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 45, 9, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 30, 12, scene),
-                b => new PitScenePart(b, 48, 10, scene),
+                b => PitScenePart(b, 48, PrefabSize.Eight, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 48, 12, scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 8, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 8, definition: scene),
@@ -925,7 +927,7 @@ namespace ChompGame.MainGame.SceneModels
                   b => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 36, y: 11, definition: scene),
 
                   b => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Block),
-                  b => new PitScenePart(b, 40,8, scene),
+                  b => PitScenePart(b, 40,PrefabSize.Eight, scene),
                   b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 40, 8, scene)
               );
             CheckDestroyBits(Level.Level1_13_Column, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
@@ -991,8 +993,10 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level2_1_Intro, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 15, y:12, definition: scene),
-                 b => new PitScenePart(b, 18,15, scene),
-                 b => new PitScenePart(b, 33, 15, scene),
+                 b => PitScenePart(b, 16,PrefabSize.Eight, scene),
+                 b => PitScenePart(b, 24, PrefabSize.Eight, scene),
+                 b => PitScenePart(b, 32, PrefabSize.Eight, scene),
+                 b => PitScenePart(b, 40, PrefabSize.Eight, scene),
                  b => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
             CheckDestroyBits(Level.Level2_1_Intro, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
@@ -1058,9 +1062,9 @@ namespace ChompGame.MainGame.SceneModels
                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, 10, 12, scene),
                  b => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 8, scene),
                  b => new PrefabScenePart(b, scene, 12, 8, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
-                 b => new PitScenePart(b, 40, 4, scene),
+                 b => PitScenePart(b, 40, PrefabSize.Four, scene),
                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 12, scene),
-                 b => new PitScenePart(b, 52, 2, scene),
+                 b => PitScenePart(b, 52, PrefabSize.Two, scene),
                  b => new ExitScenePart(b, ExitType.Left, -1, scene),
                  b => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
@@ -1105,8 +1109,13 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level2_8_Platforms, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 3, 10, scene),
-                b => new PitScenePart(b, 8,16, scene),
-                b => new PitScenePart(b, 34,20, scene),
+                b => PitScenePart(b, 8, PrefabSize.Eight, scene),
+                b => PitScenePart(b, 16, PrefabSize.Eight, scene),
+
+                b => PitScenePart(b, 32, PrefabSize.Eight, scene),
+                b => PitScenePart(b, 40, PrefabSize.Eight, scene),
+                b => PitScenePart(b, 48, PrefabSize.Six, scene),
+
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 3, 40, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 3, 20, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 12, 8, scene),
@@ -1382,6 +1391,11 @@ namespace ChompGame.MainGame.SceneModels
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
              (b, scene) => new ExitScenePart(b, ExitType.Top, -2, scene)
             );         
+        }
+
+        private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
+        {
+            return new PrefabScenePart(b, scene, x, 8, width, PrefabSize.Eight, PrefabStyle.Space);
         }
 
         private static void AddLevel(Level level, 

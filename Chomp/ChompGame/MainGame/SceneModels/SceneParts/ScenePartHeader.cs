@@ -13,7 +13,6 @@ namespace ChompGame.MainGame.SceneModels
         EnemyType1=1,
         EnemyType2=2,
         AutoScrollEnemyType3=3,
-        Pit=3,
         SideExit=4,
         DoorFowardExit=5,
         DoorBackExit=6,
@@ -88,7 +87,6 @@ namespace ChompGame.MainGame.SceneModels
                 ScenePartType.DestructibleBlock => new DynamicScenePart(_memory, address, sceneDefinition, specs),
                 ScenePartType.Coin => new DynamicScenePart(_memory, address, sceneDefinition, specs),
                 ScenePartType.SideExit => new ExitScenePart(_memory, address, sceneDefinition, specs),
-                ScenePartType.Pit => new PitScenePart(_memory, address, sceneDefinition, specs),
                 ScenePartType.Prefab => new PrefabScenePart(_memory, address, sceneDefinition, specs),
                 _ => new SpriteScenePart(_memory, address, sceneDefinition, specs),
             };
