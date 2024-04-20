@@ -206,9 +206,14 @@ namespace ChompGame.MainGame.SceneModels
                     case SpriteGroup.PlaneTakeoff:
                     case SpriteGroup.Plane:
                         yield return SpriteType.Plane;
-                        yield return _enemy1.Value.ToSpriteType();
-                        yield return (_enemy1.Value + _enemy2.Value + 1).ToSpriteType();
-                        yield return SpriteType.Chomp;
+
+                        if (_enemy1.Value == EnemyIndex.Midboss)
+                            yield return SpriteType.Chomp;
+                        else
+                        {
+                            yield return _enemy1.Value.ToSpriteType();
+                            yield return (_enemy1.Value + _enemy2.Value + 1).ToSpriteType();
+                        }
                         break;
                     case SpriteGroup.Boss:
                         yield return _enemy1.Value.ToBossSpriteType();

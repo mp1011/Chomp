@@ -175,7 +175,7 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
                     return;
 
-                case Level.Level2_2_Fly:
+                case Level.Level2_2_Fly2:
                     AddSprite(SpriteTileIndex.AutoscrollEnemy3, 8, 1, 4, 2);
                     AddSprite(SpriteTileIndex.Extra2, 7, 1, 1, 1);
                     return;

@@ -11,7 +11,8 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PrizeController : ActorController, IAutoScrollSpriteController
     {
-        public const int ExtraBomb = 0;
+        private ChompGameModule _gameModule;
+        public const int ExtraHealth = 0;
         public const int Coin3 = 1;
         public const int Coin5Diag = 2;
         public const int Coin5Diag2 = 3;
@@ -78,6 +79,8 @@ namespace ChompGame.MainGame.SpriteControllers
         public PrizeController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Prize, gameModule, memoryBuilder, SpriteTileIndex.Prize)
         {
+
+            _gameModule = gameModule;
             _rewardsModule = gameModule.RewardsModule;
             var motionController = new ActorMotionController(gameModule.SpritesModule, gameModule.SpriteTileTable,
                  gameModule.LevelTimer, memoryBuilder, new SpriteDefinition(SpriteType.Prize, memoryBuilder.Memory), WorldSprite);
@@ -109,24 +112,32 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
             }
 
-            if (_variation.Value == ExtraBomb)
-                Update_ExtraBomb();
+            if (_variation.Value == ExtraHealth)
+                Update_ExtraHealth();
             else
                 Update_Coin();
         }
 
-        private void Update_ExtraBomb()
+        private void Update_ExtraHealth()
         {
-            if (_motion.YSpeed == 0)
+            if (_gameModule.CurrentScene.IsAutoScroll)
             {
-                _motion.TargetXSpeed = -10;
-                _motion.XAcceleration = 5;
-                _motion.SetYSpeed(2);
+                _motion.XSpeed = -8;
+                _motion.TargetXSpeed = -8;
             }
-
-            if (_levelTimer.Value.IsMod(24))
+            else
             {
-                _motion.TargetXSpeed = -_motion.TargetXSpeed;
+                if (_motion.YSpeed == 0)
+                {
+                    _motion.TargetXSpeed = -10;
+                    _motion.XAcceleration = 5;
+                    _motion.SetYSpeed(2);
+                }
+
+                if (_levelTimer.Value.IsMod(24))
+                {
+                    _motion.TargetXSpeed = -_motion.TargetXSpeed;
+                }
             }
 
             _motionController.Update();
@@ -151,14 +162,14 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 Destroy();
 
-                if (_variation.Value == ExtraBomb)
-                    OnCollected_ExtraBomb();
+                if (_variation.Value == ExtraHealth)
+                    OnCollected_ExtraExtraHealth();
                 else
                     OnCollected_Coin();
             }
         }
 
-        private void OnCollected_ExtraBomb()
+        private void OnCollected_ExtraExtraHealth()
         {
             if (_statusBar.Health < StatusBar.FullHealth - HealthPerPickup)
                 _statusBar.Health += HealthPerPickup;

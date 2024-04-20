@@ -12,7 +12,6 @@ namespace ChompGame.MainGame.SceneModels
         Bomb=0,
         EnemyType1=1,
         EnemyType2=2,
-        AutoScrollEnemyType3=3,
         SideExit=4,
         DoorFowardExit=5,
         DoorBackExit=6,

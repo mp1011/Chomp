@@ -295,7 +295,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 time += sp.Delay;
 
                 if (header.IsPartActivated(i))
+                {
+                    if (i == header.PartsCount - 1)
+                        CheckAutoscrollEnd(time);
                     continue;
+                }
 
                 if (_gameModule.LevelTimerLong.Value == time)
                 {
@@ -303,6 +307,23 @@ namespace ChompGame.MainGame.SpriteControllers
                     header.MarkActive(i);
                 }
             }
+        }
+
+        private void CheckAutoscrollEnd(byte lastSpawnTime)
+        {
+            if (_scene.IsBossScene || _gameModule.LevelTimerLong.Value < lastSpawnTime + 32)
+                return;
+
+            foreach(var pool in _spriteControllers)
+            {
+                pool.Execute(c =>
+                {
+                    if (c.Status == WorldSpriteStatus.Active)
+                        return;
+                });          
+            }
+
+            _gameModule.ExitsModule.GotoNextLevel();
         }
 
         private void SpawnAutoscrollSprite(AutoscrollScenePart sp)
@@ -360,7 +381,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 ScenePartType.Bomb => _bombControllers,
                 ScenePartType.EnemyType1 => _spriteControllers[0],
                 ScenePartType.EnemyType2 => _spriteControllers[1],
-                ScenePartType.AutoScrollEnemyType3 => _spriteControllers[3],
                 ScenePartType.DoorBackExit => _doorControllers,
                 ScenePartType.DoorFowardExit => _doorControllers,
                 ScenePartType.Platform_Falling => _platformControllers,

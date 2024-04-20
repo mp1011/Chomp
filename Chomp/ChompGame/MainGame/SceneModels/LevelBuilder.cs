@@ -848,9 +848,14 @@ namespace ChompGame.MainGame.SceneModels
                           () => new Level1BossController(_gameModule, playerController.WorldSprite, bossBulletControllers, memoryBuilder));
                     break;
 
-                case Level.Level2_2_Fly:
-                    bossBulletControllers = spritePools[2] as EnemyOrBulletSpriteControllerPool<BossBulletController>;
-                    spritePools[3] = new EnemyOrBulletSpriteControllerPool<ChompBoss2Controller>(
+                case Level.Level2_2_Fly2:
+
+                    bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                        6,
+                        _gameModule.SpritesModule,
+                        () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+                    spritePools[extraIndex] = bossBulletControllers;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompBoss2Controller>(
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
                             () => new ChompBoss2Controller(playerController, 

@@ -29,6 +29,7 @@ namespace ChompGame.MainGame.SceneModels
         Level1_17_Boss,
         Level2_1_Intro,
         Level2_2_Fly,
+        Level2_2_Fly2,
         Level2_3_Beach,
         Level2_4_Beach2,
         Level2_5_Hub,
@@ -322,14 +323,28 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0,
                 bottom: 1,
                 bgPosition1: 3);
-            
-            //Level2_2_Flying,
+
+            _ = Level.Level2_2_Fly;
             SceneDefinition.HorizontalScroll(
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.OceanAutoscroll,
                 enemy1:EnemyIndex.Bird,
                 enemy2: EnemyIndex.Rocket,
+                spriteGroup: SpriteGroup.Plane,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 0,
+                bgPosition1: 3
+            );
+
+            _ = Level.Level2_2_Fly2;
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.OceanAutoscroll,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
                 spriteGroup: SpriteGroup.Plane,
                 memoryBuilder: memoryBuilder,
                 top: 0,
@@ -1035,10 +1050,15 @@ namespace ChompGame.MainGame.SceneModels
                 b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 8, delay: 6, variation: 1, scene),
                 b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
                 b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
-                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene),
-                b => new AutoscrollScenePart(b, ScenePartType.AutoScrollEnemyType3, position: 9, delay: 15, variation: 1, scene)
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 9, delay: 8, variation: 1, scene)
             );
             CheckDestroyBits(Level.Level2_2_Fly, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
+
+            scene = new SceneDefinition(Level.Level2_2_Fly2, builder.Memory, specs);
+            header = new ScenePartsHeader(builder,               
+                b => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 9, delay: 15, variation: 1, scene)
+            );
+            CheckDestroyBits(Level.Level2_2_Fly2, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
             scene = new SceneDefinition(Level.Level2_3_Beach, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
