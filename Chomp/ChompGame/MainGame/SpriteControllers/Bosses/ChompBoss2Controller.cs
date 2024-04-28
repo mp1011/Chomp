@@ -47,7 +47,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SpriteControllerPool<PrizeController> prizes,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
-            : base(SpriteType.Chomp, SpriteTileIndex.AutoscrollEnemy3, gameModule, memoryBuilder)
+            : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _playerController = player;
             _bullets = bullets;

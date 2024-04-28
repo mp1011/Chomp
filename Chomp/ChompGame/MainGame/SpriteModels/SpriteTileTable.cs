@@ -21,7 +21,7 @@ namespace ChompGame.MainGame.SpriteModels
         Platform,
         Prize,
         Plane,
-        AutoscrollEnemy3
+        Turret
     }
 
     class SpriteTileTable
@@ -35,6 +35,7 @@ namespace ChompGame.MainGame.SpriteModels
         public byte DestructibleBlockTile => GetTile(SpriteTileIndex.Block);
         public byte CoinTile => GetTile(SpriteTileIndex.Coin);
         public byte DoorTile => GetTile(SpriteTileIndex.Door);
+        public byte TurretTile => GetTile(SpriteTileIndex.Turret);
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {

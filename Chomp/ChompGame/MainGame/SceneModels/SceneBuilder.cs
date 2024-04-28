@@ -1216,6 +1216,7 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level3_2_Building1, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
+                b => new TurretScenePart(b, scene, 5, 52),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len32, 8, 50, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 6, 44, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 8, 34, scene),

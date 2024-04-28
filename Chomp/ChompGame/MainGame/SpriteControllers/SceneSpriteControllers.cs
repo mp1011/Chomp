@@ -21,7 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private SpriteControllerPool<ButtonController> _buttonControllers;
         private SpriteControllerPool<PlatformController> _platformControllers;
         private SpriteControllerPool<ExplosionController> _explosionControllers;
-
+        private EnemyOrBulletSpriteControllerPool<TurretBulletController> _turretBulletControllers;
         private ICollidableSpriteControllerPool[] _spriteControllers;
 
         private SceneDefinition _scene;
@@ -44,6 +44,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SpriteControllerPool<ButtonController> buttonControllers,
             SpriteControllerPool<PlatformController> platformControllers,
             SpriteControllerPool<ExplosionController> explosionControllers,
+            EnemyOrBulletSpriteControllerPool<TurretBulletController> turretBulletControllers,
             params ICollidableSpriteControllerPool[] spriteControllerPools)
         {
             _gameModule = chompGameModule;
@@ -54,6 +55,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _prizeControllers = prizeControllers;
             _doorControllers = doorControllers;
             _buttonControllers = buttonControllers;
+            _turretBulletControllers = turretBulletControllers;
             _spriteControllers = spriteControllerPools
                 .Where(p => p != null)
                 .ToArray();
@@ -117,7 +119,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _buttonControllers.Execute(c => c.Update());
                 _platformControllers.Execute(c => c.Update());
                 _prizeControllers.Execute(c => c.Update());
-
+                _turretBulletControllers.Execute(c => c.Update());
             }
 
             _explosionControllers.Execute(c => c.Update());
@@ -148,7 +150,8 @@ namespace ChompGame.MainGame.SpriteControllers
                     _doorControllers.Execute(c => c.WorldSprite.UpdateSprite());
                     _buttonControllers.Execute(c => c.WorldSprite.UpdateSprite());
                     _platformControllers.Execute(c => c.WorldSprite.UpdateSprite());
-                }                
+                    _turretBulletControllers.Execute(c => c.WorldSprite.UpdateSprite());
+                }
             }
 
             _explosionControllers.Execute(c => c.WorldSprite.UpdateSprite());
@@ -258,6 +261,10 @@ namespace ChompGame.MainGame.SpriteControllers
                         };
 
                         pc.Initialize(platformType, spawnX, spawnY, (sp as PlatformScenePart).Length);
+                    }
+                    else if(sprite is TurretBulletController tc)
+                    {
+                        tc.ScenePartIndex = (byte)i;
                     }
 
                     if(sp.DestroyBitsRequired > 0)                    
@@ -379,6 +386,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             scenePartType switch {
                 ScenePartType.Bomb => _bombControllers,
+                ScenePartType.Turret => _turretBulletControllers,
                 ScenePartType.EnemyType1 => _spriteControllers[0],
                 ScenePartType.EnemyType2 => _spriteControllers[1],
                 ScenePartType.DoorBackExit => _doorControllers,
@@ -407,6 +415,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     b.CheckPlayerOpen();
                 });
+
             }
 
             _prizeControllers.Execute(b => b.CheckPlayerCollision(_playerController));

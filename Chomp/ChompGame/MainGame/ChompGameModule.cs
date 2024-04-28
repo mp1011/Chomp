@@ -320,7 +320,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level2_2_Fly;
+            _currentLevel.Value = Level.Level3_2_Building1;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -400,6 +400,8 @@ namespace ChompGame.MainGame
             var levelAttributeTable = _levelBuilder.BuildAttributeTable(memoryBuilder, levelMap);
 
             _levelBuilder.SetProperTiles(levelMap);
+
+            _levelBuilder.AddTurrets(levelMap);
 
             _levelBuilder.BuildBackgroundNametable(levelMap, levelAttributeTable);
 

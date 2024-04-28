@@ -663,7 +663,7 @@ namespace ChompGame.MainGame.SceneModels
             SpriteControllerPool<ButtonController> buttonControllers = null;
             SpriteControllerPool<PlatformController> platformControllers = null;
             SpriteControllerPool<ExplosionController> explosionControllers = null;
-
+            EnemyOrBulletSpriteControllerPool<TurretBulletController> turretControllers = null;
 
             if(_sceneDefinition.IsAutoScroll)
             {
@@ -717,6 +717,9 @@ namespace ChompGame.MainGame.SceneModels
                 AssignSpriteControllers(sprite, spritePools, memoryBuilder, playerController, prizeControllers);
             }
 
+            turretControllers = new EnemyOrBulletSpriteControllerPool<TurretBulletController>(4, _gameModule.SpritesModule,
+                () => new TurretBulletController(_gameModule, memoryBuilder, SpriteTileIndex.Extra1));
+
             return new SceneSpriteControllers(_gameModule, playerController,
                 bombControllers,
                 prizeControllers,
@@ -724,6 +727,7 @@ namespace ChompGame.MainGame.SceneModels
                 buttonControllers,
                 platformControllers,
                 explosionControllers,
+                turretControllers,
                 spritePools);
         }
 
@@ -896,6 +900,25 @@ namespace ChompGame.MainGame.SceneModels
                     AddPrefab(sp as PrefabScenePart, levelMap);                   
                     header.MarkActive(i);
                 }
+                else if(sp.Type == ScenePartType.Turret)
+                {
+                    AddTurret(sp as TurretScenePart, levelMap);
+                }
+            }
+        }
+
+        public void AddTurrets(NBitPlane levelMap)
+        {
+            DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {
+                IScenePart sp = header.GetScenePart(i, _sceneDefinition, _gameModule.Specs);
+
+                if (sp.Type == ScenePartType.Turret)
+                {
+                    AddTurret(sp as TurretScenePart, levelMap);
+                }
             }
         }
 
@@ -925,6 +948,11 @@ namespace ChompGame.MainGame.SceneModels
                 else
                     levelMap[x, y] = (byte)_sceneDefinition.GetGroundFillTile(x, y);
             });
+        }
+
+        private void AddTurret(TurretScenePart part, NBitPlane levelMap)
+        {
+            levelMap[part.TileX, part.TileY] = _spriteTileTable.TurretTile;
         }
 
         private void AddPrefab(PrefabScenePart part, NBitPlane levelMap)
@@ -967,7 +995,6 @@ namespace ChompGame.MainGame.SceneModels
 
             bgBuilder.AddStatusBarTiles();            
             _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, bgPatternTable, memory);
-
             if(_sceneDefinition.IsAutoScroll)
             {
                 //player sprite
@@ -1034,7 +1061,8 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             bgBuilder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
-            bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);           
+            bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
+            bgBuilder.AddSprite(SpriteTileIndex.Turret, 8, 6, 2, 1);
         }
          
     }

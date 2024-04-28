@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SceneModels
         Bomb=0,
         EnemyType1=1,
         EnemyType2=2,
+        Turret=3,
         SideExit=4,
         DoorFowardExit=5,
         DoorBackExit=6,
@@ -87,6 +88,7 @@ namespace ChompGame.MainGame.SceneModels
                 ScenePartType.Coin => new DynamicScenePart(_memory, address, sceneDefinition, specs),
                 ScenePartType.SideExit => new ExitScenePart(_memory, address, sceneDefinition, specs),
                 ScenePartType.Prefab => new PrefabScenePart(_memory, address, sceneDefinition, specs),
+                ScenePartType.Turret => new TurretScenePart(_memory, address, sceneDefinition, specs),
                 _ => new SpriteScenePart(_memory, address, sceneDefinition, specs),
             };
         }
@@ -129,6 +131,11 @@ namespace ChompGame.MainGame.SceneModels
         public PrefabScenePart GetPrefabScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
         {
             return new PrefabScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+        }
+
+        public TurretScenePart GetTurretScenePart(int index, SceneDefinition sceneDefinition, Specs specs)
+        {
+            return new TurretScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
         }
 
         public byte GetScenePartDestroyBitsRequired(int index)
