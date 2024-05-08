@@ -100,7 +100,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte AddExplosionSprite()
         {
-            return AddSprite(SpriteTileIndex.Explosion, 5,0,2,1);
+            return AddSprite(SpriteTileIndex.Explosion, 6,5,2,1);
         }
 
         public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height, Point? destination=null)
@@ -172,7 +172,7 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
                     AddSprite(SpriteTileIndex.Extra1, 4, 0, 1, 1);
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
-                    AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
+                    AddSprite(SpriteTileIndex.Extra2, 5, 0, 1, 1);
                     return;
 
                 case Level.Level2_2_Fly2:

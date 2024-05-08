@@ -405,6 +405,7 @@ namespace ChompGame.MainGame.SpriteControllers
             foreach(var c in _spriteControllers)
                 _playerController.CheckEnemyOrBulletCollisions(c);
 
+            _playerController.CheckEnemyOrBulletCollisions(_turretBulletControllers);
             _playerController.CheckBombPickup(_bombControllers);
 
             //should do this better

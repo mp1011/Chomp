@@ -26,9 +26,10 @@ namespace ChompGame.MainGame
 
     class WorldSprite : IWithPosition
     {
+        private ChompGameModule _gameModule;
         private SpriteTileTable _spriteTileTable;
         protected readonly Specs _specs;
-        protected SpriteDefinition _spriteDefinition;
+        protected readonly SpriteDefinition _spriteDefinition;
         protected readonly SpritesModule _spritesModule;
         protected readonly WorldScroller _scroller;
         private readonly TwoBitEnum<SpritePalette> _palette;
@@ -118,6 +119,8 @@ namespace ChompGame.MainGame
                 Y = value.Y - sprite.Height / 2;
             }
         }
+
+        public AnimationStyle AnimationStyle => _spriteDefinition.AnimationStyle;
 
         public WorldSprite(
             SystemMemoryBuilder memoryBuilder,

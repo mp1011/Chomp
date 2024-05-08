@@ -109,7 +109,6 @@ namespace ChompGame.MainGame.SpriteModels
         public MovementSpeed MovementSpeed => _movementSpeed.Value;
         public GravityStrength GravityStrength => _gravityStrength.Value;
         public AnimationStyle AnimationStyle => _animationStyle.Value;
-
         public bool StopsAtLedges => _stopsAtLedges.Value;
 
         public SpriteDefinition(SystemMemoryBuilder memoryBuilder,

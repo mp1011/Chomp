@@ -1216,7 +1216,11 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level3_2_Building1, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
-                b => new TurretScenePart(b, scene, 5, 52),
+                b => new TurretScenePart(b, scene, Direction.Right, 5, 52),
+                b => new TurretScenePart(b, scene, Direction.Left, 11, 46),
+                b => new TurretScenePart(b, scene, Direction.Down, 11, 52),
+                b => new TurretScenePart(b, scene, Direction.Left, 11, 32),
+                b => new TurretScenePart(b, scene, Direction.Down, 10, 12),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len32, 8, 50, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 6, 44, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 8, 34, scene),
@@ -1241,7 +1245,8 @@ namespace ChompGame.MainGame.SceneModels
                 b => new PrefabScenePart(builder, scene, 24, 12, PrefabSize.Four, PrefabSize.Six, PrefabStyle.Space),
 
                 b => new PrefabScenePart(builder, scene, 20, 20, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
-
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 10, 13, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 18, 24, scene),
                 b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 5, 13, scene),
                 b => new ExitScenePart(b, ExitType.Left, -1, scene)
             );

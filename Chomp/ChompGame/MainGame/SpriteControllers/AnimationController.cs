@@ -19,6 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public void Update(WorldSprite worldSprite, IMotion motion)
         {
+
             if (worldSprite.Status != WorldSpriteStatus.Active)
                 return;
 
@@ -34,6 +35,10 @@ namespace ChompGame.MainGame.SpriteControllers
                     sprite.FlipX = false;
                 }
             }
+
+            // this is meant to allow for overriding the tile, but unsure if this will cause other problems
+            if (_spriteDefinition.AnimationStyle == AnimationStyle.NoAnimation && sprite.SizeY == 1)                
+                return;
 
             bool shouldAnimate = _spriteDefinition.AnimationStyle switch {
                 AnimationStyle.AlwaysAnimate => true,

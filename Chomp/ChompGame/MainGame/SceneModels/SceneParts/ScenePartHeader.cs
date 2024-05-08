@@ -123,6 +123,8 @@ namespace ChompGame.MainGame.SceneModels
                 case ScenePartType.Platform_UpDown:
                 case ScenePartType.Platform_Vanishing:
                     return new PlatformScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
+                case ScenePartType.Turret:
+                    return new TurretScenePart(_memory, FirstPartAddress + (BaseScenePart.Bytes * index), sceneDefinition, specs);
                 default:
                     return s;
             }

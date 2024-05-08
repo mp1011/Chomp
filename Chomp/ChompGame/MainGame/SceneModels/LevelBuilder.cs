@@ -952,7 +952,11 @@ namespace ChompGame.MainGame.SceneModels
 
         private void AddTurret(TurretScenePart part, NBitPlane levelMap)
         {
-            levelMap[part.TileX, part.TileY] = _spriteTileTable.TurretTile;
+            var x = part.X;
+            if (part.Direction == Direction.Left)
+                x++;
+
+            levelMap[x, part.Y] = (byte)(_spriteTileTable.TurretTile + (int)part.Direction);
         }
 
         private void AddPrefab(PrefabScenePart part, NBitPlane levelMap)
@@ -1026,7 +1030,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
                 spriteBuilder.AddEnemySprite(2, 0, 2, 2);
-                spriteBuilder.AddExtraSprite(4, 0, 1, 1);
+                spriteBuilder.AddExtraSprite(4, 0, 2, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Bird))
@@ -1062,7 +1066,7 @@ namespace ChompGame.MainGame.SceneModels
 
             bgBuilder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
             bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
-            bgBuilder.AddSprite(SpriteTileIndex.Turret, 8, 6, 2, 1);
+            bgBuilder.AddSprite(SpriteTileIndex.Turret, 7, 6, 4, 1);
         }
          
     }
