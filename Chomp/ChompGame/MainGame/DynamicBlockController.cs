@@ -74,7 +74,7 @@ namespace ChompGame.MainGame
     class DynamicBlockController
     {
         private ChompGameModule _gameModule;
-        private GameByte _partCount;
+        private GameByte _blockCount;
         private SceneDefinition _scene;
         private SpriteControllerPool<ExplosionController> _explosionControllers;
         private SpriteTileTable _spriteTileTable;
@@ -102,7 +102,7 @@ namespace ChompGame.MainGame
 
             DynamicScenePartHeader header = _gameModule.CurrentScenePartHeader;
 
-            _partCount = memoryBuilder.AddByte();
+            _blockCount = memoryBuilder.AddByte();
 
             byte nextDestructionBitOffset = 0;
             byte destructionBitOffset = 0;
@@ -131,7 +131,7 @@ namespace ChompGame.MainGame
                         continue;
                 }
 
-                _partCount.Value++;
+                _blockCount.Value++;
                 var dynamicBlock = new DynamicBlock(type, memoryBuilder, scene, _gameModule.Specs);
                 dynamicBlock.Location.TileX = sp.X;
                 dynamicBlock.Location.TileY = sp.Y;
@@ -153,10 +153,10 @@ namespace ChompGame.MainGame
 
         public void ResetCoinsForLevelBoss()
         {
-            int address = _partCount.Address + 1;
+            int address = _blockCount.Address + 1;
             int coinIndex = 0;
 
-            for (int index = 0; index < _partCount.Value; index++)
+            for (int index = 0; index < _blockCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
 
@@ -179,10 +179,10 @@ namespace ChompGame.MainGame
 
         public void PositionFreeCoinBlocksNearPlayer(byte tileX, byte tileY)
         {
-            int address = _partCount.Address + 1;
+            int address = _blockCount.Address + 1;
             int freeIndex = 0;
 
-            for (int index = 0; index < _partCount.Value; index++)
+            for (int index = 0; index < _blockCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
 
@@ -214,9 +214,9 @@ namespace ChompGame.MainGame
             if (_scene.IsAutoScroll)
                 return;
 
-            int address = _partCount.Address + 1;
+            int address = _blockCount.Address + 1;
 
-            for (int index = 0; index < _partCount.Value; index++)
+            for (int index = 0; index < _blockCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
 
@@ -331,9 +331,9 @@ namespace ChompGame.MainGame
             if (!collisionInfo.DynamicBlockCollision)
                 return 0;
 
-            int address = _partCount.Address + 1;
+            int address = _blockCount.Address + 1;
 
-            for (int index = 0; index < _partCount.Value; index++)
+            for (int index = 0; index < _blockCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
 
@@ -398,9 +398,9 @@ namespace ChompGame.MainGame
             if (!collisionInfo.DynamicBlockCollision)
                 return false;
 
-            int address = _partCount.Address + 1;
+            int address = _blockCount.Address + 1;
 
-            for (int index = 0; index < _partCount.Value; index++)
+            for (int index = 0; index < _blockCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
                     
@@ -449,11 +449,20 @@ namespace ChompGame.MainGame
             }
         }
 
-        public void SwitchOffBlocks()
+        public void ToggleSwitchBlocks()
         {
-            int address = _partCount.Address + 1;
+            _gameModule.ScenePartsDestroyed.SwitchBlocksOff = !_gameModule.ScenePartsDestroyed.SwitchBlocksOff;
 
-            for (int index = 0; index < _partCount.Value; index++)
+            if (_gameModule.ScenePartsDestroyed.SwitchBlocksOff)
+                SwitchBlocksOff();
+            else
+                SwitchBlocksOn();  
+        }
+    
+        private void SwitchBlocksOff()
+        {
+            int address = _blockCount.Address + 1;
+            for (int index = 0; index < _blockCount.Value; index++)
             {
                 DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
 
@@ -462,11 +471,42 @@ namespace ChompGame.MainGame
                     block.State.TopLeft = false;
                     block.State.TopRight = false;
                     block.State.BottomLeft = false;
-                    block.State.BottomRight = false;
+                    block.State.BottomRight = false;                    
                     _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
-                    _gameModule.ScenePartsDestroyed.SwitchBlocksOff = true;
                 }
 
+                address += block.ByteLength;
+            }
+        }
+
+        private void SwitchBlocksOn()
+        {
+            var header = _gameModule.CurrentScenePartHeader;
+            int address = _blockCount.Address + 1;
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {
+                var sp = header.GetDynamicScenePart(i, _scene, _gameModule.Specs);
+
+                switch (sp.Type)
+                {
+                    case ScenePartType.Coin:
+                    case ScenePartType.DestructibleBlock:
+                    case ScenePartType.SwitchBlock:
+                        break;
+                    default:
+                        continue;
+                }
+
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+                if(block.Type == DynamicBlockType.SwitchBlock)
+                {
+                    block.State.TopLeft = sp.DynamicBlockState.TopLeft;
+                    block.State.TopRight = sp.DynamicBlockState.TopRight;
+                    block.State.BottomLeft = sp.DynamicBlockState.BottomLeft;
+                    block.State.BottomRight = sp.DynamicBlockState.BottomRight;                    
+                    _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
+                }
                 address += block.ByteLength;
             }
         }

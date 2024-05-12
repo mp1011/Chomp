@@ -96,9 +96,9 @@ namespace ChompGame.MainGame.SceneModels
                 bg2: PaletteKey.CityBg,
                 fg1: PaletteKey.CityFg,
                 fg2: PaletteKey.Gray,
-                bomb: PaletteKey.BombLight,
+                bomb: PaletteKey.Gray,
                 enemy1: PaletteKey.GreenEnemy,
-                enemy2: PaletteKey.LightBlueEnemy);
+                enemy2: PaletteKey.Gray);
 
             //CityInterior
             new Theme(memoryBuilder,

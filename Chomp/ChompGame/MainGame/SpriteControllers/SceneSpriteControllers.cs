@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers.Base;
@@ -229,6 +230,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 int spawnX = sp.X * Specs.TileWidth;
                 int spawnY = sp.Y * Specs.TileHeight;
+                if (spawnY == 0)
+                    spawnY = GetGroundPosition(sp.X);
 
                 var spawnBounds = new Rectangle(spawnX, spawnY, Specs.TileWidth * 2, Specs.TileHeight * 2);
 
@@ -290,6 +293,14 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        private int GetGroundPosition(byte tileX)
+        {
+            var levelNt = _gameModule.WorldScroller.LevelNameTable;
+            byte tileY = 0;
+            while (!CollisionDetector.IsTileSolid(levelNt[tileX, tileY++]));
+
+            return tileY * _gameModule.Specs.TileHeight;
+        }
 
         private void CheckSpriteSpawn_AutoScroll()
         {

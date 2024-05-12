@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
@@ -14,6 +15,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private DynamicBlockController _dynamicBlockController;
         private ChompAudioService _audio;
         private GameByte _state;
+        private GameByte _levelTimer;
 
         public SpritePalette Palette => SpritePalette.Platform;
         public byte SpriteIndex
@@ -48,7 +50,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _playerController = playerController;
             _audio = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
-
+            _levelTimer = gameModule.LevelTimer;
             _state = memoryBuilder.AddByte();
             
             WorldSprite = new WorldSprite(
@@ -82,12 +84,24 @@ namespace ChompGame.MainGame.SpriteControllers
                 && _playerController.Motion.YSpeed > 0 
                 && player.Bounds.Intersects(this.WorldSprite.Bounds))
             {
-                _playerController.Motion.YSpeed = -10;
+                _playerController.Motion.YSpeed = -30;
                 WorldSprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Button) + 1);
                 _audio.PlaySound(ChompAudioService.Sound.ButtonPress);
-                _dynamicBlockController.SwitchOffBlocks();
+                _dynamicBlockController.ToggleSwitchBlocks();
                 _state.Value = 1;
             }
+            else if(_state.Value > 0 && _levelTimer.IsMod(8))
+            {
+                if (_state.Value == 7)
+                {
+                    WorldSprite.Tile = (byte)(_spriteTileTable.GetTile(SpriteTileIndex.Button));
+                    _state.Value = 0;
+                }
+                else
+                    _state.Value++;
+                
+            }
+
         }
 
         private void HideIfOutOfBounds()
