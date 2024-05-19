@@ -37,7 +37,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
             {
                 var groundY = nameTable
                     .Find(new Point(leftEdge, nameTable.Height - 1), 0, -1, p => !CollisionDetector.IsTileSolid(p)).Y + 1;
-           
+
                 if(leftEdge == 0 || groundY != lastGroundY)
                 {
                     var groundStart = new Point(leftEdge, groundY); 
@@ -59,7 +59,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                             width -= 2;
                         }
 
-                        if (availableWidth >= MinWidth)
+                        if (availableWidth >= MinWidth && lastGroundStart.Y < nameTable.Height)
                         {
                             yield return new Rectangle(x, lastGroundStart.Y - Height,
                                 (width / 2) * 2, Height);

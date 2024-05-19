@@ -93,11 +93,11 @@ namespace ChompGame.MainGame.SpriteControllers
                     SetInitialPosition_Horizontal(levelMap, new Point(levelMap.Width-1, levelMap.Height - 1), -1);
                     break;
                 case ExitType.Bottom:
-                    SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width/2, 2), 1);
+                    SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width/2, 3), 1);
                     WorldSprite.Y++;
                     break;
                 case ExitType.Top:
-                    SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width / 2, levelMap.Height - 2), 1);
+                    SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width / 2, levelMap.Height - 2), -1);
                     Motion.YSpeed = -_motionController.JumpSpeed;
                     break;
                 case ExitType.DoorForward:
