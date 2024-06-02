@@ -29,7 +29,7 @@ namespace ChompGame.MainGame.SpriteControllers
             head.Palette = SpritePalette.Player;
         }
 
-        public override bool CollidesWith(WorldSprite other)
+        public override bool CollidesWith(IWithBounds other)
         {
             if (_statusBar.Health == 0)
                 return false;

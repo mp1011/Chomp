@@ -14,5 +14,15 @@ namespace ChompGame.Helpers
 
             return new Point((int)x, (int)y);
         }
+
+        public static Point PointFromAngle(float degrees, int magnitude)
+        {
+            var rad = MathHelper.ToRadians(degrees);
+
+            var x = Math.Sin(rad) * magnitude;
+            var y = Math.Cos(rad) * magnitude;
+
+            return new Point((int)x, (int)y);
+        }
     }
 }

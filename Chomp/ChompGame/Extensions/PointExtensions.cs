@@ -80,6 +80,13 @@ namespace ChompGame.Extensions
             return deg.NMod(360);
         }
 
+        public static float DegreesF(this Point pt)
+        {
+            var rad = Math.Atan2(pt.X, pt.Y);
+            var deg = MathHelper.ToDegrees((float)rad);
+            return deg.NMod(360);
+        }
+
         public static Point RotateDeg(this Point pt, int degrees)
         {
             var deg = (pt.Degrees() + degrees).NMod(360);
@@ -87,6 +94,15 @@ namespace ChompGame.Extensions
             
             return GameMathHelper.PointFromAngle(deg, length);             
         }
+
+        public static Point RotateDeg(this Point pt, float degrees)
+        {
+            var deg = (pt.DegreesF() + degrees).NMod(360.0f);
+            var length = pt.Magnitude();
+
+            return GameMathHelper.PointFromAngle(deg, length);
+        }
+
 
     }
 }

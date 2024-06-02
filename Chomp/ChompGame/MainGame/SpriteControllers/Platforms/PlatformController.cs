@@ -116,6 +116,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private CollisionInfo GetPlayerCollisionInfo(PlayerController playerController)
         {
+            if (playerController.Motion.YSpeed < 0)
+                return new CollisionInfo();
+
             _platformHandler.BeforeGetPlayerCollisionInfo(playerController);
           
             var playerBounds = playerController.WorldSprite.Bounds;

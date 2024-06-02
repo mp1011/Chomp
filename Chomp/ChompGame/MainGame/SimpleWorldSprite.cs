@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 namespace ChompGame.MainGame
 {
     // only supports horizontal scrolling
-    class SimpleWorldSprite : IWithPosition
+    class SimpleWorldSprite : IWithPosition, IWithBounds
     {
         private readonly SpritesModule _spritesModule;
         private readonly WorldScroller _scroller;
@@ -30,6 +30,17 @@ namespace ChompGame.MainGame
         }
 
         public Rectangle Bounds => new Rectangle(X, Y, Sprite.Width, Sprite.Height);
+
+        public Point Center
+        {
+            get => Bounds.Center;
+            set
+            {
+                var sprite = Sprite;
+                X = value.X - sprite.Width / 2;
+                Y = value.Y - sprite.Height / 2;
+            }
+        }
 
         public bool IsErased => _spriteIndex.Value == 63;
 

@@ -24,7 +24,7 @@ namespace ChompGame.MainGame
         FarOutOfBounds=2
     }
 
-    class WorldSprite : IWithPosition
+    class WorldSprite : IWithPosition, IWithBounds
     {
         private ChompGameModule _gameModule;
         private SpriteTileTable _spriteTileTable;

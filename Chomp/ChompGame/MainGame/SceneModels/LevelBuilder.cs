@@ -885,16 +885,16 @@ namespace ChompGame.MainGame.SceneModels
                     break;
                 case Level.Level3_20_Midboss:
 
-                    bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                    var bouncingBullets = new EnemyOrBulletSpriteControllerPool<BouncingBossBulletController>(
                           3,
                           _gameModule.SpritesModule,
-                          () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+                          () => new BouncingBossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
 
-                    spritePools[extraIndex] = bullets;
+                    spritePools[extraIndex] = bouncingBullets;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompBoss3Controller>(
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
-                            () => new ChompBoss3Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+                            () => new ChompBoss3Controller(playerController.WorldSprite, bouncingBullets, _gameModule, memoryBuilder));
 
                     break;
             }
@@ -1067,7 +1067,8 @@ namespace ChompGame.MainGame.SceneModels
 
             spriteBuilder.AddExplosionSprite();
             
-            if (_sceneDefinition.SpriteGroup == SpriteGroup.Normal)
+            if (_sceneDefinition.SpriteGroup == SpriteGroup.Normal || 
+                _sceneDefinition.SpriteGroup == SpriteGroup.Boss)
             {
                 spriteBuilder.AddSprite(SpriteTileIndex.Platform, 12, 5, 2, 1);
                 spriteBuilder.AddSprite(SpriteTileIndex.Button, 11, 6, 2, 1);

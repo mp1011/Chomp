@@ -305,7 +305,7 @@ namespace ChompGame.MainGame.SpriteControllers
             bombController.DoThrow();
         }
 
-        public virtual bool CollidesWith(WorldSprite other) =>
+        public virtual bool CollidesWith(IWithBounds other) =>
             other.Bounds.Intersects(WorldSprite.Bounds);
 
         public void CheckEnemyOrBulletCollisions(ICollidableSpriteControllerPool sprites)

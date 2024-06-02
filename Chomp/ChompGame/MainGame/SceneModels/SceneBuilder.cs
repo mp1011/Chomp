@@ -1519,7 +1519,14 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
              Level.Level3_20_Midboss,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4,4, scene)
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4,4, scene),
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 4, 5, scene),
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 10, 6, scene),
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 6, 5, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 4, 10, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 6, 10, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 8, 10, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 10, scene)
             );         
         }
 
