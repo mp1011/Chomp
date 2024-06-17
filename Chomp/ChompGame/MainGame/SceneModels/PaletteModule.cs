@@ -55,7 +55,10 @@ namespace ChompGame.MainGame.SceneModels
         CityBg,
         CityFg,
         CityInterior,
-        Max= CityInterior
+        CitySkyEvening,
+        CityBgEvening,
+        CityFgEvening,
+        Max = CityFgEvening
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -310,6 +313,24 @@ namespace ChompGame.MainGame.SceneModels
             ColorIndex.Red2,
             ColorIndex.Green2,
             ColorIndex.DarkGray1);
+
+            DefinePalette(PaletteKey.CitySkyEvening,
+               ColorIndex.Purple1,
+               ColorIndex.Purple2,
+               ColorIndex.Brown6,
+               ColorIndex.Brown7);
+
+            DefinePalette(PaletteKey.CityBgEvening,
+              ColorIndex.White,
+              ColorIndex.Purple2,
+              ColorIndex.Black,
+              ColorIndex.Black);
+
+            DefinePalette(PaletteKey.CityFgEvening,
+             ColorIndex.White,
+             ColorIndex.DarkGray(4).Value,
+             ColorIndex.DarkGray(5).Value,
+             ColorIndex.DarkGray(7).Value);
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {

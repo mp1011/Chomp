@@ -126,7 +126,14 @@
         public static byte Brown6 => Brown(5).Value;
         public static byte Brown7 => Brown(6).Value;
         public static byte Brown8 => Brown(7).Value;
-
+        public static byte Purple1 => Purple(0).Value;
+        public static byte Purple2 => Purple(1).Value;
+        public static byte Purple3 => Purple(2).Value;
+        public static byte Purple4 => Purple(3).Value;
+        public static byte Purple5 => Purple(4).Value;
+        public static byte Purple6 => Purple(5).Value;
+        public static byte Purple7 => Purple(6).Value;
+        public static byte Purple8 => Purple(7).Value;
 
     }
 }

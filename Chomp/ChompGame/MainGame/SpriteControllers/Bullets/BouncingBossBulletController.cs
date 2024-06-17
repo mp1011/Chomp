@@ -51,8 +51,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 _state.Value++;
                 _motion.YSpeed = _rng.RandomItem(-30, -20, -10);
 
-                _motion.XSpeed = (_rng.Next() % 16) - 8;
-                if (_state.Value == 3)
+                _motion.XSpeed = (_rng.Next() % 24) - 12;
+                if (_state.Value == 2)
                     Explode();
             }
         }

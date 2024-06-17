@@ -2,26 +2,22 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
-using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
-using System;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss3Controller : EnemyController
     {
-        public const int BossHp = 3;
+        public const int BossHp = 1;
         private const int StopY = 20;
 
-        private readonly WorldSprite _player;
+        private readonly WorldScroller _scroller;
         private readonly EnemyOrBulletSpriteControllerPool<BouncingBossBulletController> _bullets;
         private readonly MusicModule _music;
-        private readonly WorldScroller _scroller;
         private readonly Specs _specs;
-
 
         private GameShort _armAngle;
         private GameByte _armLength;
@@ -34,7 +30,8 @@ namespace ChompGame.MainGame.SpriteControllers
             BeginArmSpin,
             ArmSpin,
             EndArmSpin,
-            Fireballs
+            Fireballs,
+            Dying
         }
 
         class Arm
@@ -93,12 +90,11 @@ namespace ChompGame.MainGame.SpriteControllers
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
-            _player = player;
             _music = gameModule.MusicModule;
+            _scroller = gameModule.WorldScroller;
             _bullets = bullets;
 
             _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
-            _scroller = gameModule.WorldScroller;
             _specs = gameModule.Specs;
  
             Palette = SpritePalette.Enemy1;
@@ -180,7 +176,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                     UpdateArms();
 
-                    if (_levelTimer.IsMod(16))
+                    if (_levelTimer.IsMod(32))
                         _armLength.Value++;
 
                     if (_armLength.Value == 6)
@@ -189,7 +185,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 case Phase.ArmSpin:
                     _motion.TargetYSpeed = 0;
                     _motion.YAcceleration = 1;
+
                     _motion.SetXSpeed(0);
+
                     _motionController.Update();
                     UpdateArms();
 
@@ -206,7 +204,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motionController.Update();
                     UpdateArms();
 
-                    if (_levelTimer.IsMod(16))
+                    if (_levelTimer.IsMod(32))
                         _armLength.Value--;
 
                     if (_armLength.Value == 0)
@@ -217,15 +215,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     break;
                 case Phase.Fireballs:
 
-                    if (_levelTimer.IsMod(16))
-                    {
-                        if (WorldSprite.X < (_specs.ScreenWidth / 2) - 4)
-                            _motion.TargetXSpeed = 10;
-                        else
-                            _motion.TargetXSpeed = -10;
-                    }
-            
-                    _motion.XAcceleration = 1;
+                    Sway();
                     _motionController.Update();
                     _motion.SetYSpeed(0);
 
@@ -243,11 +233,23 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        private void Sway()
+        {
+            if (_levelTimer.IsMod(16))
+            {
+                if (WorldSprite.X < (_specs.ScreenWidth / 2) - 4)
+                    _motion.TargetXSpeed = 10;
+                else
+                    _motion.TargetXSpeed = -10;
+            }
+
+            _motion.XAcceleration = 1;
+        }
+
         private void HideArms()
         {
             _arm1.Hide();
             _arm2.Hide();
-
         }
 
         private void UpdateArms()
@@ -283,9 +285,24 @@ namespace ChompGame.MainGame.SpriteControllers
             bullet.AcceleratedMotion.SetXSpeed(0);
         }
 
+        private void CreateExplosion()
+        {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.EnsureInFrontOf(this);
+            bullet.WorldSprite.Center = WorldSprite.Center.Add(
+                _rng.RandomItem(-4, -2, 0, 2, 4),
+                _rng.RandomItem(-4, 2, 0, 2, 4));
+
+            bullet.Motion.YSpeed = 0;
+            bullet.Motion.XSpeed = 0;
+            bullet.Explode();            
+        }
+
         protected override void UpdateDying()
         {
-
             if (_hitPoints.Value > 0)
             {
                 base.UpdateDying();
@@ -293,6 +310,44 @@ namespace ChompGame.MainGame.SpriteControllers
                     GetSprite().Palette = Palette;
 
                 return;
+            }
+
+            if (_phase.Value != Phase.Dying)
+            {
+                _phase.Value = Phase.Dying;
+                _stateTimer.Value = 0;
+            }
+            if (_armLength.Value > 0)
+            {
+                if (_levelTimer.IsMod(32))
+                    _armLength.Value--;
+
+                UpdateArms();
+                if (_armLength.Value == 0)
+                    HideArms();
+            }
+
+            if (_levelTimer.IsMod(12))
+                CreateExplosion();
+
+            if (_levelTimer.IsMod(16))
+            {
+                _stateTimer.Value++;
+
+                if (_stateTimer.Value == 0)
+                {
+                    Destroy();
+
+                    _scroller.ModifyTiles((tilemap, attr) =>
+                    {
+                        for (int y = 8; y < 12; y++)
+                        {
+                            tilemap[tilemap.Width - 1, y] = 0;
+                            tilemap[tilemap.Width - 2, y] = 0;
+                            attr[(tilemap.Width / 2) - 1, y / 2] = 1;
+                        }
+                    });
+                }
             }
         }
 

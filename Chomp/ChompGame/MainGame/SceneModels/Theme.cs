@@ -15,6 +15,8 @@ namespace ChompGame.MainGame.SceneModels
         Desert,
         City,
         CityInterior,
+        CityBoss,
+        CityEvening,
         Space,
         TechBase,
         GlitchCore,
@@ -26,7 +28,9 @@ namespace ChompGame.MainGame.SceneModels
         {
             memoryBuilder.Memory.AddLabel(AddressLabels.Themes, memoryBuilder.CurrentAddress);
 
-            //Plains
+            ThemeType _;
+
+            _ = ThemeType.Plains;
             new Theme(memoryBuilder,
                 bg1: PaletteKey.PlainsFarMountains,
                 bg2: PaletteKey.PlainsCloseMountains, 
@@ -35,7 +39,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: PaletteKey.GreenEnemy,
                 enemy2: PaletteKey.Gray);
 
-            //PlainsEvening
+            _ = ThemeType.PlainsEvening;
             new Theme(memoryBuilder,
                bg1: PaletteKey.PlainsEveningFarMountains,
                bg2: PaletteKey.PlainsEveningCloseMountains,
@@ -44,7 +48,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: PaletteKey.BlueGrayEnemy,
                enemy2: PaletteKey.Gray);
 
-            //PlainsBoss
+            _ = ThemeType.PlainsBoss;
             new Theme(memoryBuilder,
                bomb: PaletteKey.BombLight,
                bg1: PaletteKey.Test,
@@ -54,7 +58,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Bullet);
 
-            //Ocean
+            _ = ThemeType.Ocean;
             new Theme(memoryBuilder, 
                bomb: PaletteKey.Gray,
                bg1: PaletteKey.OceanSky,
@@ -64,7 +68,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Gray);
 
-            //OceanAutoscroll
+            _ = ThemeType.OceanAutoscroll;
             new Theme(memoryBuilder,
                bomb: PaletteKey.Gray,
                bg1: PaletteKey.PlainsFarMountains,
@@ -74,7 +78,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: PaletteKey.GreenEnemy3,
                enemy2: PaletteKey.Gray);
 
-            //OceanBoss
+            _ = ThemeType.OceanBoss;
             new Theme(memoryBuilder,
                bomb: PaletteKey.BombLight,
                bg1: PaletteKey.Test,
@@ -90,7 +94,7 @@ namespace ChompGame.MainGame.SceneModels
             //Desert
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
 
-            //City 
+            _ = ThemeType.City;
             new Theme(memoryBuilder,
                 bg1: PaletteKey.CitySky,
                 bg2: PaletteKey.CityBg,
@@ -100,7 +104,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: PaletteKey.GreenEnemy,
                 enemy2: PaletteKey.Gray);
 
-            //CityInterior
+            _ = ThemeType.CityInterior;
             new Theme(memoryBuilder,
                 bg1: PaletteKey.CityInterior,
                 bg2: PaletteKey.CityInterior,
@@ -109,6 +113,27 @@ namespace ChompGame.MainGame.SceneModels
                 bomb: PaletteKey.BombLight,
                 enemy1: PaletteKey.BlueGrayEnemy,
                 enemy2: PaletteKey.BombLight);
+
+            _ = ThemeType.CityBoss;
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.CityInterior,
+                bg2: PaletteKey.CityInterior,
+                fg1: PaletteKey.CityFg,
+                fg2: PaletteKey.BombLight,
+                bomb: PaletteKey.BombLight,
+                enemy1: PaletteKey.GreenEnemy,
+                enemy2: PaletteKey.BombLight);
+
+            _ = ThemeType.CityEvening;
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.CitySkyEvening,
+                bg2: PaletteKey.CityBgEvening,
+                fg1: PaletteKey.CityFgEvening,
+                fg2: PaletteKey.BombLight,
+                bomb: PaletteKey.Gray,
+                enemy1: PaletteKey.GreenEnemy,
+                enemy2: PaletteKey.Gray);
+
 
             //Space
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);

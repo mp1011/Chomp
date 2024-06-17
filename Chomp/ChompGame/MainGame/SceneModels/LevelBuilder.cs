@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteControllers.Bosses;
@@ -104,6 +105,9 @@ namespace ChompGame.MainGame.SceneModels
 
         private bool NeedsRightExit(NBitPlane nameTable)
         {
+            if (_gameModule.CurrentLevel == Level.Level3_20_Midboss)
+                return false;
+
             bool maybeExit = false;
             var maybeExitBegin = 0;
 
@@ -604,7 +608,7 @@ namespace ChompGame.MainGame.SceneModels
             int groundLower = nameTable.Height;
 
             int groundPosition = rng.Next(groundUpper, groundLower);
-            if (_sceneDefinition.Theme == ThemeType.City)
+            if (_sceneDefinition.Theme.IsCityTheme())
             {
                 groundPosition = (groundPosition / 2) * 2;
                 groundLower = nameTable.Height - 2;
@@ -619,14 +623,14 @@ namespace ChompGame.MainGame.SceneModels
                     {
                         nextSectionBegin = nextSectionBegin + GetNextGroundSectionWidth(rng);
                         int nextGroundPosition = rng.Next(groundUpper, groundLower);
-                        if (_sceneDefinition.Theme == ThemeType.City)
+                        if (_sceneDefinition.Theme.IsCityTheme())
                             nextGroundPosition = (nextGroundPosition / 2) * 2;
 
                         if (nextGroundPosition == groundPosition)
                         {
-                            nextGroundPosition = groundPosition - (_sceneDefinition.Theme == ThemeType.City ? 2 : 1);
+                            nextGroundPosition = groundPosition - (_sceneDefinition.Theme.IsCityTheme() ? 2 : 1);
                             if (nextGroundPosition < groundUpper)
-                                nextGroundPosition = groundPosition + (_sceneDefinition.Theme == ThemeType.City ? 2 : 1);
+                                nextGroundPosition = groundPosition + (_sceneDefinition.Theme.IsCityTheme() ? 2 : 1);
 
                             if (nextGroundPosition > groundLower)
                                 nextGroundPosition = groundLower;

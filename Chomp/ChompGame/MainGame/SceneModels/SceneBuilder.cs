@@ -59,7 +59,8 @@ namespace ChompGame.MainGame.SceneModels
         Level3_17_Building3_Room7,
         Level3_18_Building3_Room8,
         Level3_19_Building3_Room9,
-        Level3_20_Midboss
+        Level3_20_Midboss,
+        Level3_21_CityAfterMidboss
     }
 
     class SceneBuilder
@@ -741,15 +742,28 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityBoss,
                 spriteGroup: SpriteGroup.Boss,
                 enemy1: EnemyIndex.Midboss,
                 enemy2: EnemyIndex.Bird,
-                left: 2,
+                left: 1,
                 top: 0,
-                right: 2,
+                right: 1,
                 bottom: 1,
                 bgPosition: 0);
+
+            _ = Level.Level3_21_CityAfterMidboss;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.LowVariance,
+               theme: ThemeType.CityEvening,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Bird,
+               enemy2: EnemyIndex.Ogre,
+               bottom: 2,
+               top: 0,
+               bgPosition1: 1);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1520,14 +1534,25 @@ namespace ChompGame.MainGame.SceneModels
              Level.Level3_20_Midboss,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4,4, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 4, 5, scene),
              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 10, 6, scene),
              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 6, 5, scene),
              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 4, 10, scene),
              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 6, 10, scene),
              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 8, 10, scene),
-             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 10, scene)
-            );         
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 10, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 2, 10, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 12, 10, scene)
+             );
+
+            AddLevel(
+                Level.Level3_21_CityAfterMidboss,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 4, scene)
+            //    (b, scene) => new PrefabScenePart(builder, scene, 8, 10, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+             //   (b, scene) => new PrefabScenePart(builder, scene, 40, 10, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
+                );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
