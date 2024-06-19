@@ -27,6 +27,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {
             get
             {
+                yield return new TrainTracks(_sceneDefinition);
                 yield return new TrainCar(_sceneDefinition);
             }
         }
@@ -69,6 +70,13 @@ namespace ChompGame.MainGame.SceneModels.Themes
                destinationPoint: new Point(1, 0),
                _specs,
                memory);
+
+            masterPatternTable.CopyTilesTo(
+              destination: vramPatternTable,
+              source: new InMemoryByteRectangle(13, 10, 2, 1),
+              destinationPoint: new Point(3, 0),
+              _specs,
+              memory);
         }
     }
 }

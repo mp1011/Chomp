@@ -23,10 +23,19 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         private const int BottomRight = 18;
         private const int Ground1 = 1;
         private const int Ground2 = 2;
+        private const int Under = 3;
 
 
 
         protected override void AddBlock(Rectangle region, NBitPlane nameTable)
+        {
+            if (region.Height == 2)
+                AddFlatCar(region, nameTable);
+            else
+                AddCar(region, nameTable);
+        }
+
+        private void AddCar(Rectangle region, NBitPlane nameTable)
         {
             nameTable.ForEach(new Point(region.X, region.Y), new Point(region.Right, region.Bottom),
                (x, y, b) =>
@@ -40,7 +49,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                        nameTable[x, y] = TopRight;
                    else if (blockX == 0 && blockY == 2)
                        nameTable[x, y] = BottomLeft;
-                   else if (blockX == region.Width-1 && blockY == 2)
+                   else if (blockX == region.Width - 1 && blockY == 2)
                        nameTable[x, y] = BottomRight;
                    else if (blockX == 0 && blockY < 2)
                        nameTable[x, y] = Left;
@@ -53,14 +62,37 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                    else if (blockY == 2)
                        nameTable[x, y] = Bottom;
                    else if (blockY == 3)
-                       nameTable[x, y] = (byte)((x % 2 == 0) ? Wheel : 0);
+                       nameTable[x, y] = (byte)((x % 2 == 0) ? Wheel : Under);
                    else if (blockY == 4)
                        nameTable[x, y] = (byte)((x % 2 == 0) ? Ground1 : Ground2);
                });
         }
+
+        private void AddFlatCar(Rectangle region, NBitPlane nameTable)
+        {
+            nameTable.ForEach(new Point(region.X, region.Y), new Point(region.Right, region.Bottom),
+               (x, y, b) =>
+               {
+                   int blockY = y - region.Y;
+
+                   if (blockY == 0)
+                       nameTable[x, y] = Bottom;                  
+                   else if (blockY == 1)
+                       nameTable[x, y] = (byte)((x % 2 == 0) ? Wheel : Under);
+               });
+        }
+
+
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
-            yield return new Rectangle(0, 9, 16, 5);
+            yield return new Rectangle(0, 9, 14, 5);
+            yield return new Rectangle(14, 11, 2, 2);
+            yield return new Rectangle(16, 9, 12, 5);
+            yield return new Rectangle(28, 11, 2, 2);
+            yield return new Rectangle(30, 9, 8, 5);
+            yield return new Rectangle(38, 11, 12, 2);
+            yield return new Rectangle(50, 9, 8, 5);
+            yield return new Rectangle(58, 11, 6, 2);
         }
     }
 }

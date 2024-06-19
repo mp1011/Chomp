@@ -571,7 +571,7 @@ namespace ChompGame.MainGame.SceneModels
             return GroundTopBegin + index;
         }
 
-        public int LevelTileWidth =>
+        public int LevelTileWidth => 
             HasSprite(SpriteType.Plane) ? (_specs.ScreenWidth / _specs.TileWidth) * 3
             :   ScrollStyle switch {
                     ScrollStyle.None => _specs.ScreenWidth / _specs.TileWidth,

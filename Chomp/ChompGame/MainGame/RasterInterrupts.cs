@@ -65,6 +65,8 @@ namespace ChompGame.MainGame
             else if (_sceneDefinition.Theme == ThemeType.Ocean
                 && _sceneDefinition.ScrollStyle != ScrollStyle.NameTable)
                 HandleOcean();
+            else if (_sceneDefinition.Theme == ThemeType.CityTrain)
+                HandleTrainParallax();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
         }
@@ -91,6 +93,23 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
             }
             else if(_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar:true))
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
+            {
+                _tileModule.Scroll.X = _realScrollX.Value;
+            }
+        }
+
+        private void HandleTrainParallax()
+        {
+
+            if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            {
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
             {
                 _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
             }
@@ -135,7 +154,7 @@ namespace ChompGame.MainGame
 
         public void Update()
         {
-            if (_sceneDefinition.IsAutoScroll)
+            if (_sceneDefinition.IsAutoScroll || _sceneDefinition.Theme == ThemeType.CityTrain)
                 _autoScroll.Value++;
         }
 

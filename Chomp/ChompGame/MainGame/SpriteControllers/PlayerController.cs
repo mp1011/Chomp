@@ -123,7 +123,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Point pt = startPoint;
 
-            while(CollisionDetector.IsTileSolid(levelMap[pt.X,pt.Y]))
+            while(CollisionDetector.IsTileSolid(levelMap[pt.X,pt.Y]) || CollisionDetector.IsTileSolid(levelMap[pt.X, pt.Y-1]))
             {
                 pt = new Point(pt.X, pt.Y - 1);
                 if(pt.Y == 0)
