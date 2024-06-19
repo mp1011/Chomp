@@ -61,7 +61,11 @@ namespace ChompGame.MainGame.SceneModels
         Level3_19_Building3_Room9,
         Level3_20_Midboss,
         Level3_21_CityAfterMidboss,
-        Level3_22_CityTrain
+        Level3_22_CityTrain,
+        Level3_23_CityTrain2,
+        Level3_24_CityTrain3,
+        Level3_25_CityBeforeBoss,
+        Level3_26_Boss
     }
 
     class SceneBuilder
@@ -775,9 +779,52 @@ namespace ChompGame.MainGame.SceneModels
                spriteGroup: SpriteGroup.Normal,
                enemy1: EnemyIndex.Bird,
                enemy2: EnemyIndex.Ogre,
+               bottom: 0,
+               top: 0,
+               bgPosition1: 1);
+
+            _ = Level.Level3_23_CityTrain2;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.Flat,
+               theme: ThemeType.CityTrain,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Bird,
+               enemy2: EnemyIndex.Ogre,
                bottom: 1,
                top: 0,
                bgPosition1: 1);
+
+            _ = Level.Level3_24_CityTrain3;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.Flat,
+               theme: ThemeType.CityTrain,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Bird,
+               enemy2: EnemyIndex.Ogre,
+               bottom: 2,
+               top: 0,
+               bgPosition1: 1);
+
+            _ = Level.Level3_25_CityBeforeBoss;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.LowVariance,
+               theme: ThemeType.CityEvening,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Bird,
+               enemy2: EnemyIndex.Ogre,
+               bottom: 2,
+               top: 0,
+               bgPosition1: 1);
+
+            _ = Level.Level3_26_Boss;
+            SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.CityBoss);
+
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1572,6 +1619,39 @@ namespace ChompGame.MainGame.SceneModels
                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
                );
+
+            AddLevel(
+               Level.Level3_23_CityTrain2,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               );
+
+            AddLevel(
+               Level.Level3_24_CityTrain3,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               );
+
+            AddLevel(
+                Level.Level3_25_CityBeforeBoss,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 4, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+                );
+
+            AddLevel(
+                Level.Level3_26_Boss,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 16, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 6, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene)
+            );
+            CheckDestroyBits(Level.Level2_12_Boss, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
+
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

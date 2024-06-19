@@ -50,6 +50,12 @@
 /processorParam:Quality=Best
 /build:Music/Nemesis.ogg
 
+#begin Music/Railway.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Railway.ogg
+
 #begin Music/Sea Dreams.ogg
 /importer:OggImporter
 /processor:SongProcessor

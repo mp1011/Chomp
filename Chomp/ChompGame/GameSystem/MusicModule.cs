@@ -8,7 +8,7 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
-        public const bool Enabled = false;
+        public const bool Enabled = true;
 
         private readonly ContentManager _contentManager;
 
@@ -21,7 +21,8 @@ namespace ChompGame.GameSystem
             Threat,
             Nemesis,
             Flight,
-            City
+            City,
+            Railway
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -60,6 +61,8 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.SeaDreams;
             else if (level >= Level.Level3_1_City && level < Level.Level3_20_Midboss)
                 CurrentSong = SongName.City;
+            else if (level >= Level.Level3_21_CityAfterMidboss)
+                CurrentSong = SongName.Railway;
             else
                 CurrentSong = SongName.None;
         }

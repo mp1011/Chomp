@@ -7,7 +7,6 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     class CityTrainThemeSetup : ThemeSetup
     {
-
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
             var farCityPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);

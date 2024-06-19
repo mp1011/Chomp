@@ -107,13 +107,21 @@ namespace ChompGame.MainGame
 
             if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
             }
             else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
-            }
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value / 2);
+            }           
             else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
+            {
+                _tileModule.Scroll.X = _realScrollX.Value;
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y == _specs.ScreenHeight - 4)
+            {
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y == _specs.ScreenHeight-1)
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
             }

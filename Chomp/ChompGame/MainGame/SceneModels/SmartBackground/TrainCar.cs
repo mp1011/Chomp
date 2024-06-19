@@ -85,14 +85,37 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
 
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
-            yield return new Rectangle(0, 9, 14, 5);
-            yield return new Rectangle(14, 11, 2, 2);
-            yield return new Rectangle(16, 9, 12, 5);
-            yield return new Rectangle(28, 11, 2, 2);
-            yield return new Rectangle(30, 9, 8, 5);
-            yield return new Rectangle(38, 11, 12, 2);
-            yield return new Rectangle(50, 9, 8, 5);
-            yield return new Rectangle(58, 11, 6, 2);
+            if (_sceneDefinition.BottomTiles == 0)
+            {
+                yield return new Rectangle(0, 9, 14, 5);
+                yield return new Rectangle(14, 11, 2, 2);
+                yield return new Rectangle(16, 9, 12, 5);
+                yield return new Rectangle(28, 11, 2, 2);
+                yield return new Rectangle(30, 9, 8, 5);
+                yield return new Rectangle(38, 11, 12, 2);
+                yield return new Rectangle(50, 9, 8, 5);
+                yield return new Rectangle(58, 11, 6, 2);
+            }
+            if (_sceneDefinition.BottomTiles == 2)
+            {
+                yield return new Rectangle(0, 9, 12, 5);
+                yield return new Rectangle(18, 9, 8, 5);
+                yield return new Rectangle(26, 11, 1, 2);
+                yield return new Rectangle(27, 9, 8, 5);
+                yield return new Rectangle(40, 9, 12, 5);
+                yield return new Rectangle(52, 11, 12, 2);
+            }
+
+            if (_sceneDefinition.BottomTiles == 4)
+            {
+                yield return new Rectangle(0, 9, 6, 5);
+                yield return new Rectangle(14, 11, 16, 2);
+                yield return new Rectangle(30, 9, 12, 5);
+                yield return new Rectangle(42, 11, 2, 2);
+                yield return new Rectangle(44, 9, 8, 5);
+                yield return new Rectangle(58, 9, 6, 5);
+
+            }
         }
     }
 }
