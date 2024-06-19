@@ -60,7 +60,8 @@ namespace ChompGame.MainGame.SceneModels
         Level3_18_Building3_Room8,
         Level3_19_Building3_Room9,
         Level3_20_Midboss,
-        Level3_21_CityAfterMidboss
+        Level3_21_CityAfterMidboss,
+        Level3_22_CityTrain
     }
 
     class SceneBuilder
@@ -762,6 +763,19 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: EnemyIndex.Bird,
                enemy2: EnemyIndex.Ogre,
                bottom: 2,
+               top: 0,
+               bgPosition1: 1);
+
+            _ = Level.Level3_22_CityTrain;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.Flat,
+               theme: ThemeType.CityTrain,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Bird,
+               enemy2: EnemyIndex.Ogre,
+               bottom: 1,
                top: 0,
                bgPosition1: 1);
         }
@@ -1549,10 +1563,15 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
                 Level.Level3_21_CityAfterMidboss,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 4, scene)
-            //    (b, scene) => new PrefabScenePart(builder, scene, 8, 10, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
-             //   (b, scene) => new PrefabScenePart(builder, scene, 40, 10, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 4, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
                 );
+
+            AddLevel(
+               Level.Level3_22_CityTrain,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

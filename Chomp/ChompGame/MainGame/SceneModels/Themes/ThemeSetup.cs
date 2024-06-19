@@ -52,6 +52,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.OceanBoss => new OceanBossThemeSetup(),
                 ThemeType.City => new CityThemeSetup(),
                 ThemeType.CityEvening => new CityThemeSetup(),
+                ThemeType.CityTrain => new CityTrainThemeSetup(),
                 ThemeType.CityInterior => new CityInteriorThemeSetup(),
                 ThemeType.CityBoss => new CityInteriorThemeSetup(),
                 _ => throw new NotImplementedException()
