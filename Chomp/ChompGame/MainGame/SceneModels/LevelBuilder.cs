@@ -779,10 +779,21 @@ namespace ChompGame.MainGame.SceneModels
 
                     spritePools[extraIndex] = bulletControllers;
 
-                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<RocketEnemyController>(
-                        4,
-                        _gameModule.SpritesModule,
-                        () => new RocketEnemyController(enemyTileIndex, _gameModule, playerController.WorldSprite, bulletControllers, memoryBuilder));
+                    if (_sceneDefinition.IsAutoScroll)
+                    {
+                        spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<RocketEnemyController>(
+                            4,
+                            _gameModule.SpritesModule,
+                            () => new RocketEnemyController(enemyTileIndex, _gameModule, playerController.WorldSprite, bulletControllers, memoryBuilder));
+                    }
+                    else
+                    {
+                        spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<RocketEnemyController2>(
+                          2,
+                          _gameModule.SpritesModule,
+                          () => new RocketEnemyController2(enemyTileIndex, _gameModule, playerController.WorldSprite, bulletControllers, memoryBuilder));
+
+                    }
                     break;
 
                 case SpriteType.Bird:

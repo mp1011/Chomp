@@ -20,8 +20,10 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                {
                    int blockY = y - region.Y;
 
-                   if (blockY == 4)
+                   if (blockY == 3)
                        nameTable[x, y] = (byte)((x % 2 == 0) ? Ground1 : Ground2);
+                   else if (blockY == 4)
+                       nameTable[x, y] = (byte)((x % 2 == 0) ? Ground2 : Ground1);
                    else
                        nameTable[x, y] = 0;
                });

@@ -21,15 +21,13 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         private const int Window = 16;
         private const int BottomLeft = 17;
         private const int BottomRight = 18;
-        private const int Ground1 = 1;
-        private const int Ground2 = 2;
         private const int Under = 3;
 
 
 
         protected override void AddBlock(Rectangle region, NBitPlane nameTable)
         {
-            if (region.Height == 2)
+            if (region.Height == 3)
                 AddFlatCar(region, nameTable);
             else
                 AddCar(region, nameTable);
@@ -63,8 +61,6 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                        nameTable[x, y] = Bottom;
                    else if (blockY == 3)
                        nameTable[x, y] = (byte)((x % 2 == 0) ? Wheel : Under);
-                   else if (blockY == 4)
-                       nameTable[x, y] = (byte)((x % 2 == 0) ? Ground1 : Ground2);
                });
         }
 
@@ -87,33 +83,33 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         {
             if (_sceneDefinition.BottomTiles == 0)
             {
-                yield return new Rectangle(0, 9, 14, 5);
-                yield return new Rectangle(14, 11, 2, 2);
-                yield return new Rectangle(16, 9, 12, 5);
-                yield return new Rectangle(28, 11, 2, 2);
-                yield return new Rectangle(30, 9, 8, 5);
-                yield return new Rectangle(38, 11, 12, 2);
-                yield return new Rectangle(50, 9, 8, 5);
-                yield return new Rectangle(58, 11, 6, 2);
+                yield return new Rectangle(0, 8, 14, 6);
+                yield return new Rectangle(14, 10, 2, 3);
+                yield return new Rectangle(16, 8, 12, 6);
+                yield return new Rectangle(28, 10, 2, 3);
+                yield return new Rectangle(30, 8, 8, 6);
+                yield return new Rectangle(38, 10, 12, 3);
+                yield return new Rectangle(50, 8, 8, 6);
+                yield return new Rectangle(58, 10, 6, 3);
             }
             if (_sceneDefinition.BottomTiles == 2)
             {
-                yield return new Rectangle(0, 9, 12, 5);
-                yield return new Rectangle(18, 9, 8, 5);
-                yield return new Rectangle(26, 11, 1, 2);
-                yield return new Rectangle(27, 9, 8, 5);
-                yield return new Rectangle(40, 9, 12, 5);
-                yield return new Rectangle(52, 11, 12, 2);
+                yield return new Rectangle(0, 8, 12, 6);
+                yield return new Rectangle(18, 8, 8, 6);
+                yield return new Rectangle(26, 10, 1, 3);
+                yield return new Rectangle(27, 8, 8, 6);
+                yield return new Rectangle(40, 8, 12, 6);
+                yield return new Rectangle(52, 10, 12, 3);
             }
 
             if (_sceneDefinition.BottomTiles == 4)
             {
-                yield return new Rectangle(0, 9, 6, 5);
-                yield return new Rectangle(14, 11, 16, 2);
-                yield return new Rectangle(30, 9, 12, 5);
-                yield return new Rectangle(42, 11, 2, 2);
-                yield return new Rectangle(44, 9, 8, 5);
-                yield return new Rectangle(58, 9, 6, 5);
+                yield return new Rectangle(0, 8, 6, 6);
+                yield return new Rectangle(14, 10, 16, 3);
+                yield return new Rectangle(30, 8, 12, 6);
+                yield return new Rectangle(42, 10, 2, 3);
+                yield return new Rectangle(44, 8, 8, 6);
+                yield return new Rectangle(58, 8, 6, 6);
 
             }
         }

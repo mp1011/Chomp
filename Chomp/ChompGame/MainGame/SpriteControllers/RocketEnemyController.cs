@@ -112,7 +112,7 @@ namespace ChompGame.MainGame.SpriteControllers
             else
             {
                 GetSprite().Palette = SpritePalette.Fire;
-                _motion.TargetXSpeed = 0;
+              
                 _motion.TargetYSpeed = 0;
                 _motion.XAcceleration = Brake * 2;
                 if (_levelTimer.IsMod(16))

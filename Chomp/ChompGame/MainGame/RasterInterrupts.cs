@@ -117,7 +117,7 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
             }
-            else if (_coreGraphicsModule.ScreenPoint.Y == _specs.ScreenHeight - 4)
+            else if (_coreGraphicsModule.ScreenPoint.Y == _specs.ScreenHeight - 8)
             {
                 _tileModule.Scroll.X = (byte)(_autoScroll.Value);
             }

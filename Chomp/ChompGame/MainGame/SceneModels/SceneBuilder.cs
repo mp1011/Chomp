@@ -79,7 +79,10 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level2_3_Beach,
             Level.Level3_1_City,
             Level.Level3_7_Building2,
-            Level.Level3_13_Building3_Room3
+            Level.Level3_13_Building3_Room3,
+            Level.Level3_21_CityAfterMidboss,
+            Level.Level3_23_CityTrain2,
+            Level.Level3_24_CityTrain3
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -777,8 +780,8 @@ namespace ChompGame.MainGame.SceneModels
                variance: LevelShape.Flat,
                theme: ThemeType.CityTrain,
                spriteGroup: SpriteGroup.Normal,
-               enemy1: EnemyIndex.Bird,
-               enemy2: EnemyIndex.Ogre,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Rocket,
                bottom: 0,
                top: 0,
                bgPosition1: 1);
@@ -790,7 +793,7 @@ namespace ChompGame.MainGame.SceneModels
                variance: LevelShape.Flat,
                theme: ThemeType.CityTrain,
                spriteGroup: SpriteGroup.Normal,
-               enemy1: EnemyIndex.Bird,
+               enemy1: EnemyIndex.Rocket,
                enemy2: EnemyIndex.Ogre,
                bottom: 1,
                top: 0,
@@ -804,7 +807,7 @@ namespace ChompGame.MainGame.SceneModels
                theme: ThemeType.CityTrain,
                spriteGroup: SpriteGroup.Normal,
                enemy1: EnemyIndex.Bird,
-               enemy2: EnemyIndex.Ogre,
+               enemy2: EnemyIndex.Rocket,
                bottom: 2,
                top: 0,
                bgPosition1: 1);
@@ -1610,33 +1613,127 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
                 Level.Level3_21_CityAfterMidboss,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 4, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 6, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 0, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 50, 0, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 4, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, 35, 0, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, true, 28, 8, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, false, 30, 8, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 30, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 40, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 55, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, true, 57, 10, scene),
+
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+
                 );
 
             AddLevel(
                Level.Level3_22_CityTrain,
                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 0, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 4, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 40, 3, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 60, 8, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 33, 0, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 55, 0, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 12, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 10, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 8, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 6, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 24, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 22, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 20, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 18, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 40, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 44, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 44, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 56, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 54, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 52, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 50, 6, scene)
+
                );
 
             AddLevel(
                Level.Level3_23_CityTrain2,
                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 0, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 44, 0, scene),
+
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 10, 2, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 40, 7, scene),
+
+
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 4, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 6, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 8, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 18, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 20, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 22, 6, scene),
+
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, true, 28, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, true, 30, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, true, 32, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, true, 34, 6, scene),
+
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 42, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 44, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 46, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 48, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 54, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 54, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 56, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 56, 6, scene)
+
+
                );
 
             AddLevel(
                Level.Level3_24_CityTrain3,
                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 20, 0, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 40, 0, scene),
+
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 4, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 5, scene),
+
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 50, 4, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 50, 5, scene),
+
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 16, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 20, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 14, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 26, 8, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 30, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 32, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, false, true, 34, 6, scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, false, 36, 6, scene)
                );
 
             AddLevel(
                 Level.Level3_25_CityBeforeBoss,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 4, 4, scene),
-                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 8, 4, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 10, 6, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 0, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 0, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 34, 6, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 44, 0, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 12, 8, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 14, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, false, 14, 8, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 32, 8, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 34, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, false, 34, 8, scene)
+
+
                 );
 
             AddLevel(
