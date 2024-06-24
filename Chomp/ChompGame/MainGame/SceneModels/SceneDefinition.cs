@@ -105,8 +105,8 @@ namespace ChompGame.MainGame.SceneModels
 
         public int Address => _scrollStyle.Address;
 
-        public bool IsBossScene => HasSprite(SpriteType.Chomp);
-        public bool IsLevelBossScene => IsBossScene && HasSprite(SpriteType.LevelBoss);
+        public bool IsMidBossScene => HasSprite(SpriteType.Chomp);
+        public bool IsLevelBossScene => HasSprite(SpriteType.LevelBoss);
 
         public int GroundFillStart => 8;
 

@@ -235,7 +235,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 var spawnBounds = new Rectangle(spawnX, spawnY, Specs.TileWidth * 2, Specs.TileHeight * 2);
 
-                if(_gameModule.WorldScroller.DistanceFromViewpane(spawnBounds) < 12)
+                if(_gameModule.WorldScroller.DistanceFromViewpane(spawnBounds) < 8)
                 {
                     var sprite = pool.TryAddNew();
                     if (sprite == null)
@@ -329,7 +329,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void CheckAutoscrollEnd(byte lastSpawnTime)
         {
-            if (_scene.IsBossScene || _gameModule.LevelTimerLong.Value < lastSpawnTime + 32)
+            if (_scene.IsMidBossScene || _gameModule.LevelTimerLong.Value < lastSpawnTime + 32)
                 return;
 
             foreach(var pool in _spriteControllers)

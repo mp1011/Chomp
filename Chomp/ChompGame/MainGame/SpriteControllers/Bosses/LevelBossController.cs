@@ -41,8 +41,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected abstract string BossTiles { get; }
         protected abstract string BlankBossTiles { get; }
-
-        private GameByte _levelBossBackgroundEnd;
         protected override bool DestroyBombOnCollision => true;
         public LevelBossController(ChompGameModule gameModule,
             WorldSprite player,
@@ -61,7 +59,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _tileModule = gameModule.TileModule;
             _paletteModule = gameModule.PaletteModule;
             _position = gameModule.BossBackgroundHandler.BossPosition;
-            _levelBossBackgroundEnd = gameModule.BossBackgroundHandler.BossBackgroundEnd;
             _bossBackgroundHandler = gameModule.BossBackgroundHandler;
                      
             var motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.LevelBoss, WorldSprite);
@@ -70,11 +67,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _motionController = motionController;
 
             Palette = SpritePalette.Enemy1;
-        }
-
-        protected void SetBossBackgroundEnd(int tilesAboveBottom)
-        {
-            _levelBossBackgroundEnd.Value = (byte)(_spritesModule.Specs.ScreenHeight - (_spritesModule.Specs.TileHeight * tilesAboveBottom));
         }
 
         protected override void BeforeInitializeSprite()

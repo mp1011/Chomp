@@ -387,7 +387,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_currentScene == null)
                 return;
 
-            if(_currentScene.IsBossScene && _currentScene.HasSprite(SpriteType.LevelBoss))
+            if(_currentScene.IsLevelBossScene)
             {
                 OnHBlank_LevelBoss();
                 return;

@@ -22,13 +22,11 @@ namespace ChompGame.MainGame
         private CoreGraphicsModule _coreGraphicsModule;
         private TileModule _tileModule;
         private GameByteGridPoint _bossPosition;
-        private GameByte _bossBackgroundEnd;
         private GameByte _bossBgEffectValue;
         private GameByteEnum<BackgroundEffectType> _bossBgEffectType;
         private RandomModule _rng;
 
         public GameByteGridPoint BossPosition => _bossPosition;
-        public GameByte BossBackgroundEnd => _bossBackgroundEnd;
 
         public byte BossBgEffectValue
         {
@@ -55,7 +53,6 @@ namespace ChompGame.MainGame
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _bossPosition = new GameByteGridPoint(memoryBuilder.AddByte(), memoryBuilder.AddByte(), 255, 255);
-            _bossBackgroundEnd = memoryBuilder.AddByte();
             _bossBgEffectValue = memoryBuilder.AddByte();
             _bossBgEffectType = new GameByteEnum<BackgroundEffectType>(memoryBuilder.AddByte());
         }
@@ -68,7 +65,7 @@ namespace ChompGame.MainGame
             if (_bossBgEffectValue.Value == 255)
                 return;
 
-            var groundPosition = _bossBackgroundEnd.Value;
+            var groundPosition = (byte)(_specs.ScreenHeight - (_specs.TileHeight * 2));
 
             if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight
                 && _coreGraphicsModule.ScreenPoint.Y < groundPosition)
@@ -90,7 +87,7 @@ namespace ChompGame.MainGame
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
             {
                 _tileModule.Scroll.X = _rasterInterrupts.RealScrollX;
-                _tileModule.Scroll.Y = (byte)_specs.ScreenHeight;
+                _tileModule.Scroll.Y = (byte)(_specs.ScreenHeight);
             }
         }
 

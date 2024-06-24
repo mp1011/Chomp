@@ -320,7 +320,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level3_21_CityAfterMidboss;
+            _currentLevel.Value = Level.Level1_17_Boss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -360,7 +360,7 @@ namespace ChompGame.MainGame
                 _worldScroller = _currentScene.ScrollStyle switch {
                     ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
                     ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
-                    ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsBossScene), 
+                    ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsLevelBossScene), 
                     _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
                 };
 
@@ -483,6 +483,7 @@ namespace ChompGame.MainGame
         {
             if (_deathTimer.Value == 0 && _statusBar.Health == 0)
             {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
                 _audioService.PlaySound(ChompAudioService.Sound.PlayerDie);
                 _deathTimer.Value = 1;
             }

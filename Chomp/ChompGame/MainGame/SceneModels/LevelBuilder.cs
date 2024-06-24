@@ -559,7 +559,7 @@ namespace ChompGame.MainGame.SceneModels
                     nameTable.Width - 4,
                     nameTable.Height - _sceneDefinition.BottomTiles - 2),
               changeX: 2,
-              changeY: 2);
+              changeY: -2);
 
             return nameTable;
         }

@@ -501,8 +501,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if(phase == Phase.BeforeBoss)
             {
                 WorldSprite.X = 80;
-                WorldSprite.Y = 64;
-                SetBossBackgroundEnd(4);                
+                WorldSprite.Y = 64;          
                 _paletteModule.BgColor = 0;
             }
             else if(phase == Phase.FadeIn)
@@ -544,7 +543,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             WorldSprite.X = 80;
             WorldSprite.Y = 64;
             SetBossTiles();
-            SetBossBackgroundEnd(4);
             _stateTimer.Value = 1;
             _paletteModule.BgColor = 0;
 

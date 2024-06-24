@@ -82,7 +82,7 @@ namespace ChompGame.MainGame
 
         private bool RewardIsBomb(StatusBar statusBar)
         {
-            if (_currentScene.IsBossScene)
+            if (_currentScene.IsMidBossScene || _currentScene.IsLevelBossScene)
                 return true;
 
             if (_currentScene.IsAutoScroll)

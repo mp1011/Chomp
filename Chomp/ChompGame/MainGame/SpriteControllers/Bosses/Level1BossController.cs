@@ -152,7 +152,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (_phase.Value == Phase.Init)
             {
                 CollisionEnabled = false;
-                SetBossBackgroundEnd(2);
 
                 _musicModule.CurrentSong = MusicModule.SongName.None;
                 WorldSprite.X = 0;
@@ -350,8 +349,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     _motion.SetXSpeed(0);
                     _motion.SetYSpeed(0);
                     HideBoss();
-
-                    SetBossBackgroundEnd(4);
                 }
 
 
@@ -389,8 +386,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                             jawSprite.Visible = true;
 
                             _dynamicBlockController.ResetCoinsForLevelBoss();
-                            SetBossBackgroundEnd(2);
-
                             SetBossTiles();
                             _internalTimer.Value = 0;
                         }
