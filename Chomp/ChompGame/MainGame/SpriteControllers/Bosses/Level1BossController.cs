@@ -343,6 +343,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 if (_internalTimer.Value == 0)
                 {
+                    _bossBackgroundHandler.ShowCoins = true;
                     CollisionEnabled = false;
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                     _internalTimer.Value++;
@@ -386,6 +387,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                             jawSprite.Visible = true;
 
                             _dynamicBlockController.ResetCoinsForLevelBoss();
+                            _bossBackgroundHandler.ShowCoins = false;
                             SetBossTiles();
                             _internalTimer.Value = 0;
                         }
@@ -407,6 +409,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 bullet.WorldSprite.Y = WorldSprite.Y + 8;
                 bullet.WorldSprite.FlipX = true;
                 bullet.Motion.XSpeed = -40;
+                bullet.WorldSprite.ConfigureSprite(bullet.GetSprite());
                 _audioService.PlaySound(ChompAudioService.Sound.Fireball);
             }
         }
@@ -424,6 +427,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 bullet.WorldSprite.Y = 64;
                 bullet.WorldSprite.X = _player.X;
                 bullet.Motion.YSpeed = 40;
+                bullet.WorldSprite.ConfigureSprite(bullet.GetSprite());
             }
 
             return bullet;

@@ -175,7 +175,7 @@ namespace ChompGame.MainGame.SpriteControllers
                         if (_motion.YSpeed > 0)
                             _motion.YSpeed = -Motion.YSpeed * 2;
 
-                        _motion.SetXSpeed(0);
+                        _motion.SetXSpeed(_motion.XSpeed * -1);
                         _bombState.Value = BombState.Idle;
                         break;
                 }

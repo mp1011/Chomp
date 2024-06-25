@@ -59,7 +59,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                             width -= 2;
                         }
 
-                        if (availableWidth >= MinWidth && lastGroundStart.Y < nameTable.Height)
+                        if (width >= MinWidth && lastGroundStart.Y < nameTable.Height)
                         {
                             yield return new Rectangle(x, lastGroundStart.Y - Height,
                                 (width / 2) * 2, Height);
@@ -111,10 +111,6 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                 else
                     AddWindow(1 + (i * 2), region, nameTable);
             }
-
-            //  AddWindow(2, region, nameTable);
-            //AddDoor(4, region, nameTable);
-            // AddWindow(5, region, nameTable);
         }
 
         private void AddWindow(int position, Rectangle region, NBitPlane nameTable)

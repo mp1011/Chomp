@@ -72,7 +72,6 @@ namespace ChompGame
             _showBgVram = ks.IsKeyDown(Keys.V) && !ks.IsKeyDown(Keys.LeftAlt);
             _showSpriteVram = ks.IsKeyDown(Keys.V) && ks.IsKeyDown(Keys.LeftAlt);
 
-
             if (ks.IsKeyDown(Keys.D1))
                 _paletteIndex = 0;
             if (ks.IsKeyDown(Keys.D2))

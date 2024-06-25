@@ -25,6 +25,13 @@ namespace ChompGame.MainGame
         private GameByte _bossBgEffectValue;
         private GameByteEnum<BackgroundEffectType> _bossBgEffectType;
         private RandomModule _rng;
+        private GameBit _showCoins;
+
+        public bool ShowCoins
+        {
+            get => _showCoins.Value;
+            set => _showCoins.Value = value;
+        }
 
         public GameByteGridPoint BossPosition => _bossPosition;
 
@@ -54,7 +61,9 @@ namespace ChompGame.MainGame
         {
             _bossPosition = new GameByteGridPoint(memoryBuilder.AddByte(), memoryBuilder.AddByte(), 255, 255);
             _bossBgEffectValue = memoryBuilder.AddByte();
-            _bossBgEffectType = new GameByteEnum<BackgroundEffectType>(memoryBuilder.AddByte());
+
+            _showCoins = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
+            _bossBgEffectType = new GameByteEnum<BackgroundEffectType>(memoryBuilder.AddMaskedByte(Bit.Right7));
         }
 
         public void OnHBlank()
@@ -65,7 +74,8 @@ namespace ChompGame.MainGame
             if (_bossBgEffectValue.Value == 255)
                 return;
 
-            var groundPosition = (byte)(_specs.ScreenHeight - (_specs.TileHeight * 2));
+            var groundTiles = ShowCoins ? 4 : 2;
+            var groundPosition = (byte)(_specs.ScreenHeight - (_specs.TileHeight * groundTiles));
 
             if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight
                 && _coreGraphicsModule.ScreenPoint.Y < groundPosition)

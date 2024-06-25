@@ -500,6 +500,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             if(phase == Phase.BeforeBoss)
             {
+                _bossBackgroundHandler.ShowCoins = true;
                 WorldSprite.X = 80;
                 WorldSprite.Y = 64;          
                 _paletteModule.BgColor = 0;
