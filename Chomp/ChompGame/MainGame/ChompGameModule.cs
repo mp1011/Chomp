@@ -448,7 +448,7 @@ namespace ChompGame.MainGame
             HandlePlayerDeath();
             _rasterInterrupts.Update();
 
-            _sceneSpriteControllers.CheckCollissions();
+            _sceneSpriteControllers.CheckCollisions();
 
             PaletteModule.Update();
             RewardsModule.Update(_statusBar, _sceneSpriteControllers);

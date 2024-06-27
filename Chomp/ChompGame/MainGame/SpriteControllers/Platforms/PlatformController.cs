@@ -37,6 +37,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _playerOnPlatform;
         private TwoBitEnum<PlatformType> _platformType;
 
+        public WorldScroller WorldScroller { get; }
         public override IMotion Motion => _motionController.Motion;
 
         public PlatformType PlatformType
@@ -62,7 +63,7 @@ namespace ChompGame.MainGame.SpriteControllers
             
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite, 
                 new SpriteDefinition(SpriteType.Platform, memoryBuilder.Memory));
-
+            WorldScroller = gameModule.WorldScroller;
             Palette = SpritePalette.Platform;
         }
 
@@ -158,13 +159,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if(topYOverlap >= 0 && playerController.Motion.YSpeed >= 0)
             {
-                playerController.WorldSprite.Y -= topYOverlap;
                 return new CollisionInfo { IsOnGround = true };
             }
 
             if (bottomYOverlap > 0 && playerController.Motion.YSpeed <= 0)
             {
-                playerController.WorldSprite.Y += bottomYOverlap;
                 return new CollisionInfo { IsOnGround = true, YCorrection = bottomYOverlap };
             }
 

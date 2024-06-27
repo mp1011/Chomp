@@ -411,7 +411,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _ => _bombControllers
             };
         
-        public void CheckCollissions()
+        public void CheckCollisions()
         {
             foreach(var c in _spriteControllers)
                 _playerController.CheckEnemyOrBulletCollisions(c);

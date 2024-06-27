@@ -70,6 +70,7 @@ namespace ChompGame.MainGame.SpriteControllers.Platforms
             int startY = WorldSprite.Y;
             _motionController.Update();
 
+            GameDebug.DebugLog($"Platform Y {startY} - {WorldSprite.Y}", DebugLogFlags.Misc);
             _movedBack.Value = WorldSprite.Y < startY;
             _movedForward.Value = WorldSprite.Y > startY;
 
@@ -118,6 +119,8 @@ namespace ChompGame.MainGame.SpriteControllers.Platforms
                     xMove = 1;
 
                 playerController.WorldSprite.X += xMove;
+                playerController.WorldSprite.UpdateSprite();
+                _platformController.WorldScroller.Update();
             }
             else if (_platformController.PlatformType == PlatformType.UpDown)
             {
@@ -128,6 +131,8 @@ namespace ChompGame.MainGame.SpriteControllers.Platforms
                     yMove = 1;
 
                 playerController.WorldSprite.Y += yMove;
+                playerController.WorldSprite.UpdateSprite();
+                _platformController.WorldScroller.Update();
             }
         }
 

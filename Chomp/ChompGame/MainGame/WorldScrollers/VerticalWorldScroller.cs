@@ -83,9 +83,6 @@ namespace ChompGame.MainGame.WorldScrollers
 
         public override bool Update()
         {
-            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.L))
-                return false;
-
             int worldScrollBegin = (_focusSprite.Y - _halfWindowSize).Clamp(0, ScrollYMax);
             int worldScrollBeginTile = worldScrollBegin / _specs.TileHeight;
             var ntScrollBegin = (worldScrollBegin).NModByte(_specs.NameTablePixelHeight);
