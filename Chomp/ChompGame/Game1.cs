@@ -88,6 +88,7 @@ namespace ChompGame
 
 #if DEBUG
             EditorInputHelper.Update(_screenRenderSize, _gameSystem.GetModule<TileModule>());
+         
             _tileInspector.Update();
 #endif
 

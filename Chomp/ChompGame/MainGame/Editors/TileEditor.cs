@@ -48,8 +48,9 @@ namespace ChompGame.MainGame.Editors
                 EditorInputHelper.MouseX, 
                 EditorInputHelper.MouseY);
 
-            return new Point(pixelPoint.X / _tileModule.Specs.TileWidth,
-                pixelPoint.Y / _tileModule.Specs.TileHeight);
+            return new Point(
+                (pixelPoint.X / _tileModule.Specs.TileWidth)-1,
+                (pixelPoint.Y / _tileModule.Specs.TileHeight)-2);
         }
 
         private void OnTileClicked()

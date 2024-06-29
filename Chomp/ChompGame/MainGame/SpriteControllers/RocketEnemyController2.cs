@@ -74,6 +74,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 GetSprite().FlipX = _motion.XSpeed < 0;
                 if (_levelTimer.Value.IsMod(32))
                     _stateTimer.Value++;
+                if (WorldSprite.Y > _player.Y)
+                    _stateTimer.Value = 6;
             }
             else if(_stateTimer.Value >= 6 && _stateTimer.Value < 10)
             {

@@ -48,4 +48,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
     {
         protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 13, 6, 1);
     }
+
+    class CityBossThemeSetup : BossThemeSetup
+    {
+        protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 14, 6, 1);
+    }
 }

@@ -25,7 +25,7 @@ namespace ChompGame.MainGame.Editors
             var levelPoint = MousePointToLevelPoint(EditorInputHelper.MousePosition.Subtract(TileModule.Scroll));
             var tilePoint = levelPoint.Divide(_gameModule.Specs.TileWidth);
             var tile = WorldScroller.LevelNameTable[tilePoint.X, tilePoint.Y];
-            WorldScroller.RefreshNametable();
+            //WorldScroller.RefreshNametable();
             Debug.WriteLine($"Screen point = {EditorInputHelper.MousePosition.Subtract(TileModule.Scroll) }");
             Debug.WriteLine($"Level point = {levelPoint}");
             Debug.WriteLine($"Tile point = {tilePoint}");

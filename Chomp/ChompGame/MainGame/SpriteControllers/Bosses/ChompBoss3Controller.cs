@@ -277,6 +277,8 @@ namespace ChompGame.MainGame.SpriteControllers
             if (bullet == null)
                 return;
 
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
             bullet.WorldSprite.Center = WorldSprite.Center;
             bullet.AcceleratedMotion.TargetYSpeed = 20;
             bullet.AcceleratedMotion.YAcceleration = 1;
