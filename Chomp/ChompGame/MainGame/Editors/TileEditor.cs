@@ -69,7 +69,7 @@ namespace ChompGame.MainGame.Editors
                 ToggleTile(tile, EditorInputHelper.IsKeyDown(Keys.LeftAlt) ? -1 : 1);
         }
 
-        private void ExportArea(Point topLeft, int tileBegin=47, int width=16, int height=16)
+        private void ExportArea(Point topLeft, int tileBegin=16, int width=16, int height=16)
         {
             var sb = new StringBuilder();
             var lastY = 0;
@@ -87,10 +87,10 @@ namespace ChompGame.MainGame.Editors
                         sb.AppendLine();
                     }
 
-                    if(adjusted > 15)
-                        sb.Append("?");
+                    if (adjusted < 10)
+                        sb.Append(adjusted.ToString());
                     else
-                        sb.Append(adjusted.ToString("X"));
+                        sb.Append((char)('A' + adjusted - 10));
                 });
 
             System.Diagnostics.Debug.WriteLine("---------------------");

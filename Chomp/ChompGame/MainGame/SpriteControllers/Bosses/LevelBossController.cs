@@ -90,7 +90,7 @@ namespace ChompGame.MainGame.SpriteControllers
     
         protected void SetBossTiles()
         {
-            var tileStart = 23;
+            var tileStart = 16;
 
             _worldScroller.ModifyTiles((nt, _) =>
             { 

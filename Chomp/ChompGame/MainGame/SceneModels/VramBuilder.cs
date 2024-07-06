@@ -153,6 +153,13 @@ namespace ChompGame.MainGame.SceneModels
                destinationPoint: new Point(0, 3),
                _specs,
                _memory);
+
+            _masterPatternTable.CopyTilesTo(
+               destination: _vramPatternTable,
+               source: new InMemoryByteRectangle(5, 11, 7, 1),
+               destinationPoint: new Point(1, 2),
+               _specs,
+               _memory);
         }
 
         public void AddBossSprites(Level currentLevel)
@@ -169,6 +176,7 @@ namespace ChompGame.MainGame.SceneModels
                     return;
 
                 case Level.Level1_17_Boss:
+                case Level.Level3_26_Boss:
                     AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
                     AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
                     AddSprite(SpriteTileIndex.Extra1, 4, 0, 1, 1);

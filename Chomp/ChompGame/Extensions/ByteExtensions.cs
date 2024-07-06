@@ -15,6 +15,14 @@ namespace ChompGame.Extensions
 
         public static byte ParseByteSpecial(this char c)
         {
+            if(c >= 'A' && c <= 'Z')
+            {
+                return (byte)(10 + (c - 'A'));
+            }
+            if (c >= '0' && c <= '9')
+            {
+                return (byte)(c - '0');
+            }
             return c switch
             {
                 '!' => 16,
@@ -25,7 +33,8 @@ namespace ChompGame.Extensions
                 '^' => 21,
                 '&' => 22,
                 '*' => 23,
-                _ => byte.Parse(c.ToString(), System.Globalization.NumberStyles.HexNumber)
+                '?' => 24,
+                _ => 0
             };
         }
 

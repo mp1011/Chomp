@@ -117,13 +117,13 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = ThemeType.CityBoss;
             new Theme(memoryBuilder,
-                bg1: PaletteKey.CityInterior,
-                bg2: PaletteKey.CityInterior,
-                fg1: PaletteKey.CityFg,
-                fg2: PaletteKey.BombLight,
-                bomb: PaletteKey.BombLight,
-                enemy1: PaletteKey.GreenEnemy,
-                enemy2: PaletteKey.BombLight);
+               bomb: PaletteKey.BombLight,
+               bg1: PaletteKey.Test,
+               bg2: PaletteKey.GreenEnemy2,
+               fg1: PaletteKey.CityFgEvening,
+               fg2: PaletteKey.Gray,
+               enemy1: PaletteKey.GreenEnemy3,
+               enemy2: PaletteKey.Bullet);
 
             _ = ThemeType.CityEvening;
             new Theme(memoryBuilder,
