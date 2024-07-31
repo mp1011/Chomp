@@ -32,7 +32,7 @@ namespace ChompGame.MainGame.SpriteControllers.MotionControllers
             _spriteDefinition.MovementSpeed switch {
                 MovementSpeed.VerySlow => 1,
                 MovementSpeed.Slow => 5,
-                MovementSpeed.Fast => 5,
+                MovementSpeed.Fast => 10,
                 MovementSpeed.VeryFast => 10,
                 _ => 0
             };
@@ -41,7 +41,7 @@ namespace ChompGame.MainGame.SpriteControllers.MotionControllers
             _spriteDefinition.MovementSpeed switch {
                 MovementSpeed.VerySlow => 1,
                 MovementSpeed.Slow => 5,
-                MovementSpeed.Fast => 10,
+                MovementSpeed.Fast => 60,
                 MovementSpeed.VeryFast => 10,
                 _ => 0
             };

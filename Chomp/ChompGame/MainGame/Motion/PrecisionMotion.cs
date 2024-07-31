@@ -8,10 +8,8 @@ namespace ChompGame.MainGame
         public const int Bytes = 4;
         public int Address { get; }
 
-        private byte _motionScale = 4;
         private ByteVector _motion;
-        private GameByte _subPixelX;
-        private GameByte _subPixelY;
+        private ByteVector _subPixel;
         
         public int XSpeed
         {
@@ -31,49 +29,79 @@ namespace ChompGame.MainGame
         {
             Address = memoryBuilder.CurrentAddress;
             _motion = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
-            _subPixelX = memoryBuilder.AddByte();
-            _subPixelY = memoryBuilder.AddByte();
+            _subPixel = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
+            _motion.X = 0;
+            _motion.Y = 0;
+            _subPixel.X = 0;
+            _subPixel.Y = 0;
         }
 
         public PrecisionMotion(SystemMemory memory, int address)
         {
             Address = address;
             _motion = new ByteVector(new GameByte(address, memory), new GameByte(address + 1, memory));
-            _subPixelX = new GameByte(address + 2, memory);
-            _subPixelY = new GameByte(address + 3, memory);
+            _motion = new ByteVector(new GameByte(address + 2, memory), new GameByte(address + 3, memory));
+            _motion.X = 0;
+            _motion.Y = 0;
+            _subPixel.X = 0;
+            _subPixel.Y = 0;
         }
 
         public void Apply(IWithPosition sprite)
         {
-            int sx = _subPixelX.Value;
-            sx += _motion.X * _motionScale;
-
-            var pixelX = 0;
-            if (sx >= 256)
-                pixelX = 1;
-            else if (sx < 0)
-                pixelX = -1;
-
-            _subPixelX.Value = (byte)(sx % 256);
-            if (pixelX != 0)
+            int moveX = 0;
+            int newSubX = _subPixel.X + _motion.X;
+            if(newSubX >= 128)
             {
-                sprite.X = sprite.X + pixelX;
+                moveX = 2;
+                newSubX -= 128;
+            }
+            else if(newSubX >= 64)
+            {
+                moveX = 1;
+                newSubX -= 64;
+            }
+            else if (newSubX <= -128)
+            {
+                moveX = -2;
+                newSubX += 128;
+            }
+            else if (newSubX <= -64)
+            {
+                moveX = -1;
+                newSubX += 64;
             }
 
-            int sy = _subPixelY.Value;
-            sy += _motion.Y * _motionScale;
+            _subPixel.X = newSubX;
+            sprite.X += moveX;
 
-            var pixelY = 0;
-            if (sy >= 256)
-                pixelY = 1;
-            else if (sy < 0)
-                pixelY = -1;
 
-            _subPixelY.Value = (byte)(sy % 256);
-            if (pixelY != 0)
+            int moveY = 0;
+            int newSubY = _subPixel.Y + _motion.Y;
+            if (newSubY >= 128)
             {
-                sprite.Y = sprite.Y + pixelY;
+                moveY = 2;
+                newSubY -= 128;
             }
+            else if (newSubY >= 64)
+            {
+                moveY = 1;
+                newSubY -= 64;
+            }
+            else if (newSubY <= -128)
+            {
+                moveY = -2;
+                newSubY += 128;
+            }
+            else if (newSubY <= -64)
+            {
+                moveY = -1;
+                newSubY += 64;
+            }
+
+            _subPixel.Y = newSubY;
+            sprite.Y += moveY;
+
         }
 
         public void Stop()

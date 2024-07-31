@@ -35,6 +35,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             BeforeBoss,
             Init,
             RightHook,
+            LeftHook
         }
 
         protected override int BossHP => 5;
@@ -74,8 +75,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(p == Phase.Init)
             {
-                GameDebug.Watch1 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-                GameDebug.Watch2 = new DebugWatch("State Timer", () => _stateTimer.Value);
+                GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
+                GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
+                GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
 
                 SetBossTiles();
                 SetupBossParts();
@@ -85,13 +87,31 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(p == Phase.RightHook)
             {
-                WorldSprite.Y = 80;
+                WorldSprite.Y = 70;
                 WorldSprite.X = _player.X - 40;
                 HideBoss();
 
-                _motion.TargetXSpeed = -127;
-                _motion.XSpeed = -127;
-                _motion.XAcceleration = 1;
+                _motion.TargetXSpeed = -80;
+                _motion.XSpeed = 80;
+                _motion.XAcceleration = 3;
+
+                _motion.YSpeed = 20;
+                _motion.TargetYSpeed = 1;
+                _motion.YAcceleration = 1;
+            }
+            else if (p == Phase.LeftHook)
+            {
+                WorldSprite.Y = 70;
+                WorldSprite.X = _player.X + 40;
+                HideBoss();
+
+                _motion.TargetXSpeed = 80;
+                _motion.XSpeed = -80;
+                _motion.XAcceleration = 3;
+
+                _motion.YSpeed = 20;
+                _motion.TargetYSpeed = 1;
+                _motion.YAcceleration = 1;
             }
         }
 
@@ -110,11 +130,31 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.RightHook)
             {
-                if (_levelTimer.IsMod(24))
+                if (_stateTimer.Value == 15 || WorldSprite.X <= -55)
                 {
-                    if (_stateTimer.Value < 8)
+                    SetPhase(Phase.LeftHook);
+                }
+                else if (_levelTimer.IsMod(24))
+                {                   
+                    if (_stateTimer.Value < 4)
                         FadeIn();
-                    else if (_stateTimer.Value >= 12)
+                    else if (_stateTimer.Value >= 8)
+                        FadeOut();
+                    
+                    _stateTimer.Value++;
+                }
+            }
+            else if (_phase.Value == Phase.LeftHook)
+            {
+                if (_stateTimer.Value == 15 || WorldSprite.X <= -55)
+                {
+                    SetPhase(Phase.RightHook);
+                }
+                else if (_levelTimer.IsMod(24))
+                {
+                    if (_stateTimer.Value < 4)
+                        FadeIn();
+                    else if (_stateTimer.Value >= 8)
                         FadeOut();
 
                     _stateTimer.Value++;
@@ -122,6 +162,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
 
             _motionController.Update();
+            if (WorldSprite.X < 0)
+                WorldSprite.X = 0;
+            if (WorldSprite.X > 70)
+                WorldSprite.X = 70;
+
             _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
             _position.Y = (byte)(WorldSprite.Y - 66);
             UpdatePartPositions();
