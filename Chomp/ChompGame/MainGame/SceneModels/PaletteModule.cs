@@ -145,6 +145,12 @@ namespace ChompGame.MainGame.SceneModels
                 palette.SetColor(index, color.Darker().Value);
         }
 
+        public void Darken(Palette palette, int index)
+        {
+            ColorIndex color = new ColorIndex(palette.GetColorIndex(index));          
+            palette.SetColor(index, color.Darker().Value);
+        }
+
         public override void OnStartup()
         {
             _timer = new GameByte(GameSystem.Memory.GetAddress(AddressLabels.MainTimer), GameSystem.Memory);

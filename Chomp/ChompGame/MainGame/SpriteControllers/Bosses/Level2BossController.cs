@@ -546,12 +546,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             SetBossTiles();
             _stateTimer.Value = 1;
             _paletteModule.BgColor = 0;
-
-
-            GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
-            GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-            GameDebug.Watch3 = new DebugWatch("ST", () => _stateTimer.Value);
-
         }
 
         private void SetupBossParts()

@@ -117,11 +117,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _hitPoints.Value = BossHp;
             _stateTimer.Value = 0;
             _phase.Value = Phase.Init;
-
-            GameDebug.Watch1 = new DebugWatch("PHASE", () => (int)_phase.Value);
-            GameDebug.Watch2 = new DebugWatch("PT", () => (int)_stateTimer.Value);
-            GameDebug.Watch3 = new DebugWatch("Y", () => (int)WorldSprite.Y);
-
         }
 
         protected override void UpdateActive()
