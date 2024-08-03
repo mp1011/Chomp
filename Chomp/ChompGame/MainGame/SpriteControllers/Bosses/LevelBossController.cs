@@ -99,6 +99,32 @@ namespace ChompGame.MainGame.SpriteControllers
             });
         }
 
+        protected void HideOffscreenBossTiles(int leftMin, int rightMax, int bossWidth)
+        {
+            if (WorldSprite.X < leftMin)
+            {
+                var leftHide = ((leftMin - WorldSprite.X) / _gameModule.Specs.TileWidth) + 1;
+
+                _worldScroller.ModifyTiles((nt, _) =>
+                {
+                    nt.ForEach(Point.Zero, new Point(leftHide, nt.Height - 2), (x, y, b) =>
+                          nt[x, y] = 0);
+                });
+            }
+            else if (WorldSprite.X > rightMax)
+            {
+                var rightHide = ((WorldSprite.X - rightMax) / _gameModule.Specs.TileWidth) + 1;
+
+                _worldScroller.ModifyTiles((nt, _) =>
+                {
+                    nt.ForEach(new Point(bossWidth - rightHide,0), new Point(bossWidth, nt.Height - 2), (x, y, b) =>
+                          nt[x, y] = 0);
+                });
+            }
+            else
+                SetBossTiles();
+        }
+
         protected void EraseBossTiles()
         {
             _tileModule.NameTable.SetFromString(0, 15, 0,

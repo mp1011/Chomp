@@ -98,11 +98,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _motion.YSpeed = 20;
                 _motion.TargetYSpeed = 1;
                 _motion.YAcceleration = 1;
+                _leftJawOpen.Value = true;
+                _rightJawOpen.Value = false;
             }
             else if (p == Phase.LeftHook)
             {
                 WorldSprite.Y = 70;
-                WorldSprite.X = _player.X + 40;
+                WorldSprite.X = _player.X + 20;
                 HideBoss();
 
                 _motion.TargetXSpeed = 80;
@@ -112,6 +114,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _motion.YSpeed = 20;
                 _motion.TargetYSpeed = 1;
                 _motion.YAcceleration = 1;
+                _leftJawOpen.Value = false;
+                _rightJawOpen.Value = true;
             }
         }
 
@@ -126,6 +130,19 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.Init)
             {
+                // debug
+                //FadeIn();
+                //var ks = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+                //if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.B))
+                //{
+                //    if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                //        WorldSprite.X--;
+                //    else if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                //        WorldSprite.X++;
+                //    else if (ks.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.C))
+                //        SetBossTiles();
+                //}
+
                 SetPhase(Phase.RightHook);
             }
             else if(_phase.Value == Phase.RightHook)
@@ -143,6 +160,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     
                     _stateTimer.Value++;
                 }
+
+                if (_stateTimer.Value == 5)
+                    _leftJawOpen.Value = false;
+
+                if(_stateTimer.Value > 1 && _stateTimer.Value < 5 && _levelTimer.IsMod(32))                
+                    FireBullet(_leftJaw, -20);                
             }
             else if (_phase.Value == Phase.LeftHook)
             {
@@ -159,19 +182,53 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                     _stateTimer.Value++;
                 }
+                if (_stateTimer.Value == 5)
+                    _rightJawOpen.Value = false;
             }
 
             _motionController.Update();
-            if (WorldSprite.X < 0)
-                WorldSprite.X = 0;
-            if (WorldSprite.X > 70)
-                WorldSprite.X = 70;
-
             _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
             _position.Y = (byte)(WorldSprite.Y - 66);
+
+            UpdateJaw(_leftJaw, _leftJawOpen.Value);
+            UpdateJaw(_rightJaw, _rightJawOpen.Value);
+
             UpdatePartPositions();
 
+            if (_phase.Value > Phase.Init)
+                HideOffscreenBossTiles(7, 71, 16);
 
+            if (_stateTimer.Value > 1 && _stateTimer.Value < 5 && _levelTimer.IsMod(32))
+                FireBullet(_rightJaw, 20);
+        }
+
+        private void FireBullet(BossPart origin, int xSpeed)
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
+            bullet.WorldSprite.X = origin.WorldSprite.X;
+            bullet.WorldSprite.Y = origin.WorldSprite.Y;
+            bullet.WorldSprite.FlipX = true;
+
+            bullet.Motion.XSpeed = xSpeed;
+
+            bullet.Motion.YSpeed = 0;
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+        }
+
+        private void UpdateJaw(BossPart jaw, bool open)
+        {
+            if (_levelTimer.IsMod(16))
+            {
+                var targetOffset = open ? 24 : 20;
+                if (jaw.YOffset > targetOffset)
+                    jaw.YOffset--;
+                else if (jaw.YOffset < targetOffset)
+                    jaw.YOffset++;
+            }
         }
 
         private void FadeIn()
