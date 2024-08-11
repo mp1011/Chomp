@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
@@ -12,6 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private BossPart _leftEye, _rightEye, _leftJaw, _rightJaw;
         private NibbleEnum<Phase> _phase;
         private GameBit _leftJawOpen, _rightJawOpen;
+        private MaskedByte _eyeFlashTimer;
 
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -27,6 +29,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
             _leftJawOpen = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
             _rightJawOpen = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
+            _eyeFlashTimer = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left2, memoryBuilder.Memory, leftShift:6);
             memoryBuilder.AddByte();
         }
 
@@ -59,6 +62,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void SetPhase(Phase p)
         {
+            _bossBackgroundHandler.ShowCoins = true;
             _phase.Value = p;
             _stateTimer.Value = 0;
 
@@ -87,8 +91,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(p == Phase.RightHook)
             {
-                WorldSprite.Y = 70;
-                WorldSprite.X = _player.X - 40;
+                WorldSprite.Y = 62;
+                WorldSprite.X = _player.X - 48;
                 HideBoss();
 
                 _motion.TargetXSpeed = -80;
@@ -103,8 +107,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (p == Phase.LeftHook)
             {
-                WorldSprite.Y = 70;
-                WorldSprite.X = _player.X + 20;
+                WorldSprite.Y = 62;
+                WorldSprite.X = _player.X;
                 HideBoss();
 
                 _motion.TargetXSpeed = 80;
@@ -121,6 +125,17 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         protected override void UpdateActive()
         {
+            if(_eyeFlashTimer.Value > 0)
+            {
+                if (_levelTimer.IsMod(16))
+                    _eyeFlashTimer.Value--;
+
+                if(_eyeFlashTimer.Value == 0)
+                {
+                    _leftEye.Sprite.Palette = SpritePalette.Enemy1;
+                    _rightEye.Sprite.Palette = SpritePalette.Enemy1;
+                }
+            }
             if(_phase.Value == Phase.BeforeBoss)
             {
                 if (_player.X >= 40)
@@ -147,6 +162,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.RightHook)
             {
+                PositionFreeCoinBlocksNearPlayer();
                 if (_stateTimer.Value == 15 || WorldSprite.X <= -55)
                 {
                     SetPhase(Phase.LeftHook);
@@ -162,13 +178,17 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 }
 
                 if (_stateTimer.Value == 5)
+                {
                     _leftJawOpen.Value = false;
-
-                if(_stateTimer.Value > 1 && _stateTimer.Value < 5 && _levelTimer.IsMod(32))                
-                    FireBullet(_leftJaw, -20);                
+                    FireBullet(_leftJaw, -1);
+                    FireBullet(_leftJaw, -25);
+                    FireBullet(_leftJaw, -40);
+                    _stateTimer.Value++;
+                }
             }
             else if (_phase.Value == Phase.LeftHook)
             {
+                PositionFreeCoinBlocksNearPlayer();
                 if (_stateTimer.Value == 15 || WorldSprite.X <= -55)
                 {
                     SetPhase(Phase.RightHook);
@@ -183,7 +203,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     _stateTimer.Value++;
                 }
                 if (_stateTimer.Value == 5)
+                {
                     _rightJawOpen.Value = false;
+                    FireBullet(_rightJaw, 1);
+                    FireBullet(_rightJaw, 25);
+                    FireBullet(_rightJaw, 40);
+                    _stateTimer.Value++;
+                }
             }
 
             _motionController.Update();
@@ -198,8 +224,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (_phase.Value > Phase.Init)
                 HideOffscreenBossTiles(7, 71, 16);
 
-            if (_stateTimer.Value > 1 && _stateTimer.Value < 5 && _levelTimer.IsMod(32))
-                FireBullet(_rightJaw, 20);
+            //if (_stateTimer.Value > 1 && _stateTimer.Value < 5 && _levelTimer.IsMod(32))
+            //{
+            //    FireBullet(_rightJaw, 20);
+            //    FireBullet(_rightJaw, 40);
+            //    FireBullet(_rightJaw, 80);
+            //}
         }
 
         private void FireBullet(BossPart origin, int xSpeed)
@@ -208,15 +238,47 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (bullet == null)
                 return;
 
-            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
+            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
             bullet.WorldSprite.X = origin.WorldSprite.X;
-            bullet.WorldSprite.Y = origin.WorldSprite.Y;
-            bullet.WorldSprite.FlipX = true;
+            bullet.WorldSprite.Y = origin.WorldSprite.Y - 4;
+            bullet.WorldSprite.FlipX = xSpeed < 0;
 
-            bullet.Motion.XSpeed = xSpeed;
+            bullet.AcceleratedMotion.XSpeed = xSpeed;
+            bullet.AcceleratedMotion.TargetXSpeed = 0;
+            bullet.AcceleratedMotion.XAcceleration = 1;
 
-            bullet.Motion.YSpeed = 0;
+            bullet.Motion.YSpeed = -10;
+            bullet.AcceleratedMotion.TargetYSpeed = 20;
+            bullet.AcceleratedMotion.YAcceleration = 2;
             _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+        }
+
+        public override bool CollidesWithBomb(WorldSprite bomb)
+        {
+            var x = WorldSprite.X;
+            var y = WorldSprite.Y;
+
+            bool eyeHit = CheckEyeHit(_leftEye, bomb) || CheckEyeHit(_rightEye, bomb);
+
+            WorldSprite.X = x;
+            WorldSprite.Y = y;
+            return eyeHit;
+        }
+
+        private bool CheckEyeHit(BossPart eye, WorldSprite bomb)
+        {
+            WorldSprite.X = eye.WorldSprite.X;
+            WorldSprite.Y = eye.WorldSprite.Y;
+            return base.CollidesWithBomb(bomb);
+        }
+        public override BombCollisionResponse HandleBombCollision(WorldSprite player)
+        {
+            _audioService.PlaySound(ChompAudioService.Sound.Lightning);
+            _leftEye.Sprite.Palette = SpritePalette.Fire;
+            _rightEye.Sprite.Palette = SpritePalette.Fire;
+            _eyeFlashTimer.Value = 3;
+            
+            return BombCollisionResponse.Destroy;
         }
 
         private void UpdateJaw(BossPart jaw, bool open)

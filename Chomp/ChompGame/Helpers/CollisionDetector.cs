@@ -86,7 +86,7 @@ namespace ChompGame.Helpers
         public static bool IsTileSolid(byte index) => index >= CollidableTileBegin
             && index < CollidableTileEnd;
 
-        public CollisionInfo DetectCollisions(WorldSprite actor, IMotion motion)
+        public CollisionInfo DetectCollisions(WorldSprite actor, IMotion motion, bool checkEdges=true)
         {
             var collisionInfo = new CollisionInfo();
 
@@ -221,13 +221,13 @@ namespace ChompGame.Helpers
             });
 
             int rightEdgeOverlap = (actor.X + actor.Bounds.Width) - _levelTileMap.Width * _specs.TileWidth;
-            if(rightEdgeOverlap > 0)
+            if(checkEdges && rightEdgeOverlap > 0)
             {
                 collisionInfo.XCorrection = -rightEdgeOverlap;
             }
 
             int leftEdgeOverlap = 0 - actor.X;
-            if(leftEdgeOverlap > 0)
+            if(checkEdges && leftEdgeOverlap > 0)
             {
                 collisionInfo.XCorrection = leftEdgeOverlap;
             }

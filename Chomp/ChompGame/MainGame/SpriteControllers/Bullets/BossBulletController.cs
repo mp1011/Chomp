@@ -16,14 +16,13 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameByte _state;
         private GameBit _destroyOnCollision;
 
-        private IMotionController _motionController; 
         private readonly CollisionDetector _collisionDetector;
         private readonly ChompAudioService _audioService;
         private readonly DynamicBlockController _dynamicBlockController;
         private readonly Specs _specs;
-        public override IMotion Motion => _motionController.Motion;
+        public override IMotion Motion => AcceleratedMotion;
 
-        public PrecisionMotion PrecisionMotion { get; }
+        public AcceleratedMotion AcceleratedMotion { get; }
 
         public BossBulletController(
             ChompGameModule gameModule,
@@ -37,24 +36,23 @@ namespace ChompGame.MainGame.SpriteControllers
             _specs = gameModule.Specs;
             _state = memoryBuilder.AddMaskedByte(Bit.Right7);
             _destroyOnCollision = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
-            var motionController = new SimpleMotionController(memoryBuilder, WorldSprite,
-                new SpriteDefinition(spriteType, memoryBuilder.Memory));
-
-            PrecisionMotion = motionController.Motion;
-            _motionController = motionController;
+           
+            AcceleratedMotion = new AcceleratedMotion(gameModule.LevelTimer, memoryBuilder);
             _destroyOnCollision.Value = destroyOnCollision;
             Palette = SpritePalette.Fire;
         }
 
-        protected override bool DestroyWhenOutOfBounds => true;
+        protected override bool DestroyWhenFarOutOfBounds => true;
+        protected override bool DestroyWhenOutOfBounds => false;
+        protected override bool AlwaysActive => true;
 
         protected override void UpdateActive() 
         {
-            _motionController.Update();
+            AcceleratedMotion.Apply(WorldSprite);
 
             if (_destroyOnCollision.Value)
             {
-                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motionController.Motion);
+                var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, Motion, checkEdges: false);
                 if (collisionInfo.XCorrection != 0 || collisionInfo.YCorrection != 0)
                 {
                     Explode();
@@ -107,8 +105,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 41;
-            _motionController.Motion.XSpeed = 0;
-            _motionController.Motion.YSpeed = 0;
+            Motion.XSpeed = 0;
+            Motion.YSpeed = 0;
         }
 
         public void Smoke()
@@ -121,8 +119,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 41;
-            _motionController.Motion.XSpeed = 0;
-            _motionController.Motion.YSpeed = 0;
+            Motion.XSpeed = 0;
+            Motion.YSpeed = 0;
         }
 
         public CollisionResult HandlePlayerCollision(WorldSprite player)

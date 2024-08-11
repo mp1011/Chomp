@@ -296,9 +296,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (_phase.Value == Phase.Shoot)
             {
-                _dynamicBlockController.PositionFreeCoinBlocksNearPlayer(
-                    (byte)(_player.X / _spritesModule.Specs.TileWidth),
-                    (byte)(_spritesModule.Specs.NameTableHeight - 6));
+                PositionFreeCoinBlocksNearPlayer();
 
                 _tentacle1.CurlSpeed = 1;
                 _tentacle2.CurlSpeed =1;

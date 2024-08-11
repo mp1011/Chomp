@@ -107,7 +107,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _worldScroller.ModifyTiles((nt, _) =>
                 {
-                    nt.ForEach(Point.Zero, new Point(leftHide, nt.Height - 2), (x, y, b) =>
+                    nt.ForEach(Point.Zero, new Point(leftHide, nt.Height - 4), (x, y, b) =>
                           nt[x, y] = 0);
                 });
             }
@@ -117,7 +117,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 _worldScroller.ModifyTiles((nt, _) =>
                 {
-                    nt.ForEach(new Point(bossWidth - rightHide,0), new Point(bossWidth, nt.Height - 2), (x, y, b) =>
+                    nt.ForEach(new Point(bossWidth - rightHide,0), new Point(bossWidth, nt.Height - 4), (x, y, b) =>
                           nt[x, y] = 0);
                 });
             }
@@ -168,6 +168,13 @@ namespace ChompGame.MainGame.SpriteControllers
                 explosion.WorldSprite.X = x;
                 explosion.WorldSprite.Y = y;
             }
+        }
+
+        protected void PositionFreeCoinBlocksNearPlayer()
+        {
+            _dynamicBlockController.PositionFreeCoinBlocksNearPlayer(
+                (byte)(_player.X / _spritesModule.Specs.TileWidth),
+                (byte)(_spritesModule.Specs.NameTableHeight - 6));
         }
     }
 }

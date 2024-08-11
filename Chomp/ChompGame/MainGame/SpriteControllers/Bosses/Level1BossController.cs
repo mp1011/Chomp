@@ -337,9 +337,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (_phase.Value == Phase.FireRain)
             {
-                _dynamicBlockController.PositionFreeCoinBlocksNearPlayer(
-                    (byte)(_player.X / _spritesModule.Specs.TileWidth),
-                    (byte)(_spritesModule.Specs.NameTableHeight - 6));
+                PositionFreeCoinBlocksNearPlayer();
 
                 if (_internalTimer.Value == 0)
                 {
