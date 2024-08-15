@@ -73,18 +73,10 @@ namespace ChompGame.MainGame
             _spriteIndex.Value = _spritesModule.GetFreeSpriteIndex();
         }
 
-        public void UpdateSprite()
+        public void SetVisibleWhenInBounds()
         {
             var sprite = Sprite;
-            if (_scroller.DistanceFromViewpane(Bounds) > 8)
-            {
-                sprite.Visible = false;
-            }
-            else
-            {
-                sprite.X = (byte)(X % _specs.NameTablePixelWidth);
-                sprite.Y = (byte)(Y % _specs.NameTablePixelHeight);
-            }
+            sprite.Visible = _scroller.DistanceFromViewpane(Bounds) <= 8;
         }
 
         public void Erase()

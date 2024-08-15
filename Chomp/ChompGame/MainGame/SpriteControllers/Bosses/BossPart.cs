@@ -57,10 +57,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         public void UpdatePosition(WorldSprite bossCore)
         {
-            //var partSprite = Sprite;
-            //partSprite.X = (byte)(bossCore.X + XOffset);
-            //partSprite.Y = (byte)(bossCore.Y + YOffset);
-
             WorldSprite.X = bossCore.X + XOffset;
             WorldSprite.Y = bossCore.Y + YOffset;
         }

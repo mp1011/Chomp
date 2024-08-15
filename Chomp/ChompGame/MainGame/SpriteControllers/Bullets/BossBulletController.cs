@@ -15,6 +15,7 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private GameByte _state;
         private GameBit _destroyOnCollision;
+        private GameBit _destroyOnTimer;
 
         private readonly CollisionDetector _collisionDetector;
         private readonly ChompAudioService _audioService;
@@ -23,6 +24,12 @@ namespace ChompGame.MainGame.SpriteControllers
         public override IMotion Motion => AcceleratedMotion;
 
         public AcceleratedMotion AcceleratedMotion { get; }
+
+        public bool DestroyOnTimer
+        {
+            get => _destroyOnTimer.Value;
+            set => _destroyOnTimer.Value = value;
+        }
 
         public BossBulletController(
             ChompGameModule gameModule,
@@ -34,9 +41,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _audioService = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _specs = gameModule.Specs;
-            _state = memoryBuilder.AddMaskedByte(Bit.Right7);
+            _state = memoryBuilder.AddMaskedByte(Bit.Right6);
             _destroyOnCollision = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
-           
+            _destroyOnTimer = new GameBit(_state.Address, Bit.Bit6, memoryBuilder.Memory);
+
             AcceleratedMotion = new AcceleratedMotion(gameModule.LevelTimer, memoryBuilder);
             _destroyOnCollision.Value = destroyOnCollision;
             Palette = SpritePalette.Fire;
@@ -49,6 +57,13 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void UpdateActive() 
         {
             AcceleratedMotion.Apply(WorldSprite);
+
+            if (_destroyOnTimer && _state.Value < 40 && _levelTimer.IsMod(4))
+            {
+                _state.Value++;
+                if (_state.Value == 30)
+                    Destroy();
+            }
 
             if (_destroyOnCollision.Value)
             {
