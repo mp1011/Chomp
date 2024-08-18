@@ -89,8 +89,6 @@ namespace ChompGame.Data
             get => this[(y * Width) + x];
             set
             {
-                if (y < 2)
-                    GameDebug.NoOp();
                 this[(y * Width) + x] = value;
             }
         }

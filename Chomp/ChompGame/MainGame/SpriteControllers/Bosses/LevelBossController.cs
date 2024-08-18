@@ -101,9 +101,12 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected void HideOffscreenBossTiles(int leftMin, int rightMax, int bossWidth)
         {
+            SetBossTiles();
+
             if (WorldSprite.X < leftMin)
             {
-                var leftHide = ((leftMin - WorldSprite.X) / _gameModule.Specs.TileWidth) + 1;
+                int adjust = _player.X > 75 ? 1 : 0;
+                var leftHide = ((leftMin - WorldSprite.X) / _gameModule.Specs.TileWidth) + adjust;
 
                 _worldScroller.ModifyTiles((nt, _) =>
                 {
@@ -113,7 +116,8 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (WorldSprite.X > rightMax)
             {
-                var rightHide = ((WorldSprite.X - rightMax) / _gameModule.Specs.TileWidth) + 1;
+                int adjust = _player.X < 75 ? 1 : 0;
+                var rightHide = ((WorldSprite.X - rightMax) / _gameModule.Specs.TileWidth) + adjust;
 
                 _worldScroller.ModifyTiles((nt, _) =>
                 {
@@ -121,8 +125,6 @@ namespace ChompGame.MainGame.SpriteControllers
                           nt[x, y] = 0);
                 });
             }
-            else
-                SetBossTiles();
         }
 
         protected void EraseBossTiles()

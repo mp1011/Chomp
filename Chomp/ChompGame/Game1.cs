@@ -65,6 +65,8 @@ namespace ChompGame
         }
 
         private bool _wasMouseDown;
+        private KeyboardState _priorDebugKeyState;
+
         protected override void Update(GameTime gameTime)
         {
             var ks = Keyboard.GetState();
@@ -92,9 +94,17 @@ namespace ChompGame
             _tileInspector.Update();
 #endif
 
-            _gameSystem.OnLogicUpdate();
+            if (ks.IsKeyDown(Keys.Pause) && !_priorDebugKeyState.IsKeyDown(Keys.Pause))
+                _logicPaused = !_logicPaused; ;
+
+            _priorDebugKeyState = ks;
+
+            if(!_logicPaused)
+                _gameSystem.OnLogicUpdate();
             base.Update(gameTime);
         }
+
+        private bool _logicPaused = false;
 
         private bool _showBgVram;
         private bool _showSpriteVram;

@@ -20,6 +20,9 @@ namespace ChompGame.Data
     {
         public static void ForEach<T>(this IGrid<T> grid, Point topLeft, Point bottomRight, Action<int,int,T> action)
         {
+            if (topLeft.X < 0)
+                topLeft.X = 0;
+
             for(int y = topLeft.Y; y < bottomRight.Y; y++)
             {
                 for(int x = topLeft.X; x < bottomRight.X; x++)

@@ -403,7 +403,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 return;
 
             bullet.DestroyOnTimer = false;
-            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
             bullet.WorldSprite.X = origin.WorldSprite.X;
             bullet.WorldSprite.Y = origin.WorldSprite.Y - 4;
             bullet.WorldSprite.FlipX = xSpeed < 0;
@@ -425,7 +424,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 return;
 
             bullet.DestroyOnTimer = true;
-            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
             bullet.WorldSprite.X = origin.WorldSprite.X;
             bullet.WorldSprite.Y = origin.WorldSprite.Y - 4;
             bullet.WorldSprite.FlipX = xSpeed < 0;
@@ -445,7 +443,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 return;
 
             bullet.DestroyOnTimer = false;
-            bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra2;
             bullet.WorldSprite.X = origin.WorldSprite.X;
             bullet.WorldSprite.Y = origin.WorldSprite.Y - 4;
             bullet.WorldSprite.FlipX = xSpeed < 0;

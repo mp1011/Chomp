@@ -176,12 +176,17 @@ namespace ChompGame.MainGame.SceneModels
                     return;
 
                 case Level.Level1_17_Boss:
-                case Level.Level3_26_Boss:
                     AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
                     AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
                     AddSprite(SpriteTileIndex.Extra1, 4, 0, 1, 1);
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     AddSprite(SpriteTileIndex.Extra2, 5, 0, 1, 1);
+                    return;
+                case Level.Level3_26_Boss:
+                    AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
+                    AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
+                    AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1); // bullet
+                    AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     return;
 
                 case Level.Level2_2_Fly2:
