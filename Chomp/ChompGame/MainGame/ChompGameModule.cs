@@ -346,6 +346,7 @@ namespace ChompGame.MainGame
 
             _scenePartsDestroyed.SetCurrentLevel(_currentLevel.Value, GameSystem.Memory);
             _currentScene = new SceneDefinition(_currentLevel.Value, GameSystem.Memory, Specs);
+          
             _levelBuilder = new LevelBuilder(this, _currentScene);
 
             GameRAM.Reset();

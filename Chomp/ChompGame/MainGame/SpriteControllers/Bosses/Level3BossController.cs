@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
@@ -41,7 +42,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             LeftHook,
             LeftDive,
             RightDive,
-            Bombard
+            Bombard,
+            Explosions,
+            Sink,
+            Finish
         }
 
         protected override int BossHP => 5;
@@ -190,6 +194,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             if(_phase.Value == Phase.BeforeBoss)
             {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
                 if (_player.X >= 40)
                     SetPhase(Phase.Init);
                 WorldSprite.X = 20;
@@ -210,6 +215,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 //        SetBossTiles();
                 //}
 
+                //   WorldSprite.Status = WorldSpriteStatus.Dying;
+                //   _hitPoints.Value = 0;
+                _musicModule.CurrentSong = MusicModule.SongName.Nemesis;
                 SetPhase(Phase.RightHook);
             }
             else if(_phase.Value == Phase.RightHook)
@@ -364,7 +372,104 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         protected override void UpdateDying()
         {
+            if(_phase.Value < Phase.Explosions)
+            {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
+                _phase.Value = Phase.Explosions;
+                _stateTimer.Value = 0;
+                _motion.SetXSpeed(0);
+                _motion.SetYSpeed(0);
+                
+            }
 
+            if(_phase.Value == Phase.Explosions)
+            {
+                FadeIn();
+
+                if (_stateTimer.Value < 4)
+                {
+                    _leftJaw.XOffset -= 1;
+                    _leftJaw.YOffset++;
+                    _rightJaw.XOffset++;
+                    _rightJaw.YOffset++;
+                }
+                else
+                {
+                    _leftJaw.Sprite.Visible = false;
+                    _rightJaw.Sprite.Visible = false;
+                }
+
+                if(_levelTimer.IsMod(8))
+                {
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                        _phase.Value = Phase.Sink;
+
+                    CreateExplosions();
+                }
+            }
+            else if(_phase.Value == Phase.Sink)
+            {
+                if(_stateTimer.Value==0)
+                {
+                    TurnRed();
+                    _stateTimer.Value++;
+                }
+
+                _motion.TargetYSpeed = 1;
+                _motion.YSpeed = 5;
+                _motion.YAcceleration = 1;
+
+                if(_levelTimer.IsMod(64))
+                    FadeOut();
+
+                if (_levelTimer.IsMod(8))
+                {
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                    {
+                        _phase.Value = Phase.Finish;
+                    }
+
+                    CreateExplosions();
+                }
+            }
+            else if (_phase.Value == Phase.Finish)
+            {
+                if (_stateTimer.Value == 0)
+                {
+                    _stateTimer.Value++;
+                    _leftEye.Sprite.Visible = false;
+                    _rightEye.Sprite.Visible = false;
+                    HideBoss();
+                }
+
+                if(_levelTimer.IsMod(16))
+                    _stateTimer.Value++;
+
+                if (_stateTimer.Value == 0)
+                {
+                    
+                    Destroy();
+
+                    _exitsModule.GotoNextLevel();
+                }
+            }
+
+            if (WorldSprite.Y > 90)
+                WorldSprite.Y = 90;
+
+            _motionController.Update(false);
+            _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
+            _position.Y = (byte)(WorldSprite.Y - 66);
+            UpdatePartPositions();
+        }
+
+        private void CreateExplosions()
+        {
+            var x = _rng.Next(32);
+            var y = _rng.Next(16);
+            CreateExplosion(WorldSprite.X + 8 + x, WorldSprite.Y + y);
         }
 
         private void GoNextPhase()
@@ -528,6 +633,21 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _paletteModule.Darken(bossPalette, 1);
             _paletteModule.Darken(bossPalette, 2);
             _paletteModule.Darken(bossPalette, 3);
+        }
+
+        private void TurnRed()
+        {
+            var targetPalette = _paletteModule.GetPalette(PaletteKey.Bullet);
+           
+            var spritePalette = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
+            spritePalette.SetColor(1, new ColorIndex(targetPalette.GetColorIndex(0)).Value);
+            spritePalette.SetColor(2, new ColorIndex(targetPalette.GetColorIndex(1)).Value);
+            spritePalette.SetColor(3, new ColorIndex(targetPalette.GetColorIndex(2)).Value);
+
+            var bossPalette = _paletteModule.BgPalette2;
+            bossPalette.SetColor(1, new ColorIndex(targetPalette.GetColorIndex(0)).Value);
+            bossPalette.SetColor(2, new ColorIndex(targetPalette.GetColorIndex(1)).Value);
+            bossPalette.SetColor(3, new ColorIndex(targetPalette.GetColorIndex(2)).Value);
         }
 
         private void SetupBossParts()

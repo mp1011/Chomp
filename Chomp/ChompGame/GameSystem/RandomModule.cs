@@ -40,7 +40,8 @@ namespace ChompGame.GameSystem
 
         public byte Next(byte max)
         {
-            return (byte)(Next() % max);
+            var sample = Next() / 255.0;
+            return (byte)(sample * max);
         }
 
         public static byte FixedRandom(byte seed)

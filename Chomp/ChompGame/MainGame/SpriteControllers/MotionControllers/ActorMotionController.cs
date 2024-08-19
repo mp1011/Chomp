@@ -170,10 +170,14 @@ namespace ChompGame.MainGame.SpriteControllers.MotionControllers
             }
 
         }
-
         public void Update()
         {
-            if (WorldSprite.Status != WorldSpriteStatus.Active)
+            Update(true);
+        }
+
+        public void Update(bool ignoreUnlessActive)
+        {
+            if (ignoreUnlessActive && WorldSprite.Status != WorldSpriteStatus.Active)
                 return;
 
             Motion.Apply(WorldSprite);
