@@ -8,7 +8,7 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
-        public const bool Enabled = true;
+        public const bool Enabled = false;
 
         private readonly ContentManager _contentManager;
 

@@ -92,8 +92,15 @@ namespace ChompGame.MainGame.SceneModels
             //Forest 
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
 
-            //Desert
-            new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
+            _ = ThemeType.Desert;
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.PurpleSky,
+                bg2: PaletteKey.PurpleSky,
+                fg1: PaletteKey.Sand,
+                fg2: PaletteKey.Test,
+                bomb: PaletteKey.Gray,
+                enemy1: PaletteKey.Bullet,
+                enemy2: PaletteKey.Bullet);
 
             _ = ThemeType.City;
             new Theme(memoryBuilder,
