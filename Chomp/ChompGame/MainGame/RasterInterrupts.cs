@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
@@ -24,6 +25,8 @@ namespace ChompGame.MainGame
         private SceneDefinition _sceneDefinition;
 
         public byte RealScrollX => _realScrollX;
+
+        private bool HasHeatWaveEffect => _sceneDefinition.Theme == ThemeType.Desert;
 
         public RasterInterrupts(
             ChompGameModule gameModule,
@@ -65,6 +68,8 @@ namespace ChompGame.MainGame
             else if (_sceneDefinition.Theme == ThemeType.Ocean
                 && _sceneDefinition.ScrollStyle != ScrollStyle.NameTable)
                 HandleOcean();
+            else if (HasHeatWaveEffect)
+                HandleHeatWave();
             else if (_sceneDefinition.Theme == ThemeType.CityTrain)
                 HandleTrainParallax();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
@@ -83,6 +88,26 @@ namespace ChompGame.MainGame
                 int waterY = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
                 _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY+5)/16.0));
             }
+        }
+
+        private void HandleHeatWave()
+        {
+
+            int baseY = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Foreground, true) - 1;
+                // _specs.ScreenHeight - (_sceneDefinition.BottomTiles * 4) - 1;
+            if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight
+                || _coreGraphicsModule.ScreenPoint.Y >= baseY)
+            {
+                _tileModule.Scroll.Y = 0;
+                return;
+            }
+
+            var offsetLine = _autoScroll.Value % 4;
+
+            if ((_coreGraphicsModule.ScreenPoint.Y % 4) == offsetLine)
+                _tileModule.Scroll.Y = 1;
+            else
+                _tileModule.Scroll.Y = 0;
         }
 
         private void HandleParallax()
@@ -162,6 +187,9 @@ namespace ChompGame.MainGame
 
         public void Update()
         {
+            if (HasHeatWaveEffect && _gameModule.LevelTimer.Value.IsMod(8))
+                _autoScroll.Value++;
+
             if (_sceneDefinition.IsAutoScroll || _sceneDefinition.Theme == ThemeType.CityTrain)
                 _autoScroll.Value++;
         }

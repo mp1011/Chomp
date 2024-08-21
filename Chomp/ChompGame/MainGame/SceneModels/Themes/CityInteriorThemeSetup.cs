@@ -7,6 +7,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     class CityInteriorThemeSetup : ThemeSetup
     {
+        public CityInteriorThemeSetup(ChompGameModule m) : base(m) { }
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {

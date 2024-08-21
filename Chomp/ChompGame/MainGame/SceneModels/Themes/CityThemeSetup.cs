@@ -7,6 +7,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     class CityThemeSetup : ThemeSetup
     {
+        public CityThemeSetup(ChompGameModule m) : base(m) { }
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
@@ -27,7 +28,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {
             get
             {
-                yield return new CityBuildingBlock(_sceneDefinition);
+                yield return new CityBuildingBlock(_sceneDefinition, _gameModule);
             }
         }
 

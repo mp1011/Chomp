@@ -181,7 +181,8 @@ namespace ChompGame.MainGame.SceneModels
 
         public ThemeType Theme => _theme.Value;
 
-        public ThemeSetup ThemeSetup => ThemeSetup.Create(Theme, _specs, this);
+        public ThemeSetup CreateThemeSetup(ChompGameModule chompGameModule) => 
+            ThemeSetup.Create(Theme, _specs, this, chompGameModule);
 
         public CornerStairStyle CornerStairStyle => _cornerStairStyle.Value;
 

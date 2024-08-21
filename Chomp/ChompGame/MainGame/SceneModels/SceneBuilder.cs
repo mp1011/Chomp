@@ -66,7 +66,8 @@ namespace ChompGame.MainGame.SceneModels
         Level3_24_CityTrain3,
         Level3_25_CityBeforeBoss,
         Level3_26_Boss,
-        Level4_1_Desert
+        Level4_1_Desert,
+        Level4_2_Desert
     }
 
     class SceneBuilder
@@ -841,8 +842,22 @@ namespace ChompGame.MainGame.SceneModels
                 left: 0,
                 right: 0,
                 top: 0,
-                bottom: 2,
-                bgPosition: 0);        
+                bottom: 1,
+                bgPosition: 0);
+
+            _ = Level.Level4_2_Desert;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.LowVariance,
+               theme: ThemeType.Desert,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Crocodile,
+               bottom: 2,
+               top: 0,
+               bgPosition1: 1);
+
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1021,8 +1036,8 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                   b => new ExitScenePart(b, ExitType.Left, exitOffset: -1, scene),
                   b => new ExitScenePart(b, ExitType.Right, exitOffset: 1, scene),
-                  b => new PrefabScenePart(b, scene, 16, 8, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
-                  b => new PrefabScenePart(b, scene, 24, 8, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                  b => new PrefabScenePart(b, scene, 16, 2, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
+                  b => new PrefabScenePart(b, scene, 24, 2, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
                   b => new PlatformScenePart(b, ScenePartType.Platform_UpDown,PlatformDistance.Len16, 12, 8,  scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType1, 18, 0, scene),
                   b => new SpriteScenePart(b, ScenePartType.EnemyType2, 42, 8, scene),
@@ -1037,7 +1052,7 @@ namespace ChompGame.MainGame.SceneModels
 
                   b => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 36, y: 11, definition: scene),
 
-                  b => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Block),
+                  b => new PrefabScenePart(b, scene, 48, 0, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Block),
                   b => PitScenePart(b, 40,PrefabSize.Eight, scene),
                   b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 40, 8, scene)
               );
@@ -1390,10 +1405,10 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level3_6_City3, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
-                b => new PrefabScenePart(b, scene, 10, 12, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Space),
-                b => new PrefabScenePart(b, scene, 30, 12, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Space),
-                b => new PrefabScenePart(b, scene, 40, 8, PrefabSize.Four, PrefabSize.Four, PrefabStyle.StairUp),
-                b => new PrefabScenePart(b, scene, 44, 12, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Space),
+                b => new PrefabScenePart(b, scene, 10, 6, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Space),
+                b => new PrefabScenePart(b, scene, 30, 6, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Space),
+                b => new PrefabScenePart(b, scene, 40, 2, PrefabSize.Four, PrefabSize.Four, PrefabStyle.StairUp),
+                b => new PrefabScenePart(b, scene, 44, 6, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Space),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, false, 8, 6, scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, false, true, 8, 8, scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, true, true, 10, 6, scene),
@@ -1776,14 +1791,25 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
                 Level.Level4_1_Desert,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 0, definition: scene)
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 0, definition: scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
+
+            AddLevel(
+                Level.Level4_2_Desert,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new PrefabScenePart(b, scene, 16, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 24, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
+            );
+            
+
 
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
         {
-            return new PrefabScenePart(b, scene, x, 8, width, PrefabSize.Eight, PrefabStyle.Space);
+            return new PrefabScenePart(b, scene, x, 12, width, PrefabSize.Eight, PrefabStyle.Space);
         }
 
         private static void AddLevel(Level level, 

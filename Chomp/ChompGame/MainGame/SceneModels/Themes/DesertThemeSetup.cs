@@ -8,22 +8,33 @@ namespace ChompGame.MainGame.SceneModels.Themes
     class DesertThemeSetup : ThemeSetup
     {
 
-
-        public DesertThemeSetup()
-        {
-        }
+        public DesertThemeSetup(ChompGameModule m) : base(m) { }
 
         public override IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks
         {
             get
             {
-                yield return new Pyramid(_sceneDefinition);
+                yield return new Pyramid(_sceneDefinition, _gameModule);
             }
         }
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
 
+        }
+
+        public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
+        {
+            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) / _specs.AttributeTableBlockSize;
+
+            var begin = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) / 2;
+            begin--;
+            attributeTable.ForEach((x, y, b) =>
+            {
+                attributeTable[x, y] = (byte)((y > begin) ? 1: 0);
+            });
+
+            return attributeTable;
         }
 
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)

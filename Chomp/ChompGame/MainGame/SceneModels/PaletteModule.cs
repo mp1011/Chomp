@@ -341,9 +341,9 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.PurpleSky,
                 ColorIndex.Purple1,
-                ColorIndex.Purple2,
-                ColorIndex.Purple3,
-                ColorIndex.Purple4);
+                ColorIndex.Brown5,
+                ColorIndex.Brown6,
+                ColorIndex.Red1);
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -413,6 +413,9 @@ namespace ChompGame.MainGame.SceneModels
 
             int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
 
+            if (_currentScene.Theme == ThemeType.Desert)
+                back2Pixel = -1;
+
             if (_graphicsModule.ScreenPoint.Y == 0)
             {
                 LoadPalette(PaletteKey.StatusBar, _graphicsModule.GetBackgroundPalette(0));
@@ -428,7 +431,8 @@ namespace ChompGame.MainGame.SceneModels
             {
                 LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
             }
-            else if (_graphicsModule.ScreenPoint.Y == _currentScene.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
+            else if (_graphicsModule.ScreenPoint.Y == _currentScene.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true)
+                && _currentScene.Theme != ThemeType.Desert )
             {
                 _graphicsModule.GetBackgroundPalette(0).SetColor(0, _bgColor.Value);
             }

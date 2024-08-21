@@ -345,9 +345,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     && _levelTimer.IsMod(16))
                 {
                     if (_rng.RandomChance(50))
-                        FireBulletFalling(_leftJaw, (_rng.Next() & 0x1F) - 16);
+                        FireBulletFalling(_leftJaw, (_rng.Generate(5)) - 16);
                     else
-                        FireBulletFalling(_rightJaw, (_rng.Next() & 0x1F) - 16);
+                        FireBulletFalling(_rightJaw, (_rng.Generate(5)) - 16);
                 }
             }
 
@@ -467,8 +467,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void CreateExplosions()
         {
-            var x = _rng.Next(32);
-            var y = _rng.Next(16);
+            var x = _rng.Generate(5);
+            var y = _rng.Generate(4);
             CreateExplosion(WorldSprite.X + 8 + x, WorldSprite.Y + y);
         }
 

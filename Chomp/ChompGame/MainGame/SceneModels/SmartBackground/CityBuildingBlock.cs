@@ -10,10 +10,12 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
     {
         private const int MinWidth = 5;
         private const int Height = 4;
+        private readonly RandomModule _rng;
 
-
-        public CityBuildingBlock(SceneDefinition sceneDefinition) : base(sceneDefinition)
+        public CityBuildingBlock(SceneDefinition sceneDefinition, ChompGameModule chompGameModule) 
+            : base(sceneDefinition)
         {
+            _rng = chompGameModule.RandomModule;
         }
 
         private const int RoofLeft = 32;
@@ -48,13 +50,13 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                         int x = lastGroundStart.X;
                         int width = (availableWidth / 2) * 2;
                        
-                        if(RandomModule.FixedRandom((byte)(leftEdge * groundY)) > 128)
+                        if(_rng.FixedRandom((byte)(leftEdge * groundY),8) > 128)
                         {
                             x += 2;
                             width -= 2;
                         }
 
-                        if (RandomModule.FixedRandom((byte)(leftEdge + groundY)) > 128)
+                        if (_rng.FixedRandom((byte)(leftEdge + groundY),8) > 128)
                         {
                             width -= 2;
                         }

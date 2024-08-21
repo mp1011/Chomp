@@ -6,6 +6,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     class OceanAutoscrollThemeSetup : ThemeSetup
     {
+        public OceanAutoscrollThemeSetup(ChompGameModule m) : base(m) { }
+
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
             var bgPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);

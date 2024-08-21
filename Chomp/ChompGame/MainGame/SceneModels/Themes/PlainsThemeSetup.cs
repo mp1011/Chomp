@@ -5,6 +5,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     class PlainsThemeSetup : ThemeSetup
     {
+        public PlainsThemeSetup(ChompGameModule m) : base(m) { }
         public override void SetupVRAMPatternTable(
           NBitPlane masterPatternTable,
           NBitPlane vramPatternTable,

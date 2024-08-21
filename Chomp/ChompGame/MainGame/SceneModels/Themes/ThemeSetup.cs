@@ -10,11 +10,17 @@ namespace ChompGame.MainGame.SceneModels.Themes
     {
         protected Specs _specs;
         protected SceneDefinition _sceneDefinition;
+        protected ChompGameModule _gameModule;
 
         public abstract void SetupVRAMPatternTable(
           NBitPlane masterPatternTable,
           NBitPlane vramPatternTable,
           SystemMemory memory);
+
+        protected ThemeSetup(ChompGameModule gameModule)
+        {
+            _gameModule = gameModule;
+        }
 
         public abstract void BuildBackgroundNameTable(NBitPlane nameTable);
         public virtual IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks => Array.Empty<SmartBackgroundBlock>();
@@ -41,21 +47,22 @@ namespace ChompGame.MainGame.SceneModels.Themes
             return attributeTable;
         }
 
-        public static ThemeSetup Create(ThemeType themeType, Specs specs, SceneDefinition sceneDefinition)
+        public static ThemeSetup Create(ThemeType themeType, Specs specs, SceneDefinition sceneDefinition, 
+            ChompGameModule chompGameModule)
         {
             ThemeSetup setup = themeType switch {
-                ThemeType.Plains => new PlainsThemeSetup(),
-                ThemeType.PlainsEvening => new PlainsThemeSetup(),
-                ThemeType.PlainsBoss => new PlainsBossThemeSetup(),
-                ThemeType.Ocean => new OceanThemeSetup(),
-                ThemeType.OceanAutoscroll => new OceanAutoscrollThemeSetup(),
-                ThemeType.OceanBoss => new OceanBossThemeSetup(),
-                ThemeType.City => new CityThemeSetup(),
-                ThemeType.CityEvening => new CityThemeSetup(),
-                ThemeType.CityTrain => new CityTrainThemeSetup(),
-                ThemeType.CityInterior => new CityInteriorThemeSetup(),
-                ThemeType.CityBoss => new CityBossThemeSetup(),
-                ThemeType.Desert => new DesertThemeSetup(),
+                ThemeType.Plains => new PlainsThemeSetup(chompGameModule),
+                ThemeType.PlainsEvening => new PlainsThemeSetup(chompGameModule),
+                ThemeType.PlainsBoss => new PlainsBossThemeSetup(chompGameModule),
+                ThemeType.Ocean => new OceanThemeSetup(chompGameModule),
+                ThemeType.OceanAutoscroll => new OceanAutoscrollThemeSetup(chompGameModule),
+                ThemeType.OceanBoss => new OceanBossThemeSetup(chompGameModule),
+                ThemeType.City => new CityThemeSetup(chompGameModule),
+                ThemeType.CityEvening => new CityThemeSetup(chompGameModule),
+                ThemeType.CityTrain => new CityTrainThemeSetup(chompGameModule),
+                ThemeType.CityInterior => new CityInteriorThemeSetup(chompGameModule),
+                ThemeType.CityBoss => new CityBossThemeSetup(chompGameModule),
+                ThemeType.Desert => new DesertThemeSetup(chompGameModule),
                 _ => throw new NotImplementedException()
             };
 

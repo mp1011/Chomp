@@ -213,7 +213,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             prize.WorldSprite.X = _specs.ScreenWidth;
-            prize.WorldSprite.Y = 16 + (_rng.Next() % (_specs.ScreenHeight - 20)) ;
+            prize.WorldSprite.Y = 16 + (_rng.GenerateByte() % (_specs.ScreenHeight - 20)) ;
             prize.Variation = PrizeController.Coin3;
             prize.AfterSpawn(_prizes);
         }

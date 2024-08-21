@@ -30,6 +30,10 @@ namespace ChompGame.MainGame.Editors
             Debug.WriteLine($"Level point = {levelPoint}");
             Debug.WriteLine($"Tile point = {tilePoint}");
             Debug.WriteLine($"Tile = {tile}");
+
+            var attrPoint = tilePoint.Divide(2);
+            var attr = WorldScroller.LevelAttributeTable[attrPoint.X, attrPoint.Y];
+            Debug.WriteLine($"Attr = {attr}");
         }
 
         private Point MousePointToLevelPoint(Point mousePoint) =>

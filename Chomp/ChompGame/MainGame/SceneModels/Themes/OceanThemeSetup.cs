@@ -6,6 +6,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     class OceanThemeSetup : ThemeSetup
     {
+        public OceanThemeSetup(ChompGameModule m) : base(m) { }
+
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
             if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)

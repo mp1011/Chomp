@@ -46,7 +46,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
         public override byte Y => _scene.ScrollStyle switch {
             ScrollStyle.Vertical => (byte)(_longPosition.Value * 4),
             ScrollStyle.NameTable => (byte)(_ntY.Value * 4),
-            ScrollStyle.Horizontal => (byte)(_shortPosition.Value * 4),
+            ScrollStyle.Horizontal => (byte)(_scene.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) + (_shortPosition.Value * 2)),
             _ => (byte)(_shortPosition.Value * 4),
         };
 
@@ -101,6 +101,10 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
                 case ScrollStyle.NameTable:
                     _ntX.Value = (byte)(x / 4);
                     _ntY.Value = (byte)(y / 4);
+                    break;
+                case ScrollStyle.Horizontal:
+                    _longPosition.Value = (byte)(x / 4);
+                    _shortPosition.Value = (byte)(y / 2);
                     break;
                 default:
                     _longPosition.Value = (byte)(x / 4);

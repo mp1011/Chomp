@@ -5,6 +5,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
 {
     abstract class BossThemeSetup : ThemeSetup
     {
+        public BossThemeSetup(ChompGameModule m) : base(m) { }
+
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
         }
@@ -41,16 +43,20 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
     class PlainsBossThemeSetup : BossThemeSetup
     {
+        public PlainsBossThemeSetup(ChompGameModule m) : base(m) { }
+
         protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 12, 6, 1);
     }
 
     class OceanBossThemeSetup : BossThemeSetup
     {
+        public OceanBossThemeSetup(ChompGameModule m) : base(m) { }
         protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 13, 6, 1);
     }
 
     class CityBossThemeSetup : BossThemeSetup
     {
+        public CityBossThemeSetup(ChompGameModule m) : base(m) { }
         protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 14, 6, 1);
     }
 }

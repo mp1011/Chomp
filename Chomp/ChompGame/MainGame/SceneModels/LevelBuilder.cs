@@ -29,9 +29,11 @@ namespace ChompGame.MainGame.SceneModels
             _gameModule.TileModule.NameTable.Reset();
             _gameModule.StatusBar.InitializeTiles();
 
-            _sceneDefinition.ThemeSetup.BuildBackgroundNameTable(nameTable);
+            var themeSetup = _sceneDefinition.CreateThemeSetup(_gameModule);
 
-            foreach (var b in _sceneDefinition.ThemeSetup.SmartBackgroundBlocks)
+            themeSetup.BuildBackgroundNameTable(nameTable);
+
+            foreach (var b in themeSetup.SmartBackgroundBlocks)
                 b.Apply(nameTable, attributeTable);
 
             var vramNametable = _gameModule.TileModule.NameTable;
@@ -57,7 +59,8 @@ namespace ChompGame.MainGame.SceneModels
 
             memoryBuilder.AddBytes(attributeTable.Bytes);
 
-            attributeTable = _sceneDefinition.ThemeSetup.BuildAttributeTable(attributeTable, nameTable);
+            attributeTable = _sceneDefinition.CreateThemeSetup(_gameModule)
+                                             .BuildAttributeTable(attributeTable, nameTable);
 
             return attributeTable;
         }
@@ -1040,7 +1043,8 @@ namespace ChompGame.MainGame.SceneModels
             var bgBuilder = new VramBuilder(masterPatternTable, bgPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
             bgBuilder.AddStatusBarTiles();            
-            _sceneDefinition.ThemeSetup.SetupVRAMPatternTable(masterPatternTable, bgPatternTable, memory);
+            _sceneDefinition.CreateThemeSetup(_gameModule)
+                            .SetupVRAMPatternTable(masterPatternTable, bgPatternTable, memory);
             if(_sceneDefinition.IsAutoScroll)
             {
                 //player sprite

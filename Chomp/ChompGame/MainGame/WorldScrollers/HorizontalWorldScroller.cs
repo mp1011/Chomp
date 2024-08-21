@@ -21,7 +21,11 @@ namespace ChompGame.MainGame.WorldScrollers
             }
         }
 
-        protected override byte ScrollableSectionBegin => (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, includeStatusBar: false);
+        protected override byte ScrollableSectionBegin =>
+            _sceneDefinition.Theme switch {
+                ThemeType.Desert => 0,
+                _ => (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, includeStatusBar: false)
+            };
 
         public override int DistanceFromViewpane(Rectangle r)
         {

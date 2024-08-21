@@ -408,7 +408,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 if (_levelTimer.IsMod(16))
                 {
-                    var randomX = _rng.Next(32);
+                    var randomX = _rng.Generate(5);
 
                     CreateExplosion(WorldSprite.X - 24 + randomX, WorldSprite.Y + 28 - (2 * _stateTimer.Value));
                     _audioService.PlaySound(ChompAudioService.Sound.Break);
@@ -483,7 +483,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             bullet.WorldSprite.FlipX = true;
 
             var angle = bullet.WorldSprite.Center.GetVectorTo(_player.Center, 24);
-            angle = angle.RotateDeg(-16 + _rng.Next(32));
+            angle = angle.RotateDeg(-16 + _rng.Generate(5));
 
             bullet.Motion.XSpeed = angle.X;
             bullet.Motion.YSpeed = angle.Y;
