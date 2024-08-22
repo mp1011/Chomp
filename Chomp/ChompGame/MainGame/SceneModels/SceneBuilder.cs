@@ -67,7 +67,34 @@ namespace ChompGame.MainGame.SceneModels
         Level3_25_CityBeforeBoss,
         Level3_26_Boss,
         Level4_1_Desert,
-        Level4_2_Desert
+        Level4_2_Desert2,
+        Level4_3_MageIntro,
+        Level4_4_Bonus,
+        Level4_5_Desert3,
+        Level4_6_PyramidEntrance,
+        Level4_7_Pit,
+        Level4_8_Chamber,
+        Level4_9_Chamber2,
+        Level4_10_SwitchRoom,
+        Level4_11_DeadEnd,
+        Level4_12_DeadEnd2,
+        Level4_13_PyramidExit,
+        Level4_14_DeadEnd3,
+        Level4_15_Steps,
+        Level4_16_PyramidEntrance2,
+        Level4_17_Midboss,
+        Level4_18_Pit2,
+        Level4_19_Chamber3,
+        Level4_20_DeadEnd4,
+        Level4_21_Chamber4,
+        Level4_22_Chamber5,
+        Level4_23_Chamber6,
+        Level4_24_Chamber7,
+        Level4_25_DeadEnd5,
+        Level4_26_Pit3,
+        Level4_27_Chamber8,
+        Level4_28_SwitchRoom2,
+        Level4_29_DeadEnd6
     }
 
     class SceneBuilder
@@ -845,7 +872,7 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 1,
                 bgPosition: 0);
 
-            _ = Level.Level4_2_Desert;
+            _ = Level.Level4_2_Desert2;
             SceneDefinition.HorizontalScroll(
                memoryBuilder: memoryBuilder,
                specs: specs,
@@ -858,6 +885,72 @@ namespace ChompGame.MainGame.SceneModels
                top: 0,
                bgPosition1: 1);
 
+            _ = Level.Level4_3_MageIntro;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Desert,
+                shape: LevelShape.Flat,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Crocodile,
+                spriteGroup: SpriteGroup.Normal,
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 2);
+
+            _ = Level.Level4_4_Bonus;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Desert,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Crocodile,
+                left: 1,
+                right: 1,
+                top: 0,
+                bottom: 2,
+                bgPosition: 2);
+
+            _ = Level.Level4_5_Desert3;
+            SceneDefinition.HorizontalScroll(
+               memoryBuilder: memoryBuilder,
+               specs: specs,
+               variance: LevelShape.LowVariance,
+               theme: ThemeType.Desert,
+               spriteGroup: SpriteGroup.Normal,
+               enemy1: EnemyIndex.Lizard,
+               enemy2: EnemyIndex.Crocodile,
+               bottom: 2,
+               top: 0,
+               bgPosition1: 1);
+
+            _ = Level.Level4_6_PyramidEntrance;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Desert,
+                shape: LevelShape.Flat,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Crocodile,
+                spriteGroup: SpriteGroup.Normal,
+                left: 0,
+                right: 3,
+                top: 0,
+                bottom: 2);
+
+            _ = Level.Level4_7_Pit;
+            SceneDefinition.VerticalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Desert,
+                shape: LevelShape.Flat,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Crocodile,
+                spriteGroup: SpriteGroup.Normal,
+                left: 2,
+                right: 2);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1793,18 +1886,109 @@ namespace ChompGame.MainGame.SceneModels
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                 (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 0, definition: scene),
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            ); 
+
+            AddLevel(
+                Level.Level4_2_Desert2,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 12, y: 0, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 21, y: 0, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 24, y: 0, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 32, y: 0, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 46, y: 0, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 54, y: 0, definition: scene),
+                (b, scene) => new PrefabScenePart(b, scene, 0, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 8, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 40, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
             );
 
             AddLevel(
-                Level.Level4_2_Desert,
-                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-                (b, scene) => new PrefabScenePart(b, scene, 16, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
-                (b, scene) => new PrefabScenePart(b, scene, 24, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
+              Level.Level4_3_MageIntro,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
             );
-            
+
+            AddLevel(
+              Level.Level4_4_Bonus,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene)
+            );
+
+            AddLevel(
+              Level.Level4_5_Desert3,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -2, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+
+            AddLevel(
+              Level.Level4_6_PyramidEntrance,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 7, scene)
+            );
+
+            AddLevel(
+              Level.Level4_7_Pit,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
+            );
+
+            AddLevel(
+              Level.Level4_8_Chamber,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 4, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene)
+            );
+
+            AddLevel(
+              Level.Level4_9_Chamber2,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, 2, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 12, 8, scene)
+            );
+
+            AddLevel(
+             Level.Level4_10_SwitchRoom,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new SpriteScenePart(b, ScenePartType.DoorBackExit, 4, 8, scene)
+            );
 
 
+            AddLevel(
+              Level.Level4_11_DeadEnd,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Right, -2, scene)
+            );
+
+            AddLevel(
+              Level.Level4_12_DeadEnd2,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -4, scene)
+            );
+
+            AddLevel(
+              Level.Level4_13_PyramidExit,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -4, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene)
+            );
+
+
+            AddLevel(
+              Level.Level4_14_DeadEnd3,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Top, 1, scene)
+            );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

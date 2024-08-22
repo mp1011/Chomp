@@ -55,25 +55,34 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
 
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
-            var cursor = new Point(0, 
-                _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false)-1);
-
-            var randomSeed = (byte)(_sceneDefinition.Address % 256);
-            bool first = true;
-            while (cursor.X < _sceneDefinition.LevelTileWidth)
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.None || _sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
             {
-                cursor.X += _rng.FixedRandom(++randomSeed, 2);
+                var cursor = new Point(0,
+                    _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) - 1);
 
-                if (!first && _rng.FixedRandom(++randomSeed,2) < 3)
-                    cursor.X += 4 * _rng.FixedRandom(++randomSeed, 2);
+                var randomSeed = (byte)(_sceneDefinition.Address % 256);
 
-                var width = 7 + (_rng.FixedRandom(++randomSeed, 2)*2);
-                width = 9;
-                first = false;
-                if (cursor.X + width < nameTable.Width - 1)
-                    yield return new Rectangle(cursor.X, cursor.Y, width, 1);
+                int clusterSize = _rng.FixedRandom(++randomSeed, 2) + 1;
 
-                cursor.X += width - 2;
+                cursor.X = _rng.FixedRandom(++randomSeed, 3);
+
+                while (cursor.X < _sceneDefinition.LevelTileWidth)
+                {
+                    var width = 7 + (_rng.FixedRandom(++randomSeed, 2) * 2);
+                    if (cursor.X + width < nameTable.Width - 1)
+                        yield return new Rectangle(cursor.X, cursor.Y, width, 1);
+
+                    if (clusterSize == 0)
+                    {
+                        clusterSize = _rng.FixedRandom(++randomSeed, 2);
+                        cursor.X += width + 7 + _rng.FixedRandom(++randomSeed, 3);
+                    }
+                    else
+                    {
+                        cursor.X += width - 2;
+                        clusterSize--;
+                    }
+                }
             }
         }
 

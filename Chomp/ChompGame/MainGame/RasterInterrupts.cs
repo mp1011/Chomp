@@ -26,8 +26,23 @@ namespace ChompGame.MainGame
 
         public byte RealScrollX => _realScrollX;
 
-        private bool HasHeatWaveEffect => _sceneDefinition.Theme == ThemeType.Desert;
+        private bool HasHeatWaveEffect
+        {
+            get
+            {
+                if (_sceneDefinition.Theme != ThemeType.Desert)
+                    return false;
 
+                if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+                    return true;
+
+                if (_sceneDefinition.ScrollStyle == ScrollStyle.None)
+                    return _sceneDefinition.LeftTiles == 0 && _sceneDefinition.RightTiles == 0;
+
+                return false;
+            }
+        }
+                          
         public RasterInterrupts(
             ChompGameModule gameModule,
             CoreGraphicsModule coreGraphicsModule)

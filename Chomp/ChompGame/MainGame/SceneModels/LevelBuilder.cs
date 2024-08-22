@@ -4,7 +4,6 @@ using ChompGame.Extensions;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteControllers.Bosses;
-using ChompGame.MainGame.SpriteControllers.Platforms;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 using System;
