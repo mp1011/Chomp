@@ -35,6 +35,7 @@ namespace ChompGame.Extensions
                 EnemyIndex.Crocodile => SpriteType.Crocodile,
                 EnemyIndex.Lizard => SpriteType.Lizard,
                 EnemyIndex.Ogre => SpriteType.Ogre,
+                EnemyIndex.Mage => SpriteType.Mage,
                 EnemyIndex.Rocket => SpriteType.Rocket,
                 EnemyIndex.Ufo => SpriteType.Ufo,
                 _ => SpriteType.Mage,

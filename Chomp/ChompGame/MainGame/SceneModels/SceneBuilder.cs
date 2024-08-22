@@ -891,8 +891,8 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 theme: ThemeType.Desert,
                 shape: LevelShape.Flat,
-                enemy1: EnemyIndex.Lizard,
-                enemy2: EnemyIndex.Crocodile,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
                 left: 0,
                 right: 0,
@@ -1910,6 +1910,7 @@ namespace ChompGame.MainGame.SceneModels
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 16, y: 24, definition: scene),
               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
             );
 

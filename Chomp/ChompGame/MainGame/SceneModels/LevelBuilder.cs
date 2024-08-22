@@ -823,6 +823,17 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.SpritesModule,
                         () => new OgreController(spritePools[extraIndex], enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
                     break;
+                case SpriteType.Mage:
+                    spritePools[extraIndex] = new EnemyOrBulletSpriteControllerPool<MageBulletController>(
+                                     3,
+                                     _gameModule.SpritesModule,
+                                     () => new MageBulletController(_gameModule, memoryBuilder, extraTileIndex));
+
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<MageController>(
+                        2,
+                        _gameModule.SpritesModule,
+                        () => new MageController(spritePools[extraIndex], enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
+                    break;
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
 
@@ -1094,6 +1105,12 @@ namespace ChompGame.MainGame.SceneModels
             {
                 spriteBuilder.AddEnemySprite(12, 0, 2, 2);
                 spriteBuilder.AddExtraSprite(14, 0, 1, 1);
+            }
+
+            if (_sceneDefinition.HasSprite(SpriteType.Mage))
+            {
+                spriteBuilder.AddEnemySprite(12, 7, 4, 2);
+                spriteBuilder.AddExtraSprite(12, 2, 1, 1);
             }
 
             spriteBuilder.AddExplosionSprite();

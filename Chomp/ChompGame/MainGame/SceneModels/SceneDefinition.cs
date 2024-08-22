@@ -413,7 +413,7 @@ namespace ChompGame.MainGame.SceneModels
                LevelShape.Flat,
                theme,
                EnemyIndex.Bird,//todo
-               EnemyIndex.Ufo,//todo
+               EnemyIndex.Ogre,//todo
                SpriteGroup.Boss,
                0,
                0,
@@ -500,7 +500,11 @@ namespace ChompGame.MainGame.SceneModels
             _enemy2.Value = (byte)((enemy2 - enemy1) - 1);
             if (enemy2 <= enemy1 && enemy1 != EnemyIndex.Boss && enemy1 != EnemyIndex.Midboss)
                 throw new Exception("Second enemy must have higher index");
-             
+
+            if (enemy2 > enemy1+4)
+                throw new Exception("Second enemy can't be more than 4 indices away from first");
+
+
             if (scrollStyle == ScrollStyle.Horizontal)
             {
                 _begin.Value = top;

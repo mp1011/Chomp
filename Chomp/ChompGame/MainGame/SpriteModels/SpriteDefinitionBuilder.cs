@@ -6,7 +6,7 @@ namespace ChompGame.MainGame.SpriteModels
     {
         public static void BuildSpriteDefinitions(SystemMemoryBuilder memoryBuilder)
         {
-            
+            SpriteType _;
             //player
             new SpriteDefinition(memoryBuilder,
                 secondTileOffset: 1,
@@ -162,17 +162,6 @@ namespace ChompGame.MainGame.SpriteModels
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
 
-            ////level boss fireball
-            //new SpriteDefinition(memoryBuilder,
-            //    secondTileOffset: 0,
-            //    sizeX: 1,
-            //    sizeY: 1,
-            //    gravityStrength: GravityStrength.None,
-            //    movementSpeed: MovementSpeed.Fast,
-            //    animationStyle: AnimationStyle.NoAnimation,
-            //    collidesWithBackground: false,
-            //    flipXWhenMovingLeft: true);
-
             //prize
             new SpriteDefinition(memoryBuilder,
                 secondTileOffset: 0,
@@ -249,6 +238,17 @@ namespace ChompGame.MainGame.SpriteModels
               animationStyle: AnimationStyle.AnimateWhenMoving,
               collidesWithBackground: true,
               flipXWhenMovingLeft: true);
+
+            _ = SpriteType.Mage;
+            new SpriteDefinition(memoryBuilder,
+                secondTileOffset: 0,
+                sizeX: 2,
+                sizeY: 2,
+                gravityStrength: GravityStrength.None,
+                movementSpeed: MovementSpeed.VerySlow,
+                animationStyle: AnimationStyle.AlwaysAnimate,
+                collidesWithBackground: false,
+                flipXWhenMovingLeft: true);
         }
     }
 }
