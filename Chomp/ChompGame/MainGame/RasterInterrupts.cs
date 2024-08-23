@@ -36,10 +36,7 @@ namespace ChompGame.MainGame
                 if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                     return true;
 
-                if (_sceneDefinition.ScrollStyle == ScrollStyle.None)
-                    return _sceneDefinition.LeftTiles == 0 && _sceneDefinition.RightTiles == 0;
-
-                return false;
+                return _sceneDefinition.LeftTiles == 0 && _sceneDefinition.RightTiles == 0;
             }
         }
                           
@@ -107,22 +104,28 @@ namespace ChompGame.MainGame
 
         private void HandleHeatWave()
         {
-
             int baseY = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Foreground, true) - 1;
-                // _specs.ScreenHeight - (_sceneDefinition.BottomTiles * 4) - 1;
-            if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight
-                || _coreGraphicsModule.ScreenPoint.Y >= baseY)
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
+                baseY = 16;
+
+            if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight)
             {
                 _tileModule.Scroll.Y = 0;
+                return;
+            }
+
+            if (_coreGraphicsModule.ScreenPoint.Y >= baseY)
+            {
+                _tileModule.Scroll.Y = _realScrollY.Value;
                 return;
             }
 
             var offsetLine = _autoScroll.Value % 4;
 
             if ((_coreGraphicsModule.ScreenPoint.Y % 4) == offsetLine)
-                _tileModule.Scroll.Y = 1;
+                _tileModule.Scroll.Y = (byte)(_realScrollY.Value + 1);
             else
-                _tileModule.Scroll.Y = 0;
+                _tileModule.Scroll.Y = _realScrollY.Value;
         }
 
         private void HandleParallax()

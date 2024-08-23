@@ -55,33 +55,42 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
 
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
-            if (_sceneDefinition.ScrollStyle == ScrollStyle.None || _sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+            var cursor = new Point(0,
+                _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) - 1);
+
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
+                cursor.Y = 17;
+
+
+            var randomSeed = (byte)(_sceneDefinition.Address % 256);
+
+            int clusterSize = _rng.FixedRandom(++randomSeed, 2) + 1;
+
+            cursor.X = _rng.FixedRandom(++randomSeed, 3);
+
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.None &&
+                (_sceneDefinition.LeftTiles > 0 || _sceneDefinition.RightTiles > 0))
             {
-                var cursor = new Point(0,
-                    _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) - 1);
+                cursor.X = _sceneDefinition.LevelTileWidth;
+            }
 
-                var randomSeed = (byte)(_sceneDefinition.Address % 256);
+            while (cursor.X < _sceneDefinition.LevelTileWidth)
+            {
+                var width = 7 + (_rng.FixedRandom(++randomSeed, 2) * 2);
+                while (cursor.X + width >= nameTable.Width - 1)
+                    width -= 2;
+                        
+                yield return new Rectangle(cursor.X, cursor.Y, width, 1);
 
-                int clusterSize = _rng.FixedRandom(++randomSeed, 2) + 1;
-
-                cursor.X = _rng.FixedRandom(++randomSeed, 3);
-
-                while (cursor.X < _sceneDefinition.LevelTileWidth)
+                if (clusterSize == 0)
                 {
-                    var width = 7 + (_rng.FixedRandom(++randomSeed, 2) * 2);
-                    if (cursor.X + width < nameTable.Width - 1)
-                        yield return new Rectangle(cursor.X, cursor.Y, width, 1);
-
-                    if (clusterSize == 0)
-                    {
-                        clusterSize = _rng.FixedRandom(++randomSeed, 2);
-                        cursor.X += width + 7 + _rng.FixedRandom(++randomSeed, 3);
-                    }
-                    else
-                    {
-                        cursor.X += width - 2;
-                        clusterSize--;
-                    }
+                    clusterSize = _rng.FixedRandom(++randomSeed, 2);
+                    cursor.X += width + 7 + _rng.FixedRandom(++randomSeed, 3);
+                }
+                else
+                {
+                    cursor.X += width - 2;
+                    clusterSize--;
                 }
             }
         }

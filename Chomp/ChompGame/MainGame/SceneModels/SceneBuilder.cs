@@ -1901,7 +1901,7 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 54, y: 0, definition: scene),
                 (b, scene) => new PrefabScenePart(b, scene, 0, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
                 (b, scene) => new PrefabScenePart(b, scene, 8, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
-                (b, scene) => new PrefabScenePart(b, scene, 40, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 16, 4, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Block),
                 (b, scene) => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
             );
 

@@ -31,7 +31,7 @@ namespace ChompGame.MainGame
 
         private static List<string> _log = new List<string>();
 
-        public static bool EnableFly = false;
+        public static bool EnableFly = true;
         public static DebugWatch Watch1 { get; set; }
         public static DebugWatch Watch2 { get; set; }
         public static DebugWatch Watch3 { get; set; }

@@ -99,6 +99,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 case ExitType.Top:
                     SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width / 2, levelMap.Height - 2), -1);
                     Motion.YSpeed = -_motionController.JumpSpeed;
+                    CollisionEnabled = false;
                     break;
                 case ExitType.DoorForward:
                     SetInitialPosition_Door(levelMap, sceneSpriteControllers, ExitType.DoorBack);
@@ -201,7 +202,14 @@ namespace ChompGame.MainGame.SpriteControllers
             CheckAfterHitInvincability();
            
             _motionController.Update();
-            var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, Motion);
+
+            if (!CollisionEnabled && Motion.YSpeed >= 0)
+                CollisionEnabled = true;
+
+            var collisionInfo = CollisionEnabled ?
+                _collisionDetector.DetectCollisions(WorldSprite, Motion)
+                : new CollisionInfo();
+
             _motionController.AfterCollision(collisionInfo);
 
             if (collisionInfo.DynamicBlockCollision)
@@ -209,7 +217,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 int coinsCollected = _dynamicBlockController.HandleCoinCollision(collisionInfo, WorldSprite);
                 _statusBar.AddToScore((uint)(coinsCollected * 25));
             }
-            
+
             _inputModule.OnLogicUpdate();
 
             

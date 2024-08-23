@@ -29,6 +29,15 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
             var begin = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) / 2;
             begin--;
+
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
+                begin = 8;
+           else if (_sceneDefinition.ScrollStyle == ScrollStyle.None &&
+                (_sceneDefinition.LeftTiles > 0 || _sceneDefinition.RightTiles > 0))
+            {
+                begin = -1;
+            }
+
             attributeTable.ForEach((x, y, b) =>
             {
                 attributeTable[x, y] = (byte)((y > begin) ? 1: 0);

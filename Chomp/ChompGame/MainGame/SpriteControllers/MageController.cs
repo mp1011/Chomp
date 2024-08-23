@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class MageController : EnemyController
     {
+        private WorldScroller _worldScroller;
         private RandomModule _rng;
         private readonly WorldSprite _player;
         private readonly CollisionDetector _collisionDetector;
@@ -32,6 +33,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.Mage, index, gameModule, memoryBuilder)
         {
             _player = player;
+            _worldScroller = gameModule.WorldScroller;
             _collisionDetector = gameModule.CollissionDetector;
             _bulletControllers = bulletControllers;
             Palette = SpritePalette.Enemy1;
@@ -52,6 +54,9 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             WorldSprite.Y = _player.Y - (16 + (_rng.Generate(3) * 2));
             WorldSprite.X = _player.X - 30 + (_rng.Generate(4) * 4);
+
+            if (WorldSprite.Y < _worldScroller.ViewPane.Top)
+                WorldSprite.Y = _worldScroller.ViewPane.Top + 4;
         }
 
         protected override void UpdateActive()
