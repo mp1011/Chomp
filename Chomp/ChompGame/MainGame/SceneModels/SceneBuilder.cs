@@ -1911,13 +1911,37 @@ namespace ChompGame.MainGame.SceneModels
               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene),
               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 16, y: 24, definition: scene),
-              (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
+              (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 0, definition: scene),
+
+              (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: false, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 24, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 14, y: 24, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 16, y: 24, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: true, x: 18, y: 24, definition: scene),
+
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: false, topRight: true, bottomLeft: true, bottomRight: true, x: 14, y: 22, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: true, x: 16, y: 22, definition: scene)
+
             );
 
             AddLevel(
               Level.Level4_4_Bonus,
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-              (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene)
+              (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 8,4, scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 8, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 4, y: 8, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 6, y: 8, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 8, y: 8, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 8, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 8, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 6, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 4, y: 6, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 6, y: 6, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 8, y: 6, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 6, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 6, definition: scene)
+
             );
 
             AddLevel(
@@ -1925,6 +1949,7 @@ namespace ChompGame.MainGame.SceneModels
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Left, -2, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            
             );
 
             AddLevel(

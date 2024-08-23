@@ -15,7 +15,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private RandomModule _rng;
         private readonly WorldSprite _player;
         private readonly CollisionDetector _collisionDetector;
-        private readonly ICollidableSpriteControllerPool _bulletControllers;
+        private readonly EnemyOrBulletSpriteControllerPool<MageBulletController> _bulletControllers;
 
         private NibbleEnum<Phase> _phase;
 
@@ -28,7 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
             Wait
         }
 
-        public MageController(ICollidableSpriteControllerPool bulletControllers, SpriteTileIndex index, ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder, WorldSprite player) 
+        public MageController(EnemyOrBulletSpriteControllerPool<MageBulletController> bulletControllers, SpriteTileIndex index, ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder, WorldSprite player) 
             : base(SpriteType.Mage, index, gameModule, memoryBuilder)
         {
             _player = player;
@@ -70,6 +70,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.Appear)
             {
+                _motion.Stop();
                 WorldSprite.Visible = _levelTimer.Value.IsMod(2);
 
                 if (_levelTimer.Value.IsMod(8))
@@ -79,21 +80,36 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     _stateTimer.Value = 0;
                     _phase.Value = Phase.Attack;
+                    _motion.TargetYSpeed = -20;
                 }
             }
             else if (_phase.Value == Phase.Attack)
             {
+                _motion.YAcceleration = 5;
                 WorldSprite.Visible = true;
                 CollisionEnabled = true;
 
-                if (_levelTimer.Value.IsMod(16))
+
+                if (_levelTimer.IsMod(8))
+                {
                     _stateTimer.Value++;
+                    if(_stateTimer.Value <= 3)
+                        FireBullet();
+                }
+
+                if(_levelTimer.IsMod(32))
+                {
+                    _motion.TargetYSpeed *= -1;
+                }
+                    
 
                 if (_stateTimer.Value == 10)
                 {
                     _stateTimer.Value = 0;
                     _phase.Value = Phase.Disappear;
                 }
+
+                _motion.Apply(WorldSprite);
             }
             else if (_phase.Value == Phase.Disappear)
             {
@@ -126,6 +142,18 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             WorldSprite.FlipX = _player.X > WorldSprite.X;
+        }
+
+        private void FireBullet()
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.WorldSprite.Center = WorldSprite.Center;
+
+            bullet.Motion.XSpeed = WorldSprite.FlipX ? 20 : -20;
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);                         
         }
     }
 }

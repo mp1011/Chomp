@@ -824,15 +824,15 @@ namespace ChompGame.MainGame.SceneModels
                         () => new OgreController(spritePools[extraIndex], enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
                     break;
                 case SpriteType.Mage:
-                    spritePools[extraIndex] = new EnemyOrBulletSpriteControllerPool<MageBulletController>(
+                    var mageBulletControllers = new EnemyOrBulletSpriteControllerPool<MageBulletController>(
                                      3,
                                      _gameModule.SpritesModule,
-                                     () => new MageBulletController(_gameModule, memoryBuilder, extraTileIndex));
-
-                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<MageController>(
+                                     () => new MageBulletController(_gameModule, memoryBuilder, extraTileIndex, playerController.WorldSprite));
+                   spritePools[extraIndex] = mageBulletControllers;
+                   spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<MageController>(
                         2,
                         _gameModule.SpritesModule,
-                        () => new MageController(spritePools[extraIndex], enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
+                        () => new MageController(mageBulletControllers, enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
                     break;
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
