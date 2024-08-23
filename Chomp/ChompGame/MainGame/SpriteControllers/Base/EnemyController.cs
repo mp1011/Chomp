@@ -29,13 +29,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             _audioService = gameModule.AudioService;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _statusBar = gameModule.StatusBar;
+
             _stateTimer = new LowNibble(memoryBuilder);
+            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left3, memoryBuilder.Memory, leftShift: 5);
             memoryBuilder.AddByte();
-
-            //todo, unused bits
-            _hitPoints = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right3, memoryBuilder.Memory);
-            memoryBuilder.AddByte();
-
+           
             _motionController = new ActorMotionController(gameModule, memoryBuilder, spriteType, WorldSprite);
             _motion = _motionController.Motion;
         }

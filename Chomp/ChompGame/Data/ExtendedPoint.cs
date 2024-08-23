@@ -13,14 +13,10 @@ namespace ChompGame.Data
         private ExtendedByte _x;
         private ExtendedByte _y;
 
-        public ExtendedPoint(SystemMemoryBuilder memoryBuilder)
+        public ExtendedPoint(SystemMemoryBuilder memoryBuilder, GameBit extraX, GameBit extraY)
         {
-            var extraX = new GameBit(memoryBuilder.CurrentAddress + 2, Bit.Bit0, memoryBuilder.Memory);
-            var extraY = new GameBit(memoryBuilder.CurrentAddress + 2, Bit.Bit1, memoryBuilder.Memory);
             _x = new ExtendedByte(memoryBuilder.AddByte(), extraX);
-            _y = new ExtendedByte(memoryBuilder.AddByte(), extraY);
-            memoryBuilder.AddByte();
-
+            _y = new ExtendedByte(memoryBuilder.AddByte(), extraY);          
             X = 0;
             Y = 0;
         }

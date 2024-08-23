@@ -36,7 +36,7 @@ namespace ChompGame.Data
         int Bytes { get; }
     }
 
-    class GameBit
+    public class GameBit
     {
         private int _address;
         private Bit _bit;

@@ -134,12 +134,15 @@ namespace ChompGame.MainGame
         {
             _spriteTileTable = spriteTileTable;
             SpriteIndex = memoryBuilder.AddMaskedByte(Bit.Right5);
-            _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address, 5);
-            _visible = new GameBit(SpriteIndex.Address, Bit.Bit7, memoryBuilder.Memory);
+            _status = new TwoBitEnum<WorldSpriteStatus>(memoryBuilder.Memory, SpriteIndex.Address - 1, 4);
+            _visible = new GameBit(SpriteIndex.Address - 1, Bit.Bit6, memoryBuilder.Memory);
 
             _spriteDefinition = spriteDefinition;
 
-            _position = memoryBuilder.AddExtendedPoint(); // 6 bits free here
+            _position = memoryBuilder.AddExtendedPoint(
+                new GameBit(SpriteIndex.Address, Bit.Bit5, memoryBuilder.Memory),
+                new GameBit(SpriteIndex.Address, Bit.Bit6, memoryBuilder.Memory));
+
             _tileIndex = new GameByteEnum<SpriteTileIndex>(
                 new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left6, memoryBuilder.Memory, 2));
             memoryBuilder.AddByte();

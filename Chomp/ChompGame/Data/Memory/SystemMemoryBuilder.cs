@@ -154,13 +154,9 @@ namespace ChompGame.Data.Memory
             return b;
         }
 
-        /// <summary>
-        /// Note - leaves higher 6 bits of last byte free
-        /// </summary>
-        /// <returns></returns>
-        public ExtendedPoint AddExtendedPoint()
+        public ExtendedPoint AddExtendedPoint(GameBit xExtra, GameBit yExtra)
         {
-            return new ExtendedPoint(this);
+            return new ExtendedPoint(this, xExtra, yExtra);
         }
 
         public Sprite[] AddSprite(int count, SpritesModule spritesModule)
