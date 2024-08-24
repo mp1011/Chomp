@@ -513,7 +513,7 @@ namespace ChompGame.MainGame.SceneModels
                 stairSize);
 
             Rectangle rightStair = new Rectangle(
-                nameTable.Width - _sceneDefinition.RightTiles - stairSize,
+                nameTable.Width - stairSize,
                 nameTable.Height - _sceneDefinition.BottomTiles - stairSize,
                 stairSize,
                 stairSize);
@@ -706,7 +706,7 @@ namespace ChompGame.MainGame.SceneModels
                     () => new ButtonController(_gameModule, playerController, memoryBuilder));
 
                 platformControllers = new SpriteControllerPool<PlatformController>(
-                    size: 4,
+                    size: 8,
                     _gameModule.SpritesModule,
                     () => new PlatformController(_gameModule, memoryBuilder));
             }

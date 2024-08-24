@@ -74,6 +74,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 PlatformType.LeftRight => new MovingPlatformHandler(this, _motionController),
                 PlatformType.UpDown => new MovingPlatformHandler(this, _motionController),
                 PlatformType.Vanishing => new VanishingPlatformHandler(this, _motionController),
+                PlatformType.Falling => new FallingPlatformHandler(this, _motionController),
                 _ => throw new System.NotImplementedException()
             };
 

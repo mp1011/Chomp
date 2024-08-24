@@ -951,6 +951,34 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 left: 2,
                 right: 2);
+
+            _ = Level.Level4_8_Chamber;
+            SceneDefinition.NoScrollCornerStairs(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertInterior,
+                cornerStairStyle: CornerStairStyle.TwoBlockDouble,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Crocodile,
+                spriteGroup: SpriteGroup.Normal,
+                bgPosition:0,
+                top: 0,
+                left: 1,
+                bottom:1,
+                right: 1);
+
+            _ = Level.Level4_9_Chamber2;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.DesertInterior,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                bgPosition1:2,
+                top: 1,
+                bottom: 1);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1970,6 +1998,17 @@ namespace ChompGame.MainGame.SceneModels
               Level.Level4_7_Pit,
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 4,16, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 6, 16, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 8, 16, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 10, 16, scene),
+
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 4, 40, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 6, 40, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 8, 40, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 10, 40, scene),
+
+
               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
             );
 
@@ -2014,7 +2053,6 @@ namespace ChompGame.MainGame.SceneModels
               (b, scene) => new ExitScenePart(b, ExitType.Left, -4, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene)
             );
-
 
             AddLevel(
               Level.Level4_14_DeadEnd3,

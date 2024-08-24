@@ -441,8 +441,11 @@ namespace ChompGame.MainGame.SceneModels
 
             int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
 
-            if (_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.DesertInterior)
+            // todo, figure this out
+            if (_currentScene.Theme == ThemeType.Desert)
                 back2Pixel = -1;
+            if (_currentScene.Theme == ThemeType.DesertInterior)
+                back2Pixel = 100;
 
             if (_graphicsModule.ScreenPoint.Y == 0)
             {
