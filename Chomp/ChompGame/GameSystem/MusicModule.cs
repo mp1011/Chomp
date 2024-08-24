@@ -22,7 +22,8 @@ namespace ChompGame.GameSystem
             Nemesis,
             Flight,
             City,
-            Railway
+            Railway,
+            Dusk
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -61,8 +62,10 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.SeaDreams;
             else if (level >= Level.Level3_1_City && level < Level.Level3_20_Midboss)
                 CurrentSong = SongName.City;
-            else if (level >= Level.Level3_21_CityAfterMidboss)
+            else if (level >= Level.Level3_21_CityAfterMidboss && level < Level.Level4_1_Desert)
                 CurrentSong = SongName.Railway;
+            else if (level >= Level.Level4_1_Desert)
+                CurrentSong = SongName.Dusk;
             else
                 CurrentSong = SongName.None;
         }

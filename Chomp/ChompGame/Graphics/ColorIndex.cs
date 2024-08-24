@@ -95,6 +95,8 @@
         public static byte Red1 => Red(0).Value;
         public static byte Red2 => Red(1).Value;
         public static byte Red3 => Red(2).Value;
+
+
         public static byte Orange => Brown(5).Value;
         public static byte DarkBrown => Brown(0).Value;
 
@@ -116,7 +118,12 @@
 
 
         public static byte LightTan => Brown(7).Value;
-        public static byte LightYellow => Red(7).Value;
+
+        public static byte Yellow1 => Red(3).Value;
+        public static byte Yellow2 => Red(4).Value;
+        public static byte Yellow3 => Red(5).Value;
+        public static byte Yellow4 => Red(6).Value;
+        public static byte Yellow5 => Red(7).Value;
 
         public static byte Brown1 => Brown(0).Value;
         public static byte Brown2 => Brown(1).Value;

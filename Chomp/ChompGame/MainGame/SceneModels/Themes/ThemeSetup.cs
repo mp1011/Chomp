@@ -63,6 +63,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.CityInterior => new CityInteriorThemeSetup(chompGameModule),
                 ThemeType.CityBoss => new CityBossThemeSetup(chompGameModule),
                 ThemeType.Desert => new DesertThemeSetup(chompGameModule),
+                ThemeType.DesertInterior => new DesertInteriorThemeSetup(chompGameModule),
                 _ => throw new NotImplementedException()
             };
 

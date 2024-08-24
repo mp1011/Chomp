@@ -38,6 +38,12 @@
 /processorParam:Quality=Best
 /build:Music/City.ogg
 
+#begin Music/Dusk.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Dusk.ogg
+
 #begin Music/Flight.ogg
 /importer:OggImporter
 /processor:SongProcessor

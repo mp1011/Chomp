@@ -13,6 +13,7 @@ namespace ChompGame.MainGame.SceneModels
         OceanBoss,
         Forest,
         Desert,
+        DesertInterior,
         City,
         CityInterior,
         CityBoss,
@@ -97,6 +98,16 @@ namespace ChompGame.MainGame.SceneModels
                 bg1: PaletteKey.PurpleSky,
                 bg2: PaletteKey.PurpleSky,
                 fg1: PaletteKey.Sand,
+                fg2: PaletteKey.Gray,
+                bomb: PaletteKey.Gray,
+                enemy1: PaletteKey.Bullet,
+                enemy2: PaletteKey.Bullet);
+
+            _ = ThemeType.DesertInterior;
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.PyramidBg,
+                bg2: PaletteKey.PyramidBg,
+                fg1: PaletteKey.BrownBrick,
                 fg2: PaletteKey.Gray,
                 bomb: PaletteKey.Gray,
                 enemy1: PaletteKey.Bullet,

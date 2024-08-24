@@ -920,8 +920,8 @@ namespace ChompGame.MainGame.SceneModels
                variance: LevelShape.LowVariance,
                theme: ThemeType.Desert,
                spriteGroup: SpriteGroup.Normal,
-               enemy1: EnemyIndex.Lizard,
-               enemy2: EnemyIndex.Crocodile,
+               enemy1: EnemyIndex.Crocodile,
+               enemy2: EnemyIndex.Mage,
                bottom: 2,
                top: 0,
                bgPosition1: 1);
@@ -944,7 +944,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.VerticalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.Desert,
+                theme: ThemeType.DesertInterior,
                 shape: LevelShape.Flat,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
@@ -1947,6 +1947,12 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
               Level.Level4_5_Desert3,
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new PrefabScenePart(b, scene, 0, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+              (b, scene) => new PrefabScenePart(b, scene, 8, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 0, definition: scene),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 44, y: 0, definition: scene),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 40, y: 0, definition: scene),
+
               (b, scene) => new ExitScenePart(b, ExitType.Left, -2, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
             

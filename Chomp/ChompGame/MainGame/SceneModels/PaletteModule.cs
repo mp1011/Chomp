@@ -59,7 +59,9 @@ namespace ChompGame.MainGame.SceneModels
         CityBgEvening,
         CityFgEvening,
         PurpleSky,
-        Max = PurpleSky
+        BrownBrick,
+        PyramidBg,
+        Max = PyramidBg
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -146,10 +148,24 @@ namespace ChompGame.MainGame.SceneModels
                 palette.SetColor(index, color.Darker().Value);
         }
 
-        public void Darken(Palette palette, int index)
+        public bool Darken(Palette palette, int index, int limit=0)
         {
-            ColorIndex color = new ColorIndex(palette.GetColorIndex(index));          
+            ColorIndex color = new ColorIndex(palette.GetColorIndex(index));
+            if (color.ColorColumn <= limit)
+                return true;
             palette.SetColor(index, color.Darker().Value);
+            return false;
+        }
+
+        public bool Lighten(Palette palette, int index)
+        {
+            ColorIndex color = new ColorIndex(palette.GetColorIndex(index));
+            if (color.ColorColumn == 7)
+                return true;
+
+            color = color.Lighter();
+            palette.SetColor(index, color.Value);
+            return false;
         }
 
         public override void OnStartup()
@@ -208,12 +224,12 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.Gray,
                 ColorIndex.Black,
                 ColorIndex.Gray1,
-                ColorIndex.LightYellow);
+                ColorIndex.Yellow5);
 
             DefinePalette(PaletteKey.BombLight,
               ColorIndex.Gray1,
               ColorIndex.Gray2,
-              ColorIndex.LightYellow);
+              ColorIndex.Yellow5);
 
             DefinePalette(PaletteKey.Player,
                 ColorIndex.Orange,
@@ -228,7 +244,7 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.BlueEnemy,
                 ColorIndex.Blue4,
                 ColorIndex.Blue5,
-                ColorIndex.LightYellow);
+                ColorIndex.Yellow5);
 
             DefinePalette(PaletteKey.BlueEnemy2,
                ColorIndex.Black,
@@ -240,7 +256,7 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.Black,
                 ColorIndex.Blue4, //fill
                 ColorIndex.Orange, 
-                ColorIndex.LightYellow); //eye
+                ColorIndex.Yellow5); //eye
 
 
             DefinePalette(PaletteKey.BlueGrayEnemy,
@@ -266,7 +282,7 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.Bullet,
                 ColorIndex.Red2,
                 ColorIndex.Red3,
-                ColorIndex.LightYellow);
+                ColorIndex.Yellow5);
 
             DefinePalette(PaletteKey.StatusBar,
                 ColorIndex.Black,
@@ -277,7 +293,7 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.Coins,
               ColorIndex.Gold,
               ColorIndex.DarkBrown,
-              ColorIndex.LightYellow);
+              ColorIndex.Yellow5);
 
             DefinePalette(PaletteKey.DynamicBlocks,
              ColorIndex.Black,
@@ -344,6 +360,18 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.Brown5,
                 ColorIndex.Brown6,
                 ColorIndex.Red1);
+
+            DefinePalette(PaletteKey.BrownBrick,
+              ColorIndex.Brown1,
+              ColorIndex.Brown2,
+              ColorIndex.Brown3,
+              ColorIndex.Brown4);
+
+            DefinePalette(PaletteKey.PyramidBg,
+                ColorIndex.Red1,
+                ColorIndex.DarkGray1,
+                ColorIndex.Yellow1,
+                ColorIndex.Yellow4);
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -413,7 +441,7 @@ namespace ChompGame.MainGame.SceneModels
 
             int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
 
-            if (_currentScene.Theme == ThemeType.Desert)
+            if (_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.DesertInterior)
                 back2Pixel = -1;
 
             if (_graphicsModule.ScreenPoint.Y == 0)
@@ -432,7 +460,8 @@ namespace ChompGame.MainGame.SceneModels
                 LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
             }
             else if (_graphicsModule.ScreenPoint.Y == _currentScene.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true)
-                && _currentScene.Theme != ThemeType.Desert )
+                && _currentScene.Theme != ThemeType.Desert
+                && _currentScene.Theme != ThemeType.DesertInterior)
             {
                 _graphicsModule.GetBackgroundPalette(0).SetColor(0, _bgColor.Value);
             }
@@ -490,10 +519,10 @@ namespace ChompGame.MainGame.SceneModels
 
             if(c1 == ColorIndex.Red1)
             {
-                p.SetColor(2, ColorIndex.LightYellow);
+                p.SetColor(2, ColorIndex.Yellow5);
                 p.SetColor(3, ColorIndex.Red2);
             }
-            else if (c1 == ColorIndex.LightYellow)
+            else if (c1 == ColorIndex.Yellow5)
             {
                 p.SetColor(2, ColorIndex.White);
                 p.SetColor(3, ColorIndex.Red1);
@@ -501,7 +530,7 @@ namespace ChompGame.MainGame.SceneModels
             else if (c1 == ColorIndex.White)
             {
                 p.SetColor(2, ColorIndex.Red2);
-                p.SetColor(3, ColorIndex.LightYellow);
+                p.SetColor(3, ColorIndex.Yellow5);
             }
             else
             {
@@ -519,6 +548,15 @@ namespace ChompGame.MainGame.SceneModels
 
                 var coinPallete = GameSystem.CoreGraphicsModule.GetBackgroundPalette(BgPalette.Coin);
                 CyclePalette2(coinPallete);
+
+                if(_currentScene.Theme == ThemeType.DesertInterior)
+                {
+                    if (Lighten(BgPalette2, 2))
+                        BgPalette2.SetColor(2, ColorIndex.Yellow1);
+
+                    if (Darken(BgPalette2, 3, 4))
+                        BgPalette2.SetColor(3, ColorIndex.Yellow5);
+                }
             }
         }
     }
