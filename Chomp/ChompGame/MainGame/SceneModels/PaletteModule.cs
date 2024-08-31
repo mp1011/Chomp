@@ -24,6 +24,14 @@ namespace ChompGame.MainGame.SceneModels
         DynamicBlock=3
     }
 
+    public enum PaletteChange : byte
+    {
+        None,
+        Bg1,
+        Bg2,
+        UpdateColor0
+    }
+
     public enum PaletteKey : byte
     {
         Test,
@@ -77,6 +85,7 @@ namespace ChompGame.MainGame.SceneModels
         public Palette BgPalette2 { get; private set; }
 
         private GameByte _bgColor;
+        private DenseTwoBitArray _paletteChangeTable;
 
         public byte BgColor
         {
@@ -116,6 +125,9 @@ namespace ChompGame.MainGame.SceneModels
             memoryBuilder.AddBytes(_graphicsModule.Specs.BytesPerPalette);
 
             _bgColor = memoryBuilder.AddByte();
+
+            _paletteChangeTable = new DenseTwoBitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
         }
 
         public int GetPaletteAddress(PaletteKey key) => _paletteAddress + (int)key * Specs.BytesPerPalette;
@@ -409,6 +421,8 @@ namespace ChompGame.MainGame.SceneModels
             dynamicBlockPalette.SetColor(0, _bgColor.Value);
             coinPalette.SetColor(0, _bgColor.Value);
             foregroundPalette.SetColor(0, _bgColor.Value);
+
+            FillPaletteChangeTable();
         }
         private void DefinePalette(PaletteKey key, byte color1, byte color2, byte color3, byte color4)
         {
@@ -421,6 +435,32 @@ namespace ChompGame.MainGame.SceneModels
         private void DefinePalette(PaletteKey key, byte color2, byte color3, byte color4)
         {
             DefinePalette(key,0, color2, color3, color4);
+        }
+
+        public void FillPaletteChangeTable()
+        {
+            if(_currentScene.Theme == ThemeType.Desert)
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
+            }
+            else if (_currentScene.ScrollStyle == ScrollStyle.Horizontal &&
+                _currentScene.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg2;
+            }
+            else
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.UpdateColor0;
+            }
         }
 
         public void OnHBlank()
@@ -439,34 +479,49 @@ namespace ChompGame.MainGame.SceneModels
                 return;
             }
 
-            int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
-
-            // todo, figure this out
-            if (_currentScene.Theme == ThemeType.Desert)
-                back2Pixel = -1;
-            if (_currentScene.Theme == ThemeType.DesertInterior)
-                back2Pixel = 100;
-
             if (_graphicsModule.ScreenPoint.Y == 0)
             {
                 LoadPalette(PaletteKey.StatusBar, _graphicsModule.GetBackgroundPalette(0));
             }
             else if (_graphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
+                int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
                 if (_graphicsModule.ScreenPoint.Y >= back2Pixel)
-                    LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
+                    ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundLayer.Back2]);
                 else
+                    ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundLayer.Begin]);
+            }
+            else
+            {
+                CheckPaletteChange(0);
+                CheckPaletteChange(1);
+                CheckPaletteChange(2);
+                CheckPaletteChange(3);
+            }
+        }
+
+        private void CheckPaletteChange(int index)
+        {
+            var pixelY = _currentScene.GetBackgroundLayerPixel((BackgroundLayer)index, true) - _tileModule.Scroll.Y;
+            if (_graphicsModule.ScreenPoint.Y != pixelY)
+                return;
+
+            ApplyPaletteChange((PaletteChange)_paletteChangeTable[index]);           
+        }
+
+        private void ApplyPaletteChange(PaletteChange p)
+        {
+            switch (p)
+            {
+                case PaletteChange.Bg1:
                     LoadPalette(BgPalette1.Address, _graphicsModule.GetBackgroundPalette(0));
-            }
-            else if (_graphicsModule.ScreenPoint.Y == back2Pixel)
-            {
-                LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
-            }
-            else if (_graphicsModule.ScreenPoint.Y == _currentScene.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true)
-                && _currentScene.Theme != ThemeType.Desert
-                && _currentScene.Theme != ThemeType.DesertInterior)
-            {
-                _graphicsModule.GetBackgroundPalette(0).SetColor(0, _bgColor.Value);
+                    return;
+                case PaletteChange.Bg2:
+                    LoadPalette(BgPalette2.Address, _graphicsModule.GetBackgroundPalette(0));
+                    return;
+                case PaletteChange.UpdateColor0:
+                    _graphicsModule.GetBackgroundPalette(0).SetColor(0, _bgColor.Value);
+                    return;
             }
         }
 

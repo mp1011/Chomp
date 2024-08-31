@@ -130,19 +130,29 @@ namespace ChompGame.MainGame
 
         private void HandleParallax()
         {
-
-            if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            switch(_sceneDefinition.HorizontalScrollStyle)                
             {
-                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
-            }
-            else if(_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar:true))
-            {
-                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
-            }
-            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
-            {
-                _tileModule.Scroll.X = _realScrollX.Value;
-            }
+                case HorizontalScrollStyle.HorizonAndSky:
+                    if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
+                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
+                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
+                        _tileModule.Scroll.X = _realScrollX.Value;
+                    break;
+                case HorizontalScrollStyle.Interior:
+                    if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+                        _tileModule.Scroll.X = _realScrollX.Value;
+                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Begin, includeStatusBar: true))
+                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back1, includeStatusBar: true))
+                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
+                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
+                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
+                        _tileModule.Scroll.X = _realScrollX.Value;
+                    break;
+            }            
         }
 
         private void HandleTrainParallax()

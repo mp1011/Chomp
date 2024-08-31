@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private const int _hoverSpeed = 20;
         private readonly WorldSprite _player;
 
-        private GameByte _variation;
+        private LowNibble _variation;
         private NibbleEnum<BirdState> _state;
 
         private enum BirdState : byte
@@ -44,8 +44,9 @@ namespace ChompGame.MainGame.SpriteControllers
                     memoryBuilder)
         {
             _player = player;
-            _variation = memoryBuilder.AddByte();
-            _state = new NibbleEnum<BirdState>(new HighNibble(_stateTimer.Address, memoryBuilder.Memory));
+            _variation = new LowNibble(memoryBuilder);
+            _state = new NibbleEnum<BirdState>(new HighNibble(memoryBuilder.CurrentAddress, memoryBuilder.Memory));
+            memoryBuilder.AddByte();
             Palette = gameModule.CurrentScene.Theme.IsCityTheme() ? SpritePalette.Enemy2 : SpritePalette.Player;
         }
 

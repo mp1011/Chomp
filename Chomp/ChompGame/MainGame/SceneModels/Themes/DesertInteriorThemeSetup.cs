@@ -9,6 +9,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
     class DesertInteriorThemeSetup : ThemeSetup
     {
         private const int Torch = 1;
+        private const int BackTile1 = 2;
+        private const int BackTile2 = 3;
 
         public DesertInteriorThemeSetup(ChompGameModule m) : base(m) 
         {
@@ -17,27 +19,41 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-            nameTable.ForEach((x, y, b) =>
-            {          
-                if (nameTable[x, y] != 0)
+            switch(_sceneDefinition.HorizontalScrollStyle)
+            {
+                case HorizontalScrollStyle.Interior:
+                    nameTable.ForEach((x, y, b) =>
+                    {
+                        if (nameTable[x, y] != 0)
+                            return;
+
+                        nameTable[x, y] = (byte)((x % 2) == (y % 2) ? BackTile1 : BackTile2);
+                    });
                     return;
+                default:
+                    nameTable.ForEach((x, y, b) =>
+                    {
+                        if (nameTable[x, y] != 0)
+                            return;
 
-                if ((y % 6) != 0)
+                        if ((y % 6) != 0)
+                            return;
+
+                        if ((y % 12) != 0)
+                        {
+                            if ((x % 5) != 0)
+                                return;
+                        }
+                        else
+                        {
+                            if (((x + 2) % 5) != 0)
+                                return;
+                        }
+
+                        nameTable[x, y] = Torch;
+                    });
                     return;
-
-                if ((y % 12) != 0)
-                {
-                    if ((x % 5) != 0)
-                        return;
-                }
-                else
-                {
-                    if (((x+2) % 5) != 0)
-                        return;
-                }
-
-                nameTable[x, y] = Torch;
-            });
+            }
         }
 
         public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
@@ -51,7 +67,6 @@ namespace ChompGame.MainGame.SceneModels.Themes
                     attributeTable[x, y] = 1;
                 else
                     attributeTable[x, y] = 0;
-
             });
 
             return attributeTable;
@@ -76,7 +91,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
             masterPatternTable.CopyTilesTo(
                  destination: vramPatternTable,
-                 source: new InMemoryByteRectangle(10, 14, 1, 1),
+                 source: new InMemoryByteRectangle(10, 14, 3, 1),
                  destinationPoint: new Point(1, 0),
                  _specs,
                  memory);

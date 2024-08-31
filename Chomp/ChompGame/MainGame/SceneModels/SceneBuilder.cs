@@ -978,7 +978,8 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 bgPosition1:2,
                 top: 1,
-                bottom: 1);
+                bottom: 1,
+                style: HorizontalScrollStyle.Interior);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)

@@ -76,6 +76,7 @@ namespace ChompGame.MainGame.SpriteControllers
             var palette = new TwoBitEnum<SpritePalette>(memoryBuilder.Memory, _openState.Address, 6);
             palette.Value = Palette;
 
+            memoryBuilder.AddByte(); // WorldSprite uses prior bytes
             WorldSprite = new WorldSprite(
                 specs: _spritesModule.Specs,
                 spriteTileTable: gameModule.SpriteTileTable,

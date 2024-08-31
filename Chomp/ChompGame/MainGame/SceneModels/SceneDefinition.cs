@@ -21,6 +21,12 @@ namespace ChompGame.MainGame.SceneModels
         TwoBlockRight
     }
 
+    public enum HorizontalScrollStyle : byte
+    {
+        HorizonAndSky,
+        Interior
+    }
+
     public enum BackgroundLayer
     {
         Begin,
@@ -83,9 +89,11 @@ namespace ChompGame.MainGame.SceneModels
         private readonly TwoBitEnum<ScrollStyle> _scrollStyle;
         private readonly TwoBitEnum<LevelShape> _levelShape;
         private readonly TwoBit _bgPosition1;
-        private readonly TwoBit _bgPosition2;
+     
+        //
+        private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle;
+        private readonly TwoBitEnum<HorizontalScrollStyle> _horizontalScrollStyle;
 
-        private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle; //shared with bg2
 
         //byte 1
         private GameByteEnum<ThemeType> _theme;
@@ -180,12 +188,10 @@ namespace ChompGame.MainGame.SceneModels
         };
 
         public ThemeType Theme => _theme.Value;
-
         public ThemeSetup CreateThemeSetup(ChompGameModule chompGameModule) => 
             ThemeSetup.Create(Theme, _specs, this, chompGameModule);
-
         public CornerStairStyle CornerStairStyle => _cornerStairStyle.Value;
-
+        public HorizontalScrollStyle HorizontalScrollStyle => _horizontalScrollStyle.Value;
         public FallCheck SpriteFallCheck => ScrollStyle switch {
                     ScrollStyle.Horizontal => FallCheck.ScreenHeight,
                     ScrollStyle.None => FallCheck.ScreenHeight,
@@ -361,7 +367,8 @@ namespace ChompGame.MainGame.SceneModels
             SpriteGroup spriteGroup,
             byte top,
             byte bottom,
-            byte bgPosition1)
+            byte bgPosition1,
+            HorizontalScrollStyle style = HorizontalScrollStyle.HorizonAndSky)
         {
             return new SceneDefinition(memoryBuilder,
                 specs,
@@ -375,7 +382,8 @@ namespace ChompGame.MainGame.SceneModels
                 top,
                 0,
                 bottom,
-                bgPosition1);
+                bgPosition1,
+                (byte)style);
         }
         public static SceneDefinition VerticalScroll(
             SystemMemoryBuilder memoryBuilder,
@@ -469,8 +477,9 @@ namespace ChompGame.MainGame.SceneModels
             _scrollStyle = new TwoBitEnum<ScrollStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
             _levelShape = new TwoBitEnum<LevelShape>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
             _bgPosition1 = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
-            _bgPosition2 = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
-            _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(memoryBuilder.Memory, _bgPosition2.Address, 6);
+
+            _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+            _horizontalScrollStyle = new TwoBitEnum<HorizontalScrollStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
 
             memoryBuilder.AddByte();
 
@@ -524,7 +533,7 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             _bgPosition1.Value = bg1;
-            _bgPosition2.Value = bg2;
+            _horizontalScrollStyle.Value = (HorizontalScrollStyle)bg2;
 
         }
 
@@ -534,7 +543,7 @@ namespace ChompGame.MainGame.SceneModels
             _scrollStyle = new TwoBitEnum<ScrollStyle>(systemMemory, address, 0);
             _levelShape = new TwoBitEnum<LevelShape>(systemMemory, address, 2);
             _bgPosition1 = new TwoBit(systemMemory, address, 4);
-            _bgPosition2 = new TwoBit(systemMemory, address, 6);
+            _horizontalScrollStyle = new TwoBitEnum<HorizontalScrollStyle>(systemMemory, address, 6);
             _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(systemMemory, address, 6);
 
             _theme = new GameByteEnum<ThemeType>(new GameByte(address+1, systemMemory));
