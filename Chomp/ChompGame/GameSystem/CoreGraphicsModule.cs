@@ -121,14 +121,17 @@ namespace ChompGame.GameSystem
             if (screenPoint.Y < Constants.StatusBarHeight)
                 return GetPalette(0);
 
+            if (screenPoint.Y == 8)
+                GameDebug.NoOp();
+
             int attrX = (screenPoint.X + _tileModule.Scroll.X) / (Specs.TileWidth * Specs.AttributeTableBlockSize);
             int attrY = (screenPoint.Y + _tileModule.Scroll.Y) / (Specs.TileHeight * Specs.AttributeTableBlockSize);
 
             attrX %= _tileModule.AttributeTable.Width;
-                attrY %= _tileModule.AttributeTable.Height;
+            attrY %= _tileModule.AttributeTable.Height;
 
-                byte index = _tileModule.AttributeTable[attrX, attrY];            
-                return GetPalette(index);
+            byte index = _tileModule.AttributeTable[attrX, attrY];            
+            return GetPalette(index);
         }
 
         public void DrawFrame(SpriteBatch spriteBatch, Texture2D canvas)

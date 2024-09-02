@@ -106,7 +106,7 @@ namespace ChompGame.MainGame.SceneModels
             _ = ThemeType.DesertInterior;
             new Theme(memoryBuilder,
                 bg1: PaletteKey.PyramidBg,
-                bg2: PaletteKey.BlueGrayEnemy,
+                bg2: PaletteKey.PyramidTorches,
                 fg1: PaletteKey.BrownBrick,
                 fg2: PaletteKey.Gray,
                 bomb: PaletteKey.Gray,

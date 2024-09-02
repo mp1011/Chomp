@@ -19,40 +19,53 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-            switch(_sceneDefinition.HorizontalScrollStyle)
+            if(_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal 
+                && _sceneDefinition.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
             {
-                case HorizontalScrollStyle.Interior:
-                    nameTable.ForEach((x, y, b) =>
-                    {
-                        if (nameTable[x, y] != 0)
-                            return;
+                var layer2Start = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, false);
+                var layer2End = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back2, false);
+                var fgStart = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false);
+                var layer2Mid = layer2Start + (layer2End - layer2Start) / 2;
 
+                nameTable.ForEach((x, y, b) =>
+                {
+                    if(y >= fgStart || nameTable[x, y] != 0)
+                        return;
+                   
+                    if (y >= layer2Start && y < layer2End)
+                    {
+                        nameTable[x, y] = (byte)((y == layer2Mid && (x % 4) == 0) ? Torch : 0);
+                    }
+                    else
+                    {
                         nameTable[x, y] = (byte)((x % 2) == (y % 2) ? BackTile1 : BackTile2);
-                    });
-                    return;
-                default:
-                    nameTable.ForEach((x, y, b) =>
+                    }
+                });
+            }
+            else
+            {
+                nameTable.ForEach((x, y, b) =>
+                {
+                    if (nameTable[x, y] != 0)
+                        return;
+
+                    if ((y % 6) != 0)
+                        return;
+
+                    if ((y % 12) != 0)
                     {
-                        if (nameTable[x, y] != 0)
+                        if ((x % 5) != 0)
                             return;
-
-                        if ((y % 6) != 0)
+                    }
+                    else
+                    {
+                        if (((x + 2) % 5) != 0)
                             return;
+                    }
 
-                        if ((y % 12) != 0)
-                        {
-                            if ((x % 5) != 0)
-                                return;
-                        }
-                        else
-                        {
-                            if (((x + 2) % 5) != 0)
-                                return;
-                        }
-
-                        nameTable[x, y] = Torch;
-                    });
-                    return;
+                    nameTable[x, y] = Torch;
+                });
+                return;
             }
         }
 

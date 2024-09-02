@@ -69,7 +69,8 @@ namespace ChompGame.MainGame.SceneModels
         PurpleSky,
         BrownBrick,
         PyramidBg,
-        Max = PyramidBg
+        PyramidTorches,
+        Max = PyramidTorches
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -381,6 +382,13 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.PyramidBg,
                 ColorIndex.Red1,
+                ColorIndex.Red1,
+                ColorIndex.Brown1,
+                ColorIndex.Brown2);
+
+
+            DefinePalette(PaletteKey.PyramidTorches,
+                ColorIndex.Red1,
                 ColorIndex.DarkGray1,
                 ColorIndex.Yellow1,
                 ColorIndex.Yellow4);
@@ -403,7 +411,11 @@ namespace ChompGame.MainGame.SceneModels
             var enemy2Pallete = _graphicsModule.GetSpritePalette(SpritePalette.Enemy2);
 
             LoadPalette(levelTheme.Background2, backgroundPalette);
-            _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
+
+            if(_currentScene.Theme == ThemeType.DesertInterior)
+                _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
+            else
+                _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
 
             LoadPalette(levelTheme.Background1, backgroundPalette);
             LoadPalette(levelTheme.Foreground1, foregroundPalette);
@@ -449,10 +461,17 @@ namespace ChompGame.MainGame.SceneModels
             else if (_currentScene.ScrollStyle == ScrollStyle.Horizontal &&
                 _currentScene.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg1;
+            }
+            else if(_currentScene.Theme == ThemeType.DesertInterior)
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
             }
             else
             {

@@ -24,6 +24,7 @@ namespace ChompGame.MainGame.WorldScrollers
         protected override byte ScrollableSectionBegin =>
             _sceneDefinition.Theme switch {
                 ThemeType.Desert => 0,
+                ThemeType.DesertInterior => 0,
                 _ => (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, includeStatusBar: false)
             };
 

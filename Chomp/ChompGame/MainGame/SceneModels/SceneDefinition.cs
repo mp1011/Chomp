@@ -88,12 +88,9 @@ namespace ChompGame.MainGame.SceneModels
         //byte 0
         private readonly TwoBitEnum<ScrollStyle> _scrollStyle;
         private readonly TwoBitEnum<LevelShape> _levelShape;
-        private readonly TwoBit _bgPosition1;
-     
-        //
+        private readonly TwoBit _bgPosition1;    
         private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle;
-        private readonly TwoBitEnum<HorizontalScrollStyle> _horizontalScrollStyle;
-
+        private readonly TwoBitEnum<HorizontalScrollStyle> _horizontalScrollStyle; // shared with above
 
         //byte 1
         private GameByteEnum<ThemeType> _theme;
@@ -229,15 +226,34 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
         public bool HasSprite(SpriteType spriteType) => Sprites.Contains(spriteType);
-        public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar) =>
-            layer switch {
-                BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
-                BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + (_bgPosition1.Value*2),
-                BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + 2,
-                BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + 2,
-                BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar? Constants.StatusBarTiles : 0) - BottomTiles,                
-                _ => 0
-            };
+        public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar)
+        {
+            if (ScrollStyle == ScrollStyle.Horizontal && HorizontalScrollStyle == HorizontalScrollStyle.Interior)
+            {
+                var bgHeight = LevelTileHeight - TopTiles - BottomTiles;
+                var layer1Height = (bgHeight - _bgPosition1.Value * 2) / 2;
+
+                return layer switch {
+                    BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
+                    BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + layer1Height,
+                    BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + (_bgPosition1.Value*2),
+                    BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + layer1Height,
+                    BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
+                    _ => 0
+                };
+            }
+            else
+            {
+                return layer switch {
+                    BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
+                    BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + (_bgPosition1.Value * 2),
+                    BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + 2,
+                    BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + 2,
+                    BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
+                    _ => 0
+                };
+            }
+        }
 
         public int GetBackgroundLayerPixel(BackgroundLayer layer, bool includeStatusBar) =>
             GetBackgroundLayerTile(layer, includeStatusBar) * _specs.TileHeight;

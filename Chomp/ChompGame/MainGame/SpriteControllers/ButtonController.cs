@@ -14,7 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private PlayerController _playerController;
         private DynamicBlockController _dynamicBlockController;
         private ChompAudioService _audio;
-        private GameByte _state;
+        private LowNibble _state;
         private GameByte _levelTimer;
 
         public SpritePalette Palette => SpritePalette.Platform;
@@ -51,7 +51,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _audio = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _levelTimer = gameModule.LevelTimer;
-            _state = memoryBuilder.AddByte();
+            _state = new LowNibble(memoryBuilder);
+            memoryBuilder.AddByte();
             
             WorldSprite = new WorldSprite(
                 specs: gameModule.Specs,
