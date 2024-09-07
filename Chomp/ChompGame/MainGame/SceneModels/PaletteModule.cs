@@ -2,11 +2,9 @@
 using ChompGame.Data.Memory;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
-using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SceneModels
 {
-
     public enum SpritePalette :byte
     {
         Fire=0,
@@ -77,7 +75,6 @@ namespace ChompGame.MainGame.SceneModels
     {
         private int _paletteAddress;
         private readonly CoreGraphicsModule _graphicsModule;
-        private readonly GameRAM _ram;
         private GameByte _timer;
         private SceneDefinition _currentScene;
         private TileModule _tileModule;
@@ -111,7 +108,6 @@ namespace ChompGame.MainGame.SceneModels
         {
             _tileModule = tileModule;
             _graphicsModule = coreGraphicsModule;
-            _ram = ram;
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
