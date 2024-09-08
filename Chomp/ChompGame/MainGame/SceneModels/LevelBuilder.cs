@@ -350,6 +350,7 @@ namespace ChompGame.MainGame.SceneModels
                 },
                 ScrollStyle.NameTable => _sceneDefinition.LevelShape switch {
                     LevelShape.TwoHorizontalChambers => AddHorizontalChambers(nameTable),
+                    LevelShape.TwoVerticalChambers => AddVerticalChambers(nameTable),
                     LevelShape.FourChambers => AddFourChambers(nameTable),
                     _ => nameTable
                 },
@@ -372,6 +373,20 @@ namespace ChompGame.MainGame.SceneModels
             nameTable.ForEach((x, y, b) =>
             {
                 if (y >= midFloorStart && y < midFloorEnd)
+                    nameTable[x, y] = 1;
+            });
+
+            return nameTable;
+        }
+
+        private NBitPlane AddVerticalChambers(NBitPlane nameTable)
+        {
+            int midWallStart = (nameTable.Width / 2) - 2;
+            int midWallEnd = midWallStart + 4;
+
+            nameTable.ForEach((x, y, b) =>
+            {
+                if (x >= midWallStart && x < midWallEnd)
                     nameTable[x, y] = 1;
             });
 

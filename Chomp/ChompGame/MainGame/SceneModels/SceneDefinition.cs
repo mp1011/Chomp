@@ -173,6 +173,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public int RightEdgeFloorTiles => _scrollStyle.Value switch {
             ScrollStyle.None => _levelShape.Value switch {
+                LevelShape.BigStair => 12,
                 LevelShape.CornerStairs => _cornerStairStyle.Value switch {
                     CornerStairStyle.OneBlockDouble => BottomTiles + 4,
                     CornerStairStyle.TwoBlockDouble => BottomTiles + 4,
