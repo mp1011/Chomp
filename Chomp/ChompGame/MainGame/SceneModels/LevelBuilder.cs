@@ -92,14 +92,12 @@ namespace ChompGame.MainGame.SceneModels
                 if (sp.Type != ScenePartType.SideExit)
                     continue;
 
-                if (sp.ExitType == ExitType.Right)
-                    nameTable = AddRightExit(nameTable);
-
-                else if (sp.ExitType == ExitType.Left)
-                    nameTable = AddLeftExit(nameTable);
-
-                else if (sp.ExitType == ExitType.Bottom)
-                    nameTable = AddBottomExit(nameTable);
+                nameTable = sp.ExitType switch {
+                    ExitType.Right => AddRightExit(nameTable),
+                    ExitType.Left => AddLeftExit(nameTable),
+                    ExitType.Bottom => AddBottomExit(nameTable),
+                    ExitType.Top => AddTopExit(nameTable),
+                    _ => nameTable };
             }
 
             return nameTable;
@@ -303,6 +301,37 @@ namespace ChompGame.MainGame.SceneModels
             return nameTable;
         }
 
+        private NBitPlane AddTopExit(NBitPlane nameTable)
+        {
+            int xStart = (nameTable.Width / 2) - 2;
+            int width = 4;
+
+            bool needsExit = false;
+
+            for(int x = xStart; x <= xStart + width; x++)
+            {
+                for(int y= 0; y <= _sceneDefinition.TopTiles; y++)
+                {
+                    if (nameTable[x, y] != 0)
+                        needsExit = true;
+                }
+            }
+            if (!needsExit)
+                return nameTable;
+
+            nameTable.ForEach((x, y, b) =>
+            {
+
+                if (x >= xStart
+                    && x < xStart + width
+                    && y <= _sceneDefinition.TopTiles)
+                {
+                    nameTable[x, y] = 0;
+                }
+            });
+
+            return nameTable;
+        }
 
         private NBitPlane AddEdgeTiles(NBitPlane nameTable)
         {
@@ -592,6 +621,26 @@ namespace ChompGame.MainGame.SceneModels
 
                     int stepHeight = changeY < 0 ? region.Height + ((stepNumber + 1) * changeY)
                                                  : (stepNumber + 1) * changeY;
+
+                    nameTable[x, y] = (byte)((regionY >= stepHeight) ? 1 : 0);
+                });
+
+            return nameTable;
+        }
+        //todo
+        private NBitPlane AddStairs2(NBitPlane nameTable, Rectangle region, int changeX, int changeY)
+        {
+            nameTable.ForEach(new Point(region.Left, region.Top), new Point(region.Right, region.Bottom),
+                (x, y, b) =>
+                {
+                    int regionX = x - region.X;
+                    int regionY = y - region.Y;
+                    int stepNumber = regionX / changeX;
+
+                    stepNumber--;
+
+                    int stepHeight = changeY < 0 ? region.Height + (stepNumber * changeY)
+                                                 : stepNumber * changeY;
 
                     nameTable[x, y] = (byte)((regionY >= stepHeight) ? 1 : 0);
                 });
@@ -1043,7 +1092,7 @@ namespace ChompGame.MainGame.SceneModels
             if(part.Shape == PrefabStyle.StairDown)
             {
                 int stepSize = 2;
-                AddStairs(levelMap, new Rectangle(part.X, part.Y, part.Width, part.Height),
+                AddStairs2(levelMap, new Rectangle(part.X, part.Y, part.Width, part.Height),
                     stepSize, stepSize);
             }
 
