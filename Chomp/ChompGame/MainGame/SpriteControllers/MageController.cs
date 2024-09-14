@@ -21,6 +21,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private NibbleEnum<Phase> _phase;
 
+        public override bool CollidesWithPlayer(PlayerController player)
+        {
+            return false;
+        }
+
+        protected override bool DestroyWhenFarOutOfBounds => false;
+
+        protected override bool DestroyWhenOutOfBounds => false;
+
         private enum Phase : byte
         {
             Hidden,
@@ -69,6 +78,16 @@ namespace ChompGame.MainGame.SpriteControllers
                 return Math.Abs(_player.X - WorldSprite.X) < 18;
         }
 
+
+        protected override void UpdateHidden()
+        {
+            WorldSprite.Visible = false;
+            CollisionEnabled = false;
+            WorldSprite.X = _player.X;
+            WorldSprite.Y = _player.Y - 14;
+            WorldSprite.Show();
+        }
+
         protected override void UpdateActive()
         {
             if (_phase.Value == Phase.Hidden)
@@ -85,11 +104,47 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.Appear)
             {
-                _motion.Stop();
                 WorldSprite.Visible = _levelTimer.Value.IsMod(2);
 
                 if (_levelTimer.Value.IsMod(8))
                     _stateTimer.Value++;
+
+                int xDistance = WorldSprite.X - _player.X;
+                int yDistance = WorldSprite.Y - (_player.Y - 12);
+
+                int distanceThreshold = 8;
+                if (xDistance < -distanceThreshold)
+                {
+                    _motion.XAcceleration = 5;
+                    _motion.TargetXSpeed = 60;
+                }
+                else if (xDistance > distanceThreshold)
+                {
+                    _motion.XAcceleration = 5;
+                    _motion.TargetXSpeed = -60;
+                }
+                else
+                {
+                    _motion.XAcceleration = 5;
+                    _motion.TargetXSpeed = 0;
+                }
+
+                if (yDistance < -distanceThreshold)
+                {
+                    _motion.YAcceleration = 5;
+                    _motion.TargetYSpeed = 60;
+                }
+                else if (yDistance > distanceThreshold)
+                {
+                    _motion.YAcceleration = 5;
+                    _motion.TargetYSpeed = -60;
+                }
+                else
+                {
+                    _motion.YAcceleration = 5;
+                    _motion.TargetYSpeed = 0;
+                }
+
 
                 if (_stateTimer.Value == 10)
                 {
@@ -97,6 +152,8 @@ namespace ChompGame.MainGame.SpriteControllers
                     _phase.Value = Phase.Attack;
                     _motion.TargetYSpeed = -20;
                 }
+
+                _motion.Apply(WorldSprite);
             }
             else if (_phase.Value == Phase.Attack)
             {

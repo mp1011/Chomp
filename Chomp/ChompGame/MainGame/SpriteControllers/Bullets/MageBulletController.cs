@@ -26,8 +26,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public override IMotion Motion => _motion;
 
-        protected override bool DestroyWhenFarOutOfBounds => true;
-        protected override bool DestroyWhenOutOfBounds => true;
+        protected override bool DestroyWhenFarOutOfBounds => false;
+        protected override bool DestroyWhenOutOfBounds => false;
 
         public bool CollidesWithBomb(WorldSprite bomb) => false;
         public bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);

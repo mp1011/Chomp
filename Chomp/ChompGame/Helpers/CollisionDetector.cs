@@ -35,6 +35,7 @@ namespace ChompGame.Helpers
     {
         private NBitPlane _realMap;
         private const int _statusBarRows = 2;
+        private const int _padding = 8;
 
         public BitPlaneForCollision(NBitPlane realMap)
         {
@@ -44,12 +45,12 @@ namespace ChompGame.Helpers
         public byte this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public byte this[int x, int y]
         {
-            get => y < 2 ? (byte)0 : _realMap[x, y - _statusBarRows];
+            get => (y < 2 || y >= _realMap.Height + _statusBarRows) ? (byte)0 : _realMap[x, y - _statusBarRows];
             set => _realMap[x, y - _statusBarRows] = value;
         }
         public int Width => _realMap.Width;
 
-        public int Height => _realMap.Height + _statusBarRows;
+        public int Height => _realMap.Height + _statusBarRows + _padding;
 
         public int Bytes => _realMap.Bytes;
 

@@ -95,7 +95,8 @@ namespace ChompGame.MainGame.SceneModels
         Level4_27_Chamber8,
         Level4_28_SwitchRoom2,
         Level4_29_DeadEnd6,
-        Level4_30_Chamber7
+        Level4_30_Chamber7,
+        Level4_31_After_Midboss
     }
 
     class SceneBuilder
@@ -1085,7 +1086,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.DesertInterior,
+                theme: ThemeType.Desert,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
@@ -1181,7 +1182,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.DesertInterior,
+                theme: ThemeType.Desert,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
@@ -2413,6 +2414,13 @@ namespace ChompGame.MainGame.SceneModels
               Level.Level4_16_PyramidEntrance2,
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 6, y: 24, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 6, y: 22, definition: scene),
+              (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 6, y: 20, definition: scene),
+
+              (b, scene) => new SpriteScenePart(b, ScenePartType.Button, 4, 27, scene),
+
               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 2, scene),
               (b, scene) => new PrefabScenePart(b, scene, 16, 26, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
               (b, scene) => new PrefabScenePart(b, scene, 24, 26, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
@@ -2542,7 +2550,7 @@ namespace ChompGame.MainGame.SceneModels
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
 
               (b, scene) => new ExitScenePart(b, ExitType.Left, -7, scene),
-              (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene)
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 7, scene)
             );
 
            AddLevel(
