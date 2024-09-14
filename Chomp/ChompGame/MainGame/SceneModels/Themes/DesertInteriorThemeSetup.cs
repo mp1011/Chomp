@@ -29,7 +29,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
                 nameTable.ForEach((x, y, b) =>
                 {
-                    if(y >= fgStart || nameTable[x, y] != 0)
+                    if(y < _sceneDefinition.TopTiles || y >= fgStart || nameTable[x, y] != 0)
                         return;
                    
                     if (y >= layer2Start && y < layer2End)

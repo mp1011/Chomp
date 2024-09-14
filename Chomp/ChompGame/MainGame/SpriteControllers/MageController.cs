@@ -12,6 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class MageController : EnemyController
     {
+        private ChompGameModule _gameModule;
         private WorldScroller _worldScroller;
         private RandomModule _rng;
         private readonly WorldSprite _player;
@@ -32,6 +33,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public MageController(EnemyOrBulletSpriteControllerPool<MageBulletController> bulletControllers, SpriteTileIndex index, ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder, WorldSprite player) 
             : base(SpriteType.Mage, index, gameModule, memoryBuilder)
         {
+            _gameModule = gameModule;
             _player = player;
             _worldScroller = gameModule.WorldScroller;
             _collisionDetector = gameModule.CollissionDetector;
@@ -52,11 +54,19 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void PositionNearPlayer()
         {
-            WorldSprite.Y = _player.Y - (16 + (_rng.Generate(3) * 2));
+            WorldSprite.Y = _player.Y - (4 + (_rng.Generate(3) * 2));
             WorldSprite.X = _player.X - 30 + (_rng.Generate(4) * 4);
 
             if (WorldSprite.Y < _worldScroller.ViewPane.Top)
                 WorldSprite.Y = _worldScroller.ViewPane.Top + 4;
+        }
+
+        private bool PlayerIsClose()
+        {
+            if (_gameModule.CurrentScene.ScrollStyle == ScrollStyle.Vertical)
+                return Math.Abs(_player.Y - WorldSprite.Y) < 18;
+            else
+                return Math.Abs(_player.X - WorldSprite.X) < 18;
         }
 
         protected override void UpdateActive()
@@ -66,7 +76,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.Visible = false;
                 CollisionEnabled = false;
 
-                if (Math.Abs(_player.X - WorldSprite.X) < 18)
+                if (PlayerIsClose())
                 {
                     _stateTimer.Value = 0;
                     _phase.Value = Phase.Appear;

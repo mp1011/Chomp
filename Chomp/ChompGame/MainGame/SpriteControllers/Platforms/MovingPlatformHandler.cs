@@ -70,7 +70,7 @@ namespace ChompGame.MainGame.SpriteControllers.Platforms
             int startY = WorldSprite.Y;
             _motionController.Update();
 
-            GameDebug.DebugLog($"Platform Y {startY} - {WorldSprite.Y}", DebugLogFlags.Misc);
+            // GameDebug.DebugLog($"Platform Y {startY} - {WorldSprite.Y}", DebugLogFlags.Misc);
             _movedBack.Value = WorldSprite.Y < startY;
             _movedForward.Value = WorldSprite.Y > startY;
 
