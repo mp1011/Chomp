@@ -40,11 +40,7 @@ namespace ChompGame.MainGame
         {
             Address = address;
             _motion = new ByteVector(new GameByte(address, memory), new GameByte(address + 1, memory));
-            _motion = new ByteVector(new GameByte(address + 2, memory), new GameByte(address + 3, memory));
-            _motion.X = 0;
-            _motion.Y = 0;
-            _subPixel.X = 0;
-            _subPixel.Y = 0;
+            _subPixel = new ByteVector(new GameByte(address + 2, memory), new GameByte(address + 3, memory));
         }
 
         public void Apply(IWithPosition sprite)
