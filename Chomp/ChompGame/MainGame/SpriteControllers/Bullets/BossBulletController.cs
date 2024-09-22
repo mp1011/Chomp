@@ -16,6 +16,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameByte _state;
         private GameBit _destroyOnCollision;
         private GameBit _destroyOnTimer;
+        private GameBit _decorative;
 
         private readonly CollisionDetector _collisionDetector;
         private readonly ChompAudioService _audioService;
@@ -41,9 +42,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _audioService = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _specs = gameModule.Specs;
-            _state = memoryBuilder.AddMaskedByte(Bit.Right6);
+            _state = memoryBuilder.AddMaskedByte(Bit.Right5);
             _destroyOnCollision = new GameBit(_state.Address, Bit.Bit7, memoryBuilder.Memory);
             _destroyOnTimer = new GameBit(_state.Address, Bit.Bit6, memoryBuilder.Memory);
+            _decorative = new GameBit(_state.Address, Bit.Bit5, memoryBuilder.Memory);
 
             AcceleratedMotion = new AcceleratedMotion(gameModule.LevelTimer, memoryBuilder);
             _destroyOnCollision.Value = destroyOnCollision;
@@ -58,10 +60,10 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             AcceleratedMotion.Apply(WorldSprite);
 
-            if (_destroyOnTimer && _state.Value < 40 && _levelTimer.IsMod(4))
+            if (_destroyOnTimer && _state.Value < 20 && _levelTimer.IsMod(8))
             {
                 _state.Value++;
-                if (_state.Value == 30)
+                if (_state.Value == 20)
                     Destroy();
             }
 
@@ -78,39 +80,46 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _state.Value = 0;
+            _decorative.Value = false;
             Palette = SpritePalette.Fire;
             GetSprite().Palette = SpritePalette.Fire;
         }
 
         protected override void UpdateDying()
         {
-            if (_levelTimer.Value.IsMod(4))
+            AcceleratedMotion.Apply(WorldSprite);
+
+            if (_levelTimer.Value.IsMod(8))
                 _state.Value++;
 
             var sprite = GetSprite();
-            if (_state.Value == 50)
+            if (_state.Value == 25)
             {
-                var spriteBounds = WorldSprite.Bounds;
+                if (!_decorative.Value)
+                {
+                    var spriteBounds = WorldSprite.Bounds;
 
-                _dynamicBlockController.SpawnCoins(
-                    new Rectangle(
-                        spriteBounds.X,
-                        spriteBounds.Y - _specs.TileHeight,
-                        spriteBounds.Width,
-                        spriteBounds.Height * 2));
+                    _dynamicBlockController.SpawnCoins(
+                        new Rectangle(
+                            spriteBounds.X,
+                            spriteBounds.Y - _specs.TileHeight,
+                            spriteBounds.Width,
+                            spriteBounds.Height * 2));
+                }
 
                 Destroy();
             }
-            else if (_state.Value > 40)
+            else if (_state.Value > 20)
             {
                 var baseTile = _spriteTileTable.GetTile(SpriteTileIndex.Explosion);
                 sprite.Tile = (byte)(baseTile + (_levelTimer.Value % 2));
             }
         }
 
-        public void Explode()
+        public void Explode(bool decorativeOnly=false)
         {
-            if (_state.Value >= 40)
+            _decorative.Value = decorativeOnly;
+            if (_state.Value >= 20)
                 return;
 
             Palette = SpritePalette.Fire;
@@ -119,21 +128,21 @@ namespace ChompGame.MainGame.SpriteControllers
             _audioService.PlaySound(ChompAudioService.Sound.Break);
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
-            _state.Value = 41;
+            _state.Value = 21;
             Motion.XSpeed = 0;
             Motion.YSpeed = 0;
         }
 
         public void Smoke()
         {
-            if (_state.Value >= 40)
+            if (_state.Value >= 20)
                 return;
 
             Palette = SpritePalette.Platform;
             GetSprite().Palette = SpritePalette.Platform;
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
-            _state.Value = 41;
+            _state.Value = 21;
             Motion.XSpeed = 0;
             Motion.YSpeed = 0;
         }
@@ -145,7 +154,7 @@ namespace ChompGame.MainGame.SpriteControllers
         }
 
         public BombCollisionResponse HandleBombCollision(WorldSprite player) => BombCollisionResponse.None;
-        public bool CollidesWithPlayer(PlayerController player) => player.CollidesWith(WorldSprite);
+        public bool CollidesWithPlayer(PlayerController player) => !_decorative.Value && player.CollidesWith(WorldSprite);
         public bool CollidesWithBomb(WorldSprite bomb) => false;
     }
 }

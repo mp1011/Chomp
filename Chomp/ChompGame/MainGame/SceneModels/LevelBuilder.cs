@@ -1005,7 +1005,7 @@ namespace ChompGame.MainGame.SceneModels
                 case Level.Level4_31_Midboss:
 
                     bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                          5,
+                          10,
                           _gameModule.SpritesModule,
                           () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
 

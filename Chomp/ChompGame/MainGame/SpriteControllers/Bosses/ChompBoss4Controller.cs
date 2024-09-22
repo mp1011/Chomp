@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class ChompBoss4Controller : EnemyController
     {
         public const int NumTailSections = 6;
-        public const int BossHp = 4;
+        public const int BossHp = 3;
         private const int Speed = 40;
         private readonly ChompTail _tail;
 
@@ -29,7 +29,8 @@ namespace ChompGame.MainGame.SpriteControllers
             ClosePath,
             Appear,
             Dive,
-            Attack
+            Attack,
+            Dying
         }
 
         private TwoBit _diveCounter;
@@ -170,7 +171,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     if (_levelTimer.IsMod(16))
                         _stateTimer.Value++;
 
-                    if (_stateTimer.Value > 4 && _levelTimer.IsMod(8))
+                    if (_stateTimer.Value > 4 && _levelTimer.IsMod(24))
                         FireBullet();
 
                     if(_stateTimer.Value == 15)
@@ -294,7 +295,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _player.X + (_rng.Generate(4)*2 - 16),
                 _player.Y + (_rng.Generate(4)*2 - 16));
 
-            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, target, 6);
+            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, target, 10);
             bullet.AcceleratedMotion.XAcceleration = 1;
             bullet.AcceleratedMotion.YAcceleration = 1;
         }
@@ -312,7 +313,23 @@ namespace ChompGame.MainGame.SpriteControllers
 
             bullet.Motion.YSpeed = 0;
             bullet.Motion.XSpeed = 0;
-            bullet.Explode();            
+            bullet.Explode(true);            
+        }
+
+        private void CreateExplosion2()
+        {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.EnsureInFrontOf(this);
+            bullet.WorldSprite.Center = WorldSprite.Center;
+
+         
+            bullet.Explode(true);
+            bullet.AcceleratedMotion.SetYSpeed((_rng.Generate(4) - 8) * 10);
+            bullet.AcceleratedMotion.SetXSpeed((_rng.Generate(4) - 8) * 10);
+
         }
 
         protected override void UpdateDying()
@@ -325,6 +342,43 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 return;
             }
+
+            if(_phase.Value != Phase.Dying)
+            {
+                _stateTimer.Value = 0;
+                _phase.Value = Phase.Dying;
+            }
+
+            if(_levelTimer.IsMod(8))
+            {
+                CreateExplosion2();
+                CreateExplosion2();
+                CreateExplosion2();
+
+                if (_stateTimer.Value < NumTailSections)
+                    _tail.Erase(_stateTimer.Value);
+
+                _stateTimer.Value++;
+
+                if (_stateTimer.Value == 0)
+                {
+                    OpenPath();
+                    Destroy();
+                }
+                
+            }
+        }
+
+        private void OpenPath()
+        {
+            _scroller.ModifyTiles((tilemap, attr) =>
+            {
+                for (int y = 9; y <= 11; y++)
+                {
+                    tilemap[tilemap.Width - 1, y] = 0;
+                    tilemap[tilemap.Width - 2, y] = 0;
+                }
+            });
         }
 
         public override bool CollidesWithPlayer(PlayerController player)
@@ -332,13 +386,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if (base.CollidesWithPlayer(player))
                 return true;
 
-            return false;
-            //var partIndex = _levelTimer.Value % Arm.NumSections;
+            var partIndex = _levelTimer.Value % NumTailSections;
 
-            //var part1 = _arm1.GetWorldSprite(partIndex);
-            //var part2 = _arm2.GetWorldSprite(partIndex);
+            var part = _tail.GetWorldSprite(partIndex);
 
-            //return player.CollidesWith(part1) || player.CollidesWith(part2);
+            return player.CollidesWith(part);
         } 
     }
 }

@@ -68,6 +68,7 @@ namespace ChompGame.MainGame.SceneModels
         BrownBrick,
         PyramidBg,
         PyramidTorches,
+        DesertNight,
         Max = PyramidTorches
     }
 
@@ -381,6 +382,12 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.Red1,
                 ColorIndex.Brown1,
                 ColorIndex.Brown2);
+
+            DefinePalette(PaletteKey.DesertNight,
+               ColorIndex.Black,
+               ColorIndex.Purple1,
+               ColorIndex.Purple2,
+               ColorIndex.Purple3);
 
 
             DefinePalette(PaletteKey.PyramidTorches,

@@ -30,7 +30,7 @@ namespace ChompGame.MainGame
         {
             get
             {
-                if (_sceneDefinition.Theme != ThemeType.Desert)
+                if (_sceneDefinition.Theme != ThemeType.Desert && _sceneDefinition.Theme != ThemeType.DesertNight)
                     return false;
 
                 if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)

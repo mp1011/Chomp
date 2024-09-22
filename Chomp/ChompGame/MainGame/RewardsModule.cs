@@ -10,7 +10,7 @@ namespace ChompGame.MainGame
     class RewardsModule : Module
     {
         private const int FlashDuration = 60;
-        private const int CoinsUntilReward = 20;
+        private const int CoinsUntilReward = GameDebug.QuickReward ? 1 : 20;
 
         private readonly Specs _specs;
         private readonly ChompAudioService _audioService;
