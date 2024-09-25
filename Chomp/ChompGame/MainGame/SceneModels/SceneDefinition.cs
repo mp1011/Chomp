@@ -24,7 +24,8 @@ namespace ChompGame.MainGame.SceneModels
     public enum HorizontalScrollStyle : byte
     {
         HorizonAndSky,
-        Interior
+        Interior,
+        Flat
     }
 
     public enum BackgroundLayer
@@ -239,6 +240,17 @@ namespace ChompGame.MainGame.SceneModels
                     BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + layer1Height,
                     BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + (_bgPosition1.Value*2),
                     BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + layer1Height,
+                    BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
+                    _ => 0
+                };
+            }
+            else if (_theme.Value == ThemeType.DesertRain)
+            {
+                return layer switch {
+                    BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
+                    BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + (_bgPosition1.Value * 2),
+                    BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + 2,
+                    BackgroundLayer.ForegroundStart => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
                     BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
                     _ => 0
                 };

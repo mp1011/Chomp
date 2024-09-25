@@ -97,7 +97,10 @@ namespace ChompGame.MainGame.SceneModels
         Level4_29_DeadEnd6,
         Level4_30_Chamber7,
         Level4_31_Midboss,
-        Level4_32_Desert4
+        Level4_32_Desert4,
+        Level4_33_Desert5,
+        Level4_34_DesertRain1
+
     }
 
     class SceneBuilder
@@ -1303,7 +1306,35 @@ namespace ChompGame.MainGame.SceneModels
                 bgPosition1: 1,
                 top: 0,
                 bottom: 2,
-                style: HorizontalScrollStyle.Interior);
+                style: HorizontalScrollStyle.Flat);
+
+            _ = Level.Level4_33_Desert5;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.DesertNight,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Ogre,
+                spriteGroup: SpriteGroup.Normal,
+                bgPosition1: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Flat);
+
+            _ = Level.Level4_34_DesertRain1;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertRain,
+                spriteGroup: SpriteGroup.Boss,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                bgPosition: 0,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -2696,6 +2727,21 @@ namespace ChompGame.MainGame.SceneModels
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
            );
+
+            AddLevel(
+            Level.Level4_33_Desert5,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+          );
+
+
+            AddLevel(
+            Level.Level4_34_DesertRain1,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+          );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

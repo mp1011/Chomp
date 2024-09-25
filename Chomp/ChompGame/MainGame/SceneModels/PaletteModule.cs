@@ -69,7 +69,8 @@ namespace ChompGame.MainGame.SceneModels
         PyramidBg,
         PyramidTorches,
         DesertNight,
-        Max = PyramidTorches
+        DesertRain,
+        Max = DesertRain
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -395,6 +396,12 @@ namespace ChompGame.MainGame.SceneModels
                 ColorIndex.DarkGray1,
                 ColorIndex.Yellow1,
                 ColorIndex.Yellow4);
+
+            DefinePalette(PaletteKey.DesertRain,
+               ColorIndex.Black,
+               ColorIndex.Black,
+               ColorIndex.Blue1,
+               ColorIndex.Blue3);
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -460,6 +467,13 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
+            }
+            else if (_currentScene.Theme == ThemeType.DesertRain)
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg2;
             }
             else if (_currentScene.ScrollStyle == ScrollStyle.Horizontal &&
                 _currentScene.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
@@ -586,6 +600,17 @@ namespace ChompGame.MainGame.SceneModels
             p.SetColor(3,(byte)c1);
         }
 
+        public void CyclePalette3(Palette p)
+        {
+            var c3 = p.GetColorIndex(3);
+
+            p.SetColor(3, (byte)p.GetColorIndex(2));
+            p.SetColor(2, (byte)p.GetColorIndex(1));
+            p.SetColor(1, (byte)p.GetColorIndex(0));
+            p.SetColor(0, (byte)c3);
+
+        }
+
         public void CyclePalette2(Palette p)
         {
             byte c1 = (byte)p.GetColorIndex(1);
@@ -621,6 +646,14 @@ namespace ChompGame.MainGame.SceneModels
 
         public void Update()
         {
+            if (_timer.Value % 2 == 0)
+            {
+                if (_currentScene.Theme == ThemeType.DesertRain)
+                {
+                    CyclePalette3(BgPalette1);
+                }
+            }
+            
             if (_timer.Value % 8 == 0)
             {
                 var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Fire);
