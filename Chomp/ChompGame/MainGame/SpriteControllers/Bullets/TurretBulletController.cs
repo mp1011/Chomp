@@ -55,12 +55,31 @@ namespace ChompGame.MainGame.SpriteControllers
 
             WorldSprite.X = scenePart.X * _gameModule.Specs.TileWidth;
             WorldSprite.Y = (scenePart.Y + Constants.StatusBarTiles) * _gameModule.Specs.TileWidth;
+
+            switch(scenePart.Direction)
+            {
+                case Direction.Up:
+                    WorldSprite.Y -= _gameModule.Specs.TileHeight;
+                    break;
+
+                case Direction.Right:
+                    WorldSprite.X += _gameModule.Specs.TileWidth;
+                    break;
+
+            }
             return scenePart.Direction;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
             _state.Value = STATUS_IDLE;
+        }
+
+        protected override void UpdateHidden()
+        {
+            _state.Value = 0;
+            SetStartingPosition();
+            WorldSprite.Show();
         }
 
         protected override void UpdateActive()

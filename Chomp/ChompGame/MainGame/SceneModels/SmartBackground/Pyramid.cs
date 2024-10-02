@@ -99,8 +99,11 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         {
             nameTable[cursor.X, cursor.Y] = PyramidLeft;
             for (int x = 1; x < width; x++)
-                nameTable[cursor.X + x, cursor.Y] = PyramidMid;
-
+            {
+                if (nameTable[cursor.X + x, cursor.Y] == 0)
+                    nameTable[cursor.X + x, cursor.Y] = PyramidMid;
+            }
+            
             nameTable[cursor.X + width, cursor.Y] = PyramidRight;
         }
         private void AddBackPyramidLayer(NBitPlane nameTable, Point cursor, int width)

@@ -99,8 +99,12 @@ namespace ChompGame.MainGame.SceneModels
         Level4_31_Midboss,
         Level4_32_Desert4,
         Level4_33_Desert5,
-        Level4_34_DesertRain1
-
+        Level4_34_DesertRain1,
+        Level4_35_DesertRain2,
+        Level4_36_DesertRain3,
+        Level4_37_DesertRain4,
+        Level4_38_DesertRain5,
+        Level4_39_Boss
     }
 
     class SceneBuilder
@@ -1314,8 +1318,8 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.DesertNight,
-                enemy1: EnemyIndex.Lizard,
-                enemy2: EnemyIndex.Ogre,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
                 bgPosition1: 1,
                 top: 0,
@@ -1327,14 +1331,77 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.DesertRain,
-                spriteGroup: SpriteGroup.Boss,
-                enemy1: EnemyIndex.Midboss,
-                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 bgPosition: 0,
                 left: 0,
                 right: 0,
                 bottom: 1,
                 top: 0);
+
+            _ = Level.Level4_35_DesertRain2;
+            SceneDefinition.NoScrollBigStairs(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertRain,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                bgPosition: 0,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+
+            _ = Level.Level4_36_DesertRain3;
+            SceneDefinition.NoScrollBigStairs(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertRain,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Mage,
+                bgPosition: 0,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level4_37_DesertRain4;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertRain,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Mage,
+                shape: LevelShape.Flat,
+                left: 0,
+                right: 0,
+                bottom: 2,
+                top: 0);
+
+            _ = Level.Level4_38_DesertRain5;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertRain,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                shape: LevelShape.Flat,
+                left: 0,
+                right: 0,
+                bottom: 2,
+                top: 0);
+
+            _ = Level.Level4_39_Boss;
+            SceneDefinition.BossScene(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.DesertNight);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -2725,23 +2792,109 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
              Level.Level4_32_Desert4,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 28, 12, scene),
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 36, 8, scene),
+
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 40, 8, scene),
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 36, 8, scene),
+
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 48, 12, scene),
+
+             (b, scene) => new TurretScenePart(b, scene, Direction.Up, 40, 12),
+             (b, scene) => new TurretScenePart(b, scene, Direction.Left, 54, 8),
+
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 18, 0, scene),
+             (b, scene) => new PrefabScenePart(b, scene, 24, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+             (b, scene) => new PrefabScenePart(b, scene, 32, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+             (b, scene) => new PrefabScenePart(b, scene, 40, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+             (b, scene) => new PrefabScenePart(b, scene, 48, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space)
+     
            );
 
             AddLevel(
             Level.Level4_33_Desert5,
             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new TurretScenePart(b, scene, Direction.Right, 10, 8),
+            (b, scene) => new TurretScenePart(b, scene, Direction.Up, 18, 10),
+            (b, scene) => new TurretScenePart(b, scene, Direction.Right, 28, 8),
+            (b, scene) => new TurretScenePart(b, scene, Direction.Up, 24, 10),
+
+            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 0, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
           );
 
 
             AddLevel(
-            Level.Level4_34_DesertRain1,
+                Level.Level4_34_DesertRain1,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 0, scene)
+              );
+
+
+            AddLevel(
+                Level.Level4_35_DesertRain2,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 0, scene)
+              );
+
+            AddLevel(
+              Level.Level4_36_DesertRain3,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 4, 8, scene),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 8, 0, scene)
+            );
+
+            AddLevel(
+            Level.Level4_37_DesertRain4,
             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new PrefabScenePart(b, scene, 8, 52, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
+            (b, scene) => new PrefabScenePart(b, scene, 16, 52, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Block),
+            (b, scene) => new PrefabScenePart(b, scene, 20, 52, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairDown),
+
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 12, 12, scene),
+
+            (b, scene) => new PrefabScenePart(b, scene, 8, 40, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairDown),
+            (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 16, 18, scene),
+            (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 16, 16, scene),
+
+            (b, scene) => new PrefabScenePart(b, scene, 18, 4, PrefabSize.Eight, PrefabSize.Two, PrefabStyle.Block),
+            (b, scene) => new PrefabScenePart(b, scene, 26, 8, PrefabSize.Eight, PrefabSize.Two, PrefabStyle.Block),
+
             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            (b, scene) => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 60, 8, scene)
           );
+
+            AddLevel(
+               Level.Level4_38_DesertRain5,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+
+                (b, scene) => new SpriteScenePart(b, ScenePartType.DoorBackExit, 4, 8, scene),
+                (b, scene) => new PrefabScenePart(b, scene, 0, 8, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 0, 16, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 0, 24, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
+
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 12, 8, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 16, 10, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 20, 12, scene),
+
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+             );
+
+            AddLevel(
+             Level.Level4_39_Boss,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+           );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

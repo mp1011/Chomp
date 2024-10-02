@@ -17,16 +17,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 if (nameTable[x, y] != 0)
                     return;
 
-                if(x.IsMod(2))
-                    nameTable[x, y] = (byte)(y.IsMod(2) ? 1 : 2);
-                else
-                    nameTable[x, y] = (byte)(y.IsMod(2) ? 3: 4);
+                nameTable[x, y] = (byte)(1 + (y % 3));
             });
-        }
-
-        public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
-        {            
-            return attributeTable;
         }
 
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)

@@ -468,6 +468,13 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
             }
+            else if (_currentScene.Theme == ThemeType.DesertNight)
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg2;
+            }
             else if (_currentScene.Theme == ThemeType.DesertRain)
             {
                 _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
@@ -606,9 +613,7 @@ namespace ChompGame.MainGame.SceneModels
 
             p.SetColor(3, (byte)p.GetColorIndex(2));
             p.SetColor(2, (byte)p.GetColorIndex(1));
-            p.SetColor(1, (byte)p.GetColorIndex(0));
-            p.SetColor(0, (byte)c3);
-
+            p.SetColor(1, (byte)c3);
         }
 
         public void CyclePalette2(Palette p)

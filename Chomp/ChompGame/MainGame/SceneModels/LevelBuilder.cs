@@ -1208,8 +1208,10 @@ namespace ChompGame.MainGame.SceneModels
             bgBuilder.AddSprite(SpriteTileIndex.Block, 13, 6, 1, 1);
             bgBuilder.AddSprite(SpriteTileIndex.Coin, 15, 0, 1, 1);
 
-            if(!_sceneDefinition.IsLevelBossScene && !_sceneDefinition.IsMidBossScene)
+            if (!_sceneDefinition.IsLevelBossScene && !_sceneDefinition.IsMidBossScene)
+            {
                 bgBuilder.AddSprite(SpriteTileIndex.Turret, 7, 6, 4, 1);
+            }
         }
          
     }

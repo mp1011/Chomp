@@ -133,7 +133,7 @@ namespace ChompGame.MainGame.SceneModels
                 fg2: PaletteKey.DesertNight,
                 bomb: PaletteKey.Gray,
                 enemy1: PaletteKey.Bullet,
-                enemy2: PaletteKey.Bullet);
+                enemy2: PaletteKey.Gray);
 
             _ = ThemeType.City;
             new Theme(memoryBuilder,
