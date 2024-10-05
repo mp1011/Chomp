@@ -104,7 +104,8 @@ namespace ChompGame.MainGame.SceneModels
         Level4_36_DesertRain3,
         Level4_37_DesertRain4,
         Level4_38_DesertRain5,
-        Level4_39_Boss
+        Level4_39_BeforeBoss,
+        Level4_40_Boss
     }
 
     class SceneBuilder
@@ -124,7 +125,8 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level3_24_CityTrain3,
             Level.Level4_1_Desert,
             Level.Level4_16_PyramidEntrance2,
-            Level.Level4_31_Midboss
+            Level.Level4_31_Midboss,
+            Level.Level4_34_DesertRain1
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -1318,7 +1320,7 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.DesertNight,
-                enemy1: EnemyIndex.Ogre,
+                enemy1: EnemyIndex.Crocodile,
                 enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
                 bgPosition1: 1,
@@ -1375,8 +1377,8 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 theme: ThemeType.DesertRain,
                 spriteGroup: SpriteGroup.Normal,
-                enemy1: EnemyIndex.Ogre,
-                enemy2: EnemyIndex.Mage,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 shape: LevelShape.Flat,
                 left: 0,
                 right: 0,
@@ -1397,11 +1399,25 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 2,
                 top: 0);
 
-            _ = Level.Level4_39_Boss;
+            _ = Level.Level4_39_BeforeBoss;
+            SceneDefinition.NoScrollFlat(
+                           memoryBuilder: memoryBuilder,
+                           specs: specs,
+                           theme: ThemeType.DesertNight,
+                           spriteGroup: SpriteGroup.Normal,
+                           enemy1: EnemyIndex.Lizard,
+                           enemy2: EnemyIndex.Bird,
+                           bgPosition: 0,
+                           left: 0,
+                           right: 0,
+                           bottom: 1,
+                           top: 0);
+
+            _ = Level.Level4_40_Boss;
             SceneDefinition.BossScene(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.DesertNight);
+                theme: ThemeType.OceanBoss);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -2797,15 +2813,23 @@ namespace ChompGame.MainGame.SceneModels
              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 28, 12, scene),
              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 36, 8, scene),
 
-             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 40, 8, scene),
-             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len16, 36, 8, scene),
-
+             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 40, 8, scene),           
              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 48, 12, scene),
 
              (b, scene) => new TurretScenePart(b, scene, Direction.Up, 40, 12),
              (b, scene) => new TurretScenePart(b, scene, Direction.Left, 54, 8),
 
              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 18, 0, scene),
+
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, true, 14, 8, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, true, true, 22, 8, scene),
+       
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, true, 56, 8, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, true, true, 58, 8, scene),
+
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true,true,true,true, 16, 8, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 18, 8, scene),
+             (b, scene) => new DynamicScenePart(b, DynamicBlockType.DestructibleBlock, true, true, true, true, 20, 8, scene),
              (b, scene) => new PrefabScenePart(b, scene, 24, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
              (b, scene) => new PrefabScenePart(b, scene, 32, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
              (b, scene) => new PrefabScenePart(b, scene, 40, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
@@ -2821,6 +2845,7 @@ namespace ChompGame.MainGame.SceneModels
             (b, scene) => new TurretScenePart(b, scene, Direction.Right, 28, 8),
             (b, scene) => new TurretScenePart(b, scene, Direction.Up, 24, 10),
 
+            (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, 20, 0, scene),
             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 0, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
@@ -2830,8 +2855,12 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
                 Level.Level4_34_DesertRain1,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 8, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 6, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 4, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 6, 8, scene),
+
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 0, scene)
               );
 
@@ -2860,7 +2889,13 @@ namespace ChompGame.MainGame.SceneModels
             (b, scene) => new PrefabScenePart(b, scene, 16, 52, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Block),
             (b, scene) => new PrefabScenePart(b, scene, 20, 52, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairDown),
 
-                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 12, 12, scene),
+            (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 8, 24, scene),
+            (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 22, scene),
+            (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 12, 20, scene),
+            (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 14, 18, scene),
+          
+            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 20, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 18, 4, scene),
 
             (b, scene) => new PrefabScenePart(b, scene, 8, 40, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairDown),
             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 16, 18, scene),
@@ -2885,16 +2920,34 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 12, 8, scene),
                 (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 16, 10, scene),
                 (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 20, 12, scene),
+                            
+                (b, scene) => new PrefabScenePart(b, scene, 30, 8, PrefabSize.Four, PrefabSize.Two, PrefabStyle.Block),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 30, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 30, y: 2, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 30, y: 4, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 30, y: 6, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 2, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 4, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 6, definition: scene),
 
-                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+
+                (b, scene) => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 26, 26, scene)
              );
 
             AddLevel(
-             Level.Level4_39_Boss,
+             Level.Level4_39_BeforeBoss,
              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+             (b, scene) => new SpriteScenePart(b, ScenePartType.DoorBackExit, 0, 12, scene),
              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
            );
+
+            AddLevel(
+            Level.Level4_40_Boss,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

@@ -79,12 +79,13 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _state.Value = 0;
             SetStartingPosition();
-            WorldSprite.Show();
         }
 
         protected override void UpdateActive()
         {
-            if (_levelTimer.IsMod(8))
+            byte timerMod = (byte)(_gameModule.CurrentScene.Theme == ThemeType.DesertNight ? 4 : 8);
+
+            if (_levelTimer.IsMod(timerMod))
                 _state.Value++;
 
             if(_state.Value < STATUS_FIRE)
