@@ -461,7 +461,14 @@ namespace ChompGame.MainGame.SceneModels
 
         public void FillPaletteChangeTable()
         {
-            if(_currentScene.Theme == ThemeType.Desert)
+            if(_currentScene.IsLevelBossScene)
+            {
+                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
+            }
+            else if(_currentScene.Theme == ThemeType.Desert)
             {
                 _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;

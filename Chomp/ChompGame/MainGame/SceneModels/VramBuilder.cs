@@ -203,6 +203,12 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     AddSprite(SpriteTileIndex.Extra2, 10, 7, 1, 1);
                     return;
+                case Level.Level4_40_Boss:
+                    AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
+                    AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
+                    AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1); // bullet
+                    AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
+                    return;
             }
            
         }

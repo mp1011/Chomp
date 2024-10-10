@@ -2943,11 +2943,16 @@ namespace ChompGame.MainGame.SceneModels
            );
 
             AddLevel(
-            Level.Level4_40_Boss,
-            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
-            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
-            );
+               Level.Level4_40_Boss,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 0, y: 16, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 6, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 0, definition: scene)
+           );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
