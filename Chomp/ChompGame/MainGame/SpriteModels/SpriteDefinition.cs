@@ -27,8 +27,10 @@ namespace ChompGame.MainGame.SpriteModels
         OgreBullet,
         Crocodile,
         Mage,
+        BossLeg,
+        BossHorn,
         Boulder,
-        Ufo, //22
+        Ufo, //25   
         Max=31
     }
 

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using ChompGame.MainGame.Editors;
 using ChompGame.Data;
 using System.Text;
+using System;
 
 namespace ChompGame.MainGame.Editors
 {
@@ -14,6 +15,15 @@ namespace ChompGame.MainGame.Editors
         private bool _running = false;
 
         private int? _pasteTile;
+        private byte[] _topTiles = new byte[] { 24, 25, 26,27, 28 };
+        private byte[] _topLeftTiles = new byte[] { 24, 27 };
+        private byte[] _topRightTiles = new byte[] { 25, 28 };
+        private byte[] _leftTiles = new byte[] { 24, 27, 32 };
+        private byte[] _rightTiles = new byte[] { 24, 25, 35 };
+        private byte[] _bottomLeftTiles = new byte[] { 19, 22, 32, 35,  };
+        private byte[] _bottomRightTiles = new byte[] { 20, 21, 33, 36 };
+        private byte[] _centerTiles = new byte[] { 34, };
+        private byte[] _bottomTiles = new byte[] { 31, 38 };
 
         public bool IsRunning => _running;
 
@@ -49,7 +59,7 @@ namespace ChompGame.MainGame.Editors
                 EditorInputHelper.MouseY);
 
             return new Point(
-                (pixelPoint.X / _tileModule.Specs.TileWidth)-1,
+                (pixelPoint.X / _tileModule.Specs.TileWidth),
                 (pixelPoint.Y / _tileModule.Specs.TileHeight)-2);
         }
 
@@ -118,6 +128,17 @@ namespace ChompGame.MainGame.Editors
             _tileModule.Scroll.Y = (byte)(_tileModule.Scroll.Y + y);
         }
 
+        private void CycleTile(byte[] set)
+        {
+            var tile = GetNametableTileUnderMouse();
+            var current = _tileModule.NameTable[tile.X, tile.Y];
+            int currentIndex = Array.IndexOf(set, current);
+            if (currentIndex == -1)
+                _tileModule.NameTable[tile.X, tile.Y] = set[0];
+            else
+                _tileModule.NameTable[tile.X, tile.Y] = set[(currentIndex + 1) % set.Length];
+        }
+
         public bool Update()
         {
             if (!CheckActivation())
@@ -142,6 +163,27 @@ namespace ChompGame.MainGame.Editors
                 Scroll(0, -1);
             else if (EditorInputHelper.IsKeyDown(Keys.Down))
                 Scroll(0, 1);
+
+            if (EditorInputHelper.IsKeyPressed(Keys.NumPad8))
+                CycleTile(_topTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad7))
+                CycleTile(_topLeftTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad4))
+                CycleTile(_leftTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad1))
+                CycleTile(_bottomLeftTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad2))
+                CycleTile(_bottomTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad3))
+                CycleTile(_bottomRightTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad8))
+                CycleTile(_rightTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad9))
+                CycleTile(_topRightTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad5))
+                CycleTile(_centerTiles);
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad0))
+                CycleTile(new byte[] { 0 });
 
             return true;
         }

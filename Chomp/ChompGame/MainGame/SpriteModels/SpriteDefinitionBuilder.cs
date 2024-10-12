@@ -249,6 +249,28 @@ namespace ChompGame.MainGame.SpriteModels
                 animationStyle: AnimationStyle.AlwaysAnimate,
                 collidesWithBackground: false,
                 flipXWhenMovingLeft: true);
+
+            _ = SpriteType.BossLeg;
+            new SpriteDefinition(memoryBuilder,
+               secondTileOffset: 1,
+               sizeX: 1,
+               sizeY: 2,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.VerySlow,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: false);
+
+            _ = SpriteType.BossHorn;
+            new SpriteDefinition(memoryBuilder,
+               secondTileOffset: 1,
+               sizeX: 2,
+               sizeY: 2,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.VerySlow,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: false);
         }
     }
 }
