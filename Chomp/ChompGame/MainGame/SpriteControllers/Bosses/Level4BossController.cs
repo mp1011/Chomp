@@ -8,6 +8,7 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
@@ -15,10 +16,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
     {
         private NibbleEnum<Phase> _phase;
 
-        private TwoBitEnum<Direction> _legPosition1, _legPosition2;
+        private GameBit _legPos1, _legPos2;
+        private GameBit _hornClosing;
         private BossPart _leg1, _leg2, _leg3, _leftHorn, _rightHorn;
-
+        private GameByte _hornDistance;
         private const int GroundY = 100;
+        private const int BuriedY = 133;
+        private const int FullBuriedY = 136;
+
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
@@ -26,8 +31,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         public Level4BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
-            _legPosition1 = new TwoBitEnum<Direction>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
-            _legPosition2 = new TwoBitEnum<Direction>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+            _legPos1 = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+            _legPos2 = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
+            _hornClosing = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit6, memoryBuilder.Memory);
+
             memoryBuilder.AddByte();
 
             _leg1 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossLeg, memoryBuilder.Memory));
@@ -35,14 +42,22 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _leg3 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossLeg, memoryBuilder.Memory));
             _leftHorn = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
             _rightHorn = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
+
+            _hornDistance = memoryBuilder.AddByte();
         }
 
         private enum Phase : byte
         {
             BeforeBoss,
             Init,
+            Emerge,
+            Bait,
+            Trap,
+            Leap,
+            WalkLeft,
             WalkRight,
-            WalkLeft
+            Jump,
+            Bury
         }
 
         protected override int BossHP => 5;
@@ -75,8 +90,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if(p == Phase.BeforeBoss)
             {
                 _paletteModule.BgColor = ColorIndex.Black;
-                _legPosition1.Value = Direction.Down;
-                _legPosition2.Value = Direction.Down;
+              //  _legPosition1.Value = Direction.Down;
+              //  _legPosition2.Value = Direction.Down;
             }
             else if(p == Phase.Init)
             {
@@ -84,13 +99,31 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
                 GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
 
-                SetBossTiles();
-              
+                SetBossTiles();              
                 SetupBossParts();
-                WorldSprite.X = 20;
-                WorldSprite.Y = 80;
-                HideBoss();
             }
+            else if(p == Phase.Emerge)
+            {
+                WorldSprite.Y = FullBuriedY;
+                WorldSprite.X = _player.X + 30;
+
+                _leftHorn.Sprite.Priority = false;
+                _rightHorn.Sprite.Priority = false;
+            }
+            else if(p == Phase.Bait)
+            {
+                var bullet = FireArcBullet(0);
+                if (bullet != null)
+                    bullet.Explode();
+
+                bullet = FireArcBullet(0);
+                if (bullet != null)
+                {
+                    bullet.WorldSprite.X += 4;
+                    bullet.Explode();
+                }
+            }
+
         }
 
         private bool UpdateLeg(BossPart leg, Direction targetDirection, int restX, int restY)
@@ -155,14 +188,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             horn1Sprite.Tile2Offset = 1;
             horn1Sprite.FlipX = false;
             _leftHorn.XOffset = -8;
-            _leftHorn.YOffset = -18;
+            _leftHorn.YOffset = -20;
             horn1Sprite.Visible = true;
 
             var horn2Sprite = _rightHorn.PrepareSprite(SpriteTileIndex.Enemy1);
             horn2Sprite.Tile2Offset = 1;
             horn2Sprite.FlipX = true;
             _rightHorn.XOffset = 10;
-            _rightHorn.YOffset = -18;
+            _rightHorn.YOffset = -20;
             horn2Sprite.Visible = true;
         }
 
@@ -173,7 +206,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if(_phase.Value == Phase.BeforeBoss)
             {
                 _musicModule.CurrentSong = MusicModule.SongName.None;
-              //  if (_player.X >= 40)
+                if (_player.X >= 40)
                     SetPhase(Phase.Init);
                 WorldSprite.X = 64;
                 WorldSprite.Y = 100;
@@ -182,8 +215,121 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 WorldSprite.Visible = false;
                 _musicModule.CurrentSong = MusicModule.SongName.Nemesis;
-                SetPhase(Phase.WalkLeft);
                 FadeIn();
+                SetPhase(Phase.Emerge);
+            }
+            else if (_phase.Value == Phase.Emerge)
+            {
+                FadeIn();
+                _motion.SetYSpeed(-5);
+
+                if(WorldSprite.Y < BuriedY)
+                {
+                    _motion.SetYSpeed(0);
+                    WorldSprite.Y = BuriedY;
+                    SetPhase(Phase.Bait);
+                }
+            }
+            else if(_phase.Value == Phase.Bait)
+            {
+                PositionFreeCoinBlocksNearPlayer();
+                _bossBackgroundHandler.ShowCoins = true;
+
+                int hornDistance = _rightHorn.XOffset - _leftHorn.XOffset;
+                if (hornDistance < 14)
+                    _hornClosing.Value = false;
+                else if (hornDistance >= 20)                
+                    _hornClosing.Value = true;
+                
+                if (_levelTimer.IsMod(8))
+                {
+                    if (_hornClosing.Value)
+                    {
+                        _rightHorn.XOffset--;
+                        _leftHorn.XOffset++;
+                    }
+                    else
+                    {
+                        _rightHorn.XOffset++;
+                        _leftHorn.XOffset--;
+                    }
+                }
+
+                if(_player.XDistanceTo(WorldSprite) <= 4 &&
+                    _player.Y >= 110)
+                {
+                    SetPhase(Phase.Trap);
+                }
+            }
+            else if(_phase.Value == Phase.Trap)
+            {
+                PositionFreeCoinBlocksNearPlayer();
+                _bossBackgroundHandler.ShowCoins = true;
+
+                int hornDistance = _rightHorn.XOffset - _leftHorn.XOffset;
+
+                if (_stateTimer.Value == 0)
+                {
+                    if (_levelTimer.IsMod(2))
+                    {
+                        if (hornDistance < 20)
+                        {
+                            _rightHorn.XOffset++;
+                            _leftHorn.XOffset--;
+                        }
+                        else
+                        {
+                            _stateTimer.Value++;
+                        }
+                    }
+                }
+                else if (_stateTimer.Value == 1)
+                {
+                    if (_levelTimer.IsMod(2))
+                    {
+                        if (hornDistance > 8)
+                        {
+                            _rightHorn.XOffset--;
+                            _leftHorn.XOffset++;
+                        }
+                        else
+                        {
+                            _stateTimer.Value++;
+                        }
+                    }
+                }
+                else if (_stateTimer.Value < 5)
+                {
+                    if (_levelTimer.IsMod(16))
+                    {
+                        _stateTimer.Value++;
+                    }
+                }
+                else if(_stateTimer.Value == 5)
+                {
+                    FireArcBullet((_rng.Generate(4)-8) * 4);
+                    FireArcBullet((_rng.Generate(4) - 8) * 4);
+                    FireArcBullet((_rng.Generate(4) - 8) * 4);
+                    FireArcBullet((_rng.Generate(4) - 8) * 4);
+
+                    _stateTimer.Value++;
+                }
+                else
+                {
+                    if (_levelTimer.IsMod(8))
+                    {
+                        if (hornDistance < 16)
+                        {
+                            _rightHorn.XOffset++;
+                            _leftHorn.XOffset--;
+                        }
+                        else
+                        {
+                            SetPhase(Phase.Bait);
+                        }
+                    }
+                }
+
             }
             else if(_phase.Value == Phase.WalkLeft)
             {
@@ -204,7 +350,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _position.X = (byte)(WorldSprite.X - 16 - _tileModule.Scroll.X);
             _position.Y = (byte)(WorldSprite.Y - 77);
 
-            UpdatePartPositions();
+            if(_phase.Value >= Phase.Init)
+                UpdatePartPositions();
         }
 
         private void WalkRight()
@@ -212,71 +359,71 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (!_levelTimer.IsMod(4))
                 return;
 
-            if(_legPosition1.Value == Direction.Right)
-            {
-                WorldSprite.Y = 100;
+            //if(_legPosition1.Value == Direction.Right)
+            //{
+            //    WorldSprite.Y = 100;
 
-                UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
-                UpdateLeg(_leg2, Direction.Left, 2, 12);
+            //    UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
+            //    UpdateLeg(_leg2, Direction.Left, 2, 12);
 
-                if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
-                    _legPosition1.Value = Direction.Left;
-            }
-            else if (_legPosition1.Value == Direction.Left)
-            {
-                int legX = _leg1.WorldSprite.X;
-                int legY = _leg1.WorldSprite.Y;
+            //    if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
+            //        _legPosition1.Value = Direction.Left;
+            //}
+            //else if (_legPosition1.Value == Direction.Left)
+            //{
+            //    int legX = _leg1.WorldSprite.X;
+            //    int legY = _leg1.WorldSprite.Y;
 
-                UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
-                UpdateLeg(_leg2, Direction.Right, 2, 12);
+            //    UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
+            //    UpdateLeg(_leg2, Direction.Right, 2, 12);
 
-                if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
-                    _legPosition1.Value = Direction.Right;
-                _leg1.UpdatePosition(WorldSprite);
-                WorldSprite.X += (legX - _leg1.WorldSprite.X);
-                WorldSprite.Y += (legY - _leg1.WorldSprite.Y);
+            //    if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
+            //        _legPosition1.Value = Direction.Right;
+            //    _leg1.UpdatePosition(WorldSprite);
+            //    WorldSprite.X += (legX - _leg1.WorldSprite.X);
+            //    WorldSprite.Y += (legY - _leg1.WorldSprite.Y);
 
-            }
-            else
-            {
-                _legPosition1.Value = Direction.Right;
-            }
+            //}
+            //else
+            //{
+            //    _legPosition1.Value = Direction.Right;
+            //}
         }
 
         private void WalkLeft()
         {
-            if (!_levelTimer.IsMod(4))
-                return;
+            //if (!_levelTimer.IsMod(4))
+            //    return;
 
-            if (_legPosition1.Value == Direction.Left)
-            {
-                WorldSprite.Y = 100;
+            //if (_legPosition1.Value == Direction.Left)
+            //{
+            //    WorldSprite.Y = 100;
 
-                UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
-                UpdateLeg(_leg2, Direction.Right, 2, 12);
+            //    UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
+            //    UpdateLeg(_leg2, Direction.Right, 2, 12);
 
-                if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
-                    _legPosition1.Value = Direction.Right;
-            }
-            else if (_legPosition1.Value == Direction.Right)
-            {
-                int legX = _leg1.WorldSprite.X;
-                int legY = _leg1.WorldSprite.Y;
+            //    if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
+            //        _legPosition1.Value = Direction.Right;
+            //}
+            //else if (_legPosition1.Value == Direction.Right)
+            //{
+            //    int legX = _leg1.WorldSprite.X;
+            //    int legY = _leg1.WorldSprite.Y;
 
-                UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
-                UpdateLeg(_leg2, Direction.Left, 2, 12);
+            //    UpdateLeg(_leg3, _legPosition1.Value, 14, 12);
+            //    UpdateLeg(_leg2, Direction.Left, 2, 12);
 
-                if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
-                    _legPosition1.Value = Direction.Left;
-                _leg1.UpdatePosition(WorldSprite);
-                WorldSprite.X += (legX - _leg1.WorldSprite.X);
-                WorldSprite.Y += (legY - _leg1.WorldSprite.Y);
+            //    if (UpdateLeg(_leg1, _legPosition1.Value, -10, 12))
+            //        _legPosition1.Value = Direction.Left;
+            //    _leg1.UpdatePosition(WorldSprite);
+            //    WorldSprite.X += (legX - _leg1.WorldSprite.X);
+            //    WorldSprite.Y += (legY - _leg1.WorldSprite.Y);
 
-            }
-            else
-            {
-                _legPosition1.Value = Direction.Right;
-            }
+            //}
+            //else
+            //{
+            //    _legPosition1.Value = Direction.Right;
+            //}
         }
 
         protected override void UpdateDying()
@@ -326,6 +473,25 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _leg3.UpdatePosition(WorldSprite);
             _leftHorn.UpdatePosition(WorldSprite);
             _rightHorn.UpdatePosition(WorldSprite);
+        }
+
+        private BossBulletController FireArcBullet(int xSpeed)
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet == null)
+                return null;
+
+            bullet.AcceleratedMotion.SetXSpeed(xSpeed);
+            bullet.AcceleratedMotion.YSpeed = -40;
+            bullet.AcceleratedMotion.TargetYSpeed = 20;
+            bullet.AcceleratedMotion.YAcceleration = 2;
+
+            bullet.DestroyOnTimer = false;
+            bullet.WorldSprite.X = WorldSprite.X;
+            bullet.WorldSprite.Y = WorldSprite.Y - 18;        
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            return bullet;
         }
     }
 }

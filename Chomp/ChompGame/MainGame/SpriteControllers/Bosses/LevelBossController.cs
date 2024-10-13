@@ -174,8 +174,13 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected void PositionFreeCoinBlocksNearPlayer()
         {
+            PositionFreeCoinBlocks(_player.X);
+        }
+
+        protected void PositionFreeCoinBlocks(int x)
+        {
             _dynamicBlockController.PositionFreeCoinBlocksNearPlayer(
-                (byte)(_player.X / _spritesModule.Specs.TileWidth),
+                (byte)(x / _spritesModule.Specs.TileWidth),
                 (byte)(_spritesModule.Specs.NameTableHeight - 6));
         }
     }
