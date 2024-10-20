@@ -84,6 +84,13 @@ namespace ChompGame.MainGame
                 // WHEN Y=12, SCROLLY = 28
                 _tileModule.Scroll.X = (byte)(255 - _bossPosition.X);
                 _tileModule.Scroll.Y = (byte)((4 * 15) - _bossPosition.Y);
+
+                int realY = (_tileModule.Scroll.Y + _coreGraphicsModule.ScreenPoint.Y).NModByte(_specs.NameTablePixelHeight);
+                if (realY < Constants.StatusBarHeight || realY >= _specs.NameTablePixelHeight - (_specs.TileHeight * groundTiles))
+                {
+                    _tileModule.Scroll.X = 0;
+                    _tileModule.Scroll.Y = 0;
+                }
             }
 
             if(_bossBgEffectValue.Value > 0)

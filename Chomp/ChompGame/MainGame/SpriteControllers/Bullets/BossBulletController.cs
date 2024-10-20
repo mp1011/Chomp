@@ -32,6 +32,12 @@ namespace ChompGame.MainGame.SpriteControllers
             set => _destroyOnTimer.Value = value;
         }
 
+        public bool DestroyOnCollision
+        {
+            get => _destroyOnCollision.Value;
+            set => _destroyOnCollision.Value = value;
+        }
+
         public BossBulletController(
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder,
