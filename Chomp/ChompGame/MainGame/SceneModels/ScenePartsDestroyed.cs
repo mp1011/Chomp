@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
-using ChompGame.MainGame.SceneModels.SceneParts;
 using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels

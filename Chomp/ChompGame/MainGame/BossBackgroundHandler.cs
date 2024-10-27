@@ -11,7 +11,8 @@ namespace ChompGame.MainGame
     {
         None,
         SineWave,
-        DissolveFromBottom
+        DissolveFromBottom,
+        FadeFromTop
     }
 
     class BossBackgroundHandler : IHBlankHandler
@@ -99,6 +100,8 @@ namespace ChompGame.MainGame
                     OnHBlank_UpdateSineWave();
                 else if (BossBgEffectType == BackgroundEffectType.DissolveFromBottom)
                     OnHBlank_UpdateDissolveFromBottom();
+                else if (BossBgEffectType == BackgroundEffectType.FadeFromTop)
+                    OnHBlank_UpdateFadeFromTop();
             }
 
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
@@ -159,9 +162,34 @@ namespace ChompGame.MainGame
                 {
                     _coreGraphicsModule.BackgroundScanlineDrawBuffer[i] = 0;
                 }
-            }
-            
+            }            
         }
+
+        private void OnHBlank_UpdateFadeFromTop()
+        {
+            int effectY = _coreGraphicsModule.ScreenPoint.Y - _bossPosition.Y;
+            if (effectY < -8 || effectY > 32)
+                return;
+
+            if (effectY <= (_bossBgEffectValue / 8))
+            {
+                if(((_bossBgEffectValue.Value / 8) - effectY) > 8)
+                {
+                    _tileModule.Scroll.Y = 0;
+                }
+                else if (effectY.IsMod(2))
+                {
+                    _tileModule.Scroll.X--;
+                    _tileModule.Scroll.Y -= (byte)(_bossBgEffectValue % 8);
+                }
+                else
+                {
+                    _tileModule.Scroll.X++;
+                    _tileModule.Scroll.Y -= (byte)((_bossBgEffectValue*2) % 8);
+                }
+            }
+        }
+
         public void OnStartup() 
         {
         }

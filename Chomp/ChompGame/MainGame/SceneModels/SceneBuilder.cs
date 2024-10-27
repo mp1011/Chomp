@@ -2802,7 +2802,7 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 12, y: 8, definition: scene),
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 12, y: 6, definition: scene),
 
-                (b, scene) => new ExitScenePart(b, ExitType.Right, 7, scene)
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
               );
 
             AddLevel(

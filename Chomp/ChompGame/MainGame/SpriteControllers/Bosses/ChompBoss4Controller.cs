@@ -345,6 +345,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if(_phase.Value != Phase.Dying)
             {
+                _music.CurrentSong = MusicModule.SongName.None;
+
                 _stateTimer.Value = 0;
                 _phase.Value = Phase.Dying;
             }

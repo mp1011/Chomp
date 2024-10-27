@@ -30,6 +30,7 @@ namespace ChompGame.MainGame
         }
 
         public Rectangle Bounds => new Rectangle(X, Y, Sprite.Width, Sprite.Height);
+        public Rectangle ReducedBounds => new Rectangle(X+1, Y+1, Sprite.Width-2, Sprite.Height-2);
 
         public Point Center
         {

@@ -5,7 +5,6 @@ using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
-using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
 

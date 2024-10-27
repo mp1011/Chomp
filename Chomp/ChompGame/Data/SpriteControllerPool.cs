@@ -37,6 +37,9 @@ namespace ChompGame.Data
                 .ToArray();
         }
 
+        public int ActiveCount =>
+            _items.Count(p => p.Status == WorldSpriteStatus.Active);
+
         public bool CanAddNew()
         {
             byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
