@@ -56,7 +56,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
             var cursor = new Point(0,
-                _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) - 1);
+                _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Bottom, false) - 1);
 
             if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
                 cursor.Y = 17;

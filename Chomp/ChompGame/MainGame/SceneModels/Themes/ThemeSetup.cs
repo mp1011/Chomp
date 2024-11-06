@@ -26,7 +26,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
         public virtual IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks => Array.Empty<SmartBackgroundBlock>();
         public virtual NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
         {
-            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) / _specs.AttributeTableBlockSize;
+            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, false) / _specs.AttributeTableBlockSize;
             if (_sceneDefinition.IsAutoScroll)
             {
                 foreGroundAttributePosition += 2;
@@ -66,6 +66,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.DesertInterior => new DesertInteriorThemeSetup(chompGameModule),
                 ThemeType.DesertNight => new DesertThemeSetup(chompGameModule),
                 ThemeType.DesertRain => new DesertRainThemeSetup(chompGameModule),
+                ThemeType.Forest => new ForestThemeSetup(chompGameModule),
 
                 _ => throw new NotImplementedException()
             };

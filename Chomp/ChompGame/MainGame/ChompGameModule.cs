@@ -320,7 +320,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level4_40_Boss;
+            _currentLevel.Value = Level.Level4_1_Desert;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -390,7 +390,7 @@ namespace ChompGame.MainGame
 
             _gameState.Value = GameState.PlayScene;
                        
-            var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (int)_currentLevel.Value);
+            var levelMap =_levelBuilder.BuildNameTable(memoryBuilder, (byte)_currentLevel.Value);
 
             CurrentScenePartHeader = new DynamicScenePartHeader(memoryBuilder, _currentLevel.Value);
 

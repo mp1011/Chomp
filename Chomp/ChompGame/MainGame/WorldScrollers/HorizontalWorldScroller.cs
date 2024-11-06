@@ -26,7 +26,7 @@ namespace ChompGame.MainGame.WorldScrollers
                 ThemeType.Desert => 0,
                 ThemeType.DesertNight => 0,
                 ThemeType.DesertInterior => 0,
-                _ => (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, includeStatusBar: false)
+                _ => (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, includeStatusBar: false)
             };
 
         public override int DistanceFromViewpane(Rectangle r)

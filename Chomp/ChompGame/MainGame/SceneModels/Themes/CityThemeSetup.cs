@@ -11,7 +11,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-            var farCityPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);
+            var farCityPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, includeStatusBar: false);
             string farCityRow = "EFEEEFFF";
             string nearCityRow1 = "89ABC8B9";
             string nearCityRow2 = "DDDDDDDD";

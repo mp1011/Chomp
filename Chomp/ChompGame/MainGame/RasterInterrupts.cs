@@ -90,7 +90,7 @@ namespace ChompGame.MainGame
 
         private void HandleAutoScroll()
         {
-            var waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true);
+            var waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
             if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
                 _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
@@ -104,7 +104,7 @@ namespace ChompGame.MainGame
 
         private void HandleHeatWave()
         {
-            int baseY = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Foreground, true) - 1;
+            int baseY = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, true) - 1;
             if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
                 baseY = 16;
 
@@ -130,43 +130,29 @@ namespace ChompGame.MainGame
 
         private void HandleParallax()
         {
-            switch(_sceneDefinition.HorizontalScrollStyle)                
-            {
-                case HorizontalScrollStyle.HorizonAndSky:
-                    if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
-                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
-                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
-                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
-                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
-                        _tileModule.Scroll.X = _realScrollX.Value;
-                    break;
-                case HorizontalScrollStyle.Interior:
-                    if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
-                        _tileModule.Scroll.X = _realScrollX.Value;
-                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Begin, includeStatusBar: true))
-                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
-                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back1, includeStatusBar: true))
-                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
-                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
-                        _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
-                    else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
-                        _tileModule.Scroll.X = _realScrollX.Value;
-                    break;
-            }            
+            if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Upper, includeStatusBar: true))
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Top, includeStatusBar: true))
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true))
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, includeStatusBar: true))
+                _tileModule.Scroll.X = _realScrollX.Value;
+            else if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+                _tileModule.Scroll.X = _realScrollX.Value;  
         }
 
         private void HandleTrainParallax()
         {
-
             if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
                 _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
             }
-            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true))
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true))
             {
                 _tileModule.Scroll.X = (byte)(_autoScroll.Value / 2);
             }           
-            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.ForegroundStart, includeStatusBar: true))
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Bottom, includeStatusBar: true))
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
             }
@@ -182,7 +168,7 @@ namespace ChompGame.MainGame
 
         private void HandleOcean()
         {
-            int waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true);
+            int waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
 
             if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight)
             {

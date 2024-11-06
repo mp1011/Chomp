@@ -10,7 +10,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-            var bgPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);
+            var bgPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, includeStatusBar: false);
 
 
             string waterBlock = @"89A089A0008989A0

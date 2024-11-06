@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels
 {
-    public enum Level:byte 
+    public enum Level : byte
     {
         Level1_1_Start,
         Level1_2_Horizontal,
@@ -105,7 +105,8 @@ namespace ChompGame.MainGame.SceneModels
         Level4_37_DesertRain4,
         Level4_38_DesertRain5,
         Level4_39_BeforeBoss,
-        Level4_40_Boss
+        Level4_40_Boss,
+        Level5_1_Forest
     }
 
     class SceneBuilder
@@ -126,14 +127,15 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level4_1_Desert,
             Level.Level4_16_PyramidEntrance2,
             Level.Level4_31_Midboss,
-            Level.Level4_34_DesertRain1
+            Level.Level4_34_DesertRain1,
+            Level.Level5_1_Forest
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
         {
             Level _;
 
-            //Level1_1_Start
+            _ = Level.Level1_1_Start;
             SceneDefinition.NoScrollFlat(
                specs: specs,
                theme: ThemeType.Plains,
@@ -145,13 +147,15 @@ namespace ChompGame.MainGame.SceneModels
                bottom: 1,
                left: 1,
                right: 0,
-               bgPosition: 1
-            );
+               upper: 1,
+               mid: 1,
+               lower: 1
+            ); ;
 
             //Level1_2_Horizontal,
             SceneDefinition.HorizontalScroll(
                 specs: specs,
-                variance: LevelShape.MediumVariance,
+                variance: LevelShape.LowVariance,
                 theme: ThemeType.Plains,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
@@ -159,7 +163,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 2,
-                bgPosition1: 2
+                upper: 2
             );
 
             //Level1_3_Pit,
@@ -190,7 +194,7 @@ namespace ChompGame.MainGame.SceneModels
               bottom: 2,
               left: 0,
               right: 2,
-              bgPosition: 2
+              upper: 2
            );
 
             //Level1_5_Vertical,
@@ -217,7 +221,7 @@ namespace ChompGame.MainGame.SceneModels
                memoryBuilder: memoryBuilder,
                top: 0,
                bottom: 2,
-               bgPosition1: 1
+               upper: 1
            );
 
             //Level1_7_Door,
@@ -232,7 +236,7 @@ namespace ChompGame.MainGame.SceneModels
                bottom: 1,
                left: 1,
                right: 1,
-               bgPosition: 0
+               upper: 0
             );
 
             //Level1_8_Door2,
@@ -262,7 +266,7 @@ namespace ChompGame.MainGame.SceneModels
               memoryBuilder: memoryBuilder,
               top: 0,
               bottom: 2,
-              bgPosition1: 2
+              upper: 2
           );
 
             _ = Level.Level1_10_Stair;
@@ -277,7 +281,7 @@ namespace ChompGame.MainGame.SceneModels
              bottom: 2,
              left: 0,
              right: 0,
-             bgPosition: 2
+             bgPosition: 0
           );
 
             //Level1_11_Boss
@@ -292,12 +296,12 @@ namespace ChompGame.MainGame.SceneModels
                     left: 0,
                     right: 0,
                     bottom: 1,
-                    bgPosition: 0);
+                    upper: 0);
 
             //Level1_12_Horizontal2,
             SceneDefinition.HorizontalScroll(
                 specs: specs,
-                variance: LevelShape.HighVariance,
+                variance: LevelShape.LowVariance,
                 theme: ThemeType.PlainsEvening,
                 enemy1: EnemyIndex.Lizard,
                 enemy2:EnemyIndex.Bird,
@@ -305,10 +309,10 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
-                bgPosition1: 1
+                upper: 1
             );
 
-            //Level1_13_Columns
+            _ = Level.Level1_13_Column;
             SceneDefinition.HorizontalScroll(
                 specs: specs,
                 variance: LevelShape.Flat,
@@ -319,7 +323,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
-                bgPosition1: 0
+                upper: 0
             );
 
             //Level1_14_BigRoom
@@ -366,7 +370,7 @@ namespace ChompGame.MainGame.SceneModels
             //Level1_17_Boss
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.PlainsBoss);
 
-            //Level2_1_Intro,
+            _ = Level.Level2_1_Intro;
             SceneDefinition.HorizontalScroll(
                 specs: specs,
                 theme: ThemeType.Ocean,
@@ -377,7 +381,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
-                bgPosition1: 3);
+                upper: 3);
 
             _ = Level.Level2_2_Fly;
             SceneDefinition.HorizontalScroll(
@@ -390,7 +394,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 0,
-                bgPosition1: 3
+                upper: 3
             );
 
             _ = Level.Level2_2_Fly2;
@@ -404,21 +408,21 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 0,
-                bgPosition1: 3
+                upper: 3
             );
 
             //Level2_3_Beach,
             SceneDefinition.HorizontalScroll(
                 specs: specs,
                 theme: ThemeType.Ocean,
-                variance: LevelShape.MediumVariance,
+                variance: LevelShape.LowVariance,
                 enemy1: EnemyIndex.Bird,
                 enemy2: EnemyIndex.Crocodile,
                 spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 3,
-                bgPosition1: 1);
+                upper: 1);
 
             //Level2_4_Beach2,
             SceneDefinition.HorizontalScroll(
@@ -431,7 +435,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
-                bgPosition1: 1);
+                upper: 1);
 
             //Level2_5_Hub
             SceneDefinition.NametableScroll(
@@ -459,7 +463,7 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 2,
                 right: 0,
                 left: 0,
-                bgPosition: 1);
+                upper: 1);
 
             //Level2_7_Door,
             SceneDefinition.NoScrollFlat(
@@ -473,7 +477,7 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 2,
                 right: 0,
                 left: 0,
-                bgPosition: 1);
+                upper: 1);
 
             //Level2_8_Platforms,
             SceneDefinition.HorizontalScroll(
@@ -486,7 +490,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 2,
-                bgPosition1: 1);
+                upper: 1);
 
             _ = Level.Level2_9_Pit;
             SceneDefinition.NoScrollTShape(
@@ -514,7 +518,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 top: 0,
                 bottom: 1,
-                bgPosition1: 1);
+                upper: 1);
 
             //Level2_11_Beach4,
             SceneDefinition.HorizontalScroll(
@@ -526,8 +530,8 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 top: 0,
-                bottom: 4,
-                bgPosition1: 1);
+                bottom: 3,
+                upper: 1);
 
             //Level2_12_Boss
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.OceanBoss);
@@ -543,7 +547,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy2: EnemyIndex.Bird,
                 bottom: 2,
                 top:0,
-                bgPosition1: 1);
+                upper: 1);
 
             //Level3_2_Building1
             SceneDefinition.VerticalScroll(
@@ -589,14 +593,14 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                variance: LevelShape.MediumVariance,
+                variance: LevelShape.TwoByTwoVariance,
                 theme: ThemeType.City,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Crocodile,
                 enemy2: EnemyIndex.Ogre,
                 bottom: 2,
                 top: 0,
-                bgPosition1: 1);
+                upper: 1);
 
             
             _ = Level.Level3_6_City3;
@@ -610,7 +614,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Ogre,
                bottom: 1,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level3_7_Building2;
             SceneDefinition.VerticalScroll(
@@ -636,7 +640,7 @@ namespace ChompGame.MainGame.SceneModels
                bottom: 1,
                right: 1,
                left: 2,
-               bgPosition: 1);
+               upper: 1);
 
             _ = Level.Level3_9_Building2_Room2;
             SceneDefinition.NoScrollFlat(
@@ -650,7 +654,7 @@ namespace ChompGame.MainGame.SceneModels
                bottom: 2,
                right: 2,
                left: 2,
-               bgPosition: 1);
+               upper: 1);
 
             _ = Level.Level3_10_Building3;
             SceneDefinition.VerticalScroll(
@@ -690,7 +694,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 1,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_13_Building3_Room3;
             SceneDefinition.NoScrollFlat(
@@ -704,7 +708,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_14_Building3_Room4;
             SceneDefinition.NoScrollFlat(
@@ -718,7 +722,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 1,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_15_Building3_Room5;
             SceneDefinition.NoScrollFlat(
@@ -732,7 +736,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 1,
                 right: 1,
                 bottom: 2,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_16_Building3_Room6;
             SceneDefinition.NoScrollFlat(
@@ -746,7 +750,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 1,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_17_Building3_Room7;
             SceneDefinition.NoScrollFlat(
@@ -760,7 +764,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_18_Building3_Room8;
             SceneDefinition.NoScrollTShape(
@@ -788,7 +792,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_20_Midboss;
             SceneDefinition.NoScrollFlat(
@@ -802,7 +806,7 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0,
                 right: 1,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level3_21_CityAfterMidboss;
             SceneDefinition.HorizontalScroll(
@@ -815,7 +819,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Ogre,
                bottom: 2,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level3_22_CityTrain;
             SceneDefinition.HorizontalScroll(
@@ -828,7 +832,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Rocket,
                bottom: 0,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level3_23_CityTrain2;
             SceneDefinition.HorizontalScroll(
@@ -841,7 +845,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Ogre,
                bottom: 1,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level3_24_CityTrain3;
             SceneDefinition.HorizontalScroll(
@@ -854,7 +858,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Rocket,
                bottom: 2,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level3_25_CityBeforeBoss;
             SceneDefinition.HorizontalScroll(
@@ -867,7 +871,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Ogre,
                bottom: 2,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level3_26_Boss;
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.CityBoss);
@@ -884,7 +888,7 @@ namespace ChompGame.MainGame.SceneModels
                 right: 0,
                 top: 0,
                 bottom: 1,
-                bgPosition: 0);
+                upper: 0);
 
             _ = Level.Level4_2_Desert2;
             SceneDefinition.HorizontalScroll(
@@ -897,7 +901,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Crocodile,
                bottom: 2,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level4_3_MageIntro;
             SceneDefinition.NametableScroll(
@@ -925,7 +929,7 @@ namespace ChompGame.MainGame.SceneModels
                 right: 1,
                 top: 0,
                 bottom: 2,
-                bgPosition: 2);
+                upper: 2);
 
             _ = Level.Level4_5_Desert3;
             SceneDefinition.HorizontalScroll(
@@ -938,7 +942,7 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: EnemyIndex.Mage,
                bottom: 2,
                top: 0,
-               bgPosition1: 1);
+               upper: 1);
 
             _ = Level.Level4_6_PyramidEntrance;
             SceneDefinition.NametableScroll(
@@ -990,7 +994,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Ogre,
                 enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1:2,
+                upper: 2,
                 top: 1,
                 bottom: 1,
                 style: HorizontalScrollStyle.Interior);
@@ -1017,7 +1021,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition: 0,
+                upper: 0,
                 top: 1,
                 left: 2,
                 bottom: 1,
@@ -1032,7 +1036,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1: 1,
+                upper: 1,
                 top: 1,
                 bottom: 2,
                 style: HorizontalScrollStyle.Interior);
@@ -1046,7 +1050,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Ogre,
                 enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1: 1,
+                upper: 1,
                 top: 0,
                 bottom: 2,
                 style: HorizontalScrollStyle.HorizonAndSky);
@@ -1063,7 +1067,7 @@ namespace ChompGame.MainGame.SceneModels
                 right: 1,
                 top: 0,
                 bottom: 2,
-                bgPosition: 2);
+                upper: 2);
 
             _ = Level.Level4_15_Steps;
             SceneDefinition.NoScrollBigStairs(
@@ -1101,7 +1105,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
-                bgPosition:0,
+                upper:0,
                 left: 1,
                 right: 1,
                 bottom: 1,
@@ -1141,7 +1145,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
-                bgPosition: 0,
+                upper: 0,
                 left: 1,
                 right: 1,
                 bottom: 1,
@@ -1156,7 +1160,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1: 1,
+                upper: 1,
                 top: 2,
                 bottom: 1,
                 style: HorizontalScrollStyle.Interior);
@@ -1184,7 +1188,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Ogre,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1: 1,
+                upper: 1,
                 top: 1,
                 bottom: 1,
                 style: HorizontalScrollStyle.Interior);
@@ -1212,7 +1216,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
-                bgPosition: 0,
+                upper: 0,
                 left: 1,
                 right: 1,
                 bottom: 1,
@@ -1266,7 +1270,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
-                bgPosition: 0,
+                upper: 0,
                 left: 1,
                 right: 1,
                 bottom: 1,
@@ -1280,7 +1284,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Crocodile,
-                bgPosition: 0,
+                upper: 0,
                 left: 1,
                 right: 1,
                 bottom: 1,
@@ -1294,7 +1298,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Boss,
                 enemy1: EnemyIndex.Midboss,
                 enemy2: EnemyIndex.Midboss,
-                bgPosition: 0,
+                upper: 0,
                 left: 1,
                 right: 1,
                 bottom: 1,
@@ -1309,7 +1313,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Ogre,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1: 1,
+                upper: 1,
                 top: 0,
                 bottom: 2,
                 style: HorizontalScrollStyle.Flat);
@@ -1323,7 +1327,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Crocodile,
                 enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
-                bgPosition1: 1,
+                upper: 1,
                 top: 0,
                 bottom: 2,
                 style: HorizontalScrollStyle.Flat);
@@ -1336,7 +1340,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
-                bgPosition: 0,
+                upper: 0,
                 left: 0,
                 right: 0,
                 bottom: 1,
@@ -1407,7 +1411,7 @@ namespace ChompGame.MainGame.SceneModels
                            spriteGroup: SpriteGroup.Normal,
                            enemy1: EnemyIndex.Lizard,
                            enemy2: EnemyIndex.Bird,
-                           bgPosition: 0,
+                           upper: 0,
                            left: 0,
                            right: 0,
                            bottom: 1,
@@ -1418,6 +1422,20 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.OceanBoss);
+
+            _ = Level.Level5_1_Forest;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 0,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Forest);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -1441,17 +1459,17 @@ namespace ChompGame.MainGame.SceneModels
             scene = new SceneDefinition(Level.Level1_2_Horizontal, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 8, y: 8, definition: scene)
-                , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 10, y: 10, definition: scene)
-                , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 12, y: 8, definition: scene)
-                , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 18, y: 8, definition: scene)
+               // , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 10, y: 10, definition: scene)
+              //  , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 12, y: 8, definition: scene)
+              //  , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 18, y: 8, definition: scene)
                 , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 22, y: 8, definition: scene)
                 , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 36, y: 8, definition: scene)
                 , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 38, y: 8, definition: scene)
                 , b => new ExitScenePart(b, ExitType.Left, -1, scene)
                 , b => new ExitScenePart(b, ExitType.Right, 1, scene)
                 , b => new SpriteScenePart(b, ScenePartType.Bomb, 47, 0, scene)
-                , b => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 0, scene)
-                , b => new SpriteScenePart(b, ScenePartType.EnemyType1, 33, 0, scene)
+              //  , b => new SpriteScenePart(b, ScenePartType.EnemyType1, 18, 0, scene)
+                , b => new SpriteScenePart(b, ScenePartType.EnemyType1, 28, 0, scene)
                 , b => new SpriteScenePart(b, ScenePartType.EnemyType1, 58, 0, scene)
                 );
             CheckDestroyBits(Level.Level1_2_Horizontal, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
@@ -1472,7 +1490,7 @@ namespace ChompGame.MainGame.SceneModels
                 , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 4, y: 8, definition: scene)
                 , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 6, y: 8, definition: scene)
                 , b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 8, y: 8, definition: scene)
-                , b => new SpriteScenePart(b, ScenePartType.Bomb, 11, 9, scene)
+                , b => new SpriteScenePart(b, ScenePartType.Bomb, 11, 0, scene)
                 );
             CheckDestroyBits(Level.Level1_4_DeadEnd, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
@@ -1485,7 +1503,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 3, 36, scene),
                 b => new PrefabScenePart(b, scene, 2, 38, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
                 b => new PrefabScenePart(b, scene, 10, 38, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 4, definition: scene),
+                b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 4, y: 6, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 6, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 34, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 12, y: 32, definition: scene),
@@ -1497,7 +1515,7 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 60, 11, scene),
+                b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 60, 10, scene),
                 b => new ExitScenePart(b, ExitType.Left, exitOffset: 1, scene),
                 b => PitScenePart(b, 20, PrefabSize.Four, scene),
                 b => PitScenePart(b, 32, PrefabSize.Eight, scene),
@@ -1508,9 +1526,9 @@ namespace ChompGame.MainGame.SceneModels
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 48, 0, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 20, 4, scene),
                 b => new SpriteScenePart(b, ScenePartType.Bomb, 26, 0, scene),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 50, y: 10, definition: scene),
+              //  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 50, y: 10, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 50, y: 8, definition: scene),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 52, y: 10, definition: scene),
+             //   b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 52, y: 10, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false, x: 52, y: 8, definition: scene)
 
                 );
@@ -1541,8 +1559,8 @@ namespace ChompGame.MainGame.SceneModels
                 b => PitScenePart(b, 12, PrefabSize.Four, scene),
                 b => PitScenePart(b, 24, PrefabSize.Four, scene),
                 b => PitScenePart(b, 28, PrefabSize.Eight, scene),
-                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 45, 0, scene),
-                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 30, 12, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 40, 0, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 26, 12, scene),
                 b => PitScenePart(b, 48, PrefabSize.Eight, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 48, 12, scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 8, definition: scene),
@@ -2957,7 +2975,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
         {
-            return new PrefabScenePart(b, scene, x, 12, width, PrefabSize.Eight, PrefabStyle.Space);
+            return new PrefabScenePart(b, scene, x, 10, width, PrefabSize.Eight, PrefabStyle.Space);
         }
 
         private static void AddLevel(Level level, 

@@ -25,9 +25,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
         {
-            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.ForegroundStart, false) / _specs.AttributeTableBlockSize;
+            int foreGroundAttributePosition = _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, false) / _specs.AttributeTableBlockSize;
 
-            var begin = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false) / 2;
+            var begin = _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Bottom, false) / 2;
             begin--;
 
             if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)

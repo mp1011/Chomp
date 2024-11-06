@@ -50,6 +50,12 @@
 /processorParam:Quality=Best
 /build:Music/Flight.ogg
 
+#begin Music/Moonstruck.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Moonstruck.ogg
+
 #begin Music/Nemesis.ogg
 /importer:OggImporter
 /processor:SongProcessor

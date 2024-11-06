@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteControllers.Bosses;
@@ -64,7 +65,7 @@ namespace ChompGame.MainGame.SceneModels
             return attributeTable;
         }
 
-        public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, int seed)
+        public NBitPlane BuildNameTable(SystemMemoryBuilder memoryBuilder, byte seed)
         {
             NBitPlane nameTable = NBitPlane.Create(memoryBuilder.CurrentAddress, 
                 memoryBuilder.Memory,
@@ -362,7 +363,7 @@ namespace ChompGame.MainGame.SceneModels
             };
         }
 
-        private NBitPlane AddShapeTiles(NBitPlane nameTable, int seed)
+        private NBitPlane AddShapeTiles(NBitPlane nameTable, byte seed)
         {
             return _sceneDefinition.ScrollStyle switch 
             {
@@ -665,63 +666,82 @@ namespace ChompGame.MainGame.SceneModels
             return nameTable;
         }
 
-        private NBitPlane AddGroundVariance(NBitPlane nameTable, int seed)
+        private NBitPlane AddGroundVariance(NBitPlane nameTable, byte seed)
         {
-            var rng = new Random(seed);
-            int nextSectionBegin = 0;
+            var rng = _gameModule.RandomModule;
 
-            int groundUpper = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, includeStatusBar: false);
-            int groundLower = nameTable.Height;
+            int groundMin = _sceneDefinition.LevelTileHeight - _sceneDefinition.BottomTiles;
+            int groundMax = _sceneDefinition.LevelTileHeight - 1;
 
-            int groundPosition = rng.Next(groundUpper, groundLower);
-            if (_sceneDefinition.Theme.IsCityTheme())
+            if (groundMin >= groundMax)
+                throw new Exception("Not enough room for variance");
+
+            int sectionBegin = 0;
+            int sectionEnd = sectionBegin + GetNextGroundSectionWidth(rng, seed);
+            int ground = GetNextGroundHeight(0, rng, seed, groundMin, groundMax);
+
+            for (int x = 0; x < nameTable.Width; x++)
             {
-                groundPosition = (groundPosition / 2) * 2;
-                groundLower = nameTable.Height - 2;
-            }
-
-            for (var col = 0; col < nameTable.Width; col++)
-            {
-                for (var row = groundUpper; row < nameTable.Height; row++)
+                for(int y = 0; y < nameTable.Height; y++)
                 {
+                    if (y >= ground)
+                        nameTable[x, y] = 1;
+                    else if(y >= groundMin)
+                        nameTable[x, y] = 0;                   
+                }
 
-                    if (col == nextSectionBegin)
-                    {
-                        nextSectionBegin = nextSectionBegin + GetNextGroundSectionWidth(rng);
-                        int nextGroundPosition = rng.Next(groundUpper, groundLower);
-                        if (_sceneDefinition.Theme.IsCityTheme())
-                            nextGroundPosition = (nextGroundPosition / 2) * 2;
+                if (x == sectionEnd)
+                {
+                    sectionBegin = x;
+                    sectionEnd = sectionBegin + GetNextGroundSectionWidth(rng, (byte)(seed + x));
 
-                        if (nextGroundPosition == groundPosition)
-                        {
-                            nextGroundPosition = groundPosition - (_sceneDefinition.Theme.IsCityTheme() ? 2 : 1);
-                            if (nextGroundPosition < groundUpper)
-                                nextGroundPosition = groundPosition + (_sceneDefinition.Theme.IsCityTheme() ? 2 : 1);
-
-                            if (nextGroundPosition > groundLower)
-                                nextGroundPosition = groundLower;
-                        }
-
-                        groundPosition = nextGroundPosition;
-                    }
-
-                    if (row < groundPosition)
-                        nameTable[col, row] = 0;
-                    else
-                        nameTable[col, row] = 1;
+                    ground = GetNextGroundHeight(ground, rng, (byte)(seed + x + ground), groundMin, groundMax);
                 }
             }
 
             return nameTable;
         }
 
-        private int GetNextGroundSectionWidth(Random rng)
+        private int GetNextGroundSectionWidth(RandomModule rng, byte seed)
         {
-            return _sceneDefinition.LevelShape switch {
-                LevelShape.LowVariance => rng.Next(8, 16),
-                LevelShape.MediumVariance => rng.Next(6, 12),
-                _ => rng.Next(3, 6)
-            };
+            var randomValue = 1 + rng.FixedRandom(seed, 4);
+
+            if (_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
+            {
+                randomValue = (randomValue / 2) * 2;
+                if (randomValue < 0)
+                    randomValue = 2;
+            }
+
+            return randomValue;            
+        }
+
+        private int GetNextGroundHeight(int lastHeight, RandomModule rng, byte seed, int groundMin, int groundMax)
+        {
+            int newHeight;
+
+            if(lastHeight > 0 && _sceneDefinition.LevelShape == LevelShape.LowVariance)
+            {
+                newHeight = lastHeight + (rng.FixedRandom(seed, 1) == 1 ? 1 : -1);
+                if (newHeight > groundMax)
+                    newHeight = groundMax - 1;
+                else if (newHeight < groundMin)
+                    newHeight = groundMin + 1;
+
+                return newHeight;
+            }
+
+            int range = groundMax - groundMin;
+            newHeight = groundMin + (rng.FixedRandom(seed,4) % range);
+
+            if (_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
+            {
+                newHeight = (newHeight / 2) * 2;
+                if (newHeight < 0)
+                    newHeight = 2;
+            }
+
+            return newHeight;
         }
 
         public SceneSpriteControllers CreateSpriteControllers(SystemMemoryBuilder memoryBuilder)

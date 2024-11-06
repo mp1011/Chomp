@@ -22,9 +22,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             if(_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal 
                 && _sceneDefinition.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
             {
-                var layer2Start = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, false);
-                var layer2End = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back2, false);
-                var fgStart = _sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, false);
+                var layer2Start = _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, false);
+                var layer2End = _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Middle, false);
+                var fgStart = _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, false);
                 var layer2Mid = layer2Start + (layer2End - layer2Start) / 2;
 
                 nameTable.ForEach((x, y, b) =>

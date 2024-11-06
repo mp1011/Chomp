@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
                 return;
 
-            var bgPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);
+            var bgPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, includeStatusBar: false);
 
 
             string waterBlock = @"1230123000121230

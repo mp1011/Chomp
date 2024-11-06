@@ -70,7 +70,10 @@ namespace ChompGame.MainGame.SceneModels
         PyramidTorches,
         DesertNight,
         DesertRain,
-        Max = DesertRain
+        ForestGround,
+        ForestTreesNear,
+        ForestTreesFar,
+        Max = ForestTreesFar
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -402,6 +405,25 @@ namespace ChompGame.MainGame.SceneModels
                ColorIndex.Black,
                ColorIndex.Blue1,
                ColorIndex.Blue3);
+
+            DefinePalette(PaletteKey.ForestGround,
+                ColorIndex.Brown1,
+                ColorIndex.Brown2,
+                ColorIndex.Brown3);
+
+
+            DefinePalette(PaletteKey.ForestTreesNear,
+                ColorIndex.Green2,
+                ColorIndex.Green1, //outline
+                ColorIndex.Green3, //fill
+                ColorIndex.Green2);
+
+            DefinePalette(PaletteKey.ForestTreesFar,
+               ColorIndex.Black,
+               ColorIndex.Green1,//outline
+               ColorIndex.Green2, //fill
+               ColorIndex.Green3);
+
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -463,53 +485,60 @@ namespace ChompGame.MainGame.SceneModels
         {
             if(_currentScene.IsLevelBossScene)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
             }
             else if(_currentScene.Theme == ThemeType.Desert)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
+            }
+            else if (_currentScene.Theme == ThemeType.Forest)
+            {
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
             }
             else if (_currentScene.Theme == ThemeType.DesertNight)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
             else if (_currentScene.Theme == ThemeType.DesertRain)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
             else if (_currentScene.ScrollStyle == ScrollStyle.Horizontal &&
                 _currentScene.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg1;
             }
             else if(_currentScene.Theme == ThemeType.DesertInterior)
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
             }
             else
             {
-                _paletteChangeTable[(byte)BackgroundLayer.Begin] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundLayer.Back1] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundLayer.Back2] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundLayer.ForegroundStart] = (byte)PaletteChange.UpdateColor0;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.UpdateColor0;
             }
         }
 
@@ -535,11 +564,11 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_graphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
             {
-                int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true) - _tileModule.Scroll.Y;
+                int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true) - _tileModule.Scroll.Y;
                 if (_graphicsModule.ScreenPoint.Y >= back2Pixel)
-                    ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundLayer.Back2]);
+                    ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundPart.Middle]);
                 else
-                    ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundLayer.Begin]);
+                    ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundPart.Top]);
             }
             else
             {
@@ -552,7 +581,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private void CheckPaletteChange(int index)
         {
-            var pixelY = _currentScene.GetBackgroundLayerPixel((BackgroundLayer)index, true) - _tileModule.Scroll.Y;
+            var pixelY = _currentScene.GetBackgroundLayerPixel((BackgroundPart)index, true) - _tileModule.Scroll.Y;
             if (_graphicsModule.ScreenPoint.Y != pixelY)
                 return;
 
@@ -590,7 +619,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private void OnHBlank_AutoScroll()
         {
-            int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundLayer.Back2, includeStatusBar: true);
+            int back2Pixel = _currentScene.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
 
             if (_graphicsModule.ScreenPoint.Y == 0)
             {

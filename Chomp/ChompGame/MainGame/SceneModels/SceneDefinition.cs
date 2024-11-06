@@ -25,16 +25,18 @@ namespace ChompGame.MainGame.SceneModels
     {
         HorizonAndSky,
         Interior,
-        Flat
+        Flat,
+        Forest
     }
-
-    public enum BackgroundLayer
+    public enum BackgroundPart
     {
-        Begin,
-        Back1,
-        Back2,
-        ForegroundStart,
-        Foreground
+        Top,
+        Upper,
+        Middle,
+        Lower,
+        Bottom,
+        Left,
+        Right
     }
 
     public enum PlayerSpriteGroup : byte
@@ -69,8 +71,8 @@ namespace ChompGame.MainGame.SceneModels
 
         //ScrollStyle 2
         LowVariance=1,
-        MediumVariance=2,
-        HighVariance=3,
+        HighVariance=2,
+        TwoByTwoVariance=3,
 
         //ScrollStyle 3
         ZigZag=1,
@@ -89,25 +91,20 @@ namespace ChompGame.MainGame.SceneModels
         //byte 0
         private readonly TwoBitEnum<ScrollStyle> _scrollStyle;
         private readonly TwoBitEnum<LevelShape> _levelShape;
-        private readonly TwoBit _bgPosition1;    
+        private TwoBit _enemy2;
         private readonly TwoBitEnum<CornerStairStyle> _cornerStairStyle;
         private readonly TwoBitEnum<HorizontalScrollStyle> _horizontalScrollStyle; // shared with above
 
-        //byte 1
-        private GameByteEnum<ThemeType> _theme;
+        //byte 1 + 6 bits of byte 1
+        private DenseTwoBitArray _layerPositions; // 8 + 6 bits
+
+        // last 2 bits of byte 1
+        private GameByteEnum<SpriteGroup> _spriteGroup; // 2 bits
 
         //byte 2
-        private GameByteEnum<EnemyIndex> _enemy1; //3
-        private MaskedByte _enemy2; //2
-        private GameByteEnum<SpriteGroup> _spriteGroup; //3
-             
-        //byte 3 (four TwoBits or two Nibbles)
-        private TwoBit _left;
-        private TwoBit _top;
-        private TwoBit _right;
-        private TwoBit _bottom;
-        private Nibble _begin;
-        private Nibble _end;
+        private GameByteEnum<EnemyIndex> _enemy1; // 3 bits               
+        private GameByteEnum<ThemeType> _theme; // 5 bits
+       
 
         public int Address => _scrollStyle.Address;
 
@@ -138,26 +135,19 @@ namespace ChompGame.MainGame.SceneModels
 
         public bool IsAutoScroll => _spriteGroup.Value == SpriteGroup.Plane;
 
-        public int LeftTiles => _scrollStyle.Value switch {
-            ScrollStyle.Vertical => _begin.Value * 2,
-            _ => _left.Value * 2 };
+        public int LeftTiles => _layerPositions[(int)BackgroundPart.Left] * 2;
 
-        public int RightTiles => _scrollStyle.Value switch {
-            ScrollStyle.Vertical => _end.Value * 2,
-            _ => _right.Value * 2
-        };
+        public int RightTiles => _layerPositions[(int)BackgroundPart.Right] * 2;
 
-        public int TopTiles => _scrollStyle.Value switch {
-            ScrollStyle.Horizontal => _begin.Value * 2,
-            ScrollStyle.Vertical => 0,
-            _ => _top.Value * 2
-        };
+        public int TopTiles => _layerPositions[(int)BackgroundPart.Top] * 2;
 
-        public int BottomTiles => _scrollStyle.Value switch {
-            ScrollStyle.Horizontal => _end.Value * 2,
-            ScrollStyle.Vertical => 4,
-            _ => _bottom.Value * 2
-        };
+        public int UpperTiles => _layerPositions[(int)BackgroundPart.Upper] * 2;
+
+        public int MiddleTiles => _layerPositions[(int)BackgroundPart.Middle] * 2;
+
+        public int LowerTiles => _layerPositions[(int)BackgroundPart.Lower] * 2;
+
+        public int BottomTiles => _layerPositions[(int)BackgroundPart.Bottom] * 2;
 
         public int LeftEdgeFloorTiles => _scrollStyle.Value switch {
             ScrollStyle.None => _levelShape.Value switch {
@@ -228,47 +218,24 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
         public bool HasSprite(SpriteType spriteType) => Sprites.Contains(spriteType);
-        public int GetBackgroundLayerTile(BackgroundLayer layer, bool includeStatusBar)
+        public int GetBackgroundLayerTile(BackgroundPart layer, bool includeStatusBar)
         {
-            if (ScrollStyle == ScrollStyle.Horizontal && HorizontalScrollStyle == HorizontalScrollStyle.Interior)
+            int tile = includeStatusBar ? 2 : 0;
+            for(BackgroundPart x = BackgroundPart.Top; x <= layer; x++)
             {
-                var bgHeight = LevelTileHeight - TopTiles - BottomTiles;
-                var layer1Height = (bgHeight - _bgPosition1.Value * 2) / 2;
-
-                return layer switch {
-                    BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
-                    BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + layer1Height,
-                    BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + (_bgPosition1.Value*2),
-                    BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + layer1Height,
-                    BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
-                    _ => 0
+                tile += x switch {
+                    BackgroundPart.Top => TopTiles,
+                    BackgroundPart.Upper => UpperTiles,
+                    BackgroundPart.Middle => MiddleTiles,
+                    BackgroundPart.Lower => LowerTiles,
+                    BackgroundPart.Bottom => BottomTiles,
+                    _ => 0,
                 };
             }
-            else if (_theme.Value == ThemeType.DesertRain)
-            {
-                return layer switch {
-                    BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
-                    BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + (_bgPosition1.Value * 2),
-                    BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + 2,
-                    BackgroundLayer.ForegroundStart => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
-                    BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
-                    _ => 0
-                };
-            }
-            else
-            {
-                return layer switch {
-                    BackgroundLayer.Begin => (includeStatusBar ? StatusBarTiles : 0) + TopTiles,
-                    BackgroundLayer.Back1 => GetBackgroundLayerTile(BackgroundLayer.Begin, includeStatusBar) + (_bgPosition1.Value * 2),
-                    BackgroundLayer.Back2 => GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar) + 2,
-                    BackgroundLayer.ForegroundStart => GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar) + 2,
-                    BackgroundLayer.Foreground => LevelTileHeight + (includeStatusBar ? Constants.StatusBarTiles : 0) - BottomTiles,
-                    _ => 0
-                };
-            }
+            return tile;
         }
 
-        public int GetBackgroundLayerPixel(BackgroundLayer layer, bool includeStatusBar) =>
+        public int GetBackgroundLayerPixel(BackgroundPart layer, bool includeStatusBar) =>
             GetBackgroundLayerTile(layer, includeStatusBar) * _specs.TileHeight;
 
         public static SceneDefinition NoScrollFlat(
@@ -282,7 +249,9 @@ namespace ChompGame.MainGame.SceneModels
             byte top, 
             byte right, 
             byte bottom,
-            byte bgPosition)
+            byte upper,
+            byte mid=1,
+            byte lower=1)
         {
             return new SceneDefinition(memoryBuilder, 
                 specs, 
@@ -296,7 +265,9 @@ namespace ChompGame.MainGame.SceneModels
                 top,
                 right,
                 bottom,
-                bgPosition);
+                upper,
+                mid,
+                lower);
         }
 
         public static SceneDefinition NoScrollCornerStairs(
@@ -321,12 +292,14 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1,
                 enemy2,
                 spriteGroup,
-                left,
-                top,
-                right,
-                bottom,
-                bgPosition,
-                (byte)cornerStairStyle);
+                left: left,
+                top: top,
+                right: right,
+                bottom: bottom,
+                upper: bgPosition,
+                mid: 1,
+                lower:1,
+                extraStyle: (byte)cornerStairStyle);
         }
 
         public static SceneDefinition NoScrollBigStairs(
@@ -350,11 +323,13 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1,
                 enemy2,
                 spriteGroup,
-                left,
-                top,
-                right,
-                bottom,
-                bgPosition);
+                left:left,
+                top: top,
+                right: right,
+                bottom: bottom,
+                upper: bgPosition,
+                mid: 1,
+                lower:1);
         }
 
         public static SceneDefinition NoScrollTShape(
@@ -396,7 +371,9 @@ namespace ChompGame.MainGame.SceneModels
             SpriteGroup spriteGroup,
             byte top,
             byte bottom,
-            byte bgPosition1,
+            byte upper,
+            byte middle=1,
+            byte lower=1,
             HorizontalScrollStyle style = HorizontalScrollStyle.HorizonAndSky)
         {
             return new SceneDefinition(memoryBuilder,
@@ -407,12 +384,14 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1,
                 enemy2,
                 spriteGroup,
-                0,
-                top,
-                0,
-                bottom,
-                bgPosition1,
-                (byte)style);
+                left: 0,
+                top: top,
+                right: 0,
+                bottom: bottom,
+                upper: upper,
+                mid: middle,
+                lower: lower
+               );
         }
         public static SceneDefinition VerticalScroll(
             SystemMemoryBuilder memoryBuilder,
@@ -433,10 +412,13 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1,
                 enemy2,
                 spriteGroup,
-                left,
-                0,
-                right,
-                0);
+                left: left,
+                top: 0,
+                right: right,
+                bottom: 2,
+                upper: 1,
+                mid: 1,
+                lower: 1);
         }
 
         public static SceneDefinition BossScene(
@@ -474,15 +456,19 @@ namespace ChompGame.MainGame.SceneModels
             return new SceneDefinition(memoryBuilder,
                 specs,
                 ScrollStyle.NameTable,
-                shape, 
+                shape,
                 theme,
                 enemy1,
                 enemy2,
                 spriteGroup,
-                left,
-                top,
-                right,
-                bottom);
+                left: left,
+                top: top,
+                right: right,
+                bottom: bottom,
+                upper: 1,
+                mid: 1,
+                lower: 1);
+               
         }
 
         private SceneDefinition(SystemMemoryBuilder memoryBuilder, 
@@ -497,38 +483,33 @@ namespace ChompGame.MainGame.SceneModels
             byte top=0,
             byte right=0,
             byte bottom=0,
-            byte bg1=0,
-            byte bg2=0)
+            byte upper=1,
+            byte mid=0,
+            byte lower=0,
+            byte extraStyle=0)
         {
             _specs = specs;
             _systemMemory = memoryBuilder.Memory;
 
+            //byte 0
             _scrollStyle = new TwoBitEnum<ScrollStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
             _levelShape = new TwoBitEnum<LevelShape>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
-            _bgPosition1 = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
-
+            _enemy2 = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
             _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
             _horizontalScrollStyle = new TwoBitEnum<HorizontalScrollStyle>(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
-
             memoryBuilder.AddByte();
 
-            _theme = new GameByteEnum<ThemeType>(memoryBuilder.AddByte());
-
-            _enemy1 = new GameByteEnum<EnemyIndex>(new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right3, memoryBuilder.Memory));
-            _enemy2 = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)24, memoryBuilder.Memory, leftShift: 3);
-            _spriteGroup = new GameByteEnum<SpriteGroup>(new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left3, memoryBuilder.Memory, leftShift: 5));
+            //bytes 1 and 2
+            _layerPositions = new DenseTwoBitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            _spriteGroup = new GameByteEnum<SpriteGroup>(new MaskedByte(memoryBuilder.CurrentAddress+1, Bit.Left2, memoryBuilder.Memory, leftShift: 6));
+            memoryBuilder.AddByte();
             memoryBuilder.AddByte();
 
-            _begin = new LowNibble(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            _end = new HighNibble(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-
-            _left = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0);
-            _top = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 2);
-            _right = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 4);
-            _bottom  = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+            //byte 3
+            _theme = new GameByteEnum<ThemeType>(new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right5, memoryBuilder.Memory));
+            _enemy1 = new GameByteEnum<EnemyIndex>(new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left3, memoryBuilder.Memory, leftShift: 5));
             memoryBuilder.AddByte();
-
-
+          
             _scrollStyle.Value = scrollStyle;
             _levelShape.Value = levelShape;
             _theme.Value = theme;
@@ -542,52 +523,37 @@ namespace ChompGame.MainGame.SceneModels
             if (enemy2 > enemy1+4)
                 throw new Exception("Second enemy can't be more than 4 indices away from first");
 
+            _layerPositions[(int)BackgroundPart.Lower] = lower;
+            _layerPositions[(int)BackgroundPart.Middle] = mid;
+            _layerPositions[(int)BackgroundPart.Upper] = upper;
+            _layerPositions[(int)BackgroundPart.Top] = top;
+            _layerPositions[(int)BackgroundPart.Bottom] = bottom;
+            _layerPositions[(int)BackgroundPart.Middle] = mid;
+            _layerPositions[(int)BackgroundPart.Left] = left;
+            _layerPositions[(int)BackgroundPart.Right] = right;
 
-            if (scrollStyle == ScrollStyle.Horizontal)
-            {
-                _begin.Value = top;
-                _end.Value = bottom;
-            }
-            else if(scrollStyle == ScrollStyle.Vertical)
-            {
-                _begin.Value = left;
-                _end.Value = right;
-            }
-            else
-            {
-                _left.Value = left;
-                _top.Value = top;
-                _right.Value = right;
-                _bottom.Value = bottom;
-            }
-
-            _bgPosition1.Value = bg1;
-            _horizontalScrollStyle.Value = (HorizontalScrollStyle)bg2;
-
+            // shared with corner stair style
+            _horizontalScrollStyle.Value = (HorizontalScrollStyle)extraStyle;
         }
 
         public SceneDefinition(int address, SystemMemory systemMemory, Specs specs)
         {
             _specs = specs;
+
+            //byte 0
             _scrollStyle = new TwoBitEnum<ScrollStyle>(systemMemory, address, 0);
             _levelShape = new TwoBitEnum<LevelShape>(systemMemory, address, 2);
-            _bgPosition1 = new TwoBit(systemMemory, address, 4);
+            _enemy2 = new TwoBit(systemMemory, address, 4);
             _horizontalScrollStyle = new TwoBitEnum<HorizontalScrollStyle>(systemMemory, address, 6);
             _cornerStairStyle = new TwoBitEnum<CornerStairStyle>(systemMemory, address, 6);
 
-            _theme = new GameByteEnum<ThemeType>(new GameByte(address+1, systemMemory));
+            //byte 1 and 2
+            _layerPositions = new DenseTwoBitArray(address + 1, systemMemory);
+            _spriteGroup = new GameByteEnum<SpriteGroup>(new MaskedByte(address + 2, Bit.Left2, systemMemory, leftShift: 6));
 
-            _enemy1 = new GameByteEnum<EnemyIndex>(new MaskedByte(address + 2, Bit.Right3, systemMemory));
-            _enemy2 = new MaskedByte(address + 2, (Bit)24, systemMemory, leftShift: 3);
-            _spriteGroup = new GameByteEnum<SpriteGroup>(new MaskedByte(address + 2, Bit.Left3, systemMemory, leftShift: 5));
-      
-            _begin = new LowNibble(address + 3, systemMemory);
-            _end = new HighNibble(address + 3, systemMemory);
-
-            _left = new TwoBit(systemMemory, address + 3, 0);
-            _top = new TwoBit(systemMemory, address + 3, 2);
-            _right = new TwoBit(systemMemory, address + 3, 4);
-            _bottom = new TwoBit(systemMemory, address + 3, 6);
+            //byte 3
+            _theme = new GameByteEnum<ThemeType>(new MaskedByte(address + 3, Bit.Right5, systemMemory));           
+            _enemy1 = new GameByteEnum<EnemyIndex>(new MaskedByte(address + 3, Bit.Left3, systemMemory, leftShift: 5));            
         }
 
         public SceneDefinition(Level level, SystemMemory memory, Specs specs)

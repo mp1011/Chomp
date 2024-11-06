@@ -32,9 +32,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {
             byte mountain1Pos, mountain2Pos, groundPos;
 
-            mountain1Pos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back1, includeStatusBar: false);
-            mountain2Pos = (byte)(_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Back2, includeStatusBar: false));
-            groundPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundLayer.Foreground, includeStatusBar: false);
+            mountain1Pos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, includeStatusBar: false);
+            mountain2Pos = (byte)(_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Middle, includeStatusBar: false));
+            groundPos = (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, includeStatusBar: false);
 
             AddPlainsMountainTiles(nameTable, mountain1Pos, mountain2Pos, groundPos);
         }
