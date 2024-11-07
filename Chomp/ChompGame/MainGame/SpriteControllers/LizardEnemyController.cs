@@ -44,7 +44,10 @@ namespace ChompGame.MainGame.SpriteControllers
             var collision = _collisionDetector.DetectCollisions(WorldSprite, _motion);
             _motionController.AfterCollision(collision);
 
-            if (_motion.TargetXSpeed == 0 || _levelTimer.IsMod(4))
+            if (_worldScroller.DistanceFromViewpane(WorldSprite.Bounds) > 0)
+                return;
+
+            if (_motion.TargetXSpeed == 0 || _levelTimer.IsMod(8))
             {
                 _stateTimer.Value++;
 

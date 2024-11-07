@@ -90,7 +90,7 @@ namespace ChompGame.MainGame.SpriteControllers
                         bomb.DestructionBitOffset = 255;
                         bomb.SetCarried();
                         bomb.FallCheck = _scene.SpriteFallCheck;
-
+                        _playerController.IsHoldingBomb = true;
                         GameDebug.DebugLog($"Create carried bomb at Sprite {bomb.SpriteIndex}", DebugLogFlags.SpriteSpawn);
                         isCarryingBomb.Value = false;
                     }
@@ -203,7 +203,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 byte destructionBitOffset = nextDestructionBitOffset;
                 nextDestructionBitOffset += sp.DestroyBitsRequired;
 
-                if (sp.DestroyBitsRequired > 0 && _gameModule.ScenePartsDestroyed.IsDestroyed(destructionBitOffset))
+                if (sp.DestroyBitsRequired > 0 && _gameModule.ScenePartsDestroyed.IsDestroyed(destructionBitOffset)
+                    && !AllowGraceBomb(sp))
                 {
                     GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it has been destroyed", DebugLogFlags.SpriteSpawn);
                     continue;
@@ -291,6 +292,11 @@ namespace ChompGame.MainGame.SpriteControllers
                     GameDebug.DebugLog($"Skipping part {i} ({sp.Type}) because it is not in bounds", DebugLogFlags.SpriteSpawn);
                 }
             }
+        }
+
+        private bool AllowGraceBomb(BaseScenePart sp)
+        {
+            return sp.Type == ScenePartType.Bomb && !_playerController.IsHoldingBomb;
         }
 
         private int GetGroundPosition(byte tileX)

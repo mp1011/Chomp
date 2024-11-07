@@ -9,6 +9,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
 {
     abstract class EnemyController : ActorController, ICollidesWithPlayer, ICollidesWithBomb, ICollidableSpriteController
     {
+        protected WorldScroller _worldScroller;
         protected LowNibble _stateTimer;
         protected readonly ChompAudioService _audioService;
         protected ScenePartsDestroyed _scenePartsDestroyed;
@@ -26,6 +27,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             ChompGameModule gameModule,
             SystemMemoryBuilder memoryBuilder) : base(spriteType, gameModule, memoryBuilder,index)
         {
+            _worldScroller = gameModule.WorldScroller;
             _audioService = gameModule.AudioService;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _statusBar = gameModule.StatusBar;

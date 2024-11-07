@@ -38,7 +38,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private MaskedByte _afterHitInvincibility;
 
-        public bool IsHoldingBomb => _bombPickup.Value;
+        public bool IsHoldingBomb
+        {
+            get => _bombPickup.Value;
+            set => _bombPickup.Value = value;
+        }
 
         public PlayerController(
             ChompGameModule gameModule, 
@@ -356,7 +360,8 @@ namespace ChompGame.MainGame.SpriteControllers
             if (damage >= _statusBar.Health)
             {
                 Motion.YSpeed = -_motionController.JumpSpeed;
-                
+                _motionController.Motion.YAcceleration = _motionController.GravityAccel;
+
                 if(_statusBar.Health > 0)
                 {
                     _statusBar.Health = 0;
