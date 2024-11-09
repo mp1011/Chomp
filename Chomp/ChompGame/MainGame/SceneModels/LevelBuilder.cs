@@ -734,6 +734,13 @@ namespace ChompGame.MainGame.SceneModels
             int range = groundMax - groundMin;
             newHeight = groundMin + (rng.FixedRandom(seed,4) % range);
 
+            int tries = 0;
+            while(tries < 4 && newHeight == lastHeight)
+            {
+                tries++;
+                newHeight = groundMin + (rng.FixedRandom((byte)(seed+tries), 4) % range);
+            }
+
             if (_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
             {
                 newHeight = (newHeight / 2) * 2;

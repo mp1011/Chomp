@@ -28,29 +28,6 @@ namespace ChompGame.MainGame.WorldScrollers
                 ThemeType.DesertInterior => 0,
                 _ => (byte)_sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, includeStatusBar: false)
             };
-
-        public override int DistanceFromViewpane(Rectangle r)
-        {
-            if (r.Intersects(ViewPane))
-                return 0;
-
-            var rightDistance = ViewPane.X - r.Right;
-            var leftDistance = r.Left - ViewPane.Right;
-            var upDistance = ViewPane.Y - r.Bottom;
-            var downDistance = r.Top - ViewPane.Bottom;
-
-            if (rightDistance > 0)
-                return rightDistance;
-            else if (leftDistance > 0)
-                return leftDistance;
-            else if (upDistance > 0)
-                return upDistance;
-            else if (downDistance > 0)
-                return downDistance;
-            else
-                return 0;
-        }
-
         public HorizontalWorldScroller(SystemMemoryBuilder memoryBuilder, Specs specs, TileModule tileModule, SpritesModule spritesModule) 
             : base(memoryBuilder, specs, tileModule, spritesModule)
         {

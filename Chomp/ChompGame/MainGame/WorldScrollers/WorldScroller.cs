@@ -80,7 +80,21 @@ namespace ChompGame.MainGame
 
         public abstract bool Update();
 
-        public abstract int DistanceFromViewpane(Rectangle r);
+        public int DistanceFromViewpane(Rectangle r)
+        {
+            if (r.Intersects(ViewPane))
+                return 0;
+
+            var rightDistance = ViewPane.X - r.Right;
+            var leftDistance = r.Left - ViewPane.Right;
+            var upDistance = ViewPane.Y - r.Bottom;
+            var downDistance = r.Top - ViewPane.Bottom;
+
+            int hDistance = rightDistance > leftDistance ? rightDistance : leftDistance;
+            int vDistance = upDistance > downDistance ? upDistance : downDistance;
+
+            return hDistance > vDistance ? hDistance : vDistance;
+        }
            
         public void ModifyTiles(Action<NBitPlane, NBitPlane> modify)
         {

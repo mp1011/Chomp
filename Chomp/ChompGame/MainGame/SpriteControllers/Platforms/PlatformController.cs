@@ -138,48 +138,14 @@ namespace ChompGame.MainGame.SpriteControllers
             if (!playerBounds.Intersects(platformBounds))
                 return new CollisionInfo();
             
-            int leftXOverlap = playerBounds.Right - platformBounds.Left;
-            int rightXOverlap = platformBounds.Right - playerBounds.Left;
             int topYOverlap = playerBounds.Bottom - platformBounds.Top;
-            int bottomYOverlap = platformBounds.Bottom - playerBounds.Top;
 
-            if (leftXOverlap > 3)
-                leftXOverlap = -1;
-            if ( rightXOverlap > 3)
-                rightXOverlap = -1;
             if (topYOverlap > 3)
                 topYOverlap = -1;
-            if (bottomYOverlap > 3)
-                bottomYOverlap = -1;
-
-            if (topYOverlap > 0)
-            {
-                leftXOverlap = -1;
-                rightXOverlap = -1;
-            }
 
             if(topYOverlap >= 0 && playerController.Motion.YSpeed >= 0)
-            {
                 return new CollisionInfo { IsOnGround = true };
-            }
-
-            if (bottomYOverlap > 0 && playerController.Motion.YSpeed <= 0)
-            {
-                return new CollisionInfo { IsOnGround = true, YCorrection = bottomYOverlap };
-            }
-
-            if (leftXOverlap > 0 && playerController.Motion.XSpeed >= 0)
-            {
-                playerController.WorldSprite.X -= leftXOverlap;
-                return new CollisionInfo { XCorrection = leftXOverlap };
-            }
-
-            if (rightXOverlap > 0 && playerController.Motion.XSpeed <= 0)
-            {
-                playerController.WorldSprite.X += rightXOverlap;
-                return new CollisionInfo { XCorrection = rightXOverlap };
-            }
-
+            
             return new CollisionInfo();
         }
     }

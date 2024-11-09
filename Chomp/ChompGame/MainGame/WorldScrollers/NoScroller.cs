@@ -26,41 +26,6 @@ namespace ChompGame.MainGame.WorldScrollers
             }
         }
 
-        public override int DistanceFromViewpane(Rectangle r)
-        {
-            if (r.Intersects(ViewPane))
-                return 0;
-
-            var downDistance = ViewPane.Top - r.Bottom;
-            var upDistance = r.Top - ViewPane.Bottom;
-            var rightDistance = ViewPane.X - r.Right;
-            var leftDistance = r.Left - ViewPane.Right;
-
-            int hDistance = 0, vDistance = 0;
-
-            if (rightDistance > 0)
-                hDistance = rightDistance;
-            else if (leftDistance > 0)
-                hDistance = leftDistance;
-
-            if (downDistance > 0)
-                vDistance = downDistance;
-            else if (upDistance > 0)
-                vDistance = upDistance;
-
-            if (hDistance > 0 && vDistance > 0)
-            {
-                if (hDistance < vDistance)
-                    return hDistance;
-                else
-                    return vDistance;
-            }
-            else if (hDistance > 0)
-                return hDistance;
-            else
-                return vDistance;
-        }
-
         public override bool Update() => false;
     }
 }

@@ -28,22 +28,6 @@ namespace ChompGame.MainGame.WorldScrollers
             }
         }
 
-        public override int DistanceFromViewpane(Rectangle r)
-        {
-            if (r.Intersects(ViewPane))
-                return 0;
-
-            var downDistance = ViewPane.Top - r.Bottom;
-            var upDistance = r.Top - ViewPane.Bottom;
-
-            if (downDistance > 0)
-                return downDistance;
-            else if (upDistance > 0)
-                return upDistance;
-            else
-                return 0;
-        }
-
         public override void RefreshNametable()
         {
             _tileModule.Scroll.X = (byte)_specs.ScreenWidth;

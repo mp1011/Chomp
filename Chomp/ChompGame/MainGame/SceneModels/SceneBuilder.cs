@@ -210,7 +210,7 @@ namespace ChompGame.MainGame.SceneModels
               right: 1
           );
 
-            //Level1_6_Platforms,
+            _ = Level.Level1_6_Platforms;
             SceneDefinition.HorizontalScroll(
                specs: specs,
                variance: LevelShape.HighVariance,
@@ -1515,11 +1515,13 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_6_Platforms, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 60, 10, scene),
+                b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 60, 12, scene),
                 b => new ExitScenePart(b, ExitType.Left, exitOffset: 1, scene),
                 b => PitScenePart(b, 20, PrefabSize.Four, scene),
                 b => PitScenePart(b, 32, PrefabSize.Eight, scene),
-                b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 34, 8, scene),
+                b => PitScenePart(b, 40, PrefabSize.Four, scene),
+
+                b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 36, 8, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len32, 14, 12, scene),
                 b => PitScenePart(b, 8, PrefabSize.Eight, scene),
                 b => PitScenePart(b, 16, PrefabSize.Four, scene),
@@ -1571,7 +1573,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 52, y: 12, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 54, y: 12, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 56, y: 12, definition: scene),
-                b => new SpriteScenePart(b, ScenePartType.Button, x: 60, y: 11, definition: scene)
+                b => new SpriteScenePart(b, ScenePartType.Button, x: 60, y: 13, definition: scene)
                 );
             CheckDestroyBits(Level.Level1_9_Platforms2, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
