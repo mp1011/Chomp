@@ -64,6 +64,14 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 destinationPoint: new Point(0, 1),
                 _specs,
                 memory);
+
+            //black tile
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(10, 10, 1, 1),
+                destinationPoint: new Point(4, 0),
+                _specs,
+                memory);
         }
     }
 }

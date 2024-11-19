@@ -27,8 +27,8 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
         private const int WindowBottomLeft = 38;
         private const int WindowBottomRight = 39;
         private const int DoorTop = 1;
-        private const int Door = 2;
-        private const int Building = 3;
+        private const int Door = 4;
+        private const int Building = 29;
 
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
@@ -101,7 +101,8 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
 
             for(int i = 0; i < windows; i++)
             {
-                if (region.X < 4)
+                // avoids overlap with door
+                if (region.X < 3)
                     break;
 
                 if(region.Width <= 10)

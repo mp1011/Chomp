@@ -504,7 +504,7 @@ namespace ChompGame.MainGame.SceneModels
                 rightY: 0,
                 pitX: 1,
                 hallSize: 2,
-                bgPosition: 0
+                bgPosition: 1
             );
 
             //Level2_10_Beach3,
@@ -540,13 +540,13 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                variance: LevelShape.LowVariance,
+                variance: LevelShape.TwoByTwoVariance,
                 theme: ThemeType.City,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
                 bottom: 2,
-                top:0,
+                top: 0,
                 upper: 1);
 
             //Level3_2_Building1
@@ -843,7 +843,7 @@ namespace ChompGame.MainGame.SceneModels
                spriteGroup: SpriteGroup.Normal,
                enemy1: EnemyIndex.Rocket,
                enemy2: EnemyIndex.Ogre,
-               bottom: 1,
+               bottom: 0,
                top: 0,
                upper: 1);
 
@@ -856,7 +856,7 @@ namespace ChompGame.MainGame.SceneModels
                spriteGroup: SpriteGroup.Normal,
                enemy1: EnemyIndex.Bird,
                enemy2: EnemyIndex.Rocket,
-               bottom: 2,
+               bottom: 0,
                top: 0,
                upper: 1);
 
@@ -864,7 +864,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                memoryBuilder: memoryBuilder,
                specs: specs,
-               variance: LevelShape.LowVariance,
+               variance: LevelShape.TwoByTwoVariance,
                theme: ThemeType.CityEvening,
                spriteGroup: SpriteGroup.Normal,
                enemy1: EnemyIndex.Bird,
@@ -1781,7 +1781,7 @@ namespace ChompGame.MainGame.SceneModels
                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 10, definition: scene),
                  b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: false, bottomLeft: true, bottomRight: true, x: 20, y: 10, definition: scene),
 
-                 b => new PrefabScenePart(b, scene, 12, 8, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
+                 b => new PrefabScenePart(b, scene, 12, 10, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
                  b => PitScenePart(b, 40, PrefabSize.Four, scene),
                  b => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 12, scene),
                  b => PitScenePart(b, 52, PrefabSize.Two, scene),
@@ -1902,11 +1902,11 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level3_1_City, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 10, scene),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 8, scene),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 28, 10, scene),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, true, true, 52, 10, scene),
-                b => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, true, 60, 10, scene),
+             //   b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 10, scene),
+              //  b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 8, scene),
+              //  b => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 28, 10, scene),
+              //  b => new DynamicScenePart(b, DynamicBlockType.Coin, true, false, true, true, 52, 10, scene),
+              //  b => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, true, 60, 10, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 8, 4, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 4, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 32, 4, scene),
@@ -1972,7 +1972,7 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level3_5_City2, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 4, 12, scene),
+                b => new SpriteScenePart(b, ScenePartType.DoorBackExit, 5, 10, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 0, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 32, 0, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 44, 0, scene),
@@ -2349,9 +2349,12 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 12, 8, scene),
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 14, 10, scene),
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, false, 14, 8, scene),
-                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 32, 8, scene),
-                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 34, 10, scene),
-                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, false, 34, 8, scene)
+
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, false, 52, 8, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, true, true, true, 52, 10, scene),
+
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 30, 10, scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, false, false, true, false, 30, 8, scene)
 
 
                 );

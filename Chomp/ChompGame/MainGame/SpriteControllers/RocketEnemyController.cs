@@ -156,6 +156,7 @@ namespace ChompGame.MainGame.SpriteControllers
             bullet.Motion.YSpeed = y;
             bullet.WorldSprite.X = WorldSprite.X;
             bullet.WorldSprite.Y = WorldSprite.Y;
+            bullet.DestroyOnTimer = true;
         }
 
         private void CreateSmoke()

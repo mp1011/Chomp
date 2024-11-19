@@ -81,7 +81,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
 
         protected override IEnumerable<Rectangle> DetermineRegions(NBitPlane nameTable)
         {
-            if (_sceneDefinition.BottomTiles == 0)
+            if (_sceneDefinition.HasSprite(SpriteModels.SpriteType.Lizard) && _sceneDefinition.HasSprite(SpriteModels.SpriteType.Rocket))
             {
                 yield return new Rectangle(0, 8, 14, 6);
                 yield return new Rectangle(14, 10, 2, 3);
@@ -92,7 +92,8 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                 yield return new Rectangle(50, 8, 8, 6);
                 yield return new Rectangle(58, 10, 6, 3);
             }
-            if (_sceneDefinition.BottomTiles == 2)
+           else if (_sceneDefinition.HasSprite(SpriteModels.SpriteType.Rocket) && _sceneDefinition.HasSprite(SpriteModels.SpriteType.Ogre))
+
             {
                 yield return new Rectangle(0, 8, 12, 6);
                 yield return new Rectangle(18, 8, 8, 6);
@@ -101,8 +102,7 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                 yield return new Rectangle(40, 8, 12, 6);
                 yield return new Rectangle(52, 10, 12, 3);
             }
-
-            if (_sceneDefinition.BottomTiles == 4)
+            else
             {
                 yield return new Rectangle(0, 8, 6, 6);
                 yield return new Rectangle(14, 10, 16, 3);

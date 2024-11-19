@@ -709,7 +709,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
             {
                 randomValue = (randomValue / 2) * 2;
-                if (randomValue < 0)
+                if (randomValue < 2)
                     randomValue = 2;
             }
 
@@ -739,14 +739,16 @@ namespace ChompGame.MainGame.SceneModels
             {
                 tries++;
                 newHeight = groundMin + (rng.FixedRandom((byte)(seed+tries), 4) % range);
+
+                if (_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
+                {
+                    newHeight = (newHeight / 2) * 2;
+                    if (newHeight < 0)
+                        newHeight = 2;
+                }
             }
 
-            if (_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
-            {
-                newHeight = (newHeight / 2) * 2;
-                if (newHeight < 0)
-                    newHeight = 2;
-            }
+           
 
             return newHeight;
         }

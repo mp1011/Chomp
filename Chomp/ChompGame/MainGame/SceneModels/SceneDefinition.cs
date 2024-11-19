@@ -358,7 +358,7 @@ namespace ChompGame.MainGame.SceneModels
                 rightY,
                 hallSize,
                 bgPosition,
-                0);
+                1);
         }
 
         public static SceneDefinition HorizontalScroll(
