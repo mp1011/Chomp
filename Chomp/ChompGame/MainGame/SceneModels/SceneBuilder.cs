@@ -106,7 +106,8 @@ namespace ChompGame.MainGame.SceneModels
         Level4_38_DesertRain5,
         Level4_39_BeforeBoss,
         Level4_40_Boss,
-        Level5_1_Forest
+        Level5_1_Forest,
+        Level5_2_Mist
     }
 
     class SceneBuilder
@@ -888,7 +889,10 @@ namespace ChompGame.MainGame.SceneModels
                 right: 0,
                 top: 0,
                 bottom: 1,
-                upper: 0);
+                upper: 2,
+                mid: 2,
+                lower: 1
+                );
 
             _ = Level.Level4_2_Desert2;
             SceneDefinition.HorizontalScroll(
@@ -997,6 +1001,7 @@ namespace ChompGame.MainGame.SceneModels
                 upper: 2,
                 top: 1,
                 bottom: 1,
+                lower: 2,
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level4_10_SwitchRoom;
@@ -1038,7 +1043,9 @@ namespace ChompGame.MainGame.SceneModels
                 spriteGroup: SpriteGroup.Normal,
                 upper: 1,
                 top: 1,
+                middle:2,
                 bottom: 2,
+                lower: 1,
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level4_13_PyramidExit;
@@ -1163,6 +1170,7 @@ namespace ChompGame.MainGame.SceneModels
                 upper: 1,
                 top: 2,
                 bottom: 1,
+                lower:2,
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level4_22_Chamber5;
@@ -1191,6 +1199,8 @@ namespace ChompGame.MainGame.SceneModels
                 upper: 1,
                 top: 1,
                 bottom: 1,
+                middle: 2,
+                lower:2,
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level4_24_BeforeMidboss2;
@@ -1427,15 +1437,30 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                variance: LevelShape.Flat,
+                variance: LevelShape.LowVariance,
                 theme: ThemeType.Forest,
                 enemy1: EnemyIndex.Crocodile,
                 enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
-                upper: 0,
+                upper: 1,
+                middle:1,
                 top: 0,
+                bottom: 2,                
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_2_Mist;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Mist,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 2,
+                left: 0,
+                right: 0,
                 bottom: 2,
-                style: HorizontalScrollStyle.Forest);
+                top: 0);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -2389,10 +2414,10 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 32, y: 0, definition: scene),
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 46, y: 0, definition: scene),
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 54, y: 0, definition: scene),
-                (b, scene) => new PrefabScenePart(b, scene, 0, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
                 (b, scene) => new PrefabScenePart(b, scene, 8, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
-                (b, scene) => new PrefabScenePart(b, scene, 16, 4, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Block),
-                (b, scene) => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
+                (b, scene) => new PrefabScenePart(b, scene, 32, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 40, 4, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Block)
+             //   (b, scene) => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block)
             );
 
             AddLevel(
@@ -2439,6 +2464,11 @@ namespace ChompGame.MainGame.SceneModels
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new PrefabScenePart(b, scene, 0, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
               (b, scene) => new PrefabScenePart(b, scene, 8, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+              (b, scene) => new PrefabScenePart(b, scene, 40, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+              (b, scene) => new PrefabScenePart(b, scene, 48, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+               (b, scene) => new PrefabScenePart(b, scene, 56, 4, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+
+
               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 0, definition: scene),
               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 44, y: 0, definition: scene),
               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, x: 40, y: 0, definition: scene),
@@ -2976,6 +3006,18 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene),
                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 0, definition: scene)
            );
+
+            AddLevel(
+              Level.Level5_1_Forest,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)              
+            );
+
+            AddLevel(
+                Level.Level5_2_Mist,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene)
+            );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

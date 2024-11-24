@@ -390,7 +390,8 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: bottom,
                 upper: upper,
                 mid: middle,
-                lower: lower
+                lower: lower,
+                extraStyle: (byte)style
                );
         }
         public static SceneDefinition VerticalScroll(

@@ -73,7 +73,8 @@ namespace ChompGame.MainGame.SceneModels
         ForestGround,
         ForestTreesNear,
         ForestTreesFar,
-        Max = ForestTreesFar
+        NightMist,
+        Max = NightMist
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -407,6 +408,7 @@ namespace ChompGame.MainGame.SceneModels
                ColorIndex.Blue3);
 
             DefinePalette(PaletteKey.ForestGround,
+                ColorIndex.Red1,
                 ColorIndex.Brown1,
                 ColorIndex.Brown2,
                 ColorIndex.Brown3);
@@ -420,9 +422,15 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.ForestTreesFar,
                ColorIndex.Black,
-               ColorIndex.Green1,//outline
-               ColorIndex.Green2, //fill
-               ColorIndex.Green3);
+               ColorIndex.Black,//outline
+               ColorIndex.White, //fill
+               ColorIndex.Black);
+
+            DefinePalette(PaletteKey.NightMist,
+              ColorIndex.Black,
+              ColorIndex.Black,//outline
+              ColorIndex.Gray2, //fill
+              ColorIndex.Gray3);
 
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
@@ -444,7 +452,7 @@ namespace ChompGame.MainGame.SceneModels
 
             LoadPalette(levelTheme.Background2, backgroundPalette);
 
-            if(_currentScene.Theme == ThemeType.DesertInterior)
+            if(_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest)
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
             else
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
@@ -501,7 +509,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.None;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
             }
             else if (_currentScene.Theme == ThemeType.DesertNight)

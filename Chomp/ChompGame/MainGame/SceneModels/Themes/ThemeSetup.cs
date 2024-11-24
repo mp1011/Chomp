@@ -67,7 +67,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.DesertNight => new DesertThemeSetup(chompGameModule),
                 ThemeType.DesertRain => new DesertRainThemeSetup(chompGameModule),
                 ThemeType.Forest => new ForestThemeSetup(chompGameModule),
-
+                ThemeType.Mist => new MistThemeSetup(chompGameModule),
                 _ => throw new NotImplementedException()
             };
 

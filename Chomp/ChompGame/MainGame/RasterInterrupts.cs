@@ -104,7 +104,7 @@ namespace ChompGame.MainGame
 
         private void HandleHeatWave()
         {
-            int baseY = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, true) - 1;
+            int baseY = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Bottom, true) - 1;
             if (_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
                 baseY = 16;
 
