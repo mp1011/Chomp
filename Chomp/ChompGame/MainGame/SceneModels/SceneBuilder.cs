@@ -106,8 +106,11 @@ namespace ChompGame.MainGame.SceneModels
         Level4_38_DesertRain5,
         Level4_39_BeforeBoss,
         Level4_40_Boss,
-        Level5_1_Forest,
-        Level5_2_Mist
+        Level5_1_Mist,
+        Level5_2_Bridges,
+        Level5_3_Bridges2,
+        Level5_4_Mist2,
+        Level5_5_Forest,
     }
 
     class SceneBuilder
@@ -129,7 +132,7 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level4_16_PyramidEntrance2,
             Level.Level4_31_Midboss,
             Level.Level4_34_DesertRain1,
-            Level.Level5_1_Forest
+            Level.Level5_1_Mist
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -1432,8 +1435,68 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.OceanBoss);
+          
+            _ = Level.Level5_1_Mist;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Mist,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 2,
+                top: 0);
 
-            _ = Level.Level5_1_Forest;
+            _ = Level.Level5_2_Bridges;
+            SceneDefinition.HorizontalScroll(
+              memoryBuilder: memoryBuilder,
+              specs: specs,
+              variance: LevelShape.HighVariance,
+              theme: ThemeType.Mist,
+              enemy1: EnemyIndex.Crocodile,
+              enemy2: EnemyIndex.Mage,
+              spriteGroup: SpriteGroup.Normal,
+              upper: 1,
+              middle: 2,
+              top: 0,
+              bottom: 2,
+              style: HorizontalScrollStyle.Flat);
+
+            _ = Level.Level5_3_Bridges2;
+            SceneDefinition.HorizontalScroll(
+              memoryBuilder: memoryBuilder,
+              specs: specs,
+              variance: LevelShape.HighVariance,
+              theme: ThemeType.Mist,
+              enemy1: EnemyIndex.Crocodile,
+              enemy2: EnemyIndex.Mage,
+              spriteGroup: SpriteGroup.Normal,
+              upper: 1,
+              middle: 2,
+              top: 0,
+              bottom: 2,
+              style: HorizontalScrollStyle.Flat);
+
+            _ = Level.Level5_4_Mist2;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Mist,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 2,
+                top: 0);
+
+            _ = Level.Level5_5_Forest;
             SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
@@ -1443,24 +1506,11 @@ namespace ChompGame.MainGame.SceneModels
                 enemy2: EnemyIndex.Mage,
                 spriteGroup: SpriteGroup.Normal,
                 upper: 1,
-                middle:1,
+                middle: 1,
                 top: 0,
-                bottom: 2,                
+                bottom: 2,
                 style: HorizontalScrollStyle.Interior);
 
-            _ = Level.Level5_2_Mist;
-            SceneDefinition.NoScrollFlat(
-                memoryBuilder: memoryBuilder,
-                specs: specs,
-                theme: ThemeType.Mist,
-                spriteGroup: SpriteGroup.Normal,
-                enemy1: EnemyIndex.Lizard,
-                enemy2: EnemyIndex.Bird,
-                upper: 2,
-                left: 0,
-                right: 0,
-                bottom: 2,
-                top: 0);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -3008,15 +3058,45 @@ namespace ChompGame.MainGame.SceneModels
            );
 
             AddLevel(
-              Level.Level5_1_Forest,
+              Level.Level5_1_Mist,
               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)              
             );
 
             AddLevel(
-                Level.Level5_2_Mist,
+                Level.Level5_2_Bridges,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene)
+                (b, scene) => PitScenePart(b, 8, PrefabSize.Eight, scene),
+                (b, scene) => PitScenePart(b, 32, PrefabSize.Eight, scene),
+                (b, scene) => PitScenePart(b, 40, PrefabSize.Eight, scene),
+
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+
+            AddLevel(
+                Level.Level5_3_Bridges2,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => PitScenePart(b, 12, PrefabSize.Six, scene),
+                (b, scene) => PitScenePart(b, 24, PrefabSize.Eight, scene),
+                (b, scene) => PitScenePart(b, 48, PrefabSize.Six, scene),
+
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+
+            AddLevel(
+              Level.Level5_4_Mist2,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+
+            AddLevel(
+              Level.Level5_5_Forest,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
         }
 

@@ -80,6 +80,8 @@ namespace ChompGame.MainGame
             else if (_sceneDefinition.Theme == ThemeType.Ocean
                 && _sceneDefinition.ScrollStyle != ScrollStyle.NameTable)
                 HandleOcean();
+            else if (_sceneDefinition.Theme == ThemeType.Mist)
+                HandleMist();
             else if (HasHeatWaveEffect)
                 HandleHeatWave();
             else if (_sceneDefinition.Theme == ThemeType.CityTrain)
@@ -166,6 +168,36 @@ namespace ChompGame.MainGame
             }
         }
 
+        private void HandleMist()
+        {
+            int mistBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Upper, includeStatusBar: true);
+
+            if (_coreGraphicsModule.ScreenPoint.Y < mistBegin)
+            {
+                _tileModule.Scroll.X = 0;
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y < _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, true))
+            {
+                int y = _coreGraphicsModule.ScreenPoint.Y - mistBegin;
+
+                var b = y % 8;
+                if (b > 4)
+                    b = 8 - b;
+
+                var t = (_gameModule.LevelTimer.Value % 255) / 255.0;
+                var t1 = _gameModule.LevelTimer.Value / 64.0;
+
+                var a = t1 + (b * (y + 1) * Math.Sin(1 * Math.PI * t) / 4.0);
+                _tileModule.Scroll.X = (byte)(_autoScroll.Value +(a));
+            }
+            else
+            {
+                _tileModule.Scroll.X = _realScrollX.Value;
+                _tileModule.Scroll.Y = _realScrollY.Value;
+            }
+        }
+
+
         private void HandleOcean()
         {
             int waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
@@ -201,6 +233,9 @@ namespace ChompGame.MainGame
 
         public void Update()
         {
+            if (_sceneDefinition.Theme == ThemeType.Mist && _gameModule.LevelTimer.IsMod(8))
+                _autoScroll.Value++;
+
             if (HasHeatWaveEffect && _gameModule.LevelTimer.Value.IsMod(8))
                 _autoScroll.Value++;
 

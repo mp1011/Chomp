@@ -70,7 +70,7 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.Dusk;
             else if (level >= Level.Level4_32_Desert4 && level < Level.Level4_40_Boss)
                 CurrentSong = SongName.Stronghold;
-            else if (level >= Level.Level5_1_Forest)
+            else if (level >= Level.Level5_1_Mist)
                 CurrentSong = SongName.Moonstruck;
             else
                 CurrentSong = SongName.None;

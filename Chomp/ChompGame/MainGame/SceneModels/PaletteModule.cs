@@ -422,9 +422,9 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.ForestTreesFar,
                ColorIndex.Black,
-               ColorIndex.Black,//outline
-               ColorIndex.White, //fill
-               ColorIndex.Black);
+               ColorIndex.Green1,//outline
+               ColorIndex.Green2, //fill
+               ColorIndex.Green3);
 
             DefinePalette(PaletteKey.NightMist,
               ColorIndex.Black,
@@ -452,7 +452,7 @@ namespace ChompGame.MainGame.SceneModels
 
             LoadPalette(levelTheme.Background2, backgroundPalette);
 
-            if(_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest)
+            if(_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist)
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
             else
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
@@ -701,8 +701,9 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     CyclePalette3(BgPalette1);
                 }
+
             }
-            
+
             if (_timer.Value % 8 == 0)
             {
                 var bulletPallete = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Fire);
@@ -711,13 +712,38 @@ namespace ChompGame.MainGame.SceneModels
                 var coinPallete = GameSystem.CoreGraphicsModule.GetBackgroundPalette(BgPalette.Coin);
                 CyclePalette2(coinPallete);
 
-                if(_currentScene.Theme == ThemeType.DesertInterior)
+                if (_currentScene.Theme == ThemeType.DesertInterior)
                 {
                     if (Lighten(BgPalette2, 2))
                         BgPalette2.SetColor(2, ColorIndex.Yellow1);
 
                     if (Darken(BgPalette2, 3, 4))
                         BgPalette2.SetColor(3, ColorIndex.Yellow5);
+                }
+            }
+
+            if (_timer.Value % 16== 0)
+            {
+                if (_currentScene.Theme == ThemeType.Mist)
+                {
+                    if(_timer.Value < 128)
+                    {
+                        Lighten(BgPalette2, 2);
+                        Darken(BgPalette1, 2, limit: 5);
+                    }
+                    else
+                    {
+                        Darken(BgPalette2, 2, limit: 3);
+                        Lighten(BgPalette1, 2);
+                    }
+                    //if (Darken(BgPalette2, 1, 4))
+                    //    BgPalette2.SetColor(1, ColorIndex.LightGray(5).Value);
+
+                   if (Lighten(BgPalette1, 3))
+                      BgPalette1.SetColor(3, ColorIndex.Gray1);
+
+                    // if (Darken(BgPalette2, 3, 4))
+                    //    BgPalette2.SetColor(3, ColorIndex.Gray3);
                 }
             }
         }
