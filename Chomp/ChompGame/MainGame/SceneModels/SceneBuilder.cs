@@ -111,6 +111,23 @@ namespace ChompGame.MainGame.SceneModels
         Level5_3_Bridges2,
         Level5_4_Mist2,
         Level5_5_Forest,
+        Level5_6_Forest_Hub,
+        Level5_7_Forest2,
+        Level5_8_Forest2,
+        Level5_9_Forest_Corner,
+        Level5_10_Forest3,
+        Level5_11_Forest_Path,
+        Level5_12_Forest_Hub2,
+        Level5_13_Forest_Corner2,
+        Level5_14_Forest4,
+        Level5_15_Forest_Corner3,
+        Level5_16_Forest_Corner4,
+        Level5_17_Forest5,
+        Level5_18_Forest_Hub3,
+        Level5_19_Forest6,
+        Level5_20_Mist3,
+        Level5_21_Mist4,
+        Level5_22_MidBoss
     }
 
     class SceneBuilder
@@ -1510,6 +1527,261 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0,
                 bottom: 2,
                 style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_6_Forest_Hub;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 3,
+                top: 0);
+
+            _ = Level.Level5_7_Forest2;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 1,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_8_Forest2;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 1,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_9_Forest_Corner;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_10_Forest3;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_11_Forest_Path;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_12_Forest_Hub2;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_13_Forest_Corner2;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_14_Forest4;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_15_Forest_Corner3;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_16_Forest_Corner4;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_17_Forest5;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_18_Forest_Hub3;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Forest,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
+
+            _ = Level.Level5_19_Forest6;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Forest,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_20_Mist3;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Mist,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_21_Mist4;
+            SceneDefinition.HorizontalScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                variance: LevelShape.LowVariance,
+                theme: ThemeType.Mist,
+                enemy1: EnemyIndex.Crocodile,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Normal,
+                upper: 1,
+                middle: 1,
+                top: 0,
+                bottom: 2,
+                style: HorizontalScrollStyle.Interior);
+
+            _ = Level.Level5_22_MidBoss;
+            SceneDefinition.NoScrollFlat(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.Mist,
+                spriteGroup: SpriteGroup.Normal,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                upper: 1,
+                mid: 2,
+                left: 0,
+                right: 0,
+                bottom: 1,
+                top: 0);
 
         }
 
@@ -3098,6 +3370,124 @@ namespace ChompGame.MainGame.SceneModels
               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
+
+            AddLevel(
+             Level.Level5_6_Forest_Hub,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Bottom, 2, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+           );
+
+            AddLevel(
+              Level.Level5_7_Forest2,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene)
+            );
+
+            AddLevel(
+              Level.Level5_8_Forest2,
+              builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Top, -2, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 4, scene)
+            );
+
+            AddLevel(
+                Level.Level5_9_Forest_Corner,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -2, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
+            );
+
+            AddLevel(
+                Level.Level5_10_Forest3,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene)
+            );
+
+            AddLevel(
+               Level.Level5_11_Forest_Path,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene)
+           );
+
+            AddLevel(
+             Level.Level5_12_Forest_Hub2,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new ExitScenePart(b, ExitType.Left, -4, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene)
+            );
+
+            AddLevel(
+               Level.Level5_13_Forest_Corner2,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene)
+            );
+
+            AddLevel(
+             Level.Level5_14_Forest4,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Left, 1, scene)
+          );
+
+            AddLevel(
+            Level.Level5_15_Forest_Corner3,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Bottom, 3, scene)
+         );
+
+            AddLevel(
+            Level.Level5_16_Forest_Corner4,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 4, 12, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 4, scene)
+         );
+
+            AddLevel(
+            Level.Level5_17_Forest5,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new SpriteScenePart(b, ScenePartType.DoorBackExit, 4, 10, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+         );
+
+            AddLevel(
+             Level.Level5_18_Forest_Hub3,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Top, -3, scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+
+            AddLevel(
+            Level.Level5_19_Forest6,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene)
+         );
+
+
+            AddLevel(
+            Level.Level5_20_Mist3,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Left, -4, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+         );
+
+
+            AddLevel(
+            Level.Level5_21_Mist4,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+         );
+
+
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
