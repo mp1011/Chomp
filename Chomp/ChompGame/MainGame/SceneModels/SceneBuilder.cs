@@ -1584,7 +1584,7 @@ namespace ChompGame.MainGame.SceneModels
                 upper: 1,
                 mid: 2,
                 left: 0,
-                right: 0,
+                right: 2,
                 bottom: 1,
                 top: 0);
 
@@ -1592,7 +1592,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                variance: LevelShape.LowVariance,
+                variance: LevelShape.HighVariance,
                 theme: ThemeType.Forest,
                 enemy1: EnemyIndex.Crocodile,
                 enemy2: EnemyIndex.Mage,
@@ -1604,15 +1604,15 @@ namespace ChompGame.MainGame.SceneModels
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level5_11_Forest_Path;
-            SceneDefinition.NoScrollFlat(
+            SceneDefinition.NoScrollCornerStairs(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.Forest,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
-                upper: 1,
-                mid: 2,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.TwoBlockRight,
                 left: 0,
                 right: 0,
                 bottom: 1,
@@ -1634,17 +1634,17 @@ namespace ChompGame.MainGame.SceneModels
                 top: 0);
 
             _ = Level.Level5_13_Forest_Corner2;
-            SceneDefinition.NoScrollFlat(
+            SceneDefinition.NoScrollCornerStairs(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.Forest,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
-                upper: 1,
-                mid: 2,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.OneBlockDouble,
                 left: 0,
-                right: 0,
+                right: 1,
                 bottom: 1,
                 top: 0);
 
@@ -1652,7 +1652,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.HorizontalScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                variance: LevelShape.LowVariance,
+                variance: LevelShape.HighVariance,
                 theme: ThemeType.Forest,
                 enemy1: EnemyIndex.Crocodile,
                 enemy2: EnemyIndex.Mage,
@@ -1673,7 +1673,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy2: EnemyIndex.Bird,
                 upper: 1,
                 mid: 2,
-                left: 0,
+                left: 1,
                 right: 0,
                 bottom: 1,
                 top: 0);
@@ -1688,7 +1688,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy2: EnemyIndex.Bird,
                 upper: 1,
                 mid: 2,
-                left: 0,
+                left: 2,
                 right: 0,
                 bottom: 1,
                 top: 0);
@@ -1735,7 +1735,7 @@ namespace ChompGame.MainGame.SceneModels
                 upper: 1,
                 middle: 1,
                 top: 0,
-                bottom: 2,
+                bottom: 3,
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level5_20_Mist3;
@@ -3475,6 +3475,9 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
             Level.Level5_20_Mist3,
             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => PitScenePart(b, 8, PrefabSize.Four, scene),
+            (b, scene) => PitScenePart(b, 32, PrefabSize.Four, scene),
+            (b, scene) => PitScenePart(b, 36, PrefabSize.Six, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Left, -4, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
          );
@@ -3483,6 +3486,8 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
             Level.Level5_21_Mist4,
             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => PitScenePart(b, 16, PrefabSize.Eight, scene),
+            (b, scene) => PitScenePart(b, 24, PrefabSize.Eight, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
          );

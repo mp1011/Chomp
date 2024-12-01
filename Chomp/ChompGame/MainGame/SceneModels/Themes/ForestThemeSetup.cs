@@ -40,7 +40,10 @@ namespace ChompGame.MainGame.SceneModels.Themes
             attributeTable.ForEach((x, y, b) =>
             {
                 bool isSolid = nameTable[x * 2, y * 2] != 0
-                    || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
+                    || nameTable[(x * 2) + 1, (y * 2) + 1] != 0
+                    || nameTable[(x * 2), (y * 2) + 1] != 0
+                     || nameTable[(x * 2) + 1, (y * 2)] != 0;
+
 
                 if (isSolid)
                     attributeTable[x, y] = 1;
