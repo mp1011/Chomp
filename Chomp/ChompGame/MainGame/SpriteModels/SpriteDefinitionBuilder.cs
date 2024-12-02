@@ -271,6 +271,17 @@ namespace ChompGame.MainGame.SpriteModels
                animationStyle: AnimationStyle.NoAnimation,
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
+
+            _ = SpriteType.Boulder;
+            new SpriteDefinition(memoryBuilder,
+               secondTileOffset: 1,
+               sizeX: 2,
+               sizeY: 2,
+               gravityStrength: GravityStrength.High,
+               movementSpeed: MovementSpeed.Slow,
+               animationStyle: AnimationStyle.AnimateWhenMoving,
+               collidesWithBackground: true,
+               flipXWhenMovingLeft: true);
         }
     }
 }

@@ -1474,8 +1474,8 @@ namespace ChompGame.MainGame.SceneModels
               specs: specs,
               variance: LevelShape.HighVariance,
               theme: ThemeType.Mist,
-              enemy1: EnemyIndex.Crocodile,
-              enemy2: EnemyIndex.Mage,
+              enemy1: EnemyIndex.Bird,
+              enemy2: EnemyIndex.Boulder,
               spriteGroup: SpriteGroup.Normal,
               upper: 1,
               middle: 2,
@@ -3338,7 +3338,11 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
                 Level.Level5_2_Bridges,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => PitScenePart(b, 8, PrefabSize.Eight, scene),
+
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 16, 4, scene),
+                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 8, scene),
+
+                (b, scene) => PitScenePart(b, 8, PrefabSize.Eight, scene),                
                 (b, scene) => PitScenePart(b, 32, PrefabSize.Eight, scene),
                 (b, scene) => PitScenePart(b, 40, PrefabSize.Eight, scene),
 

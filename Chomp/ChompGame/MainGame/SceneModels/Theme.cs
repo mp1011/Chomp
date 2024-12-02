@@ -110,7 +110,7 @@ namespace ChompGame.MainGame.SceneModels
                bg2: PaletteKey.NightMist,
                fg1: PaletteKey.ForestGround,
                fg2: PaletteKey.BombLight,
-               enemy1: PaletteKey.BlueEnemy,
+               enemy1: PaletteKey.GreenEnemy,
                enemy2: PaletteKey.Bullet);
 
             _ = ThemeType.Desert;
