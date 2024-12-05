@@ -40,6 +40,18 @@ namespace ChompGame.MainGame.WorldScrollers
                 CopyTileColumn(c, c);
         }
 
+        public override void OffsetCamera(int x, int y)
+        {
+            byte scrollX = (byte)(_focusSprite.X - _halfWindowSize).Clamp(0, ScrollXMax);
+            byte scrollY = (byte)(_focusSprite.Y - _halfWindowSize).Clamp(0, ScrollYMax);
+
+            _tileModule.Scroll.X = (byte)(scrollX + x);
+            _spritesModule.Scroll.X = (byte)(scrollX + x);
+
+            _tileModule.Scroll.Y = (byte)(scrollY + y);
+            _spritesModule.Scroll.Y = (byte)(scrollY + y);            
+        }
+
         public override bool Update()
         {
             byte scrollX = (byte)(_focusSprite.X - _halfWindowSize).Clamp(0, ScrollXMax);

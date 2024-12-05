@@ -80,6 +80,8 @@ namespace ChompGame.MainGame
 
         public abstract bool Update();
 
+        public abstract void OffsetCamera(int x, int y);
+
         public int DistanceFromViewpane(Rectangle r)
         {
             if (r.Intersects(ViewPane))

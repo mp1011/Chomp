@@ -917,10 +917,16 @@ namespace ChompGame.MainGame.SceneModels
                         () => new OgreController(spritePools[extraIndex], enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
                     break;
                 case SpriteType.Boulder:
+                    var boulderBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                                     3,
+                                     _gameModule.SpritesModule,
+                                     () => new BossBulletController(_gameModule, memoryBuilder, true));
+
+                    spritePools[extraIndex] = boulderBulletControllers;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<BoulderEnemyController>(
                         2,
                         _gameModule.SpritesModule,
-                        () => new BoulderEnemyController(enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
+                        () => new BoulderEnemyController(boulderBulletControllers, enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
                     break;
                 case SpriteType.Mage:
                     var mageBulletControllers = new EnemyOrBulletSpriteControllerPool<MageBulletController>(
@@ -1236,6 +1242,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_sceneDefinition.HasSprite(SpriteType.Boulder))
             {
                 spriteBuilder.AddEnemySprite(0, 2, 4, 2);
+                spriteBuilder.AddExtraSprite(12, 2, 1, 1);
             }
 
             if (_sceneDefinition.HasSprite(SpriteType.Mage))

@@ -26,6 +26,14 @@ namespace ChompGame.MainGame.WorldScrollers
             }
         }
 
+        public override void OffsetCamera(int x, int y)
+        {
+            _tileModule.Scroll.X = (byte)x;
+            _tileModule.Scroll.Y = (byte)y;
+            _spritesModule.Scroll.X = (byte)x;
+            _spritesModule.Scroll.Y = (byte)y;
+        }
+
         public override bool Update() => false;
     }
 }

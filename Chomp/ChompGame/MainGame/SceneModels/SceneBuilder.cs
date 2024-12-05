@@ -3339,8 +3339,10 @@ namespace ChompGame.MainGame.SceneModels
                 Level.Level5_2_Bridges,
                 builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
 
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, 8, 10, scene),
+
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 16, 4, scene),
-                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 8, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 8, scene),
 
                 (b, scene) => PitScenePart(b, 8, PrefabSize.Eight, scene),                
                 (b, scene) => PitScenePart(b, 32, PrefabSize.Eight, scene),
