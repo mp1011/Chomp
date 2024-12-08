@@ -36,7 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             bullet.AcceleratedMotion.SetXSpeed(xSpeed);
-            bullet.AcceleratedMotion.YSpeed = -20;
+            bullet.AcceleratedMotion.YSpeed = -30;
             bullet.AcceleratedMotion.TargetYSpeed = 80;
             bullet.AcceleratedMotion.YAcceleration = 10;
 
@@ -88,6 +88,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 _motion.SetXSpeed(0);
                 ThrowFireball(-40);
                 ThrowFireball(40);
+                ThrowFireball(-60);
+                ThrowFireball(60);
+
 
                 _audioService.PlaySound(ChompAudioService.Sound.Rumble);
             }

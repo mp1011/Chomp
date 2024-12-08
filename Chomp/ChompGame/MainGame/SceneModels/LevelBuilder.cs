@@ -894,7 +894,7 @@ namespace ChompGame.MainGame.SceneModels
                 case SpriteType.Bird:
   
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
-                    2,
+                    4,
                     _gameModule.SpritesModule,
                     () => new BirdEnemyController(playerController.WorldSprite, _gameModule, memoryBuilder, enemyTileIndex));
                     break;
@@ -918,7 +918,7 @@ namespace ChompGame.MainGame.SceneModels
                     break;
                 case SpriteType.Boulder:
                     var boulderBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                                     3,
+                                     4,
                                      _gameModule.SpritesModule,
                                      () => new BossBulletController(_gameModule, memoryBuilder, true));
 
