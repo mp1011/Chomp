@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteModels;
 using System;
@@ -88,6 +89,37 @@ namespace ChompGame.MainGame
                 HandleTrainParallax();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
                 HandleParallax();
+            
+            if (_gameModule.CurrentLevel == Level.Level5_22_MidBoss)
+                HandleLevel5MidbossTailColor();
+
+        }
+
+        private void HandleLevel5MidbossTailColor()
+        {
+            var spritePalette = _coreGraphicsModule.GetSpritePalette(SpritePalette.Enemy2);
+            int shade = 1;
+
+            int sy = Math.Abs((_coreGraphicsModule.ScreenPoint.Y + _tileModule.Scroll.Y) - 58);
+
+            if (_gameModule.BossBackgroundHandler.BossBgEffectValue == 0)
+            {
+                if (sy < 8)
+                    shade = 3;
+                else
+                    shade = 2;
+            }
+            else
+            {
+                if (sy < 8)
+                    shade = 0;
+                else
+                    shade = 1;
+            }
+
+            spritePalette.SetColor(1, ColorIndex.Green(shade+1).Value);
+            spritePalette.SetColor(2, ColorIndex.Green(shade).Value);
+
         }
 
         private void HandleAutoScroll()
@@ -170,13 +202,15 @@ namespace ChompGame.MainGame
 
         private void HandleMist()
         {
+            int sy = _coreGraphicsModule.ScreenPoint.Y + _tileModule.Scroll.Y;
+
             int mistBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Upper, includeStatusBar: true);
 
-            if (_coreGraphicsModule.ScreenPoint.Y < mistBegin)
+            if (sy < mistBegin)
             {
                 _tileModule.Scroll.X = 0;
             }
-            else if (_coreGraphicsModule.ScreenPoint.Y < _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, true))
+            else if (sy < _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, true))
             {
                 int y = _coreGraphicsModule.ScreenPoint.Y - mistBegin;
 

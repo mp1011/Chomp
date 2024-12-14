@@ -1070,6 +1070,20 @@ namespace ChompGame.MainGame.SceneModels
                          () => new Level4BossController(_gameModule, playerController.WorldSprite,
                             bossBulletControllers, memoryBuilder));
                     break;
+                case Level.Level5_22_MidBoss:
+
+                    bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                          10,
+                          _gameModule.SpritesModule,
+                          () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+
+                    spritePools[extraIndex] = bullets;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompBoss5Controller>(
+                            size: 1,
+                            spritesModule: _gameModule.SpritesModule,
+                            () => new ChompBoss5Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+
+                    break;
             }
         }
 

@@ -1771,18 +1771,17 @@ namespace ChompGame.MainGame.SceneModels
                 style: HorizontalScrollStyle.Interior);
 
             _ = Level.Level5_22_MidBoss;
-            SceneDefinition.NoScrollFlat(
+            SceneDefinition.NametableScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 theme: ThemeType.Mist,
-                spriteGroup: SpriteGroup.Normal,
-                enemy1: EnemyIndex.Lizard,
-                enemy2: EnemyIndex.Bird,
-                upper: 1,
-                mid: 2,
-                left: 0,
-                right: 0,
-                bottom: 1,
+                spriteGroup: SpriteGroup.Boss,
+                shape: LevelShape.Flat,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                left: 2,
+                right: 2,
+                bottom: 3,
                 top: 0);
 
         }
@@ -3625,7 +3624,7 @@ namespace ChompGame.MainGame.SceneModels
 
             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 6, scene),
             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 24, 4, scene),
-             (b, scene) => new SpriteScenePart(b, ScenePartType.Button, 16, 7, scene),
+            (b, scene) => new SpriteScenePart(b, ScenePartType.Button, 16, 7, scene),
 
             (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 10, definition: scene),
             (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 28, y: 8, definition: scene),
@@ -3647,6 +3646,15 @@ namespace ChompGame.MainGame.SceneModels
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
          );
 
+
+            AddLevel(
+               Level.Level5_22_MidBoss,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new PrefabScenePart(b, scene, 0, 0, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Space),
+               (b, scene) => new PrefabScenePart(b, scene, 28, 0, PrefabSize.Four, PrefabSize.Eight, PrefabStyle.Space),
+                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 6, scene)
+
+               );
 
         }
 
