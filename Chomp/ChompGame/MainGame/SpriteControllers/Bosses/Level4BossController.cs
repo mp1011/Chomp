@@ -62,7 +62,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             Dying2
         }
 
-        protected override int BossHP => 1;
+        protected override int BossHP => 4;
 
         protected override string BossTiles { get; } =
             @"0008AA900

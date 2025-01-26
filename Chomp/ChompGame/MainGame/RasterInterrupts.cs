@@ -88,38 +88,7 @@ namespace ChompGame.MainGame
             else if (_sceneDefinition.Theme == ThemeType.CityTrain)
                 HandleTrainParallax();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
-                HandleParallax();
-            
-            if (_gameModule.CurrentLevel == Level.Level5_22_MidBoss)
-                HandleLevel5MidbossTailColor();
-
-        }
-
-        private void HandleLevel5MidbossTailColor()
-        {
-            var spritePalette = _coreGraphicsModule.GetSpritePalette(SpritePalette.Enemy2);
-            int shade = 1;
-
-            int sy = Math.Abs((_coreGraphicsModule.ScreenPoint.Y + _tileModule.Scroll.Y) - 58);
-
-            if (_gameModule.BossBackgroundHandler.BossBgEffectValue == 0)
-            {
-                if (sy < 8)
-                    shade = 3;
-                else
-                    shade = 2;
-            }
-            else
-            {
-                if (sy < 8)
-                    shade = 0;
-                else
-                    shade = 1;
-            }
-
-            spritePalette.SetColor(1, ColorIndex.Green(shade+1).Value);
-            spritePalette.SetColor(2, ColorIndex.Green(shade).Value);
-
+                HandleParallax();           
         }
 
         private void HandleAutoScroll()

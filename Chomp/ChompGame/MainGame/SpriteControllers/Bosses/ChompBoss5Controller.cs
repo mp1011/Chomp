@@ -13,11 +13,10 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss5Controller : EnemyController
     {
-        public const int BridgeY = 58;
+        public const int BridgeY = 54;
 
         public const int NumTailSections = 4;
         public const int BossHp = 3;
-        private const int Speed = 40;
         private readonly ChompTail _tail;
 
         private readonly WorldScroller _scroller;
@@ -25,19 +24,23 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly MusicModule _music;
         private readonly Specs _specs;
         private WorldSprite _player;
-        private PrecisionMotion _firstTailSectionMotion;
         private CoreGraphicsModule _graphics;
         private BossBackgroundHandler _bossBgHandler;
+        private GameByte _anchor;
 
         enum Phase : byte 
         {
             Init,
+            Fall,
+            Latch,
+            Detach,
             Swing
         }
       
         private GameByteEnum<Phase> _phase;
 
         protected override bool DestroyBombOnCollision => true;
+        protected override bool AlwaysActive => true;
 
         public ChompBoss5Controller(WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
@@ -61,8 +64,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
             memoryBuilder.AddByte();
 
-            _firstTailSectionMotion = new PrecisionMotion(memoryBuilder);
-            memoryBuilder.AddBytes(PrecisionMotion.Bytes * NumTailSections - 1);
+            _anchor = memoryBuilder.AddByte();
+
+            GameDebug.Watch1 = new DebugWatch("T", () => _stateTimer.Value);
         }
 
         protected override void BeforeInitializeSprite()
@@ -73,6 +77,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
+            _music.CurrentSong = MusicModule.SongName.None;
             _hitPoints.Value = BossHp;
             SetPhase(Phase.Init);
             sprite.Priority = true;
@@ -83,54 +88,122 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_phase.Value == Phase.Init)
             {
                 WorldSprite.X = 64;
-                WorldSprite.Y = 24;
+                WorldSprite.Y = 0;
                 ResetTail();
-                SetPhase(Phase.Swing);
+
+                if(_player.X >= 64)
+                {
+                    SetPhase(Phase.Fall);
+                    _music.CurrentSong = MusicModule.SongName.Threat;
+                }
+            }
+            else if(_phase.Value == Phase.Fall)
+            {
+                ResetTail();
+                UpdatePriorityAndColor();
+                if (WorldSprite.Y > BridgeY)
+                    SetPhase(Phase.Latch);
+            }
+            else if(_phase.Value == Phase.Latch)
+            {
+                UpdatePriorityAndColor();
+                UpdateTail_Latched();
+                if (WorldSprite.Y < (BridgeY - 24))
+                    SetPhase(Phase.Swing);
+            }
+            else if (_phase.Value == Phase.Detach)
+            {
+                if (UpdateTail_Retract())
+                    SetPhase(Phase.Fall);
+
+                if(WorldSprite.Y < (BridgeY - 48))
+                    SetPhase(Phase.Fall);
+
+                if(_levelTimer.IsMod(8))
+                    FireBullet();
             }
             else if(_phase.Value == Phase.Swing)
             {
-                GetSprite().Priority = _motion.YSpeed >= 0;
-
-                int dy = WorldSprite.Center.Y - BridgeY;
-                _motion.YAcceleration = 5;
-
-                int dya = Math.Abs(dy);
-
-                GameDebug.Watch1 = new DebugWatch("DYA", () => dya);
-           
-                if(_motion.YSpeed >= 0)
-                {
-                    _bossBgHandler.BossBgEffectValue = 1;
-                    if (dya <= 8)
-                        SetShade(3);
-                    else
-                        SetShade(2);
-                }
+                if(WorldSprite.X > _anchor.Value + 2)
+                    _motion.TargetXSpeed = -4;
                 else
-                {
-                    _bossBgHandler.BossBgEffectValue = 0;
-                    if (dya <= 8)
-                        SetShade(0);
-                    else
-                        SetShade(1);
-                }
+                    _motion.TargetXSpeed = 4;
 
-                if(dy < -16)
+                UpdatePriorityAndColor();
+                int dy = WorldSprite.Center.Y - BridgeY;
+                if (dy < -16)
                 {
-                    _motion.TargetYSpeed = 40;
+                    _motion.TargetYSpeed = 60;
+                    _motion.YAcceleration = 8;
                 }
                 else if (dy > 16)
                 {
-                    _motion.TargetYSpeed = -40;
+                    _motion.TargetYSpeed = -60;
+                    _motion.YAcceleration = 8;
+
                 }
 
-                UpdateTail();
-                
+                if(dy < -16 && _levelTimer.IsMod(16))
+                    FireBullet();
+
+                if (_levelTimer.Value.IsMod(32))
+                {
+                    if (_stateTimer.Value == 0 && dy < -16)
+                        SetPhase(Phase.Detach);
+                    else if(_stateTimer.Value > 0)
+                        _stateTimer.Value--;
+                }
+
+                UpdateTail_Latched();                
             }
 
 
             _motionController.Update();
 
+        }
+
+        private void FireBullet()
+        {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            bullet.WorldSprite.Center = WorldSprite.Center;
+
+            var target = _player.Center;
+
+            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, target, 60);
+            bullet.AcceleratedMotion.XAcceleration = 4;
+            bullet.AcceleratedMotion.YAcceleration = 4;
+        }
+
+        private void UpdatePriorityAndColor()
+        {
+            GetSprite().Priority = _motion.YSpeed >= 0;
+
+            int dy = WorldSprite.Center.Y - BridgeY;
+            _motion.YAcceleration = 5;
+
+            int dya = Math.Abs(dy);
+
+            if (_motion.YSpeed >= 0)
+            {
+                _bossBgHandler.BossBgEffectValue = 1;
+                if (dya <= 8)
+                    SetShade(3);
+                else
+                    SetShade(2);
+            }
+            else
+            {
+                _bossBgHandler.BossBgEffectValue = 0;
+                if (dya <= 8)
+                    SetShade(0);
+                else
+                    SetShade(1);
+            }           
         }
 
         private void SetShade(int v)
@@ -148,34 +221,108 @@ namespace ChompGame.MainGame.SpriteControllers
                 tailSprite.Y = WorldSprite.Y;
                 tailSprite.Sprite.Palette = SpritePalette.Enemy2;
                 tailSprite.Sprite.Priority = false;
+                tailSprite.Sprite.Visible = false;
             }
         }
 
-        private void UpdateTail()
+        private void UpdateTail_Latched()
         {
-            Point anchor = new Point(WorldSprite.X+2, BridgeY);
+            Point anchor = new Point(_anchor.Value + 2, BridgeY);
 
-            int intervalX = (WorldSprite.X - anchor.X) / NumTailSections;
-            int intervalY = (WorldSprite.Y - anchor.Y) / NumTailSections;
+            float intervalX = (WorldSprite.X - anchor.X) / (float)NumTailSections;
+            float intervalY = (WorldSprite.Y - anchor.Y) / (float)NumTailSections;
 
             for (int i = 1; i < NumTailSections+1; i++)
             {
                 var sprite = _tail.GetSprite(i-1);
                 sprite.X = (byte)(anchor.X + (intervalX * i));
                 sprite.Y = (byte)(anchor.Y + (intervalY * i));
+                sprite.Palette = SpritePalette.Enemy1;
                 sprite.Priority = _motion.YSpeed >= 0;
+                sprite.Visible = true;
             }
         }
-      
+
+        private bool UpdateTail_Retract()
+        {
+            bool retracted = true;
+            for (int i = 1; i < NumTailSections + 1; i++)
+            {
+                var sprite = _tail.GetWorldSprite(i - 1);
+
+                var vector = (sprite.Center - WorldSprite.Center).ToVector2();
+
+                if(vector.LengthSquared() < 64)
+                {
+                    sprite.X = WorldSprite.X;
+                    sprite.Y = WorldSprite.Y;
+                    sprite.Sprite.Priority = false;
+                }    
+                else
+                {
+                    vector.Normalize();
+                    vector = vector * 2;
+                    sprite.X -= (int)vector.X;
+                    sprite.Y -= (int)vector.Y;
+
+                    retracted = false;
+                }
+            }
+
+            return retracted;
+        }
+
         private void SetPhase(Phase phase)
         {
             _phase.Value = phase;
             _stateTimer.Value = 0;
+
+            if (_phase.Value == Phase.Fall)
+            {
+                _motion.YSpeed = 0;
+                _motion.TargetYSpeed = 60;
+                _motion.YAcceleration = 8;
+
+                if (_player.X < WorldSprite.X)
+                {
+                    _motion.TargetXSpeed = -8;
+                    _motion.XAcceleration = 5;
+                }
+                else
+                {
+                    _motion.TargetXSpeed = 8;
+                    _motion.XAcceleration = 5;
+                }
+            }
+            else if (_phase.Value == Phase.Latch)
+            {
+                _anchor.Value = (byte)WorldSprite.X;
+                _motion.TargetYSpeed = -60;
+                _motion.YAcceleration = 8;
+            }
+            else if (_phase.Value == Phase.Detach)
+            {
+                _motion.TargetYSpeed = 0;
+                _motion.YAcceleration = 4;
+            }
+            else if (_phase.Value == Phase.Swing)
+            {
+                _motion.TargetXSpeed = 0;
+                _motion.XAcceleration = 5;
+                _stateTimer.Value = (byte)(2 + (_rng.Generate(3)*3));
+            }
         }
 
         protected override void UpdateDying()
         {
-            
+            if (_hitPoints.Value > 0)
+            {
+                base.UpdateDying();
+                if (WorldSprite.Status == WorldSpriteStatus.Active)
+                    GetSprite().Palette = Palette;
+
+                return;
+            }
         }
 
         public override bool CollidesWithPlayer(PlayerController player)

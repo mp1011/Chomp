@@ -134,8 +134,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             WorldSprite.Status = WorldSpriteStatus.Dying;
             _state.Value = 21;
-            Motion.XSpeed = 0;
-            Motion.YSpeed = 0;
+            AcceleratedMotion.SetXSpeed(0);
+            AcceleratedMotion.SetYSpeed(0);
         }
 
         public void Smoke()
