@@ -13,6 +13,7 @@ namespace ChompGame.MainGame.SceneModels
         OceanBoss,
         Forest,
         Mist,
+        MistAutoscroll,
         Desert,
         DesertInterior,
         DesertNight,
@@ -104,6 +105,16 @@ namespace ChompGame.MainGame.SceneModels
                enemy2: PaletteKey.Bullet);
 
             _ = ThemeType.Mist;
+            new Theme(memoryBuilder,
+               bomb: PaletteKey.BombLight,
+               bg1: PaletteKey.NightMist,
+               bg2: PaletteKey.NightMist,
+               fg1: PaletteKey.ForestGround,
+               fg2: PaletteKey.BombLight,
+               enemy1: PaletteKey.GreenEnemy,
+               enemy2: PaletteKey.Bullet);
+
+            _ = ThemeType.MistAutoscroll;
             new Theme(memoryBuilder,
                bomb: PaletteKey.BombLight,
                bg1: PaletteKey.NightMist,

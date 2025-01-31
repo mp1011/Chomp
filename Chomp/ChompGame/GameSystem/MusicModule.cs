@@ -25,7 +25,8 @@ namespace ChompGame.GameSystem
             Railway,
             Dusk,
             Stronghold,
-            Moonstruck
+            Moonstruck,
+            Space
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -70,8 +71,10 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.Dusk;
             else if (level >= Level.Level4_32_Desert4 && level < Level.Level4_40_Boss)
                 CurrentSong = SongName.Stronghold;
-            else if (level >= Level.Level5_1_Mist)
+            else if (level >= Level.Level5_1_Mist && level < Level.Level5_22_MidBoss)
                 CurrentSong = SongName.Moonstruck;
+            else if (level >= Level.Level5_23_Plane_Begin)
+                CurrentSong = SongName.Space;
             else
                 CurrentSong = SongName.None;
         }

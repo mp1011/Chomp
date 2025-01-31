@@ -16,25 +16,28 @@ namespace ChompGame.MainGame.SpriteControllers
         public const int BridgeY = 54;
 
         public const int NumTailSections = 4;
-        public const int BossHp = 3;
+        public const int BossHp = GameDebug.BossTest ? 1 : 3;
         private readonly ChompTail _tail;
 
         private readonly WorldScroller _scroller;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
         private readonly MusicModule _music;
+        private readonly ExitsModule _exitModule;
         private readonly Specs _specs;
         private WorldSprite _player;
         private CoreGraphicsModule _graphics;
         private BossBackgroundHandler _bossBgHandler;
         private GameByte _anchor;
-
+        
         enum Phase : byte 
         {
             Init,
             Fall,
             Latch,
             Detach,
-            Swing
+            Swing,
+            Dying,
+            Dead
         }
       
         private GameByteEnum<Phase> _phase;
@@ -49,6 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _graphics = gameModule.GameSystem.CoreGraphicsModule;
+            _exitModule = gameModule.ExitsModule;
             _bossBgHandler = gameModule.BossBackgroundHandler;
             _music = gameModule.MusicModule;
             _scroller = gameModule.WorldScroller;
@@ -279,7 +283,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_phase.Value == Phase.Fall)
             {
-                _motion.YSpeed = 0;
+                if(_motion.YSpeed > 0)
+                    _motion.YSpeed = 0;
+
                 _motion.TargetYSpeed = 60;
                 _motion.YAcceleration = 8;
 
@@ -303,6 +309,7 @@ namespace ChompGame.MainGame.SpriteControllers
             else if (_phase.Value == Phase.Detach)
             {
                 _motion.TargetYSpeed = 0;
+                _motion.YSpeed = -40;
                 _motion.YAcceleration = 4;
             }
             else if (_phase.Value == Phase.Swing)
@@ -319,14 +326,71 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 base.UpdateDying();
                 if (WorldSprite.Status == WorldSpriteStatus.Active)
+                {
                     GetSprite().Palette = Palette;
-
+                    SetPhase(Phase.Fall);
+                }
                 return;
             }
+
+            if (_phase.Value < Phase.Dying)
+            {
+                _music.CurrentSong = MusicModule.SongName.None;
+
+                _stateTimer.Value = 0;
+                _phase.Value = Phase.Dying;
+            }
+            else if(_phase.Value == Phase.Dying)
+            {
+                if (_levelTimer.IsMod(8))
+                {
+                    CreateExplosion();
+                    CreateExplosion();
+                    CreateExplosion();
+
+                    if (_stateTimer.Value < NumTailSections)
+                        _tail.Erase(_stateTimer.Value);
+
+                    _stateTimer.Value++;
+
+                    if (_stateTimer.Value == 0)
+                    {
+                        WorldSprite.Visible = false;
+                        ResetTail();
+                        SetPhase(Phase.Dead);
+                    }
+                }
+            }
+            else if(_phase.Value == Phase.Dead)
+            {
+                if(_player.X > 120)
+                    _exitModule.GotoNextLevel();
+            }
+            
+
+        }
+
+        private void CreateExplosion()
+        {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.EnsureInFrontOf(this);
+            bullet.WorldSprite.Center = WorldSprite.Center.Add(
+                _rng.RandomItem(-4, -2, 0, 2, 4),
+                _rng.RandomItem(-4, 2, 0, 2, 4));
+
+            bullet.Motion.YSpeed = 0;
+            bullet.Motion.XSpeed = 0;
+            bullet.Explode(true);
         }
 
         public override bool CollidesWithPlayer(PlayerController player)
         {
+            if (_phase.Value >= Phase.Dying)
+                return false;
+
             if (base.CollidesWithPlayer(player))
                 return true;
 

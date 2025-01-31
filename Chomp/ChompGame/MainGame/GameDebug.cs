@@ -27,6 +27,8 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
+        public const bool BossTest = true;
+
         public const bool QuickReward = false;
 
         private const DebugLogFlags _debugLogFlags = DebugLogFlags.LevelTransition | DebugLogFlags.SpriteSpawn | DebugLogFlags.Misc;

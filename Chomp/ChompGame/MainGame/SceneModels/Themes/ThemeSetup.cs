@@ -68,6 +68,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.DesertRain => new DesertRainThemeSetup(chompGameModule),
                 ThemeType.Forest => new ForestThemeSetup(chompGameModule),
                 ThemeType.Mist => new MistThemeSetup(chompGameModule),
+                ThemeType.MistAutoscroll => new MistAutoscrollThemeSetup(chompGameModule),
+
                 _ => throw new NotImplementedException()
             };
 

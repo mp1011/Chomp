@@ -127,7 +127,9 @@ namespace ChompGame.MainGame.SceneModels
         Level5_19_Forest6,
         Level5_20_Mist3,
         Level5_21_Mist4,
-        Level5_22_MidBoss
+        Level5_22_MidBoss,
+        Level5_23_Plane_Begin,
+        Level5_24_Plane1
     }
 
     class SceneBuilder
@@ -151,7 +153,8 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level4_34_DesertRain1,
             Level.Level5_1_Mist,
             Level.Level5_5_Forest,
-            Level.Level5_13_Forest_Corner2
+            Level.Level5_13_Forest_Corner2,
+            Level.Level5_23_Plane_Begin
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -1784,6 +1787,32 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 3,
                 top: 0);
 
+            _ = Level.Level5_23_Plane_Begin;
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                theme: ThemeType.Mist,
+                variance: LevelShape.Flat,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.PlaneTakeoff,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 1,
+                upper: 3);
+
+            _ = Level.Level5_24_Plane1;
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.MistAutoscroll,
+                enemy1: EnemyIndex.Bird,
+                enemy2: EnemyIndex.Rocket,
+                spriteGroup: SpriteGroup.Plane,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 0,
+                upper: 3
+            );
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -3667,14 +3696,26 @@ namespace ChompGame.MainGame.SceneModels
               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 24, y: 10, definition: scene),
               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: true, bottomLeft: true, bottomRight: true, x: 26, y: 10, definition: scene),
 
-
-
-
-
                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 6, scene)
 
                );
 
+            AddLevel(
+             Level.Level5_23_Plane_Begin,
+             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 15, y: 12, definition: scene),
+                 (b, scene) => PitScenePart(b, 16, PrefabSize.Eight, scene),
+                 (b, scene) => PitScenePart(b, 24, PrefabSize.Eight, scene),
+                 (b, scene) => PitScenePart(b, 32, PrefabSize.Eight, scene),
+                 (b, scene) => PitScenePart(b, 40, PrefabSize.Eight, scene),
+                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
+            );
+
+            AddLevel(
+            Level.Level5_24_Plane1,
+            builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 2, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 6, variation: PrizeController.Coin3, scene));
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
