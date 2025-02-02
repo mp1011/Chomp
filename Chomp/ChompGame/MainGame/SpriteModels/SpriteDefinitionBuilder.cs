@@ -282,6 +282,17 @@ namespace ChompGame.MainGame.SpriteModels
                animationStyle: AnimationStyle.AnimateWhenMoving,
                collidesWithBackground: true,
                flipXWhenMovingLeft: true);
+
+            _ = SpriteType.Ufo;
+            new SpriteDefinition(memoryBuilder,
+               secondTileOffset: 1,
+               sizeX: 2,
+               sizeY: 1,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.Fast,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: false);
         }
     }
 }

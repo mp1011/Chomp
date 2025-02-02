@@ -11,22 +11,12 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {
         }
 
-        public override IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks
-        {
-            get
-            {
-                yield return new Bridge(_sceneDefinition, _gameModule);
-            }
-        }
-
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
              
             nameTable.ForEach((x, y, b) =>
             {
-                if (y >= _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, false) &&
-                    y < _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Lower, false))
-
+                if (y <= _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, false))
                     nameTable[x, y] = (byte)(1 + _gameModule.RandomModule.Generate(1));
             });
         }

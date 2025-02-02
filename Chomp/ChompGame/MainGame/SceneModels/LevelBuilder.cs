@@ -939,6 +939,17 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.SpritesModule,
                         () => new MageController(mageBulletControllers, enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
                     break;
+                case SpriteType.Ufo:
+                    var ufoBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                                     3,
+                                     _gameModule.SpritesModule,
+                                     () => new BossBulletController(_gameModule, memoryBuilder, true));
+                    spritePools[extraIndex] = ufoBulletControllers;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<UfoController>(
+                         8,
+                         _gameModule.SpritesModule,
+                         () => new UfoController(ufoBulletControllers, enemyTileIndex, _gameModule, memoryBuilder, playerController.WorldSprite));
+                    break;
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
 
@@ -1264,6 +1275,13 @@ namespace ChompGame.MainGame.SceneModels
                 spriteBuilder.AddEnemySprite(12, 7, 4, 2);
                 spriteBuilder.AddExtraSprite(12, 2, 1, 1);
             }
+
+            if (_sceneDefinition.HasSprite(SpriteType.Ufo))
+            {
+                spriteBuilder.AddEnemySprite(14, 1, 2, 1);
+                spriteBuilder.AddExtraSprite(12, 2, 1, 1);
+            }
+
 
             spriteBuilder.AddExplosionSprite();
             

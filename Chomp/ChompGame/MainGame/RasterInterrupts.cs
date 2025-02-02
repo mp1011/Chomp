@@ -93,15 +93,32 @@ namespace ChompGame.MainGame
 
         private void HandleAutoScroll()
         {
-            var waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
-            if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            if (_sceneDefinition.Theme == ThemeType.OceanAutoscroll)
             {
-                _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
+                var waterBegin = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
+                if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+                {
+                    _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
+                }
+                else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin)
+                {
+                    int waterY = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
+                    _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY + 5) / 16.0));
+                }
             }
-            else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin)
+            else
             {
-                int waterY = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
-                _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY+5)/16.0));
+                var cloudEnd = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
+                if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight && 
+                    _coreGraphicsModule.ScreenPoint.Y < cloudEnd)
+                {
+                    int cloudY = _coreGraphicsModule.ScreenPoint.Y - cloudEnd;
+                    _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((-cloudY + 5) / 16.0));
+                }
+                else if (_coreGraphicsModule.ScreenPoint.Y >= cloudEnd)
+                {
+                    _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
+                }
             }
         }
 

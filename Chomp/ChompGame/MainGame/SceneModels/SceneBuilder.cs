@@ -129,7 +129,10 @@ namespace ChompGame.MainGame.SceneModels
         Level5_21_Mist4,
         Level5_22_MidBoss,
         Level5_23_Plane_Begin,
-        Level5_24_Plane1
+        Level5_24_Plane1,
+        Level5_25_Plane2,
+        Level5_26_Plane3,
+
     }
 
     class SceneBuilder
@@ -1805,8 +1808,36 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 variance: LevelShape.Flat,
                 theme: ThemeType.MistAutoscroll,
-                enemy1: EnemyIndex.Bird,
-                enemy2: EnemyIndex.Rocket,
+                enemy1: EnemyIndex.Mage,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Plane,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 0,
+                upper: 3
+            );
+
+            _ = Level.Level5_25_Plane2;
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.MistAutoscroll,
+                enemy1: EnemyIndex.Rocket,
+                enemy2: EnemyIndex.Mage,
+                spriteGroup: SpriteGroup.Plane,
+                memoryBuilder: memoryBuilder,
+                top: 0,
+                bottom: 0,
+                upper: 3
+            );
+
+            _ = Level.Level5_26_Plane3;
+            SceneDefinition.HorizontalScroll(
+                specs: specs,
+                variance: LevelShape.Flat,
+                theme: ThemeType.MistAutoscroll,
+                enemy1: EnemyIndex.Mage,
+                enemy2: EnemyIndex.Ufo,
                 spriteGroup: SpriteGroup.Plane,
                 memoryBuilder: memoryBuilder,
                 top: 0,
@@ -3714,8 +3745,113 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(
             Level.Level5_24_Plane1,
             builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 2, variation: PrizeController.Coin3, scene),
-                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 6, variation: PrizeController.Coin3, scene));
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 5, variation: PrizeController.Coin3, scene),
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 3, delay: 5, variation: UfoController.SPath, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 1, variation: UfoController.SPath, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 5, delay: 14, variation: PrizeController.Coin5Diag, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 3, delay: 5, variation: UfoController.Hook, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.Hook, scene),
+                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Hook, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 10, delay: 5, variation: UfoController.Hook, scene),
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 15, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 8, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.SPath, scene),
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 10, variation: UfoController.Chase, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 7, delay: 5, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 5, variation: PrizeController.Coin3, scene),
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.SPath, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 6, delay: 15, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene)
+                               );
+
+            AddLevel(
+           Level.Level5_25_Plane2,
+           builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 5, variation: PrizeController.Coin3, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: UfoController.SPath, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 1, variation: UfoController.SPath, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 5, delay: 14, variation: PrizeController.Coin5Diag, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: UfoController.Hook, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.Hook, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Hook, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 10, delay: 5, variation: UfoController.Hook, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 15, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 8, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 7, delay: 5, variation: UfoController.SPath, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 10, variation: UfoController.Chase, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 7, delay: 5, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 5, variation: PrizeController.Coin3, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.SPath, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 6, delay: 15, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene)
+                              );
+
+            AddLevel(
+       Level.Level5_26_Plane3,
+       builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 5, variation: PrizeController.Coin3, scene),
+
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: UfoController.SPath, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 1, variation: UfoController.SPath, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 5, delay: 14, variation: PrizeController.Coin5Diag, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: UfoController.Hook, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.Hook, scene),
+            (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Hook, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 10, delay: 5, variation: UfoController.Hook, scene),
+
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 15, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 8, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 7, delay: 5, variation: UfoController.SPath, scene),
+
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 10, variation: UfoController.Chase, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 7, delay: 5, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 4, delay: 5, variation: PrizeController.Coin3, scene),
+
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.SPath, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
+
+            (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 6, delay: 15, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
+           (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene)
+                          );
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)
