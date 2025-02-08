@@ -1,12 +1,13 @@
 ﻿using ChompGame.Data;
-using ChompGame.MainGame.SceneModels.SmartBackground;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
     class MistAutoscrollThemeSetup : ThemeSetup
     {
+        private const int Brick = 3;
+        private const int BrickLeft = 4;
+        private const int BrickRight = 5;
         public MistAutoscrollThemeSetup(ChompGameModule gameModule) : base(gameModule)
         {
         }
@@ -18,8 +19,37 @@ namespace ChompGame.MainGame.SceneModels.Themes
             {
                 if (y <= _sceneDefinition.GetBackgroundLayerTile(BackgroundPart.Upper, false))
                     nameTable[x, y] = (byte)(1 + _gameModule.RandomModule.Generate(1));
+
+                if (y == 11)
+                    nameTable[x, y] = Brick;
+                else if(y > 11)
+                {
+                    if ((x % 16) == 0)
+                        nameTable[x, y] = Brick;
+
+                    if (y == 12 && ((x - 1) % 16) == 0)
+                        nameTable[x, y] = BrickLeft;
+
+                    if (y == 12 && ((x + 1) % 16) == 0)
+                        nameTable[x, y] = BrickRight;
+
+
+                }
             });
         }
+
+        //public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
+        //{
+        //    attributeTable.ForEach((x, y, b) =>
+        //    {
+        //        if (y >= 4)
+        //        {
+        //            attributeTable[x, y] = 2;
+        //        }
+        //    });
+
+        //    return attributeTable;
+        //}
 
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
         {
@@ -59,7 +89,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(2, 8, 1, 1),
-                destinationPoint: new Point(7, 2),
+                destinationPoint: new Point(3, 0),
                 _specs,
                 memory);
 
@@ -67,7 +97,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(7, 9, 1, 1),
-                destinationPoint: new Point(1, 3),
+                destinationPoint: new Point(4, 0),
                 _specs,
                 memory);
 
@@ -75,7 +105,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(7, 10, 1, 1),
-                destinationPoint: new Point(2, 3),
+                destinationPoint: new Point(5, 0),
                 _specs,
                 memory);
         }

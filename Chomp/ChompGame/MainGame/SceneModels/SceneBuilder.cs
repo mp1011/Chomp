@@ -132,6 +132,7 @@ namespace ChompGame.MainGame.SceneModels
         Level5_24_Plane1,
         Level5_25_Plane2,
         Level5_26_Plane3,
+        Level5_27_Boss,
 
     }
 
@@ -1844,6 +1845,9 @@ namespace ChompGame.MainGame.SceneModels
                 bottom: 0,
                 upper: 3
             );
+
+            _ = Level.Level5_27_Boss;
+            SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.CityBoss);
         }
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
@@ -3852,6 +3856,21 @@ namespace ChompGame.MainGame.SceneModels
            (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
            (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene)
                           );
+
+
+
+            AddLevel(
+                Level.Level5_27_Boss,
+                builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 0, y: 16, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 6, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 0, definition: scene)
+            );
+
         }
 
         private static PrefabScenePart PitScenePart(SystemMemoryBuilder b, byte x, PrefabSize width, SceneDefinition scene)

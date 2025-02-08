@@ -215,7 +215,12 @@ namespace ChompGame.MainGame
 
             if (_timer.Value.IsMod(16))
                 _longTimer.Value++;
-          
+
+            if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed)
+            {
+                ExitsModule.GotoNextLevel();
+            }
+
             switch (_gameState.Value)
             {
                 case GameState.NewGame:
@@ -320,7 +325,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level5_23_Plane_Begin;
+            _currentLevel.Value = Level.Level5_27_Boss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

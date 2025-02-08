@@ -117,7 +117,7 @@ namespace ChompGame.MainGame
                 }
                 else if (_coreGraphicsModule.ScreenPoint.Y >= cloudEnd)
                 {
-                    _tileModule.Scroll.X = (byte)(_autoScroll.Value / 4);
+                    _tileModule.Scroll.X = _autoScroll.Value;
                 }
             }
         }

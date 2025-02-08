@@ -428,7 +428,7 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.NightMist,
               ColorIndex.Black,
-              ColorIndex.Black,//outline
+              ColorIndex.Gray1,//outline
               ColorIndex.Gray2, //fill
               ColorIndex.Gray3);
 
