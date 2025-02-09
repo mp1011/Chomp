@@ -22,7 +22,7 @@ namespace ChompGame.MainGame.Editors
         private byte[] _rightTiles = new byte[] { 24, 25, 35 };
         private byte[] _bottomLeftTiles = new byte[] { 19, 22, 32, 35,  };
         private byte[] _bottomRightTiles = new byte[] { 20, 21, 33, 36 };
-        private byte[] _centerTiles = new byte[] { 34, };
+        private byte[] _centerTiles = new byte[] { 34, 0 };
         private byte[] _bottomTiles = new byte[] { 31, 38 };
 
         public bool IsRunning => _running;
