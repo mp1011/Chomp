@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
@@ -32,7 +33,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private enum Phase : byte
         {
             BeforeBoss,
-            Init,           
+            Init,
+            Rise,
+            BuildOrbit,
+            LaunchOrbit
         }
 
         protected override int BossHP => 4;
@@ -83,10 +87,22 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 HideBoss();
             }
             else if(p == Phase.Init)
-            {               
-
+            {     
                 SetBossTiles();              
                 SetupBossParts();
+                WorldSprite.Visible = false;
+            }
+            else if(p == Phase.Rise)
+            {
+                WorldSprite.X = _player.X + 16;
+                WorldSprite.Y = 140;
+                _motion.TargetYSpeed = 16;
+                _motion.YAcceleration = 3;
+                _motion.YSpeed = -80;
+            }
+            else if(p == Phase.BuildOrbit)
+            {
+                _motion.TargetYSpeed = 0;
             }
         }
 
@@ -150,14 +166,47 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 WorldSprite.X = 16;
                 WorldSprite.Y = 220;
-                _position.X = (byte)(WorldSprite.X + 123 - _tileModule.Scroll.X);
-                _position.Y = (byte)(WorldSprite.Y - 77);
 
                 FadeIn();
+
+                _stateTimer.Value++;
+                if (_stateTimer.Value == 15)
+                    SetPhase(Phase.Rise);
+            }
+            else if(_phase.Value == Phase.Rise)
+            {
+                FadeIn();
+                if (WorldSprite.Y >= 91 && _motion.YSpeed > 0)
+                    SetPhase(Phase.BuildOrbit);
             }
 
             if (_phase.Value >= Phase.Init)
+            {
+                _position.X = (byte)(WorldSprite.X + 123 - _tileModule.Scroll.X);
+                _position.Y = (byte)(WorldSprite.Y - 77);
+                _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.VerticalStretch;
+
+                if (_levelTimer.Value.IsMod(4))
+                {
+                    _bossBackgroundHandler.BossBgEffectValue++;
+                    if (_bossBackgroundHandler.BossBgEffectValue == 16)
+                        _bossBackgroundHandler.BossBgEffectValue = 1;
+
+                    var modVal = _bossBackgroundHandler.BossBgEffectValue;
+                    if (modVal > 8)
+                        modVal = (byte)(modVal - 2 * (modVal - 8));
+
+                    _horn3.YOffset = 10 - modVal;
+                    _horn4.YOffset = 10 - modVal;
+
+                    _eye1.YOffset = (modVal / 2)-8;
+                    _eye2.YOffset = (modVal / 2)-8;
+
+                }
                 UpdatePartPositions();
+
+                _motionController.Update();
+            }
 
         }
 

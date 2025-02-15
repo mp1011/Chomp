@@ -12,7 +12,8 @@ namespace ChompGame.MainGame
         None,
         SineWave,
         DissolveFromBottom,
-        FadeFromTop
+        FadeFromTop,
+        VerticalStretch
     }
 
     class BossBackgroundHandler : IHBlankHandler
@@ -94,7 +95,7 @@ namespace ChompGame.MainGame
                 }
             }
 
-            if(_bossBgEffectValue.Value > 0)
+            if(_coreGraphicsModule.ScreenPoint.Y < groundPosition && _bossBgEffectValue.Value > 0)
             {
                 if (BossBgEffectType == BackgroundEffectType.SineWave)
                     OnHBlank_UpdateSineWave();
@@ -102,6 +103,8 @@ namespace ChompGame.MainGame
                     OnHBlank_UpdateDissolveFromBottom();
                 else if (BossBgEffectType == BackgroundEffectType.FadeFromTop)
                     OnHBlank_UpdateFadeFromTop();
+                else if (BossBgEffectType == BackgroundEffectType.VerticalStretch)
+                    OnHBlank_VerticalStretch();
             }
 
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
@@ -122,6 +125,26 @@ namespace ChompGame.MainGame
                     _tileModule.Scroll.X += (byte)(_bossBgEffectValue.Value * 1 * Math.Sin(pct * 2.0));
                 else
                     _tileModule.Scroll.X -= (byte)(_bossBgEffectValue.Value * 1 * Math.Sin(pct * 2.0));
+            }
+        }
+
+        private void OnHBlank_VerticalStretch()
+        {
+            if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight)
+                return;
+
+            int effectY = _coreGraphicsModule.ScreenPoint.Y - _bossPosition.Y;
+            if (effectY >= 0 && effectY <= 32)
+            {
+                var modVal = _bossBgEffectValue.Value;
+                if (modVal > 8)
+                    modVal = (byte)(modVal - 2*(modVal-8));
+
+                var realY = (byte)((4 * 15) - _bossPosition.Y);
+                var mod = (double)(modVal / 16.0);
+                _tileModule.Scroll.Y = (byte)(realY + (effectY * mod));
+                //_tileModule.Scroll.Y = (byte)(180 + (_bossBgEffectValue.Value % 4));
+            //    _tileModule.Scroll.X += (byte)((_bossBgEffectValue.Value % 4));
             }
         }
 
