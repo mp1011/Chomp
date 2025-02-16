@@ -18,6 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private BossPart _eye1, _eye2, _horn1, _horn2, _horn3, _horn4;
         private NibbleArray _bullets;
         private ByteVector _orbitCenter;
+        private GameBit _orbitDirection;
 
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -26,6 +27,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         public Level5BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
+
+            _orbitDirection = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
             memoryBuilder.AddByte();
             _bulletAngle = memoryBuilder.AddShort();
 
@@ -36,9 +39,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _horn3 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
             _horn4 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
 
+
+
             _orbitCenter = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
             _bullets = new NibbleArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddBytes(MaxBullets/2);
+
         }
 
         private enum Phase : byte
@@ -100,14 +106,27 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 HideBoss();
             }
             else if(p == Phase.Init)
-            {     
+            {
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.Nemesis;
                 SetBossTiles();              
                 SetupBossParts();
                 WorldSprite.Visible = false;
             }
             else if(p == Phase.Rise)
             {
-                WorldSprite.X = _player.X + 16;
+                if(_player.X < 16)
+                    WorldSprite.X = _player.X + 16;
+                else if(_player.X > _gameModule.Specs.NameTablePixelWidth - 16)
+                    WorldSprite.X = _player.X - 20;
+                else
+                {
+                    if(_rng.Generate(1) == 0)
+                        WorldSprite.X = _player.X + 16;
+                    else
+                        WorldSprite.X = _player.X - 20;
+                }
+
+
                 WorldSprite.Y = 140;
                 _motion.TargetYSpeed = 16;
                 _motion.YAcceleration = 3;
@@ -119,9 +138,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (p == Phase.LaunchOrbit)
             {
+                _orbitDirection.Value = _player.X > _orbitCenter.X;
+                _motion.TargetXSpeed = 0;
                 _motion.YSpeed = -20;
-                _motion.YAcceleration = 1;
-                _motion.TargetYSpeed = 40;
+                _motion.YAcceleration = 4;
+                _motion.TargetYSpeed = 80;
             }
         }
 
@@ -179,7 +200,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         protected override void UpdateActive()
         {
             if (_phase.Value == Phase.BeforeBoss)
-                SetPhase(Phase.Init);
+            {
+                if(_player.X > 32)
+                    SetPhase(Phase.Init);
+            }
 
             if (_phase.Value == Phase.Init)
             {
@@ -205,34 +229,61 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 if (_levelTimer.IsMod(32))
                 {
+                    if (WorldSprite.X > _player.X)
+                        _motion.TargetXSpeed = -40;
+                    else
+                        _motion.TargetXSpeed = 40;
+
+                    _motion.XAcceleration = 4;
+
                     if(_stateTimer.Value < MaxBullets)
                         CreateBullet(_stateTimer.Value);
 
                     _stateTimer.Value++;
-                    if(_stateTimer.Value == 0)
+                    if(_stateTimer.Value == 10)
                         SetPhase(Phase.LaunchOrbit);
                 }
 
-                BulletOrbit();
+
+
+                BulletOrbit(2);
             }
             else if(_phase.Value == Phase.LaunchOrbit)
             {
-                if(WorldSprite.Y > 140)
+                PositionFreeCoinBlocksNearPlayer();
+                _bossBackgroundHandler.ShowCoins = true;
+                if(WorldSprite.Y >= 140)
                 {
                     WorldSprite.Y = 140;
                     _motion.SetXSpeed(0);
                     _motion.SetYSpeed(0);
+
+                    if(_levelTimer.IsMod(16))
+                    {
+                        _stateTimer.Value++;
+                        if (_stateTimer.Value == 10)
+                        {
+                            _bossBackgroundHandler.ShowCoins = false;
+                            _dynamicBlockController.ResetCoinsForLevelBoss();
+                            SetPhase(Phase.Rise);
+                        }
+                    }
                 }
 
                 if (_levelTimer.IsMod(8))
                 {
                     _orbitCenter.Y++;
-                    if (_player.X < _orbitCenter.X)
-                        _orbitCenter.X--;
-                    else
-                        _orbitCenter.X++;
                 }
-                BulletOrbit();
+
+                if (_levelTimer.IsMod(2))
+                {
+                    if (_orbitDirection.Value)
+                        _orbitCenter.X++;
+                    else
+                        _orbitCenter.X--;
+                }
+
+                BulletOrbit(4);
 
                 _bulletControllers.Execute(b =>
                 {
@@ -271,9 +322,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         }
 
-        private void BulletOrbit()
+        private void BulletOrbit(byte increase)
         {
-            _bulletAngle.Value += 2;
+            _bulletAngle.Value += increase;
             if (_bulletAngle.Value >= 360)
                 _bulletAngle.Value = 0;
 
@@ -282,6 +333,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private BossBulletController CreateBullet(int index)
         {
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
             var bulletAndIndex = _bulletControllers.TryAddNewWithIndex();
             var bullet = bulletAndIndex.Item1;
             if (bullet == null)

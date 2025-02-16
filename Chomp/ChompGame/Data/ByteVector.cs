@@ -2,6 +2,8 @@
 {
     public class ByteVector
     {
+        public int Address => _x.Address;
+
         private readonly GameByte _x, _y;
 
         public ByteVector(GameByte x, GameByte y)
