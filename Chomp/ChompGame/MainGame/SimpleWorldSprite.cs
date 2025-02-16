@@ -13,6 +13,13 @@ namespace ChompGame.MainGame
         private readonly Specs _specs;
         private GameByte _spriteIndex;
         private TwoBit _xPosExtra;
+
+        public byte SpriteIndex
+        {
+            get => _spriteIndex.Value;
+            set => _spriteIndex.Value = value;
+        }
+
         public int X
         {
             get => Sprite.X | (_xPosExtra.Value << 7);

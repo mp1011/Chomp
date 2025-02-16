@@ -5,13 +5,19 @@ using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level5BossController : LevelBossController
     {
+        public const int MaxBullets = 5;
+
         private NibbleEnum<Phase> _phase;
+        private GameShort _bulletAngle;
         private BossPart _eye1, _eye2, _horn1, _horn2, _horn3, _horn4;
+        private NibbleArray _bullets;
+        private ByteVector _orbitCenter;
 
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -21,6 +27,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
             memoryBuilder.AddByte();
+            _bulletAngle = memoryBuilder.AddShort();
 
             _eye1 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
             _eye2 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
@@ -28,6 +35,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _horn2 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
             _horn3 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
             _horn4 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.BossHorn, memoryBuilder.Memory));
+
+            _orbitCenter = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
+            _bullets = new NibbleArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            memoryBuilder.AddBytes(MaxBullets/2);
         }
 
         private enum Phase : byte
@@ -50,9 +61,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               0JIIIH00
               006M5000";
            
-
-
-
         protected override void UpdatePartPositions()
         {
             _eye1.UpdatePosition(WorldSprite);
@@ -69,6 +77,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             SetPhase(Phase.BeforeBoss);
             base.BeforeInitializeSprite();
+
+            for(int i =0;i<MaxBullets;i++)
+            {
+                _bullets[i] = 0;
+            }
         }
 
         private void SetPhase(Phase p)
@@ -103,6 +116,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             else if(p == Phase.BuildOrbit)
             {
                 _motion.TargetYSpeed = 0;
+            }
+            else if (p == Phase.LaunchOrbit)
+            {
+                _motion.YSpeed = -20;
+                _motion.YAcceleration = 1;
+                _motion.TargetYSpeed = 40;
             }
         }
 
@@ -179,6 +198,48 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (WorldSprite.Y >= 91 && _motion.YSpeed > 0)
                     SetPhase(Phase.BuildOrbit);
             }
+            else if(_phase.Value == Phase.BuildOrbit)
+            {
+                _orbitCenter.X = WorldSprite.X + 6;
+                _orbitCenter.Y = WorldSprite.Y - 2;
+
+                if (_levelTimer.IsMod(32))
+                {
+                    if(_stateTimer.Value < MaxBullets)
+                        CreateBullet(_stateTimer.Value);
+
+                    _stateTimer.Value++;
+                    if(_stateTimer.Value == 0)
+                        SetPhase(Phase.LaunchOrbit);
+                }
+
+                BulletOrbit();
+            }
+            else if(_phase.Value == Phase.LaunchOrbit)
+            {
+                if(WorldSprite.Y > 140)
+                {
+                    WorldSprite.Y = 140;
+                    _motion.SetXSpeed(0);
+                    _motion.SetYSpeed(0);
+                }
+
+                if (_levelTimer.IsMod(8))
+                {
+                    _orbitCenter.Y++;
+                    if (_player.X < _orbitCenter.X)
+                        _orbitCenter.X--;
+                    else
+                        _orbitCenter.X++;
+                }
+                BulletOrbit();
+
+                _bulletControllers.Execute(b =>
+                {
+                    if (b.WorldSprite.Y > 114)
+                        b.Explode();
+                });
+            }
 
             if (_phase.Value >= Phase.Init)
             {
@@ -208,6 +269,29 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _motionController.Update();
             }
 
+        }
+
+        private void BulletOrbit()
+        {
+            _bulletAngle.Value += 2;
+            if (_bulletAngle.Value >= 360)
+                _bulletAngle.Value = 0;
+
+            PlaceBullets();
+        }
+
+        private BossBulletController CreateBullet(int index)
+        {
+            var bulletAndIndex = _bulletControllers.TryAddNewWithIndex();
+            var bullet = bulletAndIndex.Item1;
+            if (bullet == null)
+                return null;
+
+            bullet.DestroyOnTimer = false;
+            bullet.DestroyOnCollision = true;
+
+            _bullets[index] = (byte)(bulletAndIndex.Item2+1);
+            return bullet;
         }
 
         private void FadeIn()
@@ -258,6 +342,31 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 return false;
 
             return false; //todo
+        }
+
+        private BossBulletController GetBulletController(int index) =>
+            _bulletControllers.GetByIndex(_bullets[index]-1);
+
+        private void PlaceBullets()
+        {
+            var center = new Point(_orbitCenter.X, _orbitCenter.Y);
+            var radius = 16;
+
+            var angleMod = 360 / MaxBullets;
+
+            for(int i = 0; i < MaxBullets; i++)
+            {
+                if (_bullets[i] == 0)
+                    break;
+
+                var bullet = GetBulletController(i);
+                if (bullet.Status != WorldSpriteStatus.Active)
+                    continue;
+
+                Point offset = new Point(0, radius).RotateDeg(_bulletAngle.Value - (i*angleMod));
+                bullet.WorldSprite.X = center.X + offset.X;
+                bullet.WorldSprite.Y = center.Y + offset.Y;               
+            }
         }
     }
 }

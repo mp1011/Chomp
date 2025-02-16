@@ -80,6 +80,27 @@ namespace ChompGame.Data
             return null;
         }
 
+        public (T,byte) TryAddNewWithIndex()
+        {
+            byte freeSpriteIndex = _spritesModule.GetFreeSpriteIndex();
+            if (freeSpriteIndex == 255)
+                return (null,0);
+
+            for (byte i = 0; i < _items.Length; i++)
+            {
+                if (_items[i].Status >= WorldSpriteStatus.Active)
+                    continue;
+
+                _items[i].SpriteIndex = freeSpriteIndex;
+                _items[i].Status = WorldSpriteStatus.Active;
+                _items[i].InitializeSprite();
+
+                return (_items[i], i);
+            }
+
+            return (null, 0);
+        }
+
         public void Execute(Action<T> action, bool skipIfInactive=true)
         {
             foreach(var item in _items)
@@ -100,6 +121,8 @@ namespace ChompGame.Data
                 }
             }
         }
+
+        public T GetByIndex(int index) => _items[index];
 
     }
 
