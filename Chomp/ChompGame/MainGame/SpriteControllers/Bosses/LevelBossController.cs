@@ -157,8 +157,8 @@ namespace ChompGame.MainGame.SpriteControllers
         protected void CreateExplosion()
         {
             CreateExplosion(
-                WorldSprite.X + _rng.RandomItem(-8, -4, 0, 4, 8),
-                WorldSprite.Y + 4 + _rng.RandomItem(-8, -4, 0, 4, 8));            
+                WorldSprite.X + 4 + _rng.RandomItem(-8, -4, 0, 4, 8),
+                WorldSprite.Y + 0 + _rng.RandomItem(-8, -4, 0, 4, 8));            
         }
 
         protected void CreateExplosion(int x, int y)

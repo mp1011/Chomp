@@ -10,6 +10,8 @@ namespace ChompGame.Data.Memory
     {
         public abstract byte this[int index] { get; set; }
         public abstract void BlockCopy(int sourceStart, int destinationStart, int length);
+
+        public abstract byte[] ToArray();
     }
 
     public class FixedMemoryBlock : MemoryBlock
@@ -31,8 +33,6 @@ namespace ChompGame.Data.Memory
             }
             set
             {
-              //  if (index == 686)
-                //    GameDebug.NoOp();
                 _memory[index] = value;
             }
         }
@@ -51,6 +51,8 @@ namespace ChompGame.Data.Memory
             return string.Join("",
                 _memory.Select(i => i.ToString("X2")).ToArray());
         }
+
+        public override byte[] ToArray() => _memory;
     }
 
     public abstract class DynamicMemoryBlock : MemoryBlock
@@ -87,6 +89,8 @@ namespace ChompGame.Data.Memory
         }
 
         public override FixedMemoryBlock ToFixed() => new FixedMemoryBlock(_memory.ToArray());
+
+        public override byte[] ToArray() => _memory.ToArray();
     }
 
     public class GameRamMemoryBlock : DynamicMemoryBlock
@@ -126,5 +130,7 @@ namespace ChompGame.Data.Memory
         {
             throw new NotImplementedException();
         }
+
+        public override byte[] ToArray() => _memory.ToArray();
     }
 }

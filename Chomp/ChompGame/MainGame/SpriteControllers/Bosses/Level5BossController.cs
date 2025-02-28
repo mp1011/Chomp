@@ -12,6 +12,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
     class Level5BossController : LevelBossController
     {
         public const int MaxBullets = 5;
+        public const int BulletRadiusMin = 16;
+        public const int BulletRadiusMax = 20;
+        public const int GroundY = 160;
 
         private NibbleEnum<Phase> _phase;
         private GameShort _bulletAngle;
@@ -19,6 +22,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private NibbleArray _bullets;
         private ByteVector _orbitCenter;
         private GameBit _orbitDirection;
+        private MaskedByte _stunTimer;
 
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -27,8 +31,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         public Level5BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
-
             _orbitDirection = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+            _stunTimer = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left3, memoryBuilder.Memory, 5);
+
             memoryBuilder.AddByte();
             _bulletAngle = memoryBuilder.AddShort();
 
@@ -53,10 +58,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             Init,
             Rise,
             BuildOrbit,
-            LaunchOrbit
+            Chase,
+            LaunchOrbit,
+            Attack2,
+            Drop,
+            Dying,
+            Dying2
         }
 
-        protected override int BossHP => 4;
+        protected override int BossHP => GameDebug.BossTest ? 1 : 3;
 
         protected override string BossTiles { get; } =
             @"0BAAC000
@@ -115,9 +125,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             else if(p == Phase.Rise)
             {
                 if(_player.X < 16)
-                    WorldSprite.X = _player.X + 16;
+                    WorldSprite.X = _player.X + 24;
                 else if(_player.X > _gameModule.Specs.NameTablePixelWidth - 16)
-                    WorldSprite.X = _player.X - 20;
+                    WorldSprite.X = _player.X - 64;
                 else
                 {
                     if(_rng.Generate(1) == 0)
@@ -138,11 +148,27 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (p == Phase.LaunchOrbit)
             {
-                _orbitDirection.Value = _player.X > _orbitCenter.X;
                 _motion.TargetXSpeed = 0;
-                _motion.YSpeed = -20;
-                _motion.YAcceleration = 4;
-                _motion.TargetYSpeed = 80;
+                _motion.YSpeed = -30;
+                _motion.YAcceleration = 1;
+                _motion.TargetYSpeed = 0;
+            }
+            else if(p == Phase.Dying2)
+            {
+
+                _bossBackgroundHandler.BossBgEffectValue = 0;
+                _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.SineWave;
+                _eye1.Sprite.Visible = false;
+                _eye2.Sprite.Visible = false;
+                _horn1.Sprite.Visible = false;
+                _horn2.Sprite.Visible = false;
+                _horn3.Sprite.Visible = false;
+                _horn4.Sprite.Visible = false;
+
+                var bossPalette = _paletteModule.BgPalette2;
+                bossPalette.SetColor(1, ColorIndex.Yellow3);
+                bossPalette.SetColor(2, ColorIndex.Yellow4);
+                bossPalette.SetColor(3, ColorIndex.Yellow5);
             }
         }
 
@@ -208,7 +234,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (_phase.Value == Phase.Init)
             {
                 WorldSprite.X = 16;
-                WorldSprite.Y = 220;
+                WorldSprite.Y = 140;
 
                 FadeIn();
 
@@ -216,13 +242,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (_stateTimer.Value == 15)
                     SetPhase(Phase.Rise);
             }
-            else if(_phase.Value == Phase.Rise)
+            else if (_phase.Value == Phase.Rise)
             {
                 FadeIn();
                 if (WorldSprite.Y >= 91 && _motion.YSpeed > 0)
                     SetPhase(Phase.BuildOrbit);
             }
-            else if(_phase.Value == Phase.BuildOrbit)
+            else if (_phase.Value == Phase.BuildOrbit)
             {
                 _orbitCenter.X = WorldSprite.X + 6;
                 _orbitCenter.Y = WorldSprite.Y - 2;
@@ -236,60 +262,132 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                     _motion.XAcceleration = 4;
 
-                    if(_stateTimer.Value < MaxBullets)
+                    if (_stateTimer.Value < MaxBullets)
                         CreateBullet(_stateTimer.Value);
 
                     _stateTimer.Value++;
-                    if(_stateTimer.Value == 10)
-                        SetPhase(Phase.LaunchOrbit);
+                    if (_stateTimer.Value == 10)
+                        SetPhase(Phase.Chase);
                 }
 
-
-
-                BulletOrbit(2);
+                BulletOrbit(2, BulletRadiusMin);
             }
-            else if(_phase.Value == Phase.LaunchOrbit)
+            else if (_phase.Value == Phase.Chase)
+            {
+                _orbitCenter.X = WorldSprite.X + 6;
+                _orbitCenter.Y = WorldSprite.Y - 2;
+
+                if (WorldSprite.X < 16)
+                    _motion.TargetXSpeed = 40;
+                else if(WorldSprite.X > 90)
+                    _motion.TargetXSpeed = -40;
+
+                if (WorldSprite.X < _worldScroller.ViewPane.Left)
+                    _motion.TargetXSpeed = 40;
+                else if (WorldSprite.X > _worldScroller.ViewPane.Right)
+                    _motion.TargetXSpeed = -40;
+
+                 _motion.XAcceleration = 4;
+
+                if (_stateTimer.Value < 8)
+                {
+                    if (_levelTimer.IsMod(8))
+                        _stateTimer.Value++;
+                }
+                else
+                {
+                    if(_levelTimer.IsMod(32))
+                    {
+                        _stateTimer.Value++;
+                        if (_stateTimer.Value == 0)
+                            SetPhase(Phase.LaunchOrbit);
+                    }
+                }
+                
+                var radius = (BulletRadiusMin + _stateTimer.Value).Clamp(0, BulletRadiusMax);
+
+                if(_motion.TargetXSpeed > 0)
+                    BulletOrbit(-3, radius);
+                else
+                    BulletOrbit(3, radius);
+
+            }
+            else if (_phase.Value == Phase.LaunchOrbit)
             {
                 PositionFreeCoinBlocksNearPlayer();
                 _bossBackgroundHandler.ShowCoins = true;
-                if(WorldSprite.Y >= 140)
-                {
-                    WorldSprite.Y = 140;
-                    _motion.SetXSpeed(0);
-                    _motion.SetYSpeed(0);
 
-                    if(_levelTimer.IsMod(16))
+                if (_motion.YSpeed != 0)
+                {
+                    _orbitDirection.Value = _player.X > _orbitCenter.X;
+                    _orbitCenter.X = WorldSprite.X + 6;
+                    _orbitCenter.Y = WorldSprite.Y - 2;
+                    BulletOrbit(2, BulletRadiusMax);
+                }
+                else 
+                {
+                    BulletOrbit(2, BulletRadiusMax);
+
+                    if (_levelTimer.IsMod(2))
+                    {
+                        _orbitCenter.Y++;
+                    }
+
+                    if (_levelTimer.IsMod(2))
+                    {
+                        if (_orbitDirection.Value)
+                            _orbitCenter.X++;
+                        else
+                            _orbitCenter.X--;
+                    }
+
+                    bool anyLeft = false;
+
+                    _bulletControllers.Execute(b =>
+                    {
+                        if (b.WorldSprite.Y > 114)
+                            b.Explode();
+                        else
+                            anyLeft = true;
+                    });
+
+                    if (!anyLeft)
+                        SetPhase(Phase.Attack2);
+                }
+            }
+            else if(_phase.Value == Phase.Attack2)
+            {
+                if(_levelTimer.IsMod(16))
+                {
+                    if(_stateTimer.Value < 8)
+                        CreateAimedBullet();
+                    _stateTimer.Value++;
+
+                    if (_stateTimer.Value == 0)
+                        SetPhase(Phase.Drop);
+                }
+            }
+            else if(_phase.Value == Phase.Drop)
+            {
+                _motion.TargetYSpeed = 80;
+                _motion.YAcceleration = 2;
+
+                if (WorldSprite.Y >= 100)
+                {
+                    _bossBackgroundHandler.ShowCoins = false;
+                    _dynamicBlockController.ResetCoinsForLevelBoss();
+                }
+
+                if (WorldSprite.Y >= GroundY)
+                {
+                    WorldSprite.Y = GroundY;
+                    if(_levelTimer.IsMod(8))
                     {
                         _stateTimer.Value++;
-                        if (_stateTimer.Value == 10)
-                        {
-                            _bossBackgroundHandler.ShowCoins = false;
-                            _dynamicBlockController.ResetCoinsForLevelBoss();
+                        if (_stateTimer.Value == 0)
                             SetPhase(Phase.Rise);
-                        }
                     }
                 }
-
-                if (_levelTimer.IsMod(8))
-                {
-                    _orbitCenter.Y++;
-                }
-
-                if (_levelTimer.IsMod(2))
-                {
-                    if (_orbitDirection.Value)
-                        _orbitCenter.X++;
-                    else
-                        _orbitCenter.X--;
-                }
-
-                BulletOrbit(4);
-
-                _bulletControllers.Execute(b =>
-                {
-                    if (b.WorldSprite.Y > 114)
-                        b.Explode();
-                });
             }
 
             if (_phase.Value >= Phase.Init)
@@ -322,13 +420,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         }
 
-        private void BulletOrbit(byte increase)
+        private void BulletOrbit(int increase, int radius)
         {
-            _bulletAngle.Value += increase;
-            if (_bulletAngle.Value >= 360)
-                _bulletAngle.Value = 0;
-
-            PlaceBullets();
+            _bulletAngle.Value = (ushort)(_bulletAngle.Value + increase).NMod(360);
+            PlaceBullets(radius);
         }
 
         private BossBulletController CreateBullet(int index)
@@ -344,6 +439,27 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             bullet.DestroyOnCollision = true;
 
             _bullets[index] = (byte)(bulletAndIndex.Item2+1);
+            return bullet;
+        }
+
+        private BossBulletController CreateAimedBullet()
+        {
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet == null)
+                return null;
+
+            bullet.DestroyOnTimer = false;
+            bullet.DestroyOnCollision = true;
+
+            bullet.WorldSprite.X = WorldSprite.X + 8;
+            bullet.WorldSprite.Y = WorldSprite.Y + 8;
+
+            bullet.AcceleratedMotion.YAcceleration = 3;
+            bullet.AcceleratedMotion.XAcceleration = 3;
+            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center, 50);
+
             return bullet;
         }
 
@@ -366,7 +482,110 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         protected override void UpdateDying()
         {
-            
+            _position.X = (byte)(WorldSprite.X + 123 - _tileModule.Scroll.X);
+            _position.Y = (byte)(WorldSprite.Y - 77);
+            UpdatePartPositions();
+
+            if(_levelTimer.IsMod(2))
+            {
+                _eye1.Sprite.Palette = SpritePalette.Enemy1;
+                _eye2.Sprite.Palette = SpritePalette.Enemy1;
+            }
+            else
+            {
+                _eye1.Sprite.Palette = SpritePalette.Enemy2;
+                _eye2.Sprite.Palette = SpritePalette.Enemy2;
+            }
+
+            if (!GameDebug.BossTest && _hitPoints.Value > 0)
+            {
+                if (_levelTimer.IsMod(4))
+                {
+                    _stunTimer.Value++;
+                    if (_stunTimer.Value == 0)
+                    {
+                        WorldSprite.Status = WorldSpriteStatus.Active;
+                        _eye1.Sprite.Palette = SpritePalette.Enemy1;
+                        _eye2.Sprite.Palette = SpritePalette.Enemy1;
+                    }
+                }
+            }
+            else
+            {
+                if (_phase.Value < Phase.Dying)
+                {
+                    SetPhase(Phase.Dying);
+
+                    _bulletControllers.Execute(b =>
+                    {
+                        b.Destroy();
+                    });
+                }
+                else if (_phase.Value == Phase.Dying)
+                { 
+                    if (_levelTimer.IsMod(4))
+                    {
+                        CreateExplosion();
+                        _stateTimer.Value++;
+                        if (_stateTimer.Value == 0)
+                        {
+                            SetPhase(Phase.Dying2);
+                            return;
+                        }
+                    }
+
+                    if (_levelTimer.IsMod(2))
+                    {
+                        _horn1.Sprite.Palette = SpritePalette.Enemy1;
+                        _horn2.Sprite.Palette = SpritePalette.Enemy1;
+                        _horn3.Sprite.Palette = SpritePalette.Enemy1;
+                        _horn4.Sprite.Palette = SpritePalette.Enemy1;
+
+
+                        var bossPalette = _paletteModule.BgPalette2;
+                        bossPalette.SetColor(1, ColorIndex.Red1);
+                        bossPalette.SetColor(2, ColorIndex.Red2);
+                        bossPalette.SetColor(3, ColorIndex.Red3);
+                    }
+                    else
+                    {
+                        _horn1.Sprite.Palette = SpritePalette.Enemy2;
+                        _horn2.Sprite.Palette = SpritePalette.Enemy2;
+                        _horn3.Sprite.Palette = SpritePalette.Enemy2;
+                        _horn4.Sprite.Palette = SpritePalette.Enemy2;
+
+                        var bossPalette = _paletteModule.BgPalette2;
+                        bossPalette.SetColor(1, ColorIndex.Yellow1);
+                        bossPalette.SetColor(2, ColorIndex.Yellow2);
+                        bossPalette.SetColor(3, ColorIndex.Yellow3);
+                    }
+                }
+                else if(_phase.Value == Phase.Dying2)
+                {
+                    if(_levelTimer.IsMod(2))
+                        _bossBackgroundHandler.BossBgEffectValue++;
+
+                    if (_levelTimer.IsMod(16))
+                    {
+                        var bossPalette = _paletteModule.BgPalette2;
+                        var c1 = _paletteModule.Darken(bossPalette, 1);
+                        var c2 = _paletteModule.Darken(bossPalette, 2);
+                        var c3 = _paletteModule.Darken(bossPalette, 3);
+
+                        if(c1 && c2 && c3)
+                        {
+                            bossPalette.SetColor(1, ColorIndex.Black);
+                            bossPalette.SetColor(2, ColorIndex.Black);
+                            bossPalette.SetColor(3, ColorIndex.Black);
+
+                            _stateTimer.Value++;
+
+                            if (_stateTimer.Value == 15)
+                                _exitsModule.GotoNextLevel();
+                        }
+                    }
+                }
+            }
         }
 
         private void CreateExplosions()
@@ -380,14 +599,19 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             _audioService.PlaySound(ChompAudioService.Sound.Lightning);           
             _hitPoints.Value--;
-            if (_hitPoints.Value == 0)
-                WorldSprite.Status = WorldSpriteStatus.Dying;
-           // else
-             //   SetPhase(Phase.Hurt);
+            WorldSprite.Status = WorldSpriteStatus.Dying;
+            _stunTimer.Value = 0;
 
             return BombCollisionResponse.Destroy;
         }
 
+        public override bool CollidesWithBomb(WorldSprite bomb)
+        {
+            if (_phase.Value <= Phase.Init)
+                return false;
+
+            return bomb.Bounds.Intersects(_eye1.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye2.WorldSprite.Bounds);
+        }
 
         public override bool CollidesWithPlayer(PlayerController player)
         {
@@ -400,11 +624,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private BossBulletController GetBulletController(int index) =>
             _bulletControllers.GetByIndex(_bullets[index]-1);
 
-        private void PlaceBullets()
+        private void PlaceBullets(int radius)
         {
             var center = new Point(_orbitCenter.X, _orbitCenter.Y);
-            var radius = 16;
-
             var angleMod = 360 / MaxBullets;
 
             for(int i = 0; i < MaxBullets; i++)

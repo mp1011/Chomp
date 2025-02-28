@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chomp", "Chomp\Chomp.csproj", "{990484DD-7CEB-4679-926E-0B0D777E5F98}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChompGame", "ChompGame\ChompGame.csproj", "{118DD0A0-E5DC-44B2-9AE9-824281EA097C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChompGame", "ChompGame\ChompGame.csproj", "{118DD0A0-E5DC-44B2-9AE9-824281EA097C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{990484DD-7CEB-4679-926E-0B0D777E5F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{990484DD-7CEB-4679-926E-0B0D777E5F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{990484DD-7CEB-4679-926E-0B0D777E5F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{990484DD-7CEB-4679-926E-0B0D777E5F98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{118DD0A0-E5DC-44B2-9AE9-824281EA097C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{118DD0A0-E5DC-44B2-9AE9-824281EA097C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{118DD0A0-E5DC-44B2-9AE9-824281EA097C}.Release|Any CPU.ActiveCfg = Release|Any CPU

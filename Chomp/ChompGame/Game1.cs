@@ -71,6 +71,13 @@ namespace ChompGame
         {
             var ks = Keyboard.GetState();
 
+            if (ks.IsKeyDown(Keys.LeftShift) && ks.IsKeyDown(Keys.S))
+                SaveState();
+
+            if (ks.IsKeyDown(Keys.LeftShift) && ks.IsKeyDown(Keys.L))
+                LoadState();
+
+
             _showBgVram = ks.IsKeyDown(Keys.V) && !ks.IsKeyDown(Keys.LeftAlt);
             _showSpriteVram = ks.IsKeyDown(Keys.V) && ks.IsKeyDown(Keys.LeftAlt);
 
@@ -119,6 +126,21 @@ namespace ChompGame
         private Color[] _filterPixels;
 
         Random _rng = new Random();
+
+        private bool _savingOrLoading = false;
+
+        public void SaveState()
+        {
+            System.IO.File.WriteAllBytes("gamestate.bin", _gameSystem.Memory.ToArray());
+        }
+
+        public void LoadState()
+        {
+            var state = System.IO.File.ReadAllBytes("gamestate.bin");
+            for(int i = 0; i < state.Length; i++)
+                _gameSystem.Memory[i] = state[i];
+        }
+
         private void GenerateFilter()
         {
             byte[] rgb = new byte[3];

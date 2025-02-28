@@ -44,6 +44,8 @@ namespace ChompGame.Data
         public int GetAddress(AddressLabels label) => _addressLabels[label];
 
         public override string ToString() => _memory.ToString();
+
+        public byte[] ToArray() => _memory.ToArray();
     }
 
  }

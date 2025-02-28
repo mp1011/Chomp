@@ -79,6 +79,14 @@ namespace ChompGame.MainGame
             var groundTiles = ShowCoins ? 4 : 2;
             var groundPosition = (byte)(_specs.ScreenHeight - (_specs.TileHeight * groundTiles));
 
+            if (_gameModule.CurrentLevel == SceneModels.Level.Level5_27_Boss)
+            {
+                if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+                    SetBossEyePriority(true);
+                else if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
+                    SetBossEyePriority(false);
+            }
+
             if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight
                 && _coreGraphicsModule.ScreenPoint.Y < groundPosition)
             {
@@ -112,6 +120,18 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.X = _rasterInterrupts.RealScrollX;
                 _tileModule.Scroll.Y = (byte)(_specs.ScreenHeight);
             }
+        }
+
+        private void SetBossEyePriority(bool value)
+        {
+            for(int i =0; i < _specs.MaxSprites; i++)
+            {
+                var sprite = _gameModule.SpritesModule.GetSprite(i);
+                if (!sprite.Visible || sprite.Tile != 10)
+                    continue;
+
+                sprite.Priority = value;
+            }            
         }
 
         private void OnHBlank_UpdateSineWave()
