@@ -74,6 +74,7 @@ namespace ChompGame.MainGame.SceneModels
         ForestTreesNear,
         ForestTreesFar,
         NightMist,
+        TechBaseBg,
         TechBaseFg,
         Max = TechBaseFg
     }
@@ -433,6 +434,12 @@ namespace ChompGame.MainGame.SceneModels
               ColorIndex.Gray2, //fill
               ColorIndex.Gray3);
 
+            DefinePalette(PaletteKey.TechBaseBg,
+            ColorIndex.Black,
+            ColorIndex.Blue2,//outline
+            ColorIndex.Blue1, //fill
+            ColorIndex.Blue2);
+
             DefinePalette(PaletteKey.TechBaseFg,
              ColorIndex.Black,
              ColorIndex.BlueGray3,//outline
@@ -533,6 +540,13 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
+            else if (_currentScene.Theme == ThemeType.TechBase)
+            {
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
+            }
             else if (_currentScene.ScrollStyle == ScrollStyle.Horizontal &&
                 _currentScene.HorizontalScrollStyle == HorizontalScrollStyle.Interior)
             {
@@ -547,14 +561,7 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
-            }
-            else if (_currentScene.Theme == ThemeType.TechBase)
-            {
-                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
-            }
+            }            
             else
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
@@ -750,14 +757,17 @@ namespace ChompGame.MainGame.SceneModels
                         Darken(BgPalette2, 2, limit: 3);
                         Lighten(BgPalette1, 2);
                     }
-                    //if (Darken(BgPalette2, 1, 4))
-                    //    BgPalette2.SetColor(1, ColorIndex.LightGray(5).Value);
 
                    if (Lighten(BgPalette1, 3))
                       BgPalette1.SetColor(3, ColorIndex.Gray1);
+                }
+                else if(_currentScene.Theme == ThemeType.TechBase)
+                {
+                    if(_timer.Value < 128)
+                        Lighten(BgPalette1, 3);
+                    else
+                        Darken(BgPalette1, 3);
 
-                    // if (Darken(BgPalette2, 3, 4))
-                    //    BgPalette2.SetColor(3, ColorIndex.Gray3);
                 }
             }
         }

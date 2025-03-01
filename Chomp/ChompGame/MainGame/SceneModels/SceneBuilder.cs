@@ -1861,7 +1861,7 @@ namespace ChompGame.MainGame.SceneModels
                 1,
                 1,
                 1,
-                2,
+                1,
                 CornerStairStyle.TwoBlockDouble);
 
             _ = Level.Level6_2_Techbase2;
@@ -1872,8 +1872,8 @@ namespace ChompGame.MainGame.SceneModels
                 SpriteGroup.Normal,
                 0,
                 1,
-                1,
                 2,
+                1,
                 1,
                 HorizontalScrollStyle.Interior);
 

@@ -88,7 +88,12 @@ namespace ChompGame.MainGame
             else if (_sceneDefinition.Theme == ThemeType.CityTrain)
                 HandleTrainParallax();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
-                HandleParallax();           
+            {
+                if (_sceneDefinition.Theme == ThemeType.TechBase)
+                    HandleParallax2();
+                else
+                    HandleParallax();
+            }
         }
 
         private void HandleAutoScroll()
@@ -160,6 +165,20 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.X = _realScrollX.Value;
             else if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
                 _tileModule.Scroll.X = _realScrollX.Value;  
+        }
+        
+        private void HandleParallax2()
+        {
+            if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true))
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 4);
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Upper, includeStatusBar: true))
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Lower, includeStatusBar: true))
+                _tileModule.Scroll.X = (byte)(_worldScroller.ScrollWindowBegin / 2);
+            else if (_coreGraphicsModule.ScreenPoint.Y == _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Bottom, includeStatusBar: true))
+                _tileModule.Scroll.X = _realScrollX.Value;
+            else if (_coreGraphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+                _tileModule.Scroll.X = _realScrollX.Value;
         }
 
         private void HandleTrainParallax()
