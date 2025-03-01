@@ -214,11 +214,18 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: PaletteKey.GreenEnemy,
                 enemy2: PaletteKey.Gray);
 
-            //Space
+            _ = ThemeType.Space;
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
 
-            //TechBase
-            new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
+            _ = ThemeType.TechBase;
+            new Theme(memoryBuilder,
+               bg1: PaletteKey.Test,
+               bg2: PaletteKey.Test,
+               fg1: PaletteKey.TechBaseFg,
+               fg2: PaletteKey.GreenEnemy,
+               bomb: PaletteKey.Gray,
+               enemy1: PaletteKey.GreenEnemy,
+               enemy2: PaletteKey.Gray);
 
             //GlitchCore 
             new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);

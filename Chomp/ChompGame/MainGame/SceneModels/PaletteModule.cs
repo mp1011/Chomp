@@ -74,7 +74,8 @@ namespace ChompGame.MainGame.SceneModels
         ForestTreesNear,
         ForestTreesFar,
         NightMist,
-        Max = NightMist
+        TechBaseFg,
+        Max = TechBaseFg
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -432,6 +433,12 @@ namespace ChompGame.MainGame.SceneModels
               ColorIndex.Gray2, //fill
               ColorIndex.Gray3);
 
+            DefinePalette(PaletteKey.TechBaseFg,
+             ColorIndex.Black,
+             ColorIndex.BlueGray3,//outline
+             ColorIndex.BlueGray1, //fill
+             ColorIndex.Gray2);
+
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -540,6 +547,13 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
+            }
+            else if (_currentScene.Theme == ThemeType.TechBase)
+            {
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
             else
             {
