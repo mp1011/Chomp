@@ -436,14 +436,14 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.TechBaseBg,
             ColorIndex.Black,
-            ColorIndex.Blue2,//outline
-            ColorIndex.Blue1, //fill
+            ColorIndex.Red1,
+            ColorIndex.Blue1, 
             ColorIndex.Blue2);
 
             DefinePalette(PaletteKey.TechBaseFg,
              ColorIndex.Black,
-             ColorIndex.BlueGray3,//outline
-             ColorIndex.BlueGray1, //fill
+             ColorIndex.BlueGray3,
+             ColorIndex.BlueGray1, 
              ColorIndex.Gray2);
 
         }
@@ -468,6 +468,8 @@ namespace ChompGame.MainGame.SceneModels
 
             if(_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist)
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
+            else if(_currentScene.Theme == ThemeType.TechBase)
+                _bgColor.Value = (byte)backgroundPalette.GetColorIndex(2);
             else
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
 
