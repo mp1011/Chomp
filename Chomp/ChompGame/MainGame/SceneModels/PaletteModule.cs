@@ -544,10 +544,20 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_currentScene.Theme == ThemeType.TechBase)
             {
-                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
-                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
+                if (_currentScene.ScrollStyle == ScrollStyle.Vertical || _currentScene.ScrollStyle == ScrollStyle.NameTable)
+                {
+                    _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                    _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                    _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                    _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
+                }
+                else
+                {
+                    _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                    _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                    _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
+                    _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
+                }
             }
             else if (_currentScene.ScrollStyle == ScrollStyle.Horizontal &&
                 _currentScene.HorizontalScrollStyle == HorizontalScrollStyle.Interior)

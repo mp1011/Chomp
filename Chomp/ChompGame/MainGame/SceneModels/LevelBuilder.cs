@@ -426,6 +426,10 @@ namespace ChompGame.MainGame.SceneModels
         private NBitPlane AddFourChambers(NBitPlane nameTable)
         {
             int midFloorStart = (nameTable.Height / 2) - 2;
+
+            if(_sceneDefinition.Theme == ThemeType.TechBase)
+                midFloorStart = (midFloorStart / 2) * 2;
+            
             int midFloorEnd = midFloorStart + 4;
 
             int midWallStart = (nameTable.Width / 2) - 2;
@@ -468,6 +472,9 @@ namespace ChompGame.MainGame.SceneModels
         private NBitPlane AddZigZagTiles(NBitPlane nameTable)
         {
             int sectionHeight = 9;
+            if (_sceneDefinition.Theme == ThemeType.TechBase)
+                sectionHeight = 8;
+
             int gapSize = 2;
             bool left = true;
 
@@ -495,7 +502,7 @@ namespace ChompGame.MainGame.SceneModels
                 else
                 {
                     p = new Point(p.X - 1, p.Y);
-                    if (p.X == _sceneDefinition.LeftTiles + gapSize)
+                    if (p.X == _sceneDefinition.LeftTiles + gapSize + 1)
                     {
                         left = true;
                         p.X = _sceneDefinition.LeftTiles;

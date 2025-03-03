@@ -138,7 +138,7 @@ namespace ChompGame.MainGame.SceneModels
         Level6_3_Techbase3,
         Level6_4_Techbase_Vertical,
         Level6_5_Techbase_Chamber,
-        Level6_6__Switchroom,
+        Level6_6_Switchroom,
         Level6_7_Techbase4,
         Level6_8_Techbase5,
         Level6_9_Techbase6,
@@ -173,7 +173,10 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level5_1_Mist,
             Level.Level5_5_Forest,
             Level.Level5_13_Forest_Corner2,
-            Level.Level5_23_Plane_Begin
+            Level.Level5_23_Plane_Begin,
+            Level.Level6_1_Techbase,
+            Level.Level6_7_Techbase4,
+            Level.Level6_13_Techbase7
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -1897,7 +1900,7 @@ namespace ChompGame.MainGame.SceneModels
                 left:1,
                 top: 1,
                 right:1,
-                upper:1,
+                upper:0,
                 bottom: 1);
 
 
@@ -1905,14 +1908,162 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.VerticalScroll(
                 specs: specs,
                 shape: LevelShape.ZigZag,
-                theme: ThemeType.Plains,
+                theme: ThemeType.TechBase,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 left: 1,
                 right: 2);
-        );
+
+            _ = Level.Level6_5_Techbase_Chamber;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.TechBase,
+                shape: LevelShape.FourChambers,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 2);
+
+            _ = Level.Level6_6_Switchroom;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.TechBase,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                1,
+                1,
+                1,
+                1,
+                1,
+                CornerStairStyle.TwoBlockRight);
+
+            _ = Level.Level6_7_Techbase4;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.TechBase,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 2,
+                top: 1,
+                right: 0,
+                upper: 1,
+                bottom: 1);
+
+            _ = Level.Level6_8_Techbase5;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.TechBase,
+                LevelShape.LowVariance,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                0,
+                1,
+                2,
+                1,
+                1,
+                HorizontalScrollStyle.Interior);
+
+            _ = Level.Level6_9_Techbase6;
+            SceneDefinition.NoScrollTShape(memoryBuilder, specs, ThemeType.TechBase,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                leftY: 0,
+                rightY: 1,
+                pitX: 1,
+                hallSize: 2,
+                bgPosition: 1);
+
+            _ = Level.Level6_10_Techbase_Vertical2;
+            SceneDefinition.VerticalScroll(
+                specs: specs,
+                shape: LevelShape.Ladder,
+                theme: ThemeType.TechBase,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
+                memoryBuilder: memoryBuilder,
+                left: 1,
+                right:1);
+
+            _ = Level.Level6_11_Techbase_Switchroom2;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.TechBase,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                1,
+                1,
+                1,
+                1,
+                1,
+                CornerStairStyle.TwoBlockRight);
+
+            _ = Level.Level6_12_Techbase_Chamber2;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.TechBase,
+                shape: LevelShape.TwoHorizontalChambers,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 1);
+
+            _ = Level.Level6_13_Techbase7;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.TechBase,
+                LevelShape.Flat,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                0,
+                1,
+                0,
+                1,
+                1,
+                HorizontalScrollStyle.Interior);
+
+            _ = Level.Level6_14_Techbase8;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.TechBase,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                1,
+                1,
+                1,
+                1,
+                1,
+                CornerStairStyle.TwoBlockDouble);
+
+            _ = Level.Level6_15_Techbase9;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.TechBase,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                1,
+                1,
+                1,
+                2,
+                1,
+                CornerStairStyle.OneBlockDouble);
+
+            _ = Level.Level6_16_Techbase10;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.TechBase,
+                LevelShape.Flat,
+                EnemyIndex.Boulder,
+                EnemyIndex.Ufo,
+                SpriteGroup.Normal,
+                0,
+                1,
+                0,
+                1,
+                1,
+                HorizontalScrollStyle.Interior);
 
         }
 
@@ -3945,6 +4096,7 @@ namespace ChompGame.MainGame.SceneModels
 
             AddLevel(Level.Level6_2_Techbase2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                 (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
                 (b, scene) => PitScenePart(builder, 8, PrefabSize.Eight, scene),
                 (b, scene) => PitScenePart(builder, 16, PrefabSize.Eight, scene),
                 (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len16, 10, 12, scene),
@@ -3960,6 +4112,69 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: true, bottomRight: true, x: 4, y: 10, definition: scene),
                 (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: true, bottomLeft: true, bottomRight: true, x: 6, y: 10, definition: scene)
             );
+
+            AddLevel(Level.Level6_3_Techbase3, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene));
+
+
+            AddLevel(Level.Level6_4_Techbase_Vertical, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, false, 2,36, scene),
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, false, 4, 34, scene),
+               (b, scene) => new PrefabScenePart(builder, scene, 12, 28, PrefabSize.Four,PrefabSize.Four, PrefabStyle.Space),
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 3, scene)
+               );
+
+            AddLevel(Level.Level6_5_Techbase_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new PrefabScenePart(builder, scene, 4, 12, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Space),
+               (b, scene) => new PrefabScenePart(builder, scene, 14, 0, PrefabSize.Six, PrefabSize.Four, PrefabStyle.Space),
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, true, 14, 24, scene),
+               (b, scene) => new PrefabScenePart(builder, scene, 20, 12, PrefabSize.Six, PrefabSize.Four, PrefabStyle.Space),
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_6_Switchroom, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(builder, ScenePartType.Button, 12, 11, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene));
+
+            AddLevel(Level.Level6_7_Techbase4, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_8_Techbase5, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_9_Techbase6, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 4, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Top, 1, scene));
+
+            AddLevel(Level.Level6_10_Techbase_Vertical2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Bottom, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_11_Techbase_Switchroom2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene));
+
+            AddLevel(Level.Level6_12_Techbase_Chamber2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Left, -3, scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_13_Techbase7, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_14_Techbase8, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene));
+
+            AddLevel(Level.Level6_15_Techbase9, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Top, -1, scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_16_Techbase10, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene));
 
         }
 
