@@ -466,10 +466,15 @@ namespace ChompGame.MainGame.SceneModels
 
             LoadPalette(levelTheme.Background2, backgroundPalette);
 
-            if(_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist)
+            if (_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist)
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
-            else if(_currentScene.Theme == ThemeType.TechBase)
-                _bgColor.Value = (byte)backgroundPalette.GetColorIndex(2);
+            else if (_currentScene.Theme == ThemeType.TechBase)
+            {
+                if(_currentScene.ScrollStyle == ScrollStyle.NameTable || _currentScene.ScrollStyle == ScrollStyle.Vertical)
+                    _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
+                else
+                    _bgColor.Value = (byte)backgroundPalette.GetColorIndex(2);
+            }
             else
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(3);
 

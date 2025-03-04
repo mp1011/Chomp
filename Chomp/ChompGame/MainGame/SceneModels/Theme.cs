@@ -222,9 +222,9 @@ namespace ChompGame.MainGame.SceneModels
                bg1: PaletteKey.GreenEnemy,
                bg2: PaletteKey.TechBaseBg,
                fg1: PaletteKey.TechBaseFg,
-               fg2: PaletteKey.GreenEnemy,
-               bomb: PaletteKey.Gray,
-               enemy1: PaletteKey.GreenEnemy,
+               fg2: PaletteKey.Gray,
+               bomb: PaletteKey.BombLight,
+               enemy1: PaletteKey.BlueGrayEnemy,
                enemy2: PaletteKey.Gray);
 
             //GlitchCore 

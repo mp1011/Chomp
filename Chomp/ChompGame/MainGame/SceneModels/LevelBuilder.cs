@@ -680,6 +680,12 @@ namespace ChompGame.MainGame.SceneModels
             int groundMin = _sceneDefinition.LevelTileHeight - _sceneDefinition.BottomTiles;
             int groundMax = _sceneDefinition.LevelTileHeight - 1;
 
+            if(_sceneDefinition.LevelShape == LevelShape.TwoByTwoVariance)
+            {
+                groundMin = (groundMin / 2) * 2;
+                groundMax = (groundMax / 2) * 2;
+            }
+
             if (groundMin >= groundMax)
                 throw new Exception("Not enough room for variance");
 
@@ -689,14 +695,6 @@ namespace ChompGame.MainGame.SceneModels
 
             for (int x = 0; x < nameTable.Width; x++)
             {
-                for(int y = 0; y < nameTable.Height; y++)
-                {
-                    if (y >= ground)
-                        nameTable[x, y] = 1;
-                    else if(y >= groundMin)
-                        nameTable[x, y] = 0;                   
-                }
-
                 if (x == sectionEnd)
                 {
                     sectionBegin = x;
@@ -704,6 +702,14 @@ namespace ChompGame.MainGame.SceneModels
 
                     ground = GetNextGroundHeight(ground, rng, (byte)(seed + x + ground), groundMin, groundMax);
                 }
+
+                for (int y = 0; y < nameTable.Height; y++)
+                {
+                    if (y >= ground)
+                        nameTable[x, y] = 1;
+                    else if(y >= groundMin)
+                        nameTable[x, y] = 0;                   
+                }                
             }
 
             return nameTable;
@@ -738,8 +744,9 @@ namespace ChompGame.MainGame.SceneModels
                 return newHeight;
             }
 
-            int range = groundMax - groundMin;
+            int range = (groundMax - groundMin)+1;
             newHeight = groundMin + (rng.FixedRandom(seed,4) % range);
+            newHeight = (newHeight / 2) * 2;
 
             int tries = 0;
             while(tries < 4 && newHeight == lastHeight)
@@ -754,8 +761,6 @@ namespace ChompGame.MainGame.SceneModels
                         newHeight = 2;
                 }
             }
-
-           
 
             return newHeight;
         }
