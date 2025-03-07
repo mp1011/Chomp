@@ -436,7 +436,7 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.TechBaseBg,
             ColorIndex.Black,
-            ColorIndex.Red1,
+            ColorIndex.Purple1,
             ColorIndex.Blue1, 
             ColorIndex.Blue2);
 

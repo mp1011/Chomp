@@ -325,8 +325,8 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level6_1_Techbase;
-            _lastExitType.Value = ExitType.Right;
+            _currentLevel.Value = Level.Level4_1_Desert;
+            _lastExitType.Value = ExitType.Bottom;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);

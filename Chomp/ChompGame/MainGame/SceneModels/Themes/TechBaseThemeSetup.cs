@@ -13,6 +13,15 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {
         }
 
+        public override IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks
+        {
+            get
+            {
+                if(_sceneDefinition.ScrollStyle == ScrollStyle.Vertical || _sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
+                    yield return new TechBasePillar(_sceneDefinition);
+            }
+        }
+
         public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
         {
             attributeTable.ForEach((x, y, b) =>
@@ -100,10 +109,24 @@ namespace ChompGame.MainGame.SceneModels.Themes
             //bg extra
             masterPatternTable.CopyTilesTo(
              destination: vramPatternTable,
-             source: new InMemoryByteRectangle(6, 11, 3, 1),
+             source: new InMemoryByteRectangle(6, 11, 1, 1),
              destinationPoint: new Point(0, 3),
              _specs,
              memory);
+
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(15, 10, 1, 1),
+                destinationPoint: new Point(1, 3),
+                _specs,
+                memory);
+
+            masterPatternTable.CopyTilesTo(
+              destination: vramPatternTable,
+              source: new InMemoryByteRectangle(3, 11, 2, 1),
+              destinationPoint: new Point(2, 3),
+              _specs,
+              memory);
 
 
             // fg
