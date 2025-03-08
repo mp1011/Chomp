@@ -29,6 +29,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override bool DestroyWhenOutOfBounds => false;
 
+        protected override bool AlwaysActive => true;
+
         public byte Variation { get => _variation.Value; set => _variation.Value = value; }
 
         private enum Phase : byte
@@ -68,12 +70,49 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if (_variation.Value == UfoController.SPath)
                 Update_SPath();
-            if (_variation.Value == UfoController.Chase)
+            else if (_variation.Value == UfoController.Chase)
                 Update_Chase();
-            if (_variation.Value == UfoController.Hook)
+            else if (_variation.Value == UfoController.Hook)
                 Update_Hook();
+            else
+                Update_Normal();
 
             _motionController.Update();
+        }
+
+        private void Update_Normal()
+        {
+            if(_stateTimer.Value == 0)
+            {
+                int dx = WorldSprite.X - _player.X;
+                int dy = WorldSprite.Y - _player.Y;
+
+                if(Math.Abs(dx) > Math.Abs(dy))
+                {
+                    _motion.TargetYSpeed = 0;
+                    if (dx > 0)
+                        _motion.TargetXSpeed = -_motionController.WalkSpeed;
+                    else
+                        _motion.TargetXSpeed = _motionController.WalkSpeed;
+                }
+                else
+                {
+                    _motion.TargetXSpeed = 0;
+                    if (dy > 0)
+                        _motion.TargetYSpeed = -_motionController.WalkSpeed;
+                    else
+                        _motion.TargetYSpeed = _motionController.WalkSpeed;
+                }
+
+                _motion.XAcceleration = _motionController.WalkAccel;
+                _motion.YAcceleration = _motionController.WalkAccel;
+                _stateTimer.Value++;
+            }
+            else if(_levelTimer.IsMod(4))
+            {
+                _stateTimer.Value++;
+            }
+
         }
 
         private void Update_Chase()

@@ -1909,8 +1909,8 @@ namespace ChompGame.MainGame.SceneModels
                 specs: specs,
                 shape: LevelShape.ZigZag,
                 theme: ThemeType.TechBase,
-                enemy1: EnemyIndex.Lizard,
-                enemy2: EnemyIndex.Bird,
+                enemy1: EnemyIndex.Mage,
+                enemy2: EnemyIndex.Ufo,
                 spriteGroup: SpriteGroup.Normal,
                 memoryBuilder: memoryBuilder,
                 left: 1,
@@ -2013,7 +2013,7 @@ namespace ChompGame.MainGame.SceneModels
                 left: 1,
                 top: 1,
                 right: 1,
-                bottom: 1);
+                bottom: 2);
 
             _ = Level.Level6_13_Techbase7;
             SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.TechBase,
@@ -4130,6 +4130,14 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, false, 2,36, scene),
                (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, false, 4, 34, scene),
                (b, scene) => new PrefabScenePart(builder, scene, 12, 28, PrefabSize.Four,PrefabSize.Four, PrefabStyle.Space),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 15, 16, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 0, 32, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 8, 48, scene),
+
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 6, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 4, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 10, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 2, y: 12, definition: scene),
 
                (b, scene) => new PrefabScenePart(builder, scene, 0, 56, PrefabSize.Two, PrefabSize.Eight, PrefabStyle.Block),
 
@@ -4150,6 +4158,9 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 24, 10, scene),
                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, 28, 10, scene),
 
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: false, x: 12, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false, x: 14, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: false, bottomRight: true, x: 16, y: 0, definition: scene),
 
                (b, scene) => new TurretScenePart(builder, scene, Direction.Up, 8, 26),
                (b, scene) => new TurretScenePart(builder, scene, Direction.Left, 6, 12),
@@ -4167,6 +4178,7 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(Level.Level6_6_Switchroom, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                 (b, scene) => new SpriteScenePart(builder, ScenePartType.Button, 12, 11, scene),
                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 8, 10, scene),
+                    (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 10, y: 10, definition: scene),
 
                 (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene));
 
@@ -4176,11 +4188,26 @@ namespace ChompGame.MainGame.SceneModels
 
             AddLevel(Level.Level6_8_Techbase5, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.Coin, true, false, true, true, 12, 10, scene),
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.Coin, false, true, true, true, 20, 10, scene),
+
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.Coin, true, false, true, true, 30, 10, scene),
+               (b, scene) => new DynamicScenePart(builder, DynamicBlockType.Coin, false, true, true, true, 42, 10, scene),
+
+
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 24, 0, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 38, 0, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 8, scene),               
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 40, 8, scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, 32, 0, scene),
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level6_9_Techbase6, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 3, scene),
+               (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 6, 2, scene),
+
               (b, scene) => new ExitScenePart(b, ExitType.Top, 1, scene));
 
             AddLevel(Level.Level6_10_Techbase_Vertical2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
@@ -4192,6 +4219,14 @@ namespace ChompGame.MainGame.SceneModels
 
             AddLevel(Level.Level6_12_Techbase_Chamber2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Left, -3, scene),
+              (b, scene) => new PrefabScenePart(b, scene, 28, 4, PrefabSize.Four, PrefabSize.Six, PrefabStyle.Space),
+               (b, scene) => new PrefabScenePart(b, scene, 16, 12, PrefabSize.Six, PrefabSize.Six, PrefabStyle.Space),
+
+
+              (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, true, 16, 22, scene),             
+              (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, true, 20, 18, scene),
+              (b, scene) => new DynamicScenePart(builder, DynamicBlockType.SwitchBlock, true, true, true, true, 16, 14, scene),
+
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level6_13_Techbase7, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
