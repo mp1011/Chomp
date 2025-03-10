@@ -56,7 +56,7 @@ namespace ChompGame.MainGame.SpriteControllers
         }
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _hitPoints.Value = 2;
+            _hitPoints.Value = 1;
             _stateTimer.Value = 0;
             _phase.Value = Phase.Hidden;
         }
@@ -104,6 +104,7 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.Appear)
             {
+                CollisionEnabled = true;
                 WorldSprite.Visible = _levelTimer.Value.IsMod(2);
 
                 if (_levelTimer.Value.IsMod(8))

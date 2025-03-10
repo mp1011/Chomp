@@ -170,6 +170,7 @@ namespace ChompGame.MainGame.SceneModels
                 case Level.Level3_20_Midboss:
                 case Level.Level4_31_Midboss:
                 case Level.Level5_22_MidBoss:
+                case Level.Level6_17_Midboss:
                     AddSprite(SpriteTileIndex.Enemy1, 8, 1, 4, 2);
                     AddSprite(SpriteTileIndex.Extra2, 7, 1, 1, 1);                    
                     AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1);

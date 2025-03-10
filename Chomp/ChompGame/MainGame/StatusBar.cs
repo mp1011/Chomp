@@ -109,6 +109,9 @@ namespace ChompGame.MainGame
 
         private void SetHealth(byte value)
         {
+            if (GameDebug.InfiniteHp)
+                value = FullHealth;
+
             _health.Value = value;
 
             int full = value / 2;
