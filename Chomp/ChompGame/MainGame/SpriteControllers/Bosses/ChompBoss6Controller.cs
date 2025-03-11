@@ -4,6 +4,7 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.MainGame.SceneModels.SmartBackground;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
@@ -12,8 +13,11 @@ using System;
 namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss6Controller : EnemyController
-    {       
+    {
+        public const int MidX = 28;
+        public const int ArmSize = 6;
         public const int BossHp = GameDebug.BossTest ? 1 : 3;
+        private readonly PaletteModule _paletteModule;
         private readonly WorldScroller _scroller;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
         private readonly MusicModule _music;
@@ -21,10 +25,18 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly Specs _specs;
         private WorldSprite _player;
         private CoreGraphicsModule _graphics;
-        
+
+        private ByteVector _arm1Pos, _arm2Pos;
+        private ChompTail _arm1, _arm2;
+
         enum Phase : byte 
         {
-            Init,          
+            Init,
+            BuildWall,
+            Appear,
+            ExtendArms,
+            Attack,
+            Fall
         }
       
         private GameByteEnum<Phase> _phase;
@@ -39,6 +51,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _graphics = gameModule.GameSystem.CoreGraphicsModule;
+            _paletteModule = gameModule.PaletteModule;
             _exitModule = gameModule.ExitsModule;
             _music = gameModule.MusicModule;
             _scroller = gameModule.WorldScroller;
@@ -51,12 +64,22 @@ namespace ChompGame.MainGame.SpriteControllers
             _specs = gameModule.Specs;
             Palette = SpritePalette.Enemy1;
 
+            _arm1Pos = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
+            _arm2Pos = new ByteVector(memoryBuilder.AddByte(), memoryBuilder.AddByte());
+            _arm1 = new ChompTail(memoryBuilder, ArmSize, gameModule);
+            _arm2 = new ChompTail(memoryBuilder, ArmSize, gameModule);
+
             memoryBuilder.AddByte();
+
+
+
             GameDebug.Watch1 = new DebugWatch("T", () => _stateTimer.Value);
         }
 
         protected override void BeforeInitializeSprite()
         {
+            _arm1.CreateTail();
+            _arm2.CreateTail();
             SpriteIndex = _spritesModule.GetFreeSpriteIndex();
         }
 
@@ -68,10 +91,125 @@ namespace ChompGame.MainGame.SpriteControllers
             sprite.Priority = true;
         }
 
+        private void HideArms()
+        {
+            HideArm(_arm1);
+            HideArm(_arm2);
+        }
+
+        private void HideArm(ChompTail arm)
+        {
+            for(int i = 0; i < ArmSize; i++)
+            {
+                arm.GetSprite(i).Visible = false;
+            }
+        }
+
+        private void PositionArm(ChompTail arm, ByteVector position)
+        {
+            Point anchor = new Point(position.X, position.Y);
+            float intervalX = (WorldSprite.X - anchor.X) / (float)ArmSize;
+            float intervalY = (WorldSprite.Y - anchor.Y) / (float)ArmSize;
+
+            for (int i = 0; i < ArmSize; i++)
+            {
+                var sprite = arm.GetSprite(i);
+                sprite.X = (byte)(anchor.X + (intervalX * (i+1)));
+                sprite.Y = (byte)(anchor.Y + (intervalY * (i+1)));
+                sprite.Palette = SpritePalette.Enemy1;
+                sprite.Priority = true;
+                sprite.Visible = true;
+            }
+        }
+
         protected override void UpdateActive()
         {
-            
+            if(_phase.Value ==  Phase.Init)
+            {
+                if (_player.X > 32)
+                    SetPhase(Phase.BuildWall);
+            }
+            else if(_phase.Value == Phase.BuildWall)
+            {
+                if(_levelTimer.IsMod(8))
+                {
+                    BuildWall();
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 4)
+                        SetPhase(Phase.Appear);
+                }
+            }
+            else if(_phase.Value == Phase.Appear)
+            {
+                WorldSprite.Visible = _levelTimer.IsMod(2);
 
+                if (_levelTimer.IsMod(16))
+                {
+                    _stateTimer.Value++;
+                    FadeIn();
+                }
+
+                if(_stateTimer.Value == 8)
+                {
+                    SetPhase(Phase.ExtendArms);
+                }
+            }
+            else if(_phase.Value == Phase.ExtendArms)
+            {
+                PositionArm(_arm1, _arm1Pos);
+                PositionArm(_arm2, _arm2Pos);
+
+                if(WorldSprite.X < MidX)
+                {
+                    _arm1Pos.Y--;
+                    _arm2Pos.Y++;
+                }
+                else if(WorldSprite.X > MidX)
+                {
+                    _arm1Pos.Y--;
+                    _arm2Pos.Y++;
+                }
+                else
+                {
+                    _arm1Pos.X--;
+                    _arm1Pos.Y++;
+
+                    _arm2Pos.X++;
+                    _arm2Pos.Y++;
+                }
+
+                if (_arm2Pos.Y >= _specs.ScreenHeight - 8)
+                    SetPhase(Phase.Attack);
+            }
+        }
+
+        private void FadeIn()
+        {
+            var targetSpritePalette = _paletteModule.GetPalette(PaletteKey.BlueGrayEnemy);
+         
+            var spritePalette = _graphics.GetSpritePalette(SpritePalette.Enemy1);
+            _paletteModule.FadeColor(spritePalette, targetSpritePalette, 1);
+            _paletteModule.FadeColor(spritePalette, targetSpritePalette, 2);
+            _paletteModule.FadeColor(spritePalette, targetSpritePalette, 3);
+        }
+
+        private void BuildWall()
+        {
+            _audioService.PlaySound(ChompAudioService.Sound.Break);
+            int y = 7 - _stateTimer.Value;
+
+            _scroller.ModifyTiles((tilemap, attr) =>
+            {
+                tilemap[0, y] = _spriteTileTable.DestructibleBlockTile;
+                tilemap[1, y] = _spriteTileTable.DestructibleBlockTile;
+
+                tilemap[tilemap.Width - 1, y] = _spriteTileTable.DestructibleBlockTile;
+                tilemap[tilemap.Width - 2, y] = _spriteTileTable.DestructibleBlockTile;
+
+                attr[0, y / 2] = 1;
+                attr[(tilemap.Width / 2) - 1, y / 2] = 1;
+
+            });
         }
 
         private void SetPhase(Phase phase)
@@ -79,7 +217,49 @@ namespace ChompGame.MainGame.SpriteControllers
             _phase.Value = phase;
             _stateTimer.Value = 0;
 
-           
+            if (phase == Phase.Init)
+            {
+                CollisionEnabled = false;
+                WorldSprite.Visible = false;
+                WorldSprite.Y = 0;
+            }
+            else if (phase == Phase.Appear)
+            {
+                _music.CurrentSong = MusicModule.SongName.Threat;
+                var spritePalette = _graphics.GetSpritePalette(SpritePalette.Enemy1);
+                spritePalette.SetColor(1, ColorIndex.Black);
+                spritePalette.SetColor(2, ColorIndex.Black);
+                spritePalette.SetColor(3, ColorIndex.Black);
+
+
+                CollisionEnabled = false;
+                WorldSprite.Visible = true;
+                var choice = _rng.Generate(2);
+                if (choice == 0)
+                {
+                    WorldSprite.X = 12;
+                    WorldSprite.Y = 28;
+                }
+                else if (choice == 1)
+                {
+                    WorldSprite.X = 48;
+                    WorldSprite.Y = 28;
+                }
+                else
+                {
+                    WorldSprite.X = MidX;
+                    WorldSprite.Y = 20;
+                }
+            }
+            else if (phase == Phase.ExtendArms)
+            {
+                WorldSprite.Visible = true;
+                CollisionEnabled = true;
+                _arm1Pos.X = WorldSprite.X;
+                _arm1Pos.Y = WorldSprite.Y;
+                _arm2Pos.X = WorldSprite.X + 8;
+                _arm2Pos.Y = WorldSprite.Y;
+            }
         }
 
         protected override void UpdateDying()
