@@ -15,11 +15,12 @@ namespace ChompGame.MainGame.SpriteControllers
     class ChompBoss6Controller : EnemyController
     {
         public const int MidX = 28;
+        public const int MidY = 20;
         public const int ArmSize = 6;
         public const int BossHp = GameDebug.BossTest ? 1 : 3;
         private readonly PaletteModule _paletteModule;
         private readonly WorldScroller _scroller;
-        private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
+        private readonly EnemyOrBulletSpriteControllerPool<WavingBossBulletController> _bullets;
         private readonly MusicModule _music;
         private readonly ExitsModule _exitModule;
         private readonly Specs _specs;
@@ -45,7 +46,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override bool AlwaysActive => true;
 
         public ChompBoss6Controller(WorldSprite player,
-            EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
+            EnemyOrBulletSpriteControllerPool<WavingBossBulletController> bullets,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
@@ -181,6 +182,81 @@ namespace ChompGame.MainGame.SpriteControllers
                 if (_arm2Pos.Y >= _specs.ScreenHeight - 8)
                     SetPhase(Phase.Attack);
             }
+            else if(_phase.Value == Phase.Attack)
+            {
+                if(_levelTimer.IsMod(128))                
+                    FireBullet();
+
+                if (_levelTimer.IsMod(8))
+                {
+                    if (WorldSprite.Y < MidY)
+                        _motion.TargetYSpeed = 8;
+                    else
+                        _motion.TargetYSpeed = -8;
+                }
+
+                if (_levelTimer.IsMod(12))
+                {
+                    if (WorldSprite.X < MidX)
+                        _motion.TargetXSpeed = 8;
+                    else
+                        _motion.TargetXSpeed = -8;
+                }
+                _motion.XAcceleration = 4;
+                _motion.YAcceleration = 4;
+                
+                PositionArm(_arm1, _arm1Pos);
+                PositionArm(_arm2, _arm2Pos);
+
+                _motionController.Update();
+
+            }
+            else if(_phase.Value == Phase.Fall)
+            {              
+                _motionController.Update();
+                PositionArm(_arm1, _arm1Pos);
+                PositionArm(_arm2, _arm2Pos);
+
+                RetractArm(_arm1Pos);
+                RetractArm(_arm2Pos);
+
+                if (WorldSprite.Y > _specs.ScreenHeight + 8)
+                {
+                    WorldSprite.Y = _specs.ScreenHeight + 8;
+                    if (_levelTimer.IsMod(16))
+                        _stateTimer.Value++;
+
+                    if(_stateTimer.Value >= 10)
+                        SetPhase(Phase.Appear);
+                }
+            }
+        }
+
+        private void RetractArm(ByteVector pos)
+        {
+            if (pos.X < WorldSprite.X)
+                pos.X++;
+            else if (pos.X > WorldSprite.X)
+                pos.X--;
+
+            if (pos.Y < WorldSprite.Y)
+                pos.Y++;
+        }
+
+        private void FireBullet()
+        {
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            bullet.WorldSprite.Center = WorldSprite.Center;
+
+            var target = _player.Center;
+
+            bullet.AcceleratedMotion.SetYSpeed(6);
+            
         }
 
         private void FadeIn()
@@ -225,6 +301,9 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (phase == Phase.Appear)
             {
+                _motion.SetXSpeed(0);
+                _motion.SetYSpeed(0);
+
                 _music.CurrentSong = MusicModule.SongName.Threat;
                 var spritePalette = _graphics.GetSpritePalette(SpritePalette.Enemy1);
                 spritePalette.SetColor(1, ColorIndex.Black);
@@ -248,7 +327,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 else
                 {
                     WorldSprite.X = MidX;
-                    WorldSprite.Y = 20;
+                    WorldSprite.Y = MidY;
                 }
             }
             else if (phase == Phase.ExtendArms)
@@ -260,11 +339,33 @@ namespace ChompGame.MainGame.SpriteControllers
                 _arm2Pos.X = WorldSprite.X + 8;
                 _arm2Pos.Y = WorldSprite.Y;
             }
+            else if(phase == Phase.Fall)
+            {
+                Palette = SpritePalette.Enemy1;
+                CollisionEnabled = false;
+                _motion.TargetXSpeed = 0;
+                _motion.TargetYSpeed = 80;
+                _motion.YAcceleration = 5;
+            }
         }
 
         protected override void UpdateDying()
         {
-            
+            if(_hitPoints > 0)
+            {
+                if(_levelTimer.IsMod(16))
+                {
+                    _stateTimer.Value++;
+
+                    if(_stateTimer.Value == 8)
+                    {
+                        WorldSprite.Status = WorldSpriteStatus.Active;
+                        Palette = SpritePalette.Enemy1;
+                        GetSprite().Palette = SpritePalette.Enemy1;
+                        SetPhase(Phase.Fall);
+                    }
+                }
+            }
             
 
         }
@@ -282,7 +383,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             bullet.Motion.YSpeed = 0;
             bullet.Motion.XSpeed = 0;
-            bullet.Explode(true);
+            bullet.Explode();
         }
     }
 }

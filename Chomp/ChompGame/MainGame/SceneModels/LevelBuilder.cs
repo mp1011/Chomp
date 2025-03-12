@@ -1121,16 +1121,16 @@ namespace ChompGame.MainGame.SceneModels
                             bossBulletControllers, memoryBuilder));
                     break;
                 case Level.Level6_17_Midboss:
-                    bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                    var wbullets = new EnemyOrBulletSpriteControllerPool<WavingBossBulletController>(
                           10,
                           _gameModule.SpritesModule,
-                          () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+                          () => new WavingBossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
 
-                    spritePools[extraIndex] = bullets;
+                    spritePools[extraIndex] = wbullets;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompBoss6Controller>(
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
-                            () => new ChompBoss6Controller(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+                            () => new ChompBoss6Controller(playerController.WorldSprite, wbullets, _gameModule, memoryBuilder));
 
                     break;
             }
