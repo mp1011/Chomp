@@ -89,7 +89,7 @@ namespace ChompGame.MainGame
                 HandleTrainParallax();
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
             {
-                if (_sceneDefinition.Theme == ThemeType.TechBase)
+                if (_sceneDefinition.Theme == ThemeType.TechBase || _sceneDefinition.Theme == ThemeType.TechBase2)
                     HandleParallax2();
                 else
                     HandleParallax();

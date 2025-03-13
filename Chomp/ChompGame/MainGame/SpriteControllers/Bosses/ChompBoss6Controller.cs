@@ -16,8 +16,16 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         public const int MidX = 28;
         public const int MidY = 20;
+
+        public const int LeftX = 12;
+        public const int LeftY = 28;
+
+        public const int RightX = 48;
+        public const int RightY = 28;
+
+
         public const int ArmSize = 6;
-        public const int BossHp = GameDebug.BossTest ? 1 : 3;
+        public const int BossHp = GameDebug.BossTest ? 1 : 5;
         private readonly PaletteModule _paletteModule;
         private readonly WorldScroller _scroller;
         private readonly EnemyOrBulletSpriteControllerPool<WavingBossBulletController> _bullets;
@@ -37,7 +45,8 @@ namespace ChompGame.MainGame.SpriteControllers
             Appear,
             ExtendArms,
             Attack,
-            Fall
+            Fall,
+            Dying
         }
       
         private GameByteEnum<Phase> _phase;
@@ -109,8 +118,8 @@ namespace ChompGame.MainGame.SpriteControllers
         private void PositionArm(ChompTail arm, ByteVector position)
         {
             Point anchor = new Point(position.X, position.Y);
-            float intervalX = (WorldSprite.X - anchor.X) / (float)ArmSize;
-            float intervalY = (WorldSprite.Y - anchor.Y) / (float)ArmSize;
+            float intervalX = (WorldSprite.X+4 - anchor.X) / (float)ArmSize;
+            float intervalY = (WorldSprite.Y+4 - anchor.Y) / (float)ArmSize;
 
             for (int i = 0; i < ArmSize; i++)
             {
@@ -172,14 +181,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
                 else
                 {
-                    _arm1Pos.X--;
+                    _arm1Pos.X -= 2;
                     _arm1Pos.Y++;
 
-                    _arm2Pos.X++;
+                    _arm2Pos.X += 2;
                     _arm2Pos.Y++;
                 }
 
-                if (_arm2Pos.Y >= _specs.ScreenHeight - 8)
+                if (_arm2Pos.Y >= _specs.ScreenHeight - 16 || _arm1Pos.X < 2)
                     SetPhase(Phase.Attack);
             }
             else if(_phase.Value == Phase.Attack)
@@ -187,21 +196,19 @@ namespace ChompGame.MainGame.SpriteControllers
                 if(_levelTimer.IsMod(128))                
                     FireBullet();
 
-                if (_levelTimer.IsMod(8))
+                switch (_hitPoints.Value)
                 {
-                    if (WorldSprite.Y < MidY)
-                        _motion.TargetYSpeed = 8;
-                    else
-                        _motion.TargetYSpeed = -8;
+                    case 4:
+                        AttackPhaseMotion(LeftX, LeftY);
+                        break;
+                    case 3:
+                        AttackPhaseMotion(RightX, RightY);
+                        break;
+                    default:
+                        AttackPhaseMotion(MidX, MidY);
+                        break;
                 }
 
-                if (_levelTimer.IsMod(12))
-                {
-                    if (WorldSprite.X < MidX)
-                        _motion.TargetXSpeed = 8;
-                    else
-                        _motion.TargetXSpeed = -8;
-                }
                 _motion.XAcceleration = 4;
                 _motion.YAcceleration = 4;
                 
@@ -229,6 +236,41 @@ namespace ChompGame.MainGame.SpriteControllers
                     if(_stateTimer.Value >= 10)
                         SetPhase(Phase.Appear);
                 }
+            }
+        }
+
+        public override bool CollidesWithPlayer(PlayerController player)
+        {
+            if (_phase.Value >= Phase.Dying)
+                return false;
+
+            if (base.CollidesWithPlayer(player))
+                return true;
+
+            var partIndex = _levelTimer.Value % ArmSize;
+
+            var part1 = _arm1.GetWorldSprite(partIndex);
+            var part2 = _arm2.GetWorldSprite(partIndex);
+
+            return player.CollidesWith(part1) || player.CollidesWith(part2);
+        }
+
+        private void AttackPhaseMotion(int x, int y)
+        {
+            if (_levelTimer.IsMod(8))
+            {
+                if (WorldSprite.Y < y)
+                    _motion.TargetYSpeed = 8;
+                else
+                    _motion.TargetYSpeed = -8;
+            }
+
+            if (_levelTimer.IsMod(12))
+            {
+                if (WorldSprite.X < x)
+                    _motion.TargetXSpeed = 8;
+                else
+                    _motion.TargetXSpeed = -8;
             }
         }
 
@@ -288,6 +330,24 @@ namespace ChompGame.MainGame.SpriteControllers
             });
         }
 
+        private void OpenWall()
+        {
+            _audioService.PlaySound(ChompAudioService.Sound.Break);
+          
+            _scroller.ModifyTiles((tilemap, attr) =>
+            {
+                for(int y = 4; y <= 7; y++)
+                {
+                    tilemap[tilemap.Width - 1, y] = 0;
+                    tilemap[tilemap.Width - 2, y] = 0;
+
+                    attr[0, y / 2] = 1;
+                    attr[(tilemap.Width / 2) - 1, y / 2] = 1;
+                }
+
+            });
+        }
+
         private void SetPhase(Phase phase)
         {
             _phase.Value = phase;
@@ -309,25 +369,23 @@ namespace ChompGame.MainGame.SpriteControllers
                 spritePalette.SetColor(1, ColorIndex.Black);
                 spritePalette.SetColor(2, ColorIndex.Black);
                 spritePalette.SetColor(3, ColorIndex.Black);
-
-
                 CollisionEnabled = false;
                 WorldSprite.Visible = true;
-                var choice = _rng.Generate(2);
-                if (choice == 0)
+
+                switch(_hitPoints.Value)
                 {
-                    WorldSprite.X = 12;
-                    WorldSprite.Y = 28;
-                }
-                else if (choice == 1)
-                {
-                    WorldSprite.X = 48;
-                    WorldSprite.Y = 28;
-                }
-                else
-                {
-                    WorldSprite.X = MidX;
-                    WorldSprite.Y = MidY;
+                    case 4:
+                        WorldSprite.X = LeftX;
+                        WorldSprite.Y = LeftY;
+                        break;
+                    case 3:
+                        WorldSprite.X = RightX;
+                        WorldSprite.Y = RightY;
+                        break;
+                    default:
+                        WorldSprite.X = MidX;
+                        WorldSprite.Y = MidY;
+                        break;
                 }
             }
             else if (phase == Phase.ExtendArms)
@@ -336,7 +394,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 CollisionEnabled = true;
                 _arm1Pos.X = WorldSprite.X;
                 _arm1Pos.Y = WorldSprite.Y;
-                _arm2Pos.X = WorldSprite.X + 8;
+                _arm2Pos.X = WorldSprite.X;
                 _arm2Pos.Y = WorldSprite.Y;
             }
             else if(phase == Phase.Fall)
@@ -366,8 +424,31 @@ namespace ChompGame.MainGame.SpriteControllers
                     }
                 }
             }
-            
 
+            if(_phase.Value < Phase.Dying)            
+                SetPhase(Phase.Dying);
+
+            if (_phase.Value == Phase.Dying)
+            {
+                _music.CurrentSong = MusicModule.SongName.None;
+                if (_levelTimer.IsMod(8))
+                {
+                    _stateTimer.Value++;
+                    CreateExplosion();
+
+                    if (_stateTimer.Value < ArmSize)
+                    {
+                        _arm1.Erase(_stateTimer.Value);
+                        _arm2.Erase(_stateTimer.Value);
+                    }
+
+                    if (_stateTimer.Value == 0)
+                    {
+                        Destroy();
+                        OpenWall();
+                    }
+                }
+            }
         }
 
         private void CreateExplosion()

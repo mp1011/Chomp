@@ -25,6 +25,7 @@ namespace ChompGame.MainGame.SceneModels
         CityTrain,
         Space,
         TechBase,
+        TechBase2,
         GlitchCore,
     }
 
@@ -222,6 +223,17 @@ namespace ChompGame.MainGame.SceneModels
                bg1: PaletteKey.GreenEnemy,
                bg2: PaletteKey.TechBaseBg,
                fg1: PaletteKey.TechBaseFg,
+               fg2: PaletteKey.Gray,
+               bomb: PaletteKey.BombLight,
+               enemy1: PaletteKey.BlueGrayEnemy,
+               enemy2: PaletteKey.Gray);
+
+
+            _ = ThemeType.TechBase;
+            new Theme(memoryBuilder,
+               bg1: PaletteKey.GreenEnemy,
+               bg2: PaletteKey.TechBaseBg2,
+               fg1: PaletteKey.TechBaseFg2,
                fg2: PaletteKey.Gray,
                bomb: PaletteKey.BombLight,
                enemy1: PaletteKey.BlueGrayEnemy,

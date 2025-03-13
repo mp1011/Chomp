@@ -76,7 +76,9 @@ namespace ChompGame.MainGame.SceneModels
         NightMist,
         TechBaseBg,
         TechBaseFg,
-        Max = TechBaseFg
+        TechBaseBg2,
+        TechBaseFg2,
+        Max = TechBaseFg2
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -446,6 +448,18 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.BlueGray1, 
              ColorIndex.Gray2);
 
+            DefinePalette(PaletteKey.TechBaseBg2,
+           ColorIndex.Black,
+           ColorIndex.Purple1,
+           ColorIndex.Brown4,
+           ColorIndex.Brown5);
+
+            DefinePalette(PaletteKey.TechBaseFg2,
+             ColorIndex.Black,
+             ColorIndex.Red1,
+             ColorIndex.Brown1,
+             ColorIndex.Red2);
+
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -468,7 +482,7 @@ namespace ChompGame.MainGame.SceneModels
 
             if (_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist)
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
-            else if (_currentScene.Theme == ThemeType.TechBase)
+            else if (_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
             {
                 if(_currentScene.ScrollStyle == ScrollStyle.NameTable || _currentScene.ScrollStyle == ScrollStyle.Vertical)
                     _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
@@ -547,7 +561,7 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
-            else if (_currentScene.Theme == ThemeType.TechBase)
+            else if (_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
             {
                 if (_currentScene.ScrollStyle == ScrollStyle.Vertical || _currentScene.ScrollStyle == ScrollStyle.NameTable)
                 {
@@ -778,7 +792,7 @@ namespace ChompGame.MainGame.SceneModels
                    if (Lighten(BgPalette1, 3))
                       BgPalette1.SetColor(3, ColorIndex.Gray1);
                 }
-                else if(_currentScene.Theme == ThemeType.TechBase)
+                else if(_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
                 {
                     if(_timer.Value < 128)
                         Lighten(BgPalette1, 3);

@@ -8,7 +8,7 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
-        public const bool Enabled = false;
+        public const bool Enabled = true;
 
         private readonly ContentManager _contentManager;
 
@@ -27,7 +27,8 @@ namespace ChompGame.GameSystem
             Stronghold,
             Moonstruck,
             Space,
-            CommandCenter
+            CommandCenter,
+            Infiltration
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -76,8 +77,11 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.Moonstruck;
             else if (level >= Level.Level5_23_Plane_Begin && level < Level.Level5_27_Boss)
                 CurrentSong = SongName.Space;
-            else if (level >= Level.Level6_1_Techbase)
+            else if (level >= Level.Level6_1_Techbase && level < Level.Level6_17_Midboss)
                 CurrentSong = SongName.CommandCenter;
+            else if (level >= Level.Level6_18_Techbase11)
+                CurrentSong = SongName.Infiltration;
+
             else
                 CurrentSong = SongName.None;
         }

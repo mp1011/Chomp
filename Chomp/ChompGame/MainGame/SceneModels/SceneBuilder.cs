@@ -149,7 +149,8 @@ namespace ChompGame.MainGame.SceneModels
         Level6_14_Techbase8,
         Level6_15_Techbase9,
         Level6_16_Techbase10,
-        Level6_17_Midboss
+        Level6_17_Midboss,
+        Level6_18_Techbase11
     }
 
     class SceneBuilder
@@ -2077,6 +2078,17 @@ namespace ChompGame.MainGame.SceneModels
                 1,
                 1,
                 CornerStairStyle.TwoBlockDouble);
+
+            _ = Level.Level6_18_Techbase11;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.TechBase2,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 0,
+                top: 1,
+                right: 1,
+                upper: 1,
+                bottom: 1);
 
         }
 
@@ -4345,6 +4357,9 @@ namespace ChompGame.MainGame.SceneModels
 
 
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 8, 8, scene));
+
+            AddLevel(Level.Level6_18_Techbase11, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
         }
 
