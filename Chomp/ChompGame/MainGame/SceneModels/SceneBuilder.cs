@@ -1,9 +1,12 @@
 ﻿using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace ChompGame.MainGame.SceneModels
@@ -150,7 +153,25 @@ namespace ChompGame.MainGame.SceneModels
         Level6_15_Techbase9,
         Level6_16_Techbase10,
         Level6_17_Midboss,
-        Level6_18_Techbase11
+        Level6_18_Techbase11,
+        Level6_19_Techbase12,
+        Level6_20_TechbaseCubeAA,
+        Level6_21_TechbaseCubeBA,
+        Level6_22_TechbaseCubeCA,
+        Level6_23_TechbaseCubeDA,
+        Level6_24_TechbaseCubeAB,
+        Level6_25_TechbaseCubeBB,
+        Level6_26_TechbaseCubeCB,
+        Level6_27_TechbaseCubeDB,
+        Level6_28_TechbaseCubeAC,
+        Level6_29_TechbaseCubeBC,
+        Level6_30_TechbaseCubeCC,
+        Level6_31_TechbaseCubeDC,
+        Level6_32_TechbaseCubeAD,
+        Level6_33_TechbaseCubeBD,
+        Level6_34_TechbaseCubeCD,
+        Level6_35_TechbaseCubeDD
+
     }
 
     class SceneBuilder
@@ -178,7 +199,8 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level5_23_Plane_Begin,
             Level.Level6_1_Techbase,
             Level.Level6_7_Techbase4,
-            Level.Level6_13_Techbase7
+            Level.Level6_13_Techbase7,
+            Level.Level6_18_Techbase11
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -2090,7 +2112,66 @@ namespace ChompGame.MainGame.SceneModels
                 upper: 1,
                 bottom: 1);
 
+            _ = Level.Level6_19_Techbase12;
+            SceneDefinition.NametableScroll(
+                memoryBuilder: memoryBuilder,
+                specs: specs,
+                theme: ThemeType.TechBase2,
+                shape: LevelShape.TwoHorizontalChambers,
+                enemy1: EnemyIndex.Ogre,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                bottom: 2);
+
+            int i = 0;
+            for(int y = 0; y < 4; y++)
+                for(int x = 0; x < 4; x++)
+                {
+                    if(i == 5 || i == 10)
+                    {
+                        SceneDefinition.NoScrollTShape(memoryBuilder, specs, ThemeType.TechBase2,
+                           enemy1: EnemyIndex.Boulder,
+                           enemy2: EnemyIndex.Ufo,
+                           spriteGroup: SpriteGroup.Normal,
+                           leftY: 1,
+                           rightY: 2,
+                           pitX: 2,
+                           hallSize: 1,
+                           bgPosition: 1);
+                    }
+                    else if(i.IsMod(2))
+                    {
+                        SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.TechBase2,
+                           enemy1: EnemyIndex.Boulder,
+                           enemy2: EnemyIndex.Ufo,
+                           spriteGroup: SpriteGroup.Normal,
+                           left: 1,
+                           top: 1,
+                           right: 1,
+                           upper: 1,
+                           bottom: 1);
+                    }
+                    else
+                    {
+                        SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.TechBase2,
+                           enemy1: EnemyIndex.Boulder,
+                           enemy2: EnemyIndex.Ufo,
+                           spriteGroup: SpriteGroup.Normal,
+                           left: 1,
+                           top: 1,
+                           right: 1,
+                           bgPosition:1,
+                           cornerStairStyle: CornerStairStyle.TwoBlockDouble,
+                           bottom: 1);
+                    }
+
+                    i++;
+                }
         }
+
 
         public static void AddSceneParts(SystemMemoryBuilder builder, Specs specs)
         {
@@ -4360,6 +4441,35 @@ namespace ChompGame.MainGame.SceneModels
 
             AddLevel(Level.Level6_18_Techbase11, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level6_19_Techbase12, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            var cubeLevel = Level.Level6_20_TechbaseCubeAA;
+            for(int y = 0; y < 4; y++)
+                for(int x = 0; x < 4; x++)
+                {
+                    AddLevel(cubeLevel, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                        CubeSceneParts(x, y).ToArray());
+                    cubeLevel++;
+                }
+        }
+
+        private static IEnumerable<Func<SystemMemoryBuilder, SceneDefinition, IScenePart>> CubeSceneParts(int x, int y)
+        {
+            if(x > 0 || (x==0 && y==0))
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Left, -1, s);
+            if(x < 3)
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Right, 1, s);
+            if(y < 3)
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Bottom, 4, s);
+            if (y > 0)
+            {
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new PlatformScenePart(b, ScenePartType.Platform_UpDown,
+                    PlatformDistance.Len24, 6, 4, s);
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Top, -4, s);
+            }
 
         }
 
