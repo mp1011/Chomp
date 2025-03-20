@@ -24,7 +24,7 @@ namespace ChompGame.MainGame.SceneModels.SceneParts
             get
             {
                 if (ExitType == ExitType.DoorForward)
-                    return 1;
+                    return _scene.Theme == ThemeType.TechBase2 ? 2 : 1;
                 else if (ExitType == ExitType.DoorBack)
                     return -1;
                 else if (_exitOffset.Value < 8)

@@ -170,7 +170,8 @@ namespace ChompGame.MainGame.SceneModels
         Level6_32_TechbaseCubeAD,
         Level6_33_TechbaseCubeBD,
         Level6_34_TechbaseCubeCD,
-        Level6_35_TechbaseCubeDD
+        Level6_35_TechbaseCubeDD,
+        Level6_36_TechbaseEnd
 
     }
 
@@ -2130,46 +2131,69 @@ namespace ChompGame.MainGame.SceneModels
             for(int y = 0; y < 4; y++)
                 for(int x = 0; x < 4; x++)
                 {
+                    EnemyIndex e1 = i switch {
+                        4 => EnemyIndex.Mage,
+                        9 => EnemyIndex.Boulder,
+                        15 => EnemyIndex.Ogre,
+                        _ => EnemyIndex.Lizard,
+                    };
+                    
                     if(i == 5 || i == 10)
                     {
                         SceneDefinition.NoScrollTShape(memoryBuilder, specs, ThemeType.TechBase2,
-                           enemy1: EnemyIndex.Boulder,
-                           enemy2: EnemyIndex.Ufo,
+                           enemy1: e1,
+                           enemy2: (EnemyIndex)(e1+1),
                            spriteGroup: SpriteGroup.Normal,
                            leftY: 1,
                            rightY: 2,
                            pitX: 2,
                            hallSize: 1,
-                           bgPosition: 1);
+                           bgPosition: 2);
                     }
                     else if(i.IsMod(2))
                     {
+                        byte bgPosition = (byte)((i == 14) ? 0 : 1);
                         SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.TechBase2,
-                           enemy1: EnemyIndex.Boulder,
-                           enemy2: EnemyIndex.Ufo,
+                           enemy1: e1,
+                           enemy2: (EnemyIndex)(e1 + 1),
                            spriteGroup: SpriteGroup.Normal,
                            left: 1,
                            top: 1,
                            right: 1,
-                           upper: 1,
+                           upper: bgPosition,
                            bottom: 1);
                     }
                     else
                     {
                         SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.TechBase2,
-                           enemy1: EnemyIndex.Boulder,
-                           enemy2: EnemyIndex.Ufo,
+                           enemy1: e1,
+                           enemy2: (EnemyIndex)(e1 + 1),
                            spriteGroup: SpriteGroup.Normal,
                            left: 1,
                            top: 1,
                            right: 1,
-                           bgPosition:1,
+                           bgPosition: 1,
                            cornerStairStyle: CornerStairStyle.TwoBlockDouble,
                            bottom: 1);
                     }
 
                     i++;
                 }
+
+
+            _ = Level.Level6_36_TechbaseEnd;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.TechBase2,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Boulder,
+               EnemyIndex.Ufo,
+               SpriteGroup.Normal,
+               1,
+               2,
+               0,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
         }
 
 
@@ -4454,11 +4478,58 @@ namespace ChompGame.MainGame.SceneModels
                         CubeSceneParts(x, y).ToArray());
                     cubeLevel++;
                 }
+
+            AddLevel(Level.Level6_36_TechbaseEnd, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
         }
 
         private static IEnumerable<Func<SystemMemoryBuilder, SceneDefinition, IScenePart>> CubeSceneParts(int x, int y)
         {
-            if(x > 0 || (x==0 && y==0))
+            if((x == 0 && y == 0)
+               || (x == 0 && y == 3))
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new SpriteScenePart(b, ScenePartType.Bomb, 4, 12, s);
+
+            if ((x == 3 && y == 0)
+               || (x == 3 && y == 2))
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new SpriteScenePart(b, ScenePartType.Bomb, 12, 12, s);
+
+
+            if ((x == 0 && y == 1)
+                || (x == 2 && y == 0)
+                || (x == 1 && y == 2)
+                || (x == 3 && y == 3))
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new SpriteScenePart(b, ScenePartType.EnemyType1, 12, 10, s);
+
+            if ((x == 1 && y == 0)
+              || (x >= 2 && y == 1)
+              || (x == 0 && y == 2)
+              || (x == 1 && y == 3))
+            {
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true,true,true, 4,10, s);
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 10, 10, s);
+            }
+
+
+            if ( (x == 1 && y == 1)
+              || (x == 2 && y == 2))
+            {
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.Coin, true, true, true, true, 4, 6, s);
+            }
+
+            if(x == 2 && y == 3)
+            {
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, true, true, true, true, 4, 10, s);
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, true, true, true, true, 4, 8, s);
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, true, true, true, true, 6, 8, s);
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, true, true, true, true, 8, 8, s);
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, true, true, true, true, 8, 10, s);
+
+                yield return (SystemMemoryBuilder b, SceneDefinition s) => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 7, 12, s);
+          
+            }
+
+
+            if (x > 0 || (x==0 && y==0))
                 yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Left, -1, s);
             if(x < 3)
                 yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Right, 1, s);
@@ -4467,7 +4538,7 @@ namespace ChompGame.MainGame.SceneModels
             if (y > 0)
             {
                 yield return (SystemMemoryBuilder b, SceneDefinition s) => new PlatformScenePart(b, ScenePartType.Platform_UpDown,
-                    PlatformDistance.Len24, 6, 4, s);
+                    PlatformDistance.Len16, 6, 4, s);
                 yield return (SystemMemoryBuilder b, SceneDefinition s) => new ExitScenePart(b, ExitType.Top, -4, s);
             }
 

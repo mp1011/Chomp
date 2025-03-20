@@ -73,6 +73,9 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
+
+        public bool IsDestroyed2(int offset) => _partsDestroyed[offset];
+
         public bool IsDestroyed(byte offsetWithinScene) => offsetWithinScene == 255 ? false 
             : _partsDestroyed[_sceneOffset.Value + offsetWithinScene];
         public bool IsDestroyed(int offsetWithinScene) => IsDestroyed((byte)offsetWithinScene);

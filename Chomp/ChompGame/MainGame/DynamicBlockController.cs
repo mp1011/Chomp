@@ -6,6 +6,9 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System;
+using System.ComponentModel;
+using System.Reflection.Emit;
 
 namespace ChompGame.MainGame
 {
@@ -97,6 +100,9 @@ namespace ChompGame.MainGame
             _scene = scene;
             if (_scene.IsAutoScroll)
                 return;
+
+            if (scene.Theme == ThemeType.TechBase2)
+                CheckTechbase2Blocks();
 
             _explosionControllers = explosionControllers;
 
@@ -254,6 +260,63 @@ namespace ChompGame.MainGame
                 address += block.ByteLength;
             }
 
+        }
+
+        private void CheckTechbase2Blocks()
+        {
+            int groupOffset = 1;
+
+            for(Level level = Level.Level6_18_Techbase11; level <= Level.Level6_35_TechbaseCubeDD; level++)
+            {
+                GameDebug.DebugLog($"TB2 - Checking {level}", DebugLogFlags.Misc);
+                ScenePartsHeader header = new ScenePartsHeader(level, _gameModule.GameSystem.Memory);
+                int nextOffset = CheckTechbase2Blocks(header, groupOffset);
+                if (nextOffset == -1)
+                {
+                    GameDebug.DebugLog($"TB2 - End at {level}", DebugLogFlags.Misc);
+                    return;
+                }
+                else
+                {
+                    GameDebug.DebugLog($"Offset bits = {nextOffset}", DebugLogFlags.Misc);
+                }
+
+                groupOffset += nextOffset;
+                GameDebug.DebugLog($"Total offset = {groupOffset}", DebugLogFlags.Misc);
+            }
+
+            _gameModule.ScenePartsDestroyed.SwitchBlocksOff = true;
+        }
+        
+        private int CheckTechbase2Blocks(ScenePartsHeader header, int initialOffset)
+        {
+            byte nextDestructionBitOffset = 0;
+            byte destructionBitOffset = 0;
+
+            for (int i = 0; i < header.PartsCount; i++)
+            {
+                var sp = header.GetDynamicScenePart(i, _scene, _gameModule.Specs);
+
+                destructionBitOffset = nextDestructionBitOffset;
+
+                int bitsToCheck = sp.Type switch {
+                    ScenePartType.Coin => 4,
+                    ScenePartType.EnemyType1 => 1,
+                    _ => 0
+                };
+
+                GameDebug.DebugLog($"Checking part {i + 1} of {header.PartsCount} ({sp.Type})", DebugLogFlags.Misc);
+
+                for(int di = 0; di < bitsToCheck; di++)
+                {
+                    if (!_gameModule.ScenePartsDestroyed.IsDestroyed2(initialOffset + destructionBitOffset + di))
+                        return -1;
+                }
+
+                nextDestructionBitOffset += sp.DestroyBitsRequired;
+            }
+
+            return nextDestructionBitOffset;
         }
 
         private void RecallDestroyed(DynamicBlock block)
