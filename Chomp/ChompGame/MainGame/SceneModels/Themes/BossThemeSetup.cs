@@ -32,7 +32,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
             attributeTable.ForEach((x, y, b) =>
             {
                 if (y == floorPos)
-                    attributeTable[x, y] = 1;
+                    attributeTable[x, y] = 1;//
                 else
                     attributeTable[x, y] = 0;
             });
@@ -58,5 +58,11 @@ namespace ChompGame.MainGame.SceneModels.Themes
     {
         public CityBossThemeSetup(ChompGameModule m) : base(m) { }
         protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 14, 6, 1);
+    }
+
+    class TechBaseBossThemeSetup : BossThemeSetup
+    {
+        public TechBaseBossThemeSetup(ChompGameModule m) : base(m) { }
+        protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 12, 6, 1);
     }
 }

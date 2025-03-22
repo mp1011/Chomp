@@ -231,7 +231,7 @@ namespace ChompGame.Helpers
             });
 
             int rightEdgeOverlap = (actor.X + actor.Bounds.Width) - _levelTileMap.Width * _specs.TileWidth;
-            if(checkEdges && rightEdgeOverlap > 0)
+            if(checkEdges && rightEdgeOverlap > 0 && _currentScene.Theme != ThemeType.TechBaseBoss)
             {
                 collisionInfo.XCorrection = -rightEdgeOverlap;
             }

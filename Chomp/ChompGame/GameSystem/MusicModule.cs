@@ -79,7 +79,7 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.Space;
             else if (level >= Level.Level6_1_Techbase && level < Level.Level6_17_Midboss)
                 CurrentSong = SongName.CommandCenter;
-            else if (level >= Level.Level6_18_Techbase11)
+            else if (level >= Level.Level6_18_Techbase11 && level < Level.Level6_37_Boss)
                 CurrentSong = SongName.Infiltration;
 
             else

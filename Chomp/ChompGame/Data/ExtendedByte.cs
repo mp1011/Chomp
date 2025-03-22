@@ -1,6 +1,4 @@
-﻿using ChompGame.GameSystem;
-
-namespace ChompGame.Data
+﻿namespace ChompGame.Data
 {
     class ExtendedByte
     {

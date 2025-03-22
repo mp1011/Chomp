@@ -71,6 +71,8 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.MistAutoscroll => new MistAutoscrollThemeSetup(chompGameModule),
                 ThemeType.TechBase => new TechBaseThemeSetup(chompGameModule),
                 ThemeType.TechBase2 => new TechBaseThemeSetup(chompGameModule),
+                ThemeType.TechBaseBoss => new TechBaseBossThemeSetup(chompGameModule),
+
                 _ => throw new NotImplementedException()
             };
 

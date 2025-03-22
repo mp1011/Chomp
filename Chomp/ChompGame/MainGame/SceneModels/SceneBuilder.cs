@@ -171,7 +171,8 @@ namespace ChompGame.MainGame.SceneModels
         Level6_33_TechbaseCubeBD,
         Level6_34_TechbaseCubeCD,
         Level6_35_TechbaseCubeDD,
-        Level6_36_TechbaseEnd
+        Level6_36_TechbaseEnd,
+        Level6_37_Boss
 
     }
 
@@ -2193,6 +2194,10 @@ namespace ChompGame.MainGame.SceneModels
                1,
                1,
                HorizontalScrollStyle.Interior);
+
+            _ = Level.Level6_37_Boss;
+            SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.TechBaseBoss);
+
 
         }
 
@@ -4480,7 +4485,27 @@ namespace ChompGame.MainGame.SceneModels
                 }
 
             AddLevel(Level.Level6_36_TechbaseEnd, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 16, 4, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 18, 12, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 32, 86, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 32, 10, scene),
+                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 48, 8, scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType2, 54, 16, scene),
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+
+            AddLevel(
+               Level.Level6_37_Boss,
+               builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 6, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene),
+               (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 0, definition: scene)
+           );
         }
 
         private static IEnumerable<Func<SystemMemoryBuilder, SceneDefinition, IScenePart>> CubeSceneParts(int x, int y)
