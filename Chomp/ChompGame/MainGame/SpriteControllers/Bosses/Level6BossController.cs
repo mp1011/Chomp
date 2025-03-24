@@ -5,7 +5,6 @@ using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
-using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
@@ -18,6 +17,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
 
+        private GameBit _forceScrollOn;
+        private MaskedByte _scrollLock;
+
         public Level6BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));           
@@ -25,20 +27,19 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
           
             _eye1 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
             _eye2 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
+
+            _forceScrollOn = new GameBit(_worldScroller.Extra.Address, Bit.Bit7, memoryBuilder.Memory);
+            _scrollLock = new MaskedByte(_worldScroller.Extra.Address, Bit.Right6, memoryBuilder.Memory);
         }
 
         private enum Phase : byte
         {
             BeforeBoss,
-            Init,
-            Rise,
-            BuildOrbit,
-            Chase,
-            LaunchOrbit,
-            Attack2,
-            Drop,
-            Dying,
-            Dying2
+            GroundFall,
+            ForceScroll,
+            BossAppear,
+            Reposition,
+            ForceScrollChase
         }
 
         protected override int BossHP => GameDebug.BossTest ? 1 : 3;
@@ -68,9 +69,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void SetPhase(Phase p)
         {
-            GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
-            GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-            GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
+      //      GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
+         //   GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
+        //    GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
 
             _phase.Value = p;
             _stateTimer.Value = 0;
@@ -80,14 +81,21 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _gameModule.BossBackgroundHandler.ShowCoins = false;
                 _paletteModule.BgColor = ColorIndex.Black;
                 HideBoss();
+                _scrollLock.Value = 6;
             }
-            else if(p == Phase.Init)
+            else if(p == Phase.BossAppear)
             {
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.Nemesis;
                 SetBossTiles();              
                 SetupBossParts();
                 WorldSprite.Visible = false;
-            }            
+            }    
+            else if(p == Phase.ForceScroll)
+            {
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.Nemesis;
+                _scrollLock.Value = 45;
+                _forceScrollOn.Value = true;
+            }
         }
 
         private void SetupBossParts()
@@ -110,9 +118,88 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         protected override void UpdateActive()
         {
+            if(_phase.Value == Phase.BeforeBoss)
+            {
+                if (_player.X > 64)
+                    SetPhase(Phase.GroundFall);
+            }
+            else if(_phase.Value == Phase.GroundFall)
+            {
+                if(_levelTimer.IsMod(16))
+                {
+                    _worldScroller.ModifyTiles(DestroyNextGround);
+                    _stateTimer.Value++;
+                }
+
+                if (_stateTimer.Value == 12)
+                    SetPhase(Phase.ForceScroll);
+            }
+            else if(_phase.Value == Phase.ForceScroll)
+            {
+                if(_levelTimer.IsMod(24))
+                {
+                    _worldScroller.ModifyTiles(RefreshTilesForForcedScroll);
+                    _stateTimer.Value++;
+                }
+            }
+        }
+
+        private void RefreshTilesForForcedScroll(NBitPlane tileMap, NBitPlane attributeMap)
+        {
+            int screenTileLeft = ((_worldScroller.ViewPane.Left / _gameModule.Specs.TileWidth)-0).NMod(tileMap.Width);
+            int screenTileRight = (_worldScroller.ViewPane.Right / _gameModule.Specs.TileWidth).NMod(tileMap.Width);
+
+            int column = (screenTileRight + 1).NMod(tileMap.Width);
+            int bottom = tileMap.Height - 1;
+
+            while (column != screenTileLeft)
+            {
+                int tile2 = column.IsMod(2) ? 9 : 8;
+
+                tileMap[column, bottom - 1] = 11;
+                tileMap[column, bottom ] = (byte)tile2;
+
+                column = (column + 1).NMod(tileMap.Width);               
+            }
+
+            _audioService.PlaySound(ChompAudioService.Sound.Break);
+
+            tileMap[screenTileLeft, bottom] = 0;
+            tileMap[screenTileLeft + 1, bottom] = 0;
+            tileMap[screenTileLeft, bottom - 1] = 0;
+            tileMap[screenTileLeft + 1, bottom - 1] = 0;
+
+            tileMap[screenTileLeft + 2, bottom] = 0;
+            tileMap[screenTileLeft + 3, bottom] = 0;
+            tileMap[screenTileLeft + 2, bottom - 1] = 0;
+            tileMap[screenTileLeft + 3, bottom - 1] = 0;
+
+
+
+            return;
 
         }
 
+        private void DestroyNextGround(NBitPlane tileMap, NBitPlane attributeMap)
+        {
+          //  int screenTileLeft = _worldScroller.ViewPane.Left / _gameModule.Specs.TileWidth;
+
+            int bottom = tileMap.Height-1;
+
+            for(int x = 0; x < tileMap.Width; x += 2)
+            {
+                if (tileMap[x, bottom] != 0)
+                {
+                    _audioService.PlaySound(ChompAudioService.Sound.Break);
+
+                    tileMap[x, bottom] = 0;
+                    tileMap[x+1, bottom] = 0;
+                    tileMap[x, bottom-1] = 0;
+                    tileMap[x+1, bottom-1] = 0;
+                    return;
+                }
+            }
+        }
 
         private void FadeIn()
         {
@@ -155,7 +242,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         public override bool CollidesWithBomb(WorldSprite bomb)
         {
-            if (_phase.Value <= Phase.Init)
+            if (_phase.Value <= Phase.BossAppear)
                 return false;
 
             return bomb.Bounds.Intersects(_eye1.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye2.WorldSprite.Bounds);
@@ -163,7 +250,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         public override bool CollidesWithPlayer(PlayerController player)
         {
-            if (_phase.Value <= Phase.Init)
+            if (_phase.Value <= Phase.BossAppear)
                 return false;
 
             return false; //todo

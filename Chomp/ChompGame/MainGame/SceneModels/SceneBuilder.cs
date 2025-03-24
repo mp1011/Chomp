@@ -2197,8 +2197,6 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level6_37_Boss;
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.TechBaseBoss);
-
-
         }
 
 

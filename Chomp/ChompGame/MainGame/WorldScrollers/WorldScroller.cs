@@ -30,6 +30,8 @@ namespace ChompGame.MainGame
 
         public NBitPlane LevelNameTable => _levelNameTable;
         public NBitPlane LevelAttributeTable => _levelAttributeTable;
+
+        public GameByte Extra { get; }
          
         public WorldScroller(
             SystemMemoryBuilder memoryBuilder,
@@ -48,6 +50,7 @@ namespace ChompGame.MainGame
             _tilesPerScreen = (byte)(_specs.ScreenHeight / _specs.TileHeight);
             _forwardSeamOffset = (byte)((_specs.ScreenWidth + _halfWindowSize) / _specs.TileWidth);
             _backwardSeamOffset = (byte)(_specs.NameTableWidth - _forwardSeamOffset - 1);
+            Extra = memoryBuilder.AddByte();
         }
 
         public byte ScrollWindowBegin

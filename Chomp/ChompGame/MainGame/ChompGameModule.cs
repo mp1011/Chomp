@@ -324,7 +324,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level6_37_Boss;
+            _currentLevel.Value = Level.Level6_13_Techbase7;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -362,7 +362,7 @@ namespace ChompGame.MainGame
             if (_currentScene.IsAutoScroll)
                 _worldScroller = new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
             else if(_currentScene.Theme == ThemeType.TechBaseBoss)
-                _worldScroller = new Level6BossScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
+                _worldScroller = new Level6BossScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _timer);
             else 
                 _worldScroller = _currentScene.ScrollStyle switch {
                     ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
