@@ -80,7 +80,10 @@ namespace ChompGame.MainGame.WorldScrollers
                 if (_levelTimer.IsMod(4))
                     _fullScroll.Value++;
 
-                scrollX = _fullScroll.Value;              
+                scrollX = _fullScroll.Value;
+
+                if (_focusSprite.X > ViewPane.Right-4)
+                    _focusSprite.X = ViewPane.Right-4;
             }
             else
             {

@@ -218,7 +218,7 @@ namespace ChompGame.MainGame.SceneModels
                     return;
                 case Level.Level6_37_Boss:
                     AddSprite(SpriteTileIndex.Enemy1, 11, 12, 2, 2); //eye
-                    AddSprite(SpriteTileIndex.Enemy2, 14, 11, 2, 1); //jaw
+                    AddSprite(SpriteTileIndex.Enemy2, 15, 14, 1, 2); //leg
                     AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1); // bullet
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
                     return;
