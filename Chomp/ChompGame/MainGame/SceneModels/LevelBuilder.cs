@@ -1137,7 +1137,7 @@ namespace ChompGame.MainGame.SceneModels
                     bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                         8,
                         _gameModule.SpritesModule,
-                        () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+                        () => new Boss6BulletController(_gameModule, memoryBuilder));
 
                     spritePools[extraIndex] = bossBulletControllers;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<Level6BossController>(
