@@ -13,6 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController : ActorController
     {
+        private RasterInterrupts _rasterInterrupts;
         protected ActorMotionController _motionController;
 
         public override IMotion Motion => AcceleratedMotion;
@@ -51,6 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers
             SpriteTileIndex spriteTileIndex = SpriteTileIndex.Player) 
             : base(spriteType, gameModule, memoryBuilder, spriteTileIndex)
         {
+            _rasterInterrupts = gameModule.RasterInterrupts;
             var state = memoryBuilder.AddByte();
             _scene = gameModule.CurrentScene;
             _specs = gameModule.Specs;
@@ -81,6 +83,12 @@ namespace ChompGame.MainGame.SpriteControllers
             SpriteIndex = 0;
 
             Palette = SpritePalette.Player;
+        }
+
+        protected override void BeforeInitializeSprite()
+        {
+            _rasterInterrupts.SetPlayer(WorldSprite);
+            base.BeforeInitializeSprite();
         }
 
         public virtual void OnBossDead() { }

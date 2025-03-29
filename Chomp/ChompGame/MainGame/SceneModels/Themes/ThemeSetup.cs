@@ -72,6 +72,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.TechBase => new TechBaseThemeSetup(chompGameModule),
                 ThemeType.TechBase2 => new TechBaseThemeSetup(chompGameModule),
                 ThemeType.TechBaseBoss => new TechBaseBossThemeSetup(chompGameModule),
+                ThemeType.GlitchCore => new GlitchCoreThemeSetup(chompGameModule),
 
                 _ => throw new NotImplementedException()
             };

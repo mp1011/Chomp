@@ -28,7 +28,8 @@ namespace ChompGame.GameSystem
             Moonstruck,
             Space,
             CommandCenter,
-            Infiltration
+            Infiltration,
+            SystemMalfunction
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -81,6 +82,8 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.CommandCenter;
             else if (level >= Level.Level6_18_Techbase11 && level < Level.Level6_37_Boss)
                 CurrentSong = SongName.Infiltration;
+            else if (level >= Level.Level7_1_GlitchCore)
+                CurrentSong = SongName.SystemMalfunction;
 
             else
                 CurrentSong = SongName.None;

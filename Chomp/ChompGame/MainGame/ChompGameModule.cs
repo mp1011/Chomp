@@ -75,6 +75,7 @@ namespace ChompGame.MainGame
 
         public GameRAM GameRAM => GameSystem.GameRAM;
 
+        public RasterInterrupts RasterInterrupts => _rasterInterrupts;
         public TileModule TileModule => _tileModule;
         public SpritesModule SpritesModule => _spritesModule;
         public SpriteTileTable SpriteTileTable { get; private set; }
@@ -324,7 +325,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level6_37_Boss;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -172,7 +173,15 @@ namespace ChompGame.MainGame.SceneModels
         Level6_34_TechbaseCubeCD,
         Level6_35_TechbaseCubeDD,
         Level6_36_TechbaseEnd,
-        Level6_37_Boss
+        Level6_37_Boss,
+        Level7_1_GlitchCore,
+        Level7_2_GlitchCore,
+        Level7_3_GlitchCore,
+        Level7_4_GlitchCore,
+        Level7_5_GlitchCore,
+        Level7_6_GlitchCore,
+        Level7_7_GlitchCore,
+        Level7_8_GlitchCore,
 
     }
 
@@ -2197,6 +2206,101 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level6_37_Boss;
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.TechBaseBoss);
+
+            _ = Level.Level7_1_GlitchCore;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.GlitchCore,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                upper: 1,
+                bottom: 1);
+
+            _ = Level.Level7_2_GlitchCore;
+            SceneDefinition.NoScrollBigStairs(memoryBuilder, specs, ThemeType.GlitchCore,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                bgPosition: 0,
+                bottom: 1);
+
+            _ = Level.Level7_3_GlitchCore;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.GlitchCore,
+               LevelShape.HighVariance,
+               EnemyIndex.Boulder,
+               EnemyIndex.Ufo,
+               SpriteGroup.Normal,
+               1,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.HorizonAndSky);
+
+
+            _ = Level.Level7_4_GlitchCore;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.GlitchCore,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.Flat,
+                bottom: 1);
+
+            _ = Level.Level7_5_GlitchCore;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.GlitchCore,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                bgPosition: 0,
+                cornerStairStyle: CornerStairStyle.TwoBlockRight,
+                bottom: 1);
+
+            _ = Level.Level7_6_GlitchCore;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.GlitchCore,
+               LevelShape.LowVariance,
+               EnemyIndex.Boulder,
+               EnemyIndex.Ufo,
+               SpriteGroup.Normal,
+               0,
+               1,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.HorizonAndSky);
+
+            _ = Level.Level7_7_GlitchCore;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.GlitchCore,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.TwoVerticalChambers,
+                bottom: 1);
+
+            _ = Level.Level7_8_GlitchCore;
+            SceneDefinition.NoScrollBigStairs(memoryBuilder, specs, ThemeType.GlitchCore,
+                enemy1: EnemyIndex.Boulder,
+                enemy2: EnemyIndex.Ufo,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 0,
+                right: 1,
+                bgPosition: 0,
+                bottom: 2);
+
         }
 
 
@@ -4504,6 +4608,31 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 0, definition: scene),
                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 0, definition: scene)
            );
+
+            AddLevel(Level.Level7_1_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_2_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_3_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_4_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_5_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_6_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_7_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_8_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                       (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
         }
 
         private static IEnumerable<Func<SystemMemoryBuilder, SceneDefinition, IScenePart>> CubeSceneParts(int x, int y)

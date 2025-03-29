@@ -24,6 +24,7 @@ namespace ChompGame.MainGame
         private GameByte _autoScroll;
         private MaskedByte _paletteCycleIndex;
         private SceneDefinition _sceneDefinition;
+        private WorldSprite _player;
 
         public byte RealScrollX => _realScrollX;
 
@@ -50,6 +51,11 @@ namespace ChompGame.MainGame
             _tileModule = gameModule.TileModule;
             _coreGraphicsModule = coreGraphicsModule;
             _gameModule = gameModule;
+        }
+
+        public void SetPlayer(WorldSprite player)
+        {
+            _player = player;
         }
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -87,6 +93,10 @@ namespace ChompGame.MainGame
                 HandleHeatWave();
             else if (_sceneDefinition.Theme == ThemeType.CityTrain)
                 HandleTrainParallax();
+            else if (_sceneDefinition.Theme == ThemeType.GlitchCore)
+            {
+                HandleGlitchEffects();
+            }
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
             {
                 if (_sceneDefinition.Theme == ThemeType.TechBase || _sceneDefinition.Theme == ThemeType.TechBase2)
@@ -94,6 +104,7 @@ namespace ChompGame.MainGame
                 else
                     HandleParallax();
             }
+           
         }
 
         private void HandleAutoScroll()
@@ -234,6 +245,37 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.X = _realScrollX.Value;
                 _tileModule.Scroll.Y = _realScrollY.Value;
             }
+        }
+
+        private void HandleGlitchEffects()
+        {
+            var sy = _coreGraphicsModule.ScreenPoint.Y;
+            if (sy < Constants.StatusBarHeight)
+                return;
+            else if(sy == _specs.ScreenHeight-1)
+            {
+                _tileModule.Scroll.X = _realScrollX.Value;
+                _tileModule.Scroll.Y = _realScrollY.Value;
+                return;
+            }
+            else if(sy > _player.GetSprite().Y - 8 && sy < _player.GetSprite().Y + 8)
+            {
+                _tileModule.Scroll.X = _realScrollX.Value;
+                _tileModule.Scroll.Y = _realScrollY.Value;
+                return;
+            }
+
+            var y = (sy % 8) / 8.0; ;
+            var x = (_coreGraphicsModule.ScreenPoint.X % 4) / 4.0; ;
+
+            var t = (_gameModule.LevelTimer.Value % 64.0) / 64.0;
+
+            var offset = 4 * Math.Sin(y + (2 * Math.PI) * t);
+            _tileModule.Scroll.X = (byte)(_realScrollX.Value + offset);
+
+            offset = 2 * y + t;
+            _tileModule.Scroll.Y = (byte)(_realScrollY.Value + offset);
+
         }
 
 

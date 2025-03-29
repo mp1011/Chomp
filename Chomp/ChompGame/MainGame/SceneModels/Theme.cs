@@ -250,8 +250,15 @@ namespace ChompGame.MainGame.SceneModels
                enemy1: PaletteKey.BlueGrayEnemy,
                enemy2: PaletteKey.Gray);
 
-            //GlitchCore 
-            new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
+            _ = ThemeType.GlitchCore;
+            new Theme(memoryBuilder,
+              bg1: PaletteKey.Gray,
+              bg2: PaletteKey.PlainsEveningCloseMountains,
+              fg1: PaletteKey.Sand,
+              fg2: PaletteKey.Gray,
+              bomb: PaletteKey.BombLight,
+              enemy1: PaletteKey.BlueGrayEnemy,
+              enemy2: PaletteKey.Gray);
         }
     }
 

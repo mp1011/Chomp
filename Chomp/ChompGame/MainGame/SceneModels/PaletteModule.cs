@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 
@@ -533,7 +534,7 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.None;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
             }
-            else if(_currentScene.Theme == ThemeType.Desert)
+            else if(_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.GlitchCore)
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
@@ -617,6 +618,11 @@ namespace ChompGame.MainGame.SceneModels
                 OnHBlank_AutoScroll();
                 return;
             }
+            else if(_currentScene.Theme == ThemeType.GlitchCore)
+            {
+                OnHBlank_GlitchCore();
+                return;
+            }
 
             if (_graphicsModule.ScreenPoint.Y == 0)
             {
@@ -636,6 +642,23 @@ namespace ChompGame.MainGame.SceneModels
                 CheckPaletteChange(1);
                 CheckPaletteChange(2);
                 CheckPaletteChange(3);
+            }
+        }
+
+        private void OnHBlank_GlitchCore()
+        {
+            if (_graphicsModule.ScreenPoint.Y == 0)
+            {
+                LoadPalette(PaletteKey.StatusBar, _graphicsModule.GetBackgroundPalette(0));
+            }
+            else if (_graphicsModule.ScreenPoint.Y == Constants.StatusBarHeight)
+            {
+                ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundPart.Top]);
+            }
+            else if(_graphicsModule.ScreenPoint.Y > Constants.StatusBarHeight)
+            {
+                if(_timer.Value.IsMod(8) && _graphicsModule.ScreenPoint.Y.IsMod(4))
+                    CyclePalette(_graphicsModule.GetBackgroundPalette(BgPalette.Foreground));
             }
         }
 
