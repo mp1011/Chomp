@@ -87,6 +87,7 @@ namespace ChompGame.MainGame.WorldScrollers
             }
             else
             {
+                _fullScroll.Value = 0;
                 scrollX = (_focusSprite.X - _halfWindowSize).Clamp(0, 4096);
             }
 

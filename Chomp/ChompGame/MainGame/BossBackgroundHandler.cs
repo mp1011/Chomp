@@ -171,7 +171,7 @@ namespace ChompGame.MainGame
         private void OnHBlank_UpdateDissolveFromBottom()
         {
             int effectY = _coreGraphicsModule.ScreenPoint.Y - _bossPosition.Y;
-            if (effectY < 0 || effectY > 32)
+            if (effectY < 0 || effectY > 36)
                 return;
 
 
