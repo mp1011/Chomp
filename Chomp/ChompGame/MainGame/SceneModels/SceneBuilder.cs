@@ -2209,8 +2209,8 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_1_GlitchCore;
             SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.GlitchCore,
-                enemy1: EnemyIndex.Boulder,
-                enemy2: EnemyIndex.Ufo,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 left: 1,
                 top: 1,
@@ -2220,8 +2220,8 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_2_GlitchCore;
             SceneDefinition.NoScrollBigStairs(memoryBuilder, specs, ThemeType.GlitchCore,
-                enemy1: EnemyIndex.Boulder,
-                enemy2: EnemyIndex.Ufo,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 left: 1,
                 top: 1,
@@ -2231,12 +2231,12 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_3_GlitchCore;
             SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.GlitchCore,
-               LevelShape.HighVariance,
-               EnemyIndex.Boulder,
-               EnemyIndex.Ufo,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Lizard,
+               EnemyIndex.Bird,
                SpriteGroup.Normal,
                1,
-               2,
+               3,
                1,
                1,
                1,
@@ -2245,19 +2245,19 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_4_GlitchCore;
             SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.GlitchCore,
-                enemy1: EnemyIndex.Boulder,
-                enemy2: EnemyIndex.Ufo,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 left: 1,
                 top: 1,
                 right: 1,
                 shape: LevelShape.Flat,
-                bottom: 1);
+                bottom: 2);
 
             _ = Level.Level7_5_GlitchCore;
             SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.GlitchCore,
-                enemy1: EnemyIndex.Boulder,
-                enemy2: EnemyIndex.Ufo,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 left: 1,
                 top: 1,
@@ -2268,9 +2268,9 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_6_GlitchCore;
             SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.GlitchCore,
-               LevelShape.LowVariance,
-               EnemyIndex.Boulder,
-               EnemyIndex.Ufo,
+               LevelShape.Flat,
+               EnemyIndex.Lizard,
+               EnemyIndex.Bird,
                SpriteGroup.Normal,
                0,
                1,
@@ -2281,19 +2281,19 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_7_GlitchCore;
             SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.GlitchCore,
-                enemy1: EnemyIndex.Boulder,
-                enemy2: EnemyIndex.Ufo,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 left: 1,
                 top: 1,
                 right: 1,
                 shape: LevelShape.TwoVerticalChambers,
-                bottom: 1);
+                bottom: 2);
 
             _ = Level.Level7_8_GlitchCore;
             SceneDefinition.NoScrollBigStairs(memoryBuilder, specs, ThemeType.GlitchCore,
-                enemy1: EnemyIndex.Boulder,
-                enemy2: EnemyIndex.Ufo,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
                 spriteGroup: SpriteGroup.Normal,
                 left: 1,
                 top: 0,
@@ -4610,24 +4610,66 @@ namespace ChompGame.MainGame.SceneModels
            );
 
             AddLevel(Level.Level7_1_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 12, y: 0, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 10, definition: scene),
+
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_2_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new PrefabScenePart(b, scene, 12,0, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Space),
+                               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 12, y: 0, definition: scene),
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_3_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 12, y: 8, definition: scene),
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 22, y: 8, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 10, definition: scene),
+                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 32, y: 8, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 42, y: 8, definition: scene),
+                      (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 32, y: 10, definition: scene),
+
              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_4_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+
+                                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 8, definition: scene),
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 8, definition: scene),
+                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 24, y: 8, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 34, y: 8, definition: scene),
+
+                 (b, scene) => new PrefabScenePart(b, scene, 56, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+                 (b, scene) => new PrefabScenePart(b, scene, 12, 16, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
+
+                 (b, scene) => new PrefabScenePart(b, scene, 24, 12, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Block),
+
+                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_5_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 12, y: 8, definition: scene),
                          (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_6_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 12, y: 8, definition: scene),
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 8, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 10, definition: scene),
+
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 8, definition: scene),
+                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 24, y: 8, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 34, y: 8, definition: scene),
                          (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_7_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                  (b, scene) => new PrefabScenePart(b, scene, 8, 16, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
+                  (b, scene) => new PrefabScenePart(b, scene, 8, 24, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
+                  (b, scene) => new PrefabScenePart(b, scene, 12, 8, PrefabSize.Six, PrefabSize.Eight, PrefabStyle.Space),
+
+
+
+                                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 8, definition: scene),
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 8, definition: scene),
+                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 24, y: 8, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 34, y: 8, definition: scene),
                          (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_8_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,

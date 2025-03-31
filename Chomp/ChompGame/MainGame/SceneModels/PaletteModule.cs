@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using System.Data;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -655,10 +656,26 @@ namespace ChompGame.MainGame.SceneModels
             {
                 ApplyPaletteChange((PaletteChange)_paletteChangeTable[(byte)BackgroundPart.Top]);
             }
-            else if(_graphicsModule.ScreenPoint.Y > Constants.StatusBarHeight)
+            else if (_graphicsModule.ScreenPoint.Y > Constants.StatusBarHeight)
             {
-                if(_timer.Value.IsMod(8) && _graphicsModule.ScreenPoint.Y.IsMod(4))
-                    CyclePalette(_graphicsModule.GetBackgroundPalette(BgPalette.Foreground));
+                int startY = (_timer.Value % 64) / 4;
+                int relY = _graphicsModule.ScreenPoint.Y - startY;
+
+                if (relY.IsMod(4))
+                {
+                    var p = _graphicsModule.GetBackgroundPalette(BgPalette.Foreground);
+                    if (relY.IsMod(24))
+                    {
+                        LoadPalette(BgPalette1.Address, _graphicsModule.GetBackgroundPalette(BgPalette.Foreground));
+                    }
+                    else
+                    {
+                        Darken(p, 0);
+                        Darken(p, 1);
+                        Darken(p, 2);
+                        Darken(p, 3);
+                    }
+                }
             }
         }
 
@@ -797,11 +814,11 @@ namespace ChompGame.MainGame.SceneModels
                 }
             }
 
-            if (_timer.Value % 16== 0)
+            if (_timer.Value % 16 == 0)
             {
                 if (_currentScene.Theme == ThemeType.Mist)
                 {
-                    if(_timer.Value < 128)
+                    if (_timer.Value < 128)
                     {
                         Lighten(BgPalette2, 2);
                         Darken(BgPalette1, 2, limit: 5);
@@ -812,17 +829,24 @@ namespace ChompGame.MainGame.SceneModels
                         Lighten(BgPalette1, 2);
                     }
 
-                   if (Lighten(BgPalette1, 3))
-                      BgPalette1.SetColor(3, ColorIndex.Gray1);
+                    if (Lighten(BgPalette1, 3))
+                        BgPalette1.SetColor(3, ColorIndex.Gray1);
                 }
-                else if(_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
+                else if (_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
                 {
-                    if(_timer.Value < 128)
+                    if (_timer.Value < 128)
                         Lighten(BgPalette1, 3);
                     else
                         Darken(BgPalette1, 3);
 
                 }
+            }
+        
+        
+        
+            if(_currentScene.Theme == ThemeType.GlitchCore)
+            {
+                LoadPalette(BgPalette1.Address, _graphicsModule.GetBackgroundPalette(BgPalette.Foreground));
             }
         }
     }

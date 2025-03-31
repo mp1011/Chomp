@@ -1293,7 +1293,11 @@ namespace ChompGame.MainGame.SceneModels
 
             if (_sceneDefinition.HasSprite(SpriteType.Lizard))
             {
-                spriteBuilder.AddEnemySprite(2, 0, 2, 2);
+                if(_sceneDefinition.Theme == ThemeType.GlitchCore)
+                    spriteBuilder.AddEnemySprite(3, 1, 2, 2);
+                else
+                    spriteBuilder.AddEnemySprite(2, 0, 2, 2);
+
                 spriteBuilder.AddExtraSprite(4, 0, 2, 1);
             }
 

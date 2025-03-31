@@ -69,6 +69,7 @@ namespace ChompGame.MainGame
         private SceneDefinition _currentScene;
         private ScenePartsDestroyed _scenePartsDestroyed;
         private TileEditor _tileEditor;
+        private GlitchCoreBgModule _glitchCoreBgModule;
 
         public BossBackgroundHandler BossBackgroundHandler => _bossBackgroundHandler;
         public ScenePartsDestroyed ScenePartsDestroyed => _scenePartsDestroyed;
@@ -325,7 +326,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level7_1_GlitchCore;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -427,6 +428,11 @@ namespace ChompGame.MainGame
             GameSystem.CoreGraphicsModule.FadeAmount = 16;
 
             _musicModule.PlaySongForLevel(_currentLevel.Value);
+
+            if(_currentScene.Theme == ThemeType.GlitchCore)
+            {
+                _glitchCoreBgModule = new GlitchCoreBgModule(_timer, _worldScroller, RandomModule);
+            }
         }
 
         private void ResetSprites()
@@ -484,6 +490,11 @@ namespace ChompGame.MainGame
                     GameDebug.DebugLog("Player is carrying bomb", DebugLogFlags.LevelTransition);
                 else
                     GameDebug.DebugLog("Player is NOT carrying bomb", DebugLogFlags.LevelTransition);
+            }
+
+            if(_currentScene.Theme == ThemeType.GlitchCore)
+            {
+                _glitchCoreBgModule.Update();
             }
         }
 

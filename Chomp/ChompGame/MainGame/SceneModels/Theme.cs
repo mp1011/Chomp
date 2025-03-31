@@ -252,12 +252,12 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = ThemeType.GlitchCore;
             new Theme(memoryBuilder,
-              bg1: PaletteKey.Gray,
+              bg1: PaletteKey.BrownBrick,
               bg2: PaletteKey.PlainsEveningCloseMountains,
               fg1: PaletteKey.Sand,
               fg2: PaletteKey.Gray,
               bomb: PaletteKey.BombLight,
-              enemy1: PaletteKey.BlueGrayEnemy,
+              enemy1: PaletteKey.Bullet,
               enemy2: PaletteKey.Gray);
         }
     }

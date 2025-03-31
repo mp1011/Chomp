@@ -249,6 +249,9 @@ namespace ChompGame.MainGame
 
         private void HandleGlitchEffects()
         {
+            if (_gameModule.LevelTimer.Value > 32)
+                return;
+
             var sy = _coreGraphicsModule.ScreenPoint.Y;
             if (sy < Constants.StatusBarHeight)
                 return;
