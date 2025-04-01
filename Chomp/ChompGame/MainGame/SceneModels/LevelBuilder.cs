@@ -365,6 +365,12 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddShapeTiles(NBitPlane nameTable, byte seed)
         {
+            if(_gameModule.CurrentLevel >= Level.Level7_9_TotalGlitch &&
+                _gameModule.CurrentLevel <= Level.Level7_15_TotalGlitch)
+            {
+                return CreateGlitchMap(nameTable, seed);
+            }
+
             return _sceneDefinition.ScrollStyle switch 
             {
                 ScrollStyle.Horizontal => _sceneDefinition.LevelShape switch 
@@ -395,6 +401,47 @@ namespace ChompGame.MainGame.SceneModels
             };
         }
 
+
+        private NBitPlane CreateGlitchMap(NBitPlane nameTable, byte seed)
+        {
+            seed += 4;
+            int exitPos = 4 + 2 * _gameModule.RandomModule.FixedRandom(seed, 2);
+
+            nameTable.ForEach((x, y, b) =>
+            {
+                if (b == 1)
+                    return;
+                if (!x.IsMod(2))
+                    return;
+                if (!y.IsMod(2))
+                    return;
+
+                int chance = 32;
+                if (nameTable[x-1,y] == 1)
+                {
+                    chance = 128;
+                }
+
+                if (_gameModule.RandomModule.FixedRandom(seed, 64) < chance)
+                {
+                    nameTable[x, y] = 1;
+                    nameTable[x+1, y] = 1;
+                    nameTable[x, y+1] = 1;
+                    nameTable[x+1, y+1] = 1;
+                }
+
+                seed += (byte)(x * y);
+            });
+
+            for (int y = exitPos; y < exitPos + 6; y++)
+            {
+                nameTable[nameTable.Width - 1, y] = 0;
+                nameTable[nameTable.Width - 2, y] = 0;
+            }
+
+            return nameTable;
+        }
+        
         private NBitPlane AddHorizontalChambers(NBitPlane nameTable)
         {
             int midFloorStart = (nameTable.Height / 2) - 2;

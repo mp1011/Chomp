@@ -182,7 +182,13 @@ namespace ChompGame.MainGame.SceneModels
         Level7_6_GlitchCore,
         Level7_7_GlitchCore,
         Level7_8_GlitchCore,
-
+        Level7_9_TotalGlitch,
+        Level7_10_TotalGlitch,
+        Level7_11_TotalGlitch,
+        Level7_12_TotalGlitch,
+        Level7_13_TotalGlitch,
+        Level7_14_TotalGlitch,
+        Level7_15_TotalGlitch,
     }
 
     class SceneBuilder
@@ -211,7 +217,9 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level6_1_Techbase,
             Level.Level6_7_Techbase4,
             Level.Level6_13_Techbase7,
-            Level.Level6_18_Techbase11
+            Level.Level6_18_Techbase11,
+            Level.Level7_1_GlitchCore,
+            Level.Level7_9_TotalGlitch
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -2301,6 +2309,18 @@ namespace ChompGame.MainGame.SceneModels
                 bgPosition: 0,
                 bottom: 2);
 
+            for(Level l = Level.Level7_9_TotalGlitch; l <= Level.Level7_15_TotalGlitch; l++)
+            {
+                SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.GlitchCore,
+                   enemy1: EnemyIndex.Lizard,
+                   enemy2: EnemyIndex.Bird,
+                   spriteGroup: SpriteGroup.Normal,
+                   left: 0,
+                   top: 1,
+                   right: 1,
+                   shape: LevelShape.Flat,
+                   bottom: 2);
+            }
         }
 
 
@@ -4663,10 +4683,7 @@ namespace ChompGame.MainGame.SceneModels
                   (b, scene) => new PrefabScenePart(b, scene, 8, 16, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
                   (b, scene) => new PrefabScenePart(b, scene, 8, 24, PrefabSize.Eight, PrefabSize.Four, PrefabStyle.Block),
                   (b, scene) => new PrefabScenePart(b, scene, 12, 8, PrefabSize.Six, PrefabSize.Eight, PrefabStyle.Space),
-
-
-
-                                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 8, definition: scene),
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 8, definition: scene),
                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 16, y: 8, definition: scene),
                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 24, y: 8, definition: scene),
                     (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 34, y: 8, definition: scene),
@@ -4674,6 +4691,16 @@ namespace ChompGame.MainGame.SceneModels
 
             AddLevel(Level.Level7_8_GlitchCore, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                        (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+
+            for (Level l = Level.Level7_9_TotalGlitch; l <= Level.Level7_15_TotalGlitch; l++)
+            {
+                AddLevel(l, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 24, y: 24, definition: scene),
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 12, y: 8, definition: scene),
+                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 44, y: 16, definition: scene),
+                      (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+            }
 
         }
 
