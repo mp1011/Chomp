@@ -84,7 +84,17 @@
         public static byte Gray2 => DarkGray(4).Value;
         public static byte Gray3 => DarkGray(5).Value;
 
-        public static byte White => LightGray(7).Value;
+
+        public static byte LightGray1 => LightGray(1).Value;
+        public static byte LightGray2 => LightGray(2).Value;
+        public static byte LightGray3 => LightGray(3).Value;
+        public static byte LightGray4 => LightGray(4).Value;
+        public static byte LightGray5 => LightGray(5).Value;
+        public static byte LightGray6 => LightGray(6).Value;
+        public static byte LightGray7 => LightGray(7).Value;
+
+        public static byte White => LightGray(8).Value;
+
         public static byte Gold => Red(4).Value;
 
         public static byte Green1 => Green(1).Value;

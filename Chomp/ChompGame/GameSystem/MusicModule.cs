@@ -29,7 +29,8 @@ namespace ChompGame.GameSystem
             Space,
             CommandCenter,
             Infiltration,
-            SystemMalfunction
+            SystemMalfunction,
+            VeryDefinitelyFinalDungeon,
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -84,6 +85,8 @@ namespace ChompGame.GameSystem
                 CurrentSong = SongName.Infiltration;
             else if (level >= Level.Level7_1_GlitchCore && level < Level.Level7_13_PreFinal1)
                 CurrentSong = SongName.SystemMalfunction;
+            else if (level >= Level.Level7_17_Final1)
+                CurrentSong = SongName.VeryDefinitelyFinalDungeon;
 
             else
                 CurrentSong = SongName.None;

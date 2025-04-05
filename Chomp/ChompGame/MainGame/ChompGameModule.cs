@@ -326,7 +326,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_13_PreFinal1;
+            _currentLevel.Value = Level.Level6_37_Boss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -431,7 +431,7 @@ namespace ChompGame.MainGame
 
             if(_currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
-                _glitchCoreBgModule = new GlitchCoreBgModule(_timer, _worldScroller, RandomModule);
+                _glitchCoreBgModule = new GlitchCoreBgModule(memoryBuilder, this);
             }
         }
 

@@ -264,7 +264,7 @@ namespace ChompGame.MainGame.SceneModels
             _ = ThemeType.Final;
             new Theme(memoryBuilder,
               bg1: PaletteKey.Test,
-              bg2: PaletteKey.Test,
+              bg2: PaletteKey.FinalBg,
               fg1: PaletteKey.FinalFg,
               fg2: PaletteKey.Test,
               bomb: PaletteKey.BombLight,

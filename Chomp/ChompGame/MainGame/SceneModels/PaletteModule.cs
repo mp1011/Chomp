@@ -81,7 +81,8 @@ namespace ChompGame.MainGame.SceneModels
         TechBaseBg2,
         TechBaseFg2,
         FinalFg,
-        Max = FinalFg
+        FinalBg,
+        Max = FinalBg
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -469,6 +470,12 @@ namespace ChompGame.MainGame.SceneModels
             ColorIndex.BlueGray3,
             ColorIndex.BlueGray4);
 
+            DefinePalette(PaletteKey.FinalBg,
+           ColorIndex.LightGray1,
+           ColorIndex.LightGray2,
+           ColorIndex.LightGray3,
+           ColorIndex.LightGray4);
+
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
         {
@@ -542,7 +549,7 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.None;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
             }
-            else if(_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.GlitchCore)
+            else if(_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;

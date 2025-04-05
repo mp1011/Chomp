@@ -189,6 +189,8 @@ namespace ChompGame.MainGame.SceneModels
         Level7_13_PreFinal1,
         Level7_14_PreFinal2,
         Level7_15_PreFinal3,
+        Level7_16_RunRoom,
+        Level7_17_Final1,
 
 
     }
@@ -2358,6 +2360,30 @@ namespace ChompGame.MainGame.SceneModels
                 bgPosition: 1,
                 cornerStairStyle: CornerStairStyle.TwoBlockLeft,
                 bottom: 2);
+
+            _ = Level.Level7_16_RunRoom;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.Flat,
+                bottom: 2);
+
+            _ = Level.Level7_17_Final1;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Lizard,
+               EnemyIndex.Bird,
+               SpriteGroup.Normal,
+               0,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
         }
 
 
@@ -4749,6 +4775,58 @@ namespace ChompGame.MainGame.SceneModels
             AddLevel(Level.Level7_15_PreFinal3, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                           (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
                           (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_16_RunRoom, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                        (b, scene) => new SpriteScenePart(b, ScenePartType.Button, x: 16, y: 59, definition: scene),
+
+                        // R
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: false,
+                            x: 8, y: 16, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 10, y: 16, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: false,
+                            x: 8, y: 18, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 10, y: 18, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: false, bottomRight: false,
+                            x: 8, y: 20, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: false, topRight: true, bottomLeft: false, bottomRight: false,
+                            x: 10, y: 20, definition: scene),
+
+                         // U
+                         (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 14, y: 16, definition: scene),
+                         (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 16, y: 16, definition: scene),
+                         (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 14, y: 18, definition: scene),
+                         (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 16, y: 18, definition: scene),
+                         (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: false, bottomRight: false,
+                            x: 14, y: 20, definition: scene),
+                         (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: false, bottomRight: false,
+                            x: 16, y: 20, definition: scene),
+
+                         // N
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true,
+                            x: 20, y: 16, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: false, topRight: true, bottomLeft: false, bottomRight: true,
+                            x: 22, y: 16, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: true, bottomRight: false,
+                            x: 20, y: 18, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true,
+                            x: 22, y: 18, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: false, bottomLeft: false, bottomRight: false,
+                            x: 20, y: 20, definition: scene),
+                        (b, scene) => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: false, topRight: true, bottomLeft: false, bottomRight: false,
+                            x: 22, y: 20, definition: scene),
+
+                        (b, scene) => new PrefabScenePart(b, scene, 28, 20, PrefabSize.Six, PrefabSize.Six, PrefabStyle.Block),
+
+                        (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_17_Final1, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                        (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
         }
 
