@@ -110,6 +110,12 @@
 /processorParam:Quality=Best
 /build:Music/Threat.ogg
 
+#begin Music/VeryDefinitelyFinalDungeon.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/VeryDefinitelyFinalDungeon.ogg
+
 #begin SystemPalette.png
 /importer:TextureImporter
 /processor:TextureProcessor

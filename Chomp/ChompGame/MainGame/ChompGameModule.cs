@@ -326,7 +326,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_1_GlitchCore;
+            _currentLevel.Value = Level.Level7_13_PreFinal1;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -429,7 +429,7 @@ namespace ChompGame.MainGame
 
             _musicModule.PlaySongForLevel(_currentLevel.Value);
 
-            if(_currentScene.Theme == ThemeType.GlitchCore)
+            if(_currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
                 _glitchCoreBgModule = new GlitchCoreBgModule(_timer, _worldScroller, RandomModule);
             }
@@ -492,7 +492,7 @@ namespace ChompGame.MainGame
                     GameDebug.DebugLog("Player is NOT carrying bomb", DebugLogFlags.LevelTransition);
             }
 
-            if(_currentScene.Theme == ThemeType.GlitchCore)
+            if(_currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
                 _glitchCoreBgModule.Update();
             }

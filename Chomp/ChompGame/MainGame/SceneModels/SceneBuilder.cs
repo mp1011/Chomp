@@ -186,9 +186,11 @@ namespace ChompGame.MainGame.SceneModels
         Level7_10_TotalGlitch,
         Level7_11_TotalGlitch,
         Level7_12_TotalGlitch,
-        Level7_13_TotalGlitch,
-        Level7_14_TotalGlitch,
-        Level7_15_TotalGlitch,
+        Level7_13_PreFinal1,
+        Level7_14_PreFinal2,
+        Level7_15_PreFinal3,
+
+
     }
 
     class SceneBuilder
@@ -2309,7 +2311,7 @@ namespace ChompGame.MainGame.SceneModels
                 bgPosition: 0,
                 bottom: 2);
 
-            for(Level l = Level.Level7_9_TotalGlitch; l <= Level.Level7_15_TotalGlitch; l++)
+            for(Level l = Level.Level7_9_TotalGlitch; l <= Level.Level7_12_TotalGlitch; l++)
             {
                 SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.GlitchCore,
                    enemy1: EnemyIndex.Lizard,
@@ -2321,6 +2323,41 @@ namespace ChompGame.MainGame.SceneModels
                    shape: LevelShape.Flat,
                    bottom: 2);
             }
+
+            _ = Level.Level7_13_PreFinal1;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
+                left: 0,
+                top: 1,
+                right: 1,
+                bgPosition: 0,
+                bottom: 2,
+                cornerStairStyle: CornerStairStyle.TwoBlockRight);
+
+            _ = Level.Level7_14_PreFinal2;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                upper: 2,
+                bottom: 2);
+
+            _ = Level.Level7_15_PreFinal3;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Lizard,
+                enemy2: EnemyIndex.Bird,
+                spriteGroup: SpriteGroup.Normal,
+                left: 1,
+                top: 1,
+                right: 1,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.TwoBlockLeft,
+                bottom: 2);
         }
 
 
@@ -4693,7 +4730,7 @@ namespace ChompGame.MainGame.SceneModels
                        (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
 
-            for (Level l = Level.Level7_9_TotalGlitch; l <= Level.Level7_15_TotalGlitch; l++)
+            for (Level l = Level.Level7_9_TotalGlitch; l <= Level.Level7_12_TotalGlitch; l++)
             {
                 AddLevel(l, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                     (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 24, y: 24, definition: scene),
@@ -4701,6 +4738,17 @@ namespace ChompGame.MainGame.SceneModels
                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 44, y: 16, definition: scene),
                       (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
             }
+
+            AddLevel(Level.Level7_13_PreFinal1, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                     (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_14_PreFinal2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                            (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_15_PreFinal3, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                          (b, scene) => new ExitScenePart(b, ExitType.Left, -1, scene),
+                          (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
         }
 

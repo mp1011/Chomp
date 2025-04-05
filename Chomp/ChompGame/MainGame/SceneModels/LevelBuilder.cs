@@ -366,7 +366,7 @@ namespace ChompGame.MainGame.SceneModels
         private NBitPlane AddShapeTiles(NBitPlane nameTable, byte seed)
         {
             if(_gameModule.CurrentLevel >= Level.Level7_9_TotalGlitch &&
-                _gameModule.CurrentLevel <= Level.Level7_15_TotalGlitch)
+                _gameModule.CurrentLevel <= Level.Level7_12_TotalGlitch)
             {
                 return CreateGlitchMap(nameTable, seed);
             }
@@ -404,6 +404,9 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane CreateGlitchMap(NBitPlane nameTable, byte seed)
         {
+            if (_gameModule.CurrentLevel == Level.Level7_12_TotalGlitch)
+                seed += 5;
+
             seed += 4;
             int exitPos = 4 + 2 * _gameModule.RandomModule.FixedRandom(seed, 2);
 

@@ -80,7 +80,8 @@ namespace ChompGame.MainGame.SceneModels
         TechBaseFg,
         TechBaseBg2,
         TechBaseFg2,
-        Max = TechBaseFg2
+        FinalFg,
+        Max = FinalFg
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -461,6 +462,12 @@ namespace ChompGame.MainGame.SceneModels
              ColorIndex.Red1,
              ColorIndex.Brown1,
              ColorIndex.Red2);
+
+            DefinePalette(PaletteKey.FinalFg,
+            ColorIndex.Black,
+            ColorIndex.BlueGray2,
+            ColorIndex.BlueGray3,
+            ColorIndex.BlueGray4);
 
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)

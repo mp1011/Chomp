@@ -28,6 +28,7 @@ namespace ChompGame.MainGame.SceneModels
         TechBase2,
         TechBaseBoss,
         GlitchCore,
+        Final
     }
 
     static class ThemeBuilder
@@ -256,6 +257,16 @@ namespace ChompGame.MainGame.SceneModels
               bg2: PaletteKey.PlainsEveningCloseMountains,
               fg1: PaletteKey.Sand,
               fg2: PaletteKey.Gray,
+              bomb: PaletteKey.BombLight,
+              enemy1: PaletteKey.Bullet,
+              enemy2: PaletteKey.Gray);
+
+            _ = ThemeType.Final;
+            new Theme(memoryBuilder,
+              bg1: PaletteKey.Test,
+              bg2: PaletteKey.Test,
+              fg1: PaletteKey.FinalFg,
+              fg2: PaletteKey.Test,
               bomb: PaletteKey.BombLight,
               enemy1: PaletteKey.Bullet,
               enemy2: PaletteKey.Gray);
