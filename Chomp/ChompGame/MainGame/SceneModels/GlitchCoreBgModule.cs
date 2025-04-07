@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.Graphics;
 using System.Xml;
 
 namespace ChompGame.MainGame.SceneModels
@@ -15,30 +16,46 @@ namespace ChompGame.MainGame.SceneModels
         private MusicModule _musicModule;
         private ChompAudioService _audioService;
         private GameByte _levelDestructTimer;
+        private PaletteModule _paletteModule;
+        private bool _firstScene;
 
-        public GlitchCoreBgModule(SystemMemoryBuilder memoryBuilder, ChompGameModule gameModule)
+        public GlitchCoreBgModule(SystemMemoryBuilder memoryBuilder, ChompGameModule gameModule, bool firstScene)
         {
+            _firstScene = firstScene;
             _rng = gameModule.RandomModule;
+            _paletteModule = gameModule.PaletteModule;
             _timer = gameModule.LevelTimer;
             _scroller = gameModule.WorldScroller;
             _levelDestructTimer = memoryBuilder.AddByte();
             _musicModule = gameModule.MusicModule;
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
             _audioService = gameModule.AudioService;
-        
+
             if (!gameModule.ScenePartsDestroyed.SwitchBlocksOff)
                 gameModule.DynamicBlocksController.ToggleSwitchBlocks();
+
+            if(!_firstScene)
+                _levelDestructTimer.Value = 3;
+
+            if (gameModule.CurrentLevel < Level.Level7_17_Final1 || gameModule.CurrentLevel == Level.Level7_28_Final12_VerticalRetry)
+                _levelDestructTimer.Value = 0;
         }
 
         public void Update()
         {
+            if (_levelDestructTimer.Value == 255)
+                return;
+
             if(_levelDestructTimer.Value == 0 && !_scenePartsDestroyed.SwitchBlocksOff)
             {
                 _levelDestructTimer.Value = 1;
             }
 
             if (_levelDestructTimer.Value > 0)
-                HandleLevelDestruct();
+            {
+                _paletteModule.BgColor = ColorIndex.Black;
+                 HandleLevelDestruct();
+            }
 
             if (!_timer.Value.IsMod(32))
                 return;
@@ -67,24 +84,56 @@ namespace ChompGame.MainGame.SceneModels
             }
             else
             {
-                if (_timer.IsMod(16))
-                {
-                    _levelDestructTimer.Value++;
-                    int x = (_levelDestructTimer.Value - 2) * 2;
-                    int y = _scroller.LevelNameTable.Height - 4;
-                    BlockWarn(x, y);
-                    if (_levelDestructTimer.Value > 3)
-                        BlockDestroy(x - 2, y);
+                int x = (_levelDestructTimer.Value - 4) * 2;
+                int y = _scroller.LevelNameTable.Height - 4;
 
-                    if(_levelDestructTimer.Value == 6)
+                byte delay = 16;
+                if (x >= _scroller.LevelNameTable.Width - 2)
+                    delay = 28;
+
+
+                if (_timer.Value.IsMod(delay))
+                {
+                    _levelDestructTimer.Value++;                   
+                    if (x >= _scroller.LevelNameTable.Width-2)
                     {
-                        BlockWarn(_scroller.LevelNameTable.Width - 4, y - 2);
-                        BlockWarn(_scroller.LevelNameTable.Width - 4, y - 4);
+                        y = _scroller.LevelNameTable.Height - (x - _scroller.LevelNameTable.Width);
+                        y = y.Clamp(0, _scroller.LevelNameTable.Height - 1);
+
+                        if (y >= 4)
+                        {
+                            for (x = 0; x < _scroller.LevelNameTable.Width; x += 2)
+                            {
+                                BlockWarn(x, y);
+                                BlockDestroy(x, y + 2);
+                            }
+                        }
                     }
-                    else if (_levelDestructTimer.Value == 7)
+                    else
                     {
-                        BlockDestroy(_scroller.LevelNameTable.Width - 4, y - 2);
-                        BlockDestroy(_scroller.LevelNameTable.Width - 4, y - 4);
+                        BlockWarn(x, y);
+                        BlockWarn(x, y + 2);
+
+                        if (_levelDestructTimer.Value > 3)
+                        {
+                            BlockDestroy(x - 2, y);
+                            BlockDestroy(x - 2, y + 2);
+
+                        }
+
+                        if (_firstScene)
+                        {
+                            if (_levelDestructTimer.Value == 6)
+                            {
+                                BlockWarn(_scroller.LevelNameTable.Width - 4, y - 2);
+                                BlockWarn(_scroller.LevelNameTable.Width - 4, y - 4);
+                            }
+                            else if (_levelDestructTimer.Value == 7)
+                            {
+                                BlockDestroy(_scroller.LevelNameTable.Width - 4, y - 2);
+                                BlockDestroy(_scroller.LevelNameTable.Width - 4, y - 4);
+                            }
+                        }
                     }
                 }
             }
@@ -104,14 +153,23 @@ namespace ChompGame.MainGame.SceneModels
 
         private void BlockWarn(int x, int y)
         {
+            x /= 2;
+            y /= 2;
+
+            x = x.Clamp(0, _scroller.LevelAttributeTable.Width - 1);
+            y = y.Clamp(0, _scroller.LevelAttributeTable.Height - 1);
+
             _scroller.ModifyTiles((t, a) =>
             {
-                a[x / 2, y / 2] = 2;
+                a[x, y] = 2;
             });
         }
 
         private void BlockDestroy(int x, int y)
         {
+            x = x.Clamp(0, _scroller.LevelNameTable.Width - 2);
+            y = y.Clamp(0, _scroller.LevelNameTable.Height - 2);
+
             _scroller.ModifyTiles((t, a) =>
             {
                 t[x, y] = 0;

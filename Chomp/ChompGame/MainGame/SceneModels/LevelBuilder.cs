@@ -243,6 +243,9 @@ namespace ChompGame.MainGame.SceneModels
 
         private NBitPlane AddBottomExit(NBitPlane nameTable)
         {
+            if (_sceneDefinition.Theme == ThemeType.Final)
+                return nameTable;
+
             int xStart = (nameTable.Width / 2) - 2;
             int width = 4;
 
@@ -1195,6 +1198,19 @@ namespace ChompGame.MainGame.SceneModels
                          spritesModule: _gameModule.SpritesModule,
                          () => new Level6BossController(_gameModule, playerController.WorldSprite,
                             bossBulletControllers, memoryBuilder));
+                    break;
+                default:
+                    bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                          15,
+                          _gameModule.SpritesModule,
+                          () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+
+                    spritePools[extraIndex] = bullets;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompEnemyController>(
+                            size: 4,
+                            spritesModule: _gameModule.SpritesModule,
+                            () => new ChompEnemyController(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+
                     break;
             }
         }

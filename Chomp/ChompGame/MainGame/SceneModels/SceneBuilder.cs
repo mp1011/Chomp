@@ -191,6 +191,21 @@ namespace ChompGame.MainGame.SceneModels
         Level7_15_PreFinal3,
         Level7_16_RunRoom,
         Level7_17_Final1,
+        Level7_18_Final2,
+        Level7_19_Final3,
+        Level7_20_Final4,
+        Level7_21_Final5_Chamber,
+        Level7_22_Final6_Chamber,
+        Level7_23_Final7_Chamber,
+        Level7_24_Final8_Chamber,
+        Level7_25_Final9_Chamber,
+        Level7_26_Final10_Chamber,
+        Level7_27_Final11_Vertical,
+        Level7_28_Final12_VerticalRetry,
+        Level7_29_Final13,
+        Level7_30_Final14,
+        Level7_31_Final15,
+        Level7_32_Final16,
 
 
     }
@@ -2375,10 +2390,194 @@ namespace ChompGame.MainGame.SceneModels
             _ = Level.Level7_17_Final1;
             SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
                LevelShape.TwoByTwoVariance,
-               EnemyIndex.Lizard,
-               EnemyIndex.Bird,
-               SpriteGroup.Normal,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
                0,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_18_Final2;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               1,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_19_Final3;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.Flat,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               0,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_20_Final4;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               1,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_21_Final5_Chamber;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                upper: 2,
+                bottom: 2);
+
+            _ = Level.Level7_22_Final6_Chamber;
+            SceneDefinition.NoScrollBigStairs(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 0,
+                right: 1,
+                bgPosition: 1,
+                bottom: 2);
+
+            _ = Level.Level7_23_Final7_Chamber;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 2,
+                right: 1,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.TwoBlockRight,
+                bottom: 2);
+
+            _ = Level.Level7_24_Final8_Chamber;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.TwoBlockLeft,
+                bottom: 1);
+
+            _ = Level.Level7_25_Final9_Chamber;
+            SceneDefinition.NoScrollCornerStairs(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 0,
+                right: 1,
+                bgPosition: 1,
+                cornerStairStyle: CornerStairStyle.TwoBlockDouble,
+                bottom: 2);
+
+            _ = Level.Level7_26_Final10_Chamber;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 0,
+                right: 1,
+                upper:1,
+                bottom: 2);
+
+            _ = Level.Level7_27_Final11_Vertical;
+            SceneDefinition.VerticalScroll(
+                specs: specs,
+                shape: LevelShape.Flat,
+                theme: ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                memoryBuilder: memoryBuilder,
+                left: 1,
+                right: 1);
+
+            _ = Level.Level7_28_Final12_VerticalRetry;
+            SceneDefinition.NoScrollFlat(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                upper: 1,
+                bottom: 1);
+
+
+            _ = Level.Level7_29_Final13;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               1,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_30_Final14;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               1,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_31_Final15;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               1,
+               2,
+               1,
+               1,
+               1,
+               HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_32_Final16;
+            SceneDefinition.HorizontalScroll(memoryBuilder, specs, ThemeType.Final,
+               LevelShape.TwoByTwoVariance,
+               EnemyIndex.Midboss,
+               EnemyIndex.Midboss,
+               SpriteGroup.Boss,
+               1,
                2,
                1,
                1,
@@ -4826,7 +5025,105 @@ namespace ChompGame.MainGame.SceneModels
                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_17_Final1, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                        (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 36, y: 4, definition: scene),
+                    (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_18_Final2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 28, y: 4, definition: scene),
+                  (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_19_Final3, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_20_Final4, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_21_Final5_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_22_Final6_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_23_Final7_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_24_Final8_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_25_Final9_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_26_Final10_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+
+            AddLevel(Level.Level7_27_Final11_Vertical, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new PrefabScenePart(b, scene, 12, 4, PrefabSize.Six, PrefabSize.Six, PrefabStyle.Space),
+               
+                (b, scene) => new PrefabScenePart(b, scene, 8, 56, PrefabSize.Six, PrefabSize.Six, PrefabStyle.StairUp),
+                (b, scene) => new PrefabScenePart(b, scene, 4, 48, PrefabSize.Eight, PrefabSize.Six, PrefabStyle.StairDown),
+                (b, scene) => new PrefabScenePart(b, scene, 8, 36, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
+                (b, scene) => new PrefabScenePart(b, scene, 0, 32, PrefabSize.Eight, PrefabSize.Two, PrefabStyle.Block),
+                (b, scene) => new PrefabScenePart(b, scene, 8, 20, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.StairUp),
+                  (b, scene) => new PrefabScenePart(b, scene, 0, 20, PrefabSize.Eight, PrefabSize.Two, PrefabStyle.Block),
+
+
+
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len24, 2, 46, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len24, 12, 36, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len24, 2, 30, scene),
+
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len24, 4, 18, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Falling, PlatformDistance.Len24, 8, 14, scene),
+
+
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 2, scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Bottom, 1, scene)
+
+                );
+
+            AddLevel(Level.Level7_28_Final12_VerticalRetry, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 8, definition: scene),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene));
+
+            AddLevel(Level.Level7_29_Final13, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
+            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
+            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_30_Final14, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+           (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+           (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
+           (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
+           (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+
+            AddLevel(Level.Level7_31_Final15, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
+               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
+               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_32_Final16, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
 
         }
 

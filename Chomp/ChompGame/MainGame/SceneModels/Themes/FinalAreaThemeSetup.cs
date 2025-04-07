@@ -16,16 +16,32 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-            nameTable.ForEach((x, y, b) =>
+            if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
             {
-                if (b == 0)
+                nameTable.ForEach((x, y, b) =>
                 {
-                    if (x.IsMod(2) || y.IsMod(2))
-                        nameTable[x, y] = 1;
-                    else
-                        nameTable[x, y] = 2;
-                }
-            });
+                    if(y == 4 || y == 2)
+                    {
+                        if (x.IsMod(3))
+                            nameTable[x, y] = 3;
+                        else
+                            nameTable[x, y] = 4;
+                    }
+                });
+            }
+            else
+            {
+                nameTable.ForEach((x, y, b) =>
+                {
+                    if (b == 0)
+                    {
+                        if (x.IsMod(2) || y.IsMod(2))
+                            nameTable[x, y] = 1;
+                        else
+                            nameTable[x, y] = 2;
+                    }
+                });
+            }
         }
 
         public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
@@ -76,6 +92,20 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 _specs,
                 memory);
 
+            // pipe
+            masterPatternTable.CopyTilesTo(
+              destination: vramPatternTable,
+              source: new InMemoryByteRectangle(6, 0, 1, 1),
+              destinationPoint: new Point(3, 0),
+              _specs,
+              memory);
+
+            masterPatternTable.CopyTilesTo(
+             destination: vramPatternTable,
+             source: new InMemoryByteRectangle(6, 6, 1, 1),
+             destinationPoint: new Point(4, 0),
+             _specs,
+             memory);
 
         }
     }

@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
+using System;
 using System.Data;
 
 namespace ChompGame.MainGame.SceneModels
@@ -471,10 +472,10 @@ namespace ChompGame.MainGame.SceneModels
             ColorIndex.BlueGray4);
 
             DefinePalette(PaletteKey.FinalBg,
-           ColorIndex.LightGray1,
-           ColorIndex.LightGray2,
-           ColorIndex.LightGray3,
-           ColorIndex.LightGray4);
+           ColorIndex.Black,
+           ColorIndex.DarkGray1,
+           ColorIndex.DarkGray2,
+           ColorIndex.Gray1);
 
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
@@ -807,7 +808,6 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     CyclePalette3(BgPalette1);
                 }
-
             }
 
             if (_timer.Value % 8 == 0)
@@ -825,6 +825,18 @@ namespace ChompGame.MainGame.SceneModels
 
                     if (Darken(BgPalette2, 3, 4))
                         BgPalette2.SetColor(3, ColorIndex.Yellow5);
+                }
+
+                if (_currentScene.Theme == ThemeType.Final && _currentScene.ScrollStyle == ScrollStyle.Horizontal)
+                {
+                    byte c = (byte)BgPalette2.GetColorIndex(3);
+
+                    if (c == ColorIndex.Red1)
+                        BgPalette2.SetColor(3, ColorIndex.Red2);
+                    else if (c == ColorIndex.Red2)
+                        BgPalette2.SetColor(3, ColorIndex.Red3);
+                    else
+                        BgPalette2.SetColor(3, ColorIndex.Red1);
                 }
             }
 

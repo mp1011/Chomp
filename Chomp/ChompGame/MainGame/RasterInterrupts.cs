@@ -249,10 +249,13 @@ namespace ChompGame.MainGame
 
         private void HandleGlitchEffects()
         {
-            if (_gameModule.LevelTimer.Value > 32)
+            if (_gameModule.LevelTimer.Value > 32 && _gameModule.CurrentLevel < Level.Level7_9_TotalGlitch)
                 return;
 
             var sy = _coreGraphicsModule.ScreenPoint.Y;
+
+            int psy = _player.GetSprite().Y - _gameModule.SpritesModule.Scroll.Y;
+
             if (sy < Constants.StatusBarHeight)
                 return;
             else if(sy == _specs.ScreenHeight-1)
@@ -261,7 +264,7 @@ namespace ChompGame.MainGame
                 _tileModule.Scroll.Y = _realScrollY.Value;
                 return;
             }
-            else if(sy > _player.GetSprite().Y - 8 && sy < _player.GetSprite().Y + 8)
+            else if(sy > psy - 16 && sy < psy + 16)
             {
                 _tileModule.Scroll.X = _realScrollX.Value;
                 _tileModule.Scroll.Y = _realScrollY.Value;
