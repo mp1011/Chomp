@@ -19,7 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private WorldSprite _player;
         private CoreGraphicsModule _graphics;
 
-        protected override bool DestroyBombOnCollision => true;
+        protected override bool DestroyBombOnCollision => false;
         protected override bool AlwaysActive => true;
 
         public ChompEnemyController(WorldSprite player,

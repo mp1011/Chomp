@@ -37,7 +37,9 @@ namespace ChompGame.MainGame.SceneModels
             if(!_firstScene)
                 _levelDestructTimer.Value = 3;
 
-            if (gameModule.CurrentLevel < Level.Level7_17_Final1 || gameModule.CurrentLevel == Level.Level7_28_Final12_VerticalRetry)
+            if (gameModule.CurrentLevel < Level.Level7_17_Final1 
+                || gameModule.CurrentLevel == Level.Level7_28_Final12_VerticalRetry
+                || gameModule.CurrentLevel >= Level.Level7_33_Final17_Chamber)
                 _levelDestructTimer.Value = 0;
         }
 

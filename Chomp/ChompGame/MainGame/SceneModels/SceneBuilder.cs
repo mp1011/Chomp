@@ -206,8 +206,10 @@ namespace ChompGame.MainGame.SceneModels
         Level7_30_Final14,
         Level7_31_Final15,
         Level7_32_Final16,
-
-
+        Level7_33_Final17_Chamber,
+        Level7_34_Final17_Chamber,
+        Level7_35_Final17_Chamber,
+        Level7_36_Final17_Chamber,
     }
 
     class SceneBuilder
@@ -2583,6 +2585,50 @@ namespace ChompGame.MainGame.SceneModels
                1,
                1,
                HorizontalScrollStyle.Interior);
+
+            _ = Level.Level7_33_Final17_Chamber;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.Flat,
+                bottom: 2);
+
+            _ = Level.Level7_34_Final17_Chamber;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.FourChambers,
+                bottom: 2);
+
+            _ = Level.Level7_35_Final17_Chamber;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.TwoVerticalChambers,
+                bottom: 2);
+
+            _ = Level.Level7_36_Final17_Chamber;
+            SceneDefinition.NametableScroll(memoryBuilder, specs, ThemeType.Final,
+                enemy1: EnemyIndex.Midboss,
+                enemy2: EnemyIndex.Midboss,
+                spriteGroup: SpriteGroup.Boss,
+                left: 1,
+                top: 1,
+                right: 1,
+                shape: LevelShape.TwoHorizontalChambers,
+                bottom: 2);
         }
 
 
@@ -5124,6 +5170,54 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
+
+            AddLevel(Level.Level7_33_Final17_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 32, definition: scene),
+                (b, scene) => new PrefabScenePart(b, scene, 24, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 16, 18, scene),
+
+
+                (b, scene) => new PrefabScenePart(b, scene, 0, 12, PrefabSize.Six, PrefabSize.Two, PrefabStyle.Block),
+                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 4, y: 8, definition: scene),
+
+
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len24, 12, 16, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 20, 14, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len32, 14, 12, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len48, 18, 10, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len32, 22, 12, scene),
+                (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len48, 24, 10, scene),
+
+                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_34_Final17_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 32, definition: scene),
+              (b, scene) => new PrefabScenePart(b, scene, 4, 12, PrefabSize.Four, PrefabSize.Six, PrefabStyle.Space),
+
+              (b, scene) => new PrefabScenePart(b, scene, 12, 18, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Space),
+                (b, scene) => new PrefabScenePart(b, scene, 12, 8, PrefabSize.Four, PrefabSize.Four, PrefabStyle.Space),
+
+              (b, scene) => new PrefabScenePart(b, scene, 24, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+
+
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len32, 6, 16, scene),
+
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 12, 24, scene),
+              (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len32, 16, 24, scene),
+              (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 24, y: 32, definition: scene),
+
+
+              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_35_Final17_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 32, definition: scene),
+             (b, scene) => new PrefabScenePart(b, scene, 24, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
+
+            AddLevel(Level.Level7_36_Final17_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 32, definition: scene),
+                 (b, scene) => new PrefabScenePart(b, scene, 24, 0, PrefabSize.Eight, PrefabSize.Eight, PrefabStyle.Space),
+                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
         }
 

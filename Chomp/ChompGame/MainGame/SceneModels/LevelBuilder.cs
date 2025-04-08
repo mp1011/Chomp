@@ -480,7 +480,7 @@ namespace ChompGame.MainGame.SceneModels
         {
             int midFloorStart = (nameTable.Height / 2) - 2;
 
-            if(_sceneDefinition.Theme == ThemeType.TechBase)
+            if(_sceneDefinition.Theme == ThemeType.TechBase || _sceneDefinition.Theme == ThemeType.Final)
                 midFloorStart = (midFloorStart / 2) * 2;
             
             int midFloorEnd = midFloorStart + 4;

@@ -16,7 +16,23 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-            if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
+            if(_sceneDefinition.ScrollStyle == ScrollStyle.NameTable)
+            {
+                nameTable.ForEach((x, y, b) =>
+                {
+                    if (b == 0)
+                    {
+                        if (y == 6 || y == 8 || y == 14 || y == 16)
+                        {
+                            if (x.IsMod(3))
+                                nameTable[x, y] = 3;
+                            else
+                                nameTable[x, y] = 4;
+                        }
+                    }
+                });
+            }    
+            else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
             {
                 nameTable.ForEach((x, y, b) =>
                 {

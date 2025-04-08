@@ -827,7 +827,8 @@ namespace ChompGame.MainGame.SceneModels
                         BgPalette2.SetColor(3, ColorIndex.Yellow5);
                 }
 
-                if (_currentScene.Theme == ThemeType.Final && _currentScene.ScrollStyle == ScrollStyle.Horizontal)
+                if (_currentScene.Theme == ThemeType.Final && (_currentScene.ScrollStyle == ScrollStyle.Horizontal 
+                    || _currentScene.ScrollStyle == ScrollStyle.NameTable))
                 {
                     byte c = (byte)BgPalette2.GetColorIndex(3);
 
