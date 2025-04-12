@@ -65,4 +65,10 @@ namespace ChompGame.MainGame.SceneModels.Themes
         public TechBaseBossThemeSetup(ChompGameModule m) : base(m) { }
         protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(0, 12, 6, 1);
     }
+
+    class FinalBossThemeSetup : BossThemeSetup
+    {
+        public FinalBossThemeSetup(ChompGameModule m) : base(m) { }
+        protected override ByteRectangleBase FloorTiles => new InMemoryByteRectangle(2, 15, 6, 1);
+    }
 }

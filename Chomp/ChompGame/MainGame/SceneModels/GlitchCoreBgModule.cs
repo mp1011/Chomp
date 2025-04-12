@@ -158,9 +158,11 @@ namespace ChompGame.MainGame.SceneModels
             x /= 2;
             y /= 2;
 
-            x = x.Clamp(0, _scroller.LevelAttributeTable.Width - 1);
-            y = y.Clamp(0, _scroller.LevelAttributeTable.Height - 1);
-
+            if (x < 0 || y < 0
+                || x > _scroller.LevelAttributeTable.Width - 1
+                || y > _scroller.LevelAttributeTable.Height - 1)
+                return;
+                
             _scroller.ModifyTiles((t, a) =>
             {
                 a[x, y] = 2;
@@ -169,8 +171,10 @@ namespace ChompGame.MainGame.SceneModels
 
         private void BlockDestroy(int x, int y)
         {
-            x = x.Clamp(0, _scroller.LevelNameTable.Width - 2);
-            y = y.Clamp(0, _scroller.LevelNameTable.Height - 2);
+            if (x < 0 || y < 0
+             || x > _scroller.LevelNameTable.Width - 2
+             || y > _scroller.LevelNameTable.Height - 2)
+                return;
 
             _scroller.ModifyTiles((t, a) =>
             {
