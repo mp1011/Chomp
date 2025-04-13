@@ -2652,7 +2652,7 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Midboss,
                 enemy2: EnemyIndex.Midboss,
                 spriteGroup: SpriteGroup.Boss,
-                left: 1,
+                left: 0,
                 top: 0,
                 right: 1,
                 bgPosition: 1,
@@ -2663,11 +2663,11 @@ namespace ChompGame.MainGame.SceneModels
                 enemy1: EnemyIndex.Midboss,
                 enemy2: EnemyIndex.Midboss,
                 spriteGroup: SpriteGroup.Boss,
-                left: 1,
+                left: 0,
                 top: 0,
                 right: 1,
                 bgPosition: 1,
-                bottom: 1);
+                bottom: 2);
 
             _ = Level.Level7_40_FinalBoss;
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.FinalBoss);
@@ -5282,7 +5282,7 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_40_FinalBoss, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                (b, scene) => new SpriteScenePart(b, ScenePartType.Bomb, x: 8, y: 0, definition: scene));
+                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 0, definition: scene));
 
         }
 

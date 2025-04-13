@@ -76,8 +76,17 @@ namespace ChompGame.Helpers
         private SceneDefinition _currentScene;
         private SpriteTileTable _spriteTileTable;
 
-        public CollisionDetector(Specs specs)
+        private GameBit _bossBgHandling;
+
+        public bool BossBgHandling
         {
+            get => _bossBgHandling.Value;
+            set => _bossBgHandling.Value = value;
+        }
+
+        public CollisionDetector(Specs specs, GameBit bossBgHandling)
+        {
+            _bossBgHandling = bossBgHandling;
             _specs = specs;
         }
 
@@ -113,7 +122,7 @@ namespace ChompGame.Helpers
 
             _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
-                if (_currentScene.IsLevelBossScene && y < _levelTileMap.Height - 12)
+                if (BossBgHandling && y < _levelTileMap.Height - 12)
                     return;
 
                 if (t < CollidableTileBegin || t > CollidableTileEnd)

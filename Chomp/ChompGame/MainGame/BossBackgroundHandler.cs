@@ -70,7 +70,7 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
-            if (!_gameModule.CurrentScene.IsLevelBossScene)
+            if (!_gameModule.BossBackgroundHandling.Value)
                 return;
 
             if (_bossBgEffectValue.Value == 255)

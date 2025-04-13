@@ -88,7 +88,9 @@ namespace ChompGame.MainGame.SceneModels
 
     class PaletteModule : Module, IHBlankHandler
     {
+        private GameBit _bossBgHandling;
         private int _paletteAddress;
+        private ChompGameModule _gameModule;
         private readonly CoreGraphicsModule _graphicsModule;
         private GameByte _timer;
         private SceneDefinition _currentScene;
@@ -179,6 +181,15 @@ namespace ChompGame.MainGame.SceneModels
                 return true;
             palette.SetColor(index, color.Darker().Value);
             return false;
+        }
+
+        public void DarkenToBlack(Palette palette, int index, int limit = 0)
+        {
+            ColorIndex color = new ColorIndex(palette.GetColorIndex(index));
+            if (color.ColorColumn <= limit)
+                palette.SetColor(index, ColorIndex.Black);
+            else
+                palette.SetColor(index, color.Darker().Value);
         }
 
         public bool Lighten(Palette palette, int index)
@@ -478,8 +489,9 @@ namespace ChompGame.MainGame.SceneModels
            ColorIndex.Gray1);
 
         }
-        public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory)
+        public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory, GameBit bossBgHandling)
         {
+            _bossBgHandling = bossBgHandling;
             _currentScene = sceneDefinition;
             if (_currentScene == null)
                 return;
@@ -545,10 +557,10 @@ namespace ChompGame.MainGame.SceneModels
         {
             if(_currentScene.IsLevelBossScene)
             {
-                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.None;
-                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
             else if(_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
@@ -624,7 +636,7 @@ namespace ChompGame.MainGame.SceneModels
             if (_currentScene == null)
                 return;
 
-            if(_currentScene.IsLevelBossScene)
+            if(_bossBgHandling.Value)
             {
                 OnHBlank_LevelBoss();
                 return;

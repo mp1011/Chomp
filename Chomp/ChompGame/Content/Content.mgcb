@@ -50,6 +50,12 @@
 /processorParam:Quality=Best
 /build:Music/Dusk.ogg
 
+#begin Music/FinalBossPart1.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/FinalBossPart1.ogg
+
 #begin Music/Flight.ogg
 /importer:OggImporter
 /processor:SongProcessor

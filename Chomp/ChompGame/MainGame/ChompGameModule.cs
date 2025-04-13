@@ -41,7 +41,7 @@ namespace ChompGame.MainGame
 
 
 
-        private readonly CollisionDetector _collisionDetector;
+        private CollisionDetector _collisionDetector;
         private readonly InputModule _inputModule;
         private readonly SpritesModule _spritesModule;
         private readonly ChompAudioService _audioService;
@@ -60,8 +60,10 @@ namespace ChompGame.MainGame
 
         private GameByte _timer;
         private GameByte _longTimer;
-
         private GameByte _deathTimer;
+
+        private GameBit _bossBackgroundHandling;
+
         private SceneSpriteControllers _sceneSpriteControllers;
         private WorldScroller _worldScroller;
         private RasterInterrupts _rasterInterrupts;
@@ -70,6 +72,8 @@ namespace ChompGame.MainGame
         private ScenePartsDestroyed _scenePartsDestroyed;
         private TileEditor _tileEditor;
         private GlitchCoreBgModule _glitchCoreBgModule;
+
+        public GameBit BossBackgroundHandling => _bossBackgroundHandling;
 
         public BossBackgroundHandler BossBackgroundHandler => _bossBackgroundHandler;
         public ScenePartsDestroyed ScenePartsDestroyed => _scenePartsDestroyed;
@@ -122,7 +126,6 @@ namespace ChompGame.MainGame
             _tileModule = tileModule;
             _musicModule = musicModule;
             RewardsModule = rewardsModule;
-            _collisionDetector = new CollisionDetector(Specs);
 
             PaletteModule = paletteModule;
             ExitsModule = new ExitsModule(this);
@@ -146,6 +149,7 @@ namespace ChompGame.MainGame
             //unused bits here
             _lastExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
             _carryingBomb = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+            _bossBackgroundHandling = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
 
             memoryBuilder.AddByte();
 
@@ -190,6 +194,8 @@ namespace ChompGame.MainGame
             SceneBuilder.AddSceneParts(memoryBuilder, Specs);
 
             ThemeBuilder.BuildThemes(memoryBuilder);
+
+            _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
         }
 
         public override void OnStartup()
@@ -260,7 +266,7 @@ namespace ChompGame.MainGame
                 TileModule.AttributeTable.Reset();
 
                 _rasterInterrupts.SetScene(null);
-                PaletteModule.SetScene(null, Level.Level1_1_Start, GameSystem.Memory);
+                PaletteModule.SetScene(null, Level.Level1_1_Start, GameSystem.Memory, _bossBackgroundHandling);
 
                 var palette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
                 palette.SetColor(0, ColorIndex.Black);
@@ -326,7 +332,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_1_GlitchCore;
+            _currentLevel.Value = Level.Level7_36_Final17_Chamber;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -344,6 +350,7 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
+            _bossBackgroundHandling.Value = false;
             _longTimer.Value = 0;
             _tileModule.NameTable.Reset();
             _tileModule.AttributeTable.Reset();
@@ -393,7 +400,7 @@ namespace ChompGame.MainGame
 
 
 
-            PaletteModule.SetScene(_currentScene, _currentLevel.Value, GameSystem.Memory);
+            PaletteModule.SetScene(_currentScene, _currentLevel.Value, GameSystem.Memory, _bossBackgroundHandling);
             RewardsModule.SetScene(_currentScene);
 
             _gameState.Value = GameState.PlayScene;

@@ -277,7 +277,7 @@ namespace ChompGame.MainGame.SceneModels
               bg1: PaletteKey.Test,
               bg2: PaletteKey.FinalBg,
               fg1: PaletteKey.FinalFg,
-              fg2: PaletteKey.Test,
+              fg2: PaletteKey.Sand,
               bomb: PaletteKey.BombLight,
               enemy1: PaletteKey.Bullet,
               enemy2: PaletteKey.Gray);

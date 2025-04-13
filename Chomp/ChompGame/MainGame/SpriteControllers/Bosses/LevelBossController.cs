@@ -67,6 +67,8 @@ namespace ChompGame.MainGame.SpriteControllers
             _motionController = motionController;
 
             Palette = SpritePalette.Enemy1;
+
+            gameModule.CollissionDetector.BossBgHandling = true;
         }
 
         protected override void BeforeInitializeSprite()

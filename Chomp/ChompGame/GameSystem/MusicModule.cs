@@ -31,6 +31,7 @@ namespace ChompGame.GameSystem
             Infiltration,
             SystemMalfunction,
             VeryDefinitelyFinalDungeon,
+            FinalBossPart1
         }
 
         private GameByteEnum<SongName> _currentSong;
