@@ -246,7 +246,9 @@ namespace ChompGame.MainGame.SceneModels
             Level.Level6_13_Techbase7,
             Level.Level6_18_Techbase11,
             Level.Level7_1_GlitchCore,
-            Level.Level7_9_TotalGlitch
+            Level.Level7_9_TotalGlitch,
+            Level.Level7_16_RunRoom,
+            Level.Level7_40_FinalBoss
         };
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
@@ -5282,6 +5284,33 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_40_FinalBoss, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 6, y: 20, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 20, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 20, definition: scene),
+
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 26, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 6, y: 26, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 8, y: 26, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 10, y: 26, definition: scene),
+
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 14, y: 24, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 16, y: 24, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 14, y: 22, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 16, y: 22, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 14, y: 20, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 16, y: 20, definition: scene),
+
+
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 20, y: 20, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 22, y: 20, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 24, y: 20, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 26, y: 20, definition: scene),
+                
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 20, y: 26, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 22, y: 26, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 24, y: 26, definition: scene),
+                (b, scene) => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 26, y: 26, definition: scene),
+
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 0, definition: scene));
 
         }

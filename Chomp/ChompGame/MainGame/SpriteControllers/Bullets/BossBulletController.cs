@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class BossBulletController : ActorController, ICollidesWithPlayer, ICollidableSpriteController
     {
-        private GameByte _state;
+        protected GameByte _state;
         private GameBit _destroyOnCollision;
         private GameBit _destroyOnTimer;
         private GameBit _decorative;

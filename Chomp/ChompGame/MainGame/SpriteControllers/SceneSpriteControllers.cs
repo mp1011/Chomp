@@ -294,6 +294,12 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
+        public void ReplaceEnemyController2(ICollidableSpriteControllerPool enemyControllers, ICollidableSpriteControllerPool extraControllers)
+        {
+            _spriteControllers[1] = enemyControllers;
+            _spriteControllers[3] = extraControllers;
+        }
+
         private bool AllowGraceBomb(BaseScenePart sp)
         {
             return sp.Type == ScenePartType.Bomb && !_playerController.IsHoldingBomb;

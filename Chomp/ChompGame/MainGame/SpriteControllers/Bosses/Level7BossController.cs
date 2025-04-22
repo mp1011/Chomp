@@ -12,13 +12,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
     {
         private NibbleEnum<Phase> _phase;
         private BossPart _eye1, _eye2;
+        private ICollidableSpriteControllerPool _enemies;
       
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
 
 
-        public Level7BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) : base(gameModule, player, bulletControllers, memoryBuilder)
+        public Level7BossController(ChompGameModule gameModule, WorldSprite player, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) 
+            : base(gameModule, player, bulletControllers, memoryBuilder)
         {
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));           
             memoryBuilder.AddByte();
@@ -31,7 +33,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             BeforeBoss,
             EyesAppear,
-            EnemySpawn
+            EnemySpawn,
+            BossReappear,
+            EyeAttack
         }
 
         protected override int BossHP => GameDebug.BossTest ? 1 : 5;
@@ -41,7 +45,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
            
         protected override void UpdatePartPositions()
         {
-
             _eye1.UpdatePosition(WorldSprite);
             _eye2.UpdatePosition(WorldSprite);
         }
@@ -86,6 +89,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye2.Sprite.Visible = false;
                 _gameModule.CollissionDetector.BossBgHandling = false;
                 SetBackgroundForEnemySpawn();
+                _enemies = _gameModule.FinalBossHelper.SetEnemy(EnemyIndex.Lizard);  
+                
+                _dynamicBlockController.RestoreCoins();
+            }
+            else if (p == Phase.BossReappear)
+            {
+                _eye1.Sprite.Visible = true;
+                _eye2.Sprite.Visible = true;
+                ResetBackground();
             }
         }
 
@@ -124,6 +136,19 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             });
         }
 
+        private void ResetBackground()
+        {
+            _worldScroller.ModifyTiles((t, a) =>
+            {
+                t.ForEach((x, y, b) =>
+                {
+                    if (y < t.Height - 2)
+                        t[x, y] = 0;
+                });
+            });
+        }
+
+
         private void SetupBossParts()
         {
             var eye1Sprite = _eye1.PrepareSprite(SpriteTileIndex.Enemy1);
@@ -153,9 +178,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.EyesAppear)
             {
-                WorldSprite.X = (_player.X - 10).Clamp(22,86);
-                WorldSprite.Y = 90;
-                PositionBoss();
+                SetEyePos();
 
                 if(_levelTimer.IsMod(32))
                 {
@@ -171,8 +194,53 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.EnemySpawn)
             {
-                FadeIn(true);
+                bool anyActive = false;
+
+                _enemies.Execute(a => { anyActive = true; });
+
+                if (!anyActive)
+                {
+                    if (_levelTimer.IsMod(16))
+                    {
+                        FadeOut();
+                        _stateTimer.Value++;
+                    }
+
+                    if(_stateTimer.Value == 14)
+                        SetPhase(Phase.BossReappear);
+                }
+                else if (_levelTimer.IsMod(16))
+                {
+                    FadeIn(true);
+                }
             }
+            else if (_phase.Value == Phase.BossReappear)
+            {
+                SetEyePos();
+                if (_levelTimer.IsMod(16))
+                {
+                    _stateTimer.Value++;
+                    FadeIn(true);
+                }
+
+                if (_stateTimer.Value == 10)
+                    SetPhase(Phase.EyeAttack);
+            }
+            else if(_phase.Value == Phase.EyeAttack)
+            {
+                SetEyePos();
+                if (_levelTimer.IsMod(32))
+                {
+                    CreateRandomAimedBullet();
+                }
+            }
+        }
+
+        private void SetEyePos()
+        {
+            WorldSprite.X = (_player.X - 10).Clamp(22, 86);
+            WorldSprite.Y = 90;
+            PositionBoss();
         }
 
         private void PositionBoss()
@@ -182,22 +250,22 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             UpdatePartPositions();
         }
 
-        private void RainBullet()
+        private void CreateRandomAimedBullet()
         {
-            var bullet = _bulletControllers.TryAddNew();
+            var bullet = _bulletControllers.TryAddNew() as Boss7BulletController;
             if (bullet == null)
                 return;
 
-            bullet.DestroyOnCollision = true;
-            bullet.DestroyOnTimer = true;
+           
+            // Add randomness to the bullet's trajectory
+            var randomOffsetX = -8 + (_rng.Generate(4)*2);
+            var randomOffsetY = -16 + _rng.Generate(4);
 
-            bullet.WorldSprite.X = _player.X + _rng.Generate(4) * 4;
-            bullet.WorldSprite.Y = 64;
+            bullet.WorldSprite.Center = WorldSprite.Center.Add(randomOffsetX, randomOffsetY);
+            bullet.Mode = Boss7BulletController.BulletMode.RandomAimed;
+
+
             _audioService.PlaySound(ChompAudioService.Sound.Fireball);
-
-
-            bullet.AcceleratedMotion.YAcceleration = 3;
-            bullet.AcceleratedMotion.TargetYSpeed = 80; 
         }
 
         private void FadeIn(bool includeFg)

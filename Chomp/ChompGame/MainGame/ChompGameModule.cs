@@ -71,7 +71,9 @@ namespace ChompGame.MainGame
         private SceneDefinition _currentScene;
         private ScenePartsDestroyed _scenePartsDestroyed;
         private TileEditor _tileEditor;
+
         private GlitchCoreBgModule _glitchCoreBgModule;
+        private FinalBossHelper _finalBossHelper;
 
         public GameBit BossBackgroundHandling => _bossBackgroundHandling;
 
@@ -107,6 +109,8 @@ namespace ChompGame.MainGame
         public SceneDefinition CurrentScene => _currentScene;
 
         public RandomModule RandomModule { get; }
+
+        public FinalBossHelper FinalBossHelper => _finalBossHelper;
 
         public Level CurrentLevel
         {
@@ -165,11 +169,7 @@ namespace ChompGame.MainGame
 
             SpriteTileTable.BuildMemory(memoryBuilder);
 
-            //note, have unused bits here
-            var freeRamOffset = new ExtendedByte2(
-                memoryBuilder.AddByte(),
-                new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 0));
-
+            var freeRamOffset = memoryBuilder.AddShort();
             GameRAM.Initialize(freeRamOffset, memoryBuilder.Memory);
 
             memoryBuilder.AddByte();
@@ -332,7 +332,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_36_Final17_Chamber;
+            _currentLevel.Value = Level.Level7_40_FinalBoss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -439,6 +439,17 @@ namespace ChompGame.MainGame
             if(_currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
                 _glitchCoreBgModule = new GlitchCoreBgModule(memoryBuilder, this, CurrentLevel == Level.Level7_16_RunRoom);
+            }
+            else if(_currentScene.Theme == ThemeType.FinalBoss)
+            {
+                _finalBossHelper = new FinalBossHelper(
+                    this,
+                    memoryBuilder,
+                    _masterPatternTable,
+                    _sceneSpriteControllers,
+                    SpriteTileTable,
+                    GameSystem.CoreGraphicsModule,
+                    GameSystem.Memory);
             }
         }
 

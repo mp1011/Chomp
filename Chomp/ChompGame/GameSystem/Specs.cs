@@ -226,7 +226,7 @@ namespace ChompGame.GameSystem
         public override int BytesPerPalette => 3;
         public override int NumPalettes => 8;
         public override int BackgroundPalettes => 4;
-        public override int GameRAMSize => 2048; //see if we can lower this
+        public override int GameRAMSize => 2048;
         public override Color[] SystemColors => _colors;
 
         private Color[] _colors = new Color[64];

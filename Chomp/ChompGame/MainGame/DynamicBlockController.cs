@@ -183,6 +183,27 @@ namespace ChompGame.MainGame
             }
         }
 
+        public void RestoreCoins()
+        {
+            int address = _blockCount.Address + 1;
+
+            for (int index = 0; index < _blockCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type != DynamicBlockType.Coin)
+                    continue;
+
+                block.State.TopLeft = true;
+                block.State.TopRight = true;
+                block.State.BottomLeft = true;
+                block.State.BottomRight = true;
+                _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
+      
+                address += block.ByteLength;
+            }
+        }
+
         public void PositionFreeCoinBlocksNearPlayer(byte tileX, byte tileY)
         {
             int address = _blockCount.Address + 1;

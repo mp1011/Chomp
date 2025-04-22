@@ -7,7 +7,7 @@ namespace ChompGame.Data
     public class GameRAM
     {
         private readonly Specs _specs;
-        private ExtendedByte2 _freeRamOffset;
+        private GameShort _freeRamOffset;
         private SystemMemory _memory;
       
         public GameRAM(Specs specs)
@@ -15,7 +15,7 @@ namespace ChompGame.Data
             _specs = specs;
         }
 
-        public void Initialize(ExtendedByte2 freeRamOffset, SystemMemory memory)
+        public void Initialize(GameShort freeRamOffset, SystemMemory memory)
         {
             _memory = memory;
             _freeRamOffset = freeRamOffset;
@@ -59,7 +59,7 @@ namespace ChompGame.Data
                 if(newOffset > _specs.GameRAMSize)
                     throw new Exception("Access Violation");
 
-                _freeRamOffset.Value = newOffset;
+                _freeRamOffset.Value = (ushort)newOffset;
             }
         }
        
