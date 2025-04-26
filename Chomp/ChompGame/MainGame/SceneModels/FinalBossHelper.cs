@@ -46,6 +46,16 @@ namespace ChompGame.MainGame.SceneModels
                     var enemies = SetSpriteControllers(SpriteType.Lizard);
                     PlaceEnemies(enemies);
                     return enemies;
+                case EnemyIndex.Bird:
+                    CopyEnemyVram(8, 0);
+                    enemies = SetSpriteControllers(SpriteType.Bird);
+                    PlaceEnemies(enemies);
+                    return enemies;
+                case EnemyIndex.Ogre:
+                    CopyEnemyVram(12, 0);
+                    enemies = SetSpriteControllers(SpriteType.Ogre);
+                    PlaceEnemies(enemies);
+                    return enemies;
                 default:
                     return null;
             }
@@ -91,7 +101,26 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.SpritesModule,
                         () => new LizardEnemyController(extra, SpriteTileIndex.Enemy2, _gameModule, player, memoryBuilder));
                     break;
+                case SpriteType.Bird:
+                    // needed as the number of pools is fixed 
+                    extra = new EnemyOrBulletSpriteControllerPool<BulletController>(1, _gameModule.SpritesModule,() => new BulletController(_gameModule, memoryBuilder, SpriteType.LizardBullet));
 
+                    enemy = new EnemyOrBulletSpriteControllerPool<BirdEnemyController>(
+                    6,
+                    _gameModule.SpritesModule,
+                    () => new BirdEnemyController(player, _gameModule, memoryBuilder, SpriteTileIndex.Enemy2));
+                    break;
+                case SpriteType.Ogre:
+                    extra = new EnemyOrBulletSpriteControllerPool<OgreBulletController>(
+                                     6,
+                                     _gameModule.SpritesModule,
+                                     () => new OgreBulletController(_gameModule, memoryBuilder, SpriteTileIndex.Extra2));
+
+                    enemy = new EnemyOrBulletSpriteControllerPool<OgreController>(
+                        6,
+                        _gameModule.SpritesModule,
+                        () => new OgreController(extra, SpriteTileIndex.Enemy2, _gameModule, memoryBuilder, player));
+                    break;
             }
 
             _sceneSpriteControllers.ReplaceEnemyController2(enemy, extra);
@@ -106,8 +135,8 @@ namespace ChompGame.MainGame.SceneModels
             int destX = tileIndex % _graphicsModule.Specs.PatternTableTilesAcross;
 
             _masterPatternTable.CopyTilesTo(
-                   destination: _graphicsModule.BackgroundPatternTable,
-                   source: new InMemoryByteRectangle(x, y, 2, 2),
+                   destination: _graphicsModule.SpritePatternTable,
+                   source: new InMemoryByteRectangle(x, y, 4, 2),
                    destinationPoint: new Point(destX, destY),
                    _graphicsModule.Specs,
                    _memory);

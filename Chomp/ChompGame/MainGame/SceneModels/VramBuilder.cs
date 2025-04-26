@@ -227,7 +227,7 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1); // bullet
                     AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
 
-                    AddSprite(SpriteTileIndex.Enemy2, 2, 0, 2, 2); // lizard
+                    AddSprite(SpriteTileIndex.Enemy2, 12, 7, 4, 2); // mage
                     AddSprite(SpriteTileIndex.Extra2, 4, 0, 1, 1); // bullet
 
                     return;

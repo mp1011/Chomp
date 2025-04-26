@@ -35,10 +35,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             EyesAppear,
             EnemySpawn,
             BossReappear,
-            EyeAttack
+            EyeAttack,
+            Hurt
         }
 
-        protected override int BossHP => GameDebug.BossTest ? 1 : 5;
+        protected override int BossHP => 7;
 
         protected override string BossTiles { get; } =
             @"0000";
@@ -89,7 +90,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye2.Sprite.Visible = false;
                 _gameModule.CollissionDetector.BossBgHandling = false;
                 SetBackgroundForEnemySpawn();
-                _enemies = _gameModule.FinalBossHelper.SetEnemy(EnemyIndex.Lizard);  
+                _enemies = _gameModule.FinalBossHelper.SetEnemy(EnemyToSpawn());  
                 
                 _dynamicBlockController.RestoreCoins();
             }
@@ -99,6 +100,25 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye2.Sprite.Visible = true;
                 ResetBackground();
             }
+            else if( p == Phase.Hurt)
+            {
+                _eye1.Sprite.Palette = SpritePalette.Fire;
+                _eye2.Sprite.Palette = SpritePalette.Fire;
+            }
+        }
+
+        private EnemyIndex EnemyToSpawn()
+        {
+            if (_hitPoints.Value == BossHP)
+                return EnemyIndex.Lizard;
+            else if (_hitPoints.Value == BossHP - 1)
+                return EnemyIndex.Bird;
+            else if (_hitPoints.Value == BossHP - 2)
+                return EnemyIndex.Ogre;
+
+
+            return EnemyIndex.Ufo;
+
         }
 
         private void SetBackgroundForEnemySpawn()
@@ -155,6 +175,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             eye1Sprite.Tile2Offset = 1;
             eye1Sprite.FlipX = true;
             eye1Sprite.FlipY = false;
+            eye1Sprite.Priority = false;
             _eye1.XOffset = 0;
             _eye1.YOffset = 0;
             eye1Sprite.Visible = true;
@@ -163,6 +184,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             eye2Sprite.Tile2Offset = 1;
             eye2Sprite.FlipX = false;
             eye2Sprite.FlipY = false;
+            eye2Sprite.Priority = false;
             _eye2.XOffset = 16;
             _eye2.YOffset = 0;
             eye2Sprite.Visible = true;
@@ -232,6 +254,24 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (_levelTimer.IsMod(32))
                 {
                     CreateRandomAimedBullet();
+                }
+            }
+            else if (_phase.Value == Phase.Hurt)
+            {
+                SetEyePos();
+               
+                if (_levelTimer.IsMod(32))
+                {
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                        SetPhase(Phase.EnemySpawn);
+
+                    if (_stateTimer.Value >= 4)
+                    {
+                        _eye1.Sprite.Palette = SpritePalette.Enemy1;
+                        _eye2.Sprite.Palette = SpritePalette.Enemy1;
+                        FadeOut();
+                    }
                 }
             }
         }
@@ -327,24 +367,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         public override BombCollisionResponse HandleBombCollision(WorldSprite player)
         {
-            //_audioService.PlaySound(ChompAudioService.Sound.Lightning);           
-            //_hitPoints.Value--;
-
-            //if(_hitPoints.Value == 0)
-            //    WorldSprite.Status = WorldSpriteStatus.Dying;
-            //else
-            //    SetPhase(Phase.Hurt);
+            _audioService.PlaySound(ChompAudioService.Sound.Lightning);           
+            _hitPoints.Value--;
+            SetPhase(Phase.Hurt);
          
             return BombCollisionResponse.Destroy;
         }
 
         public override bool CollidesWithBomb(WorldSprite bomb)
         {
-            return false;
-            //if (_phase.Value <= Phase.BossAppear)
-            //    return false;
+           
+            if (_phase.Value != Phase.EyeAttack)
+                return false;
 
-            //return bomb.Bounds.Intersects(_eye1.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye2.WorldSprite.Bounds);
+            return bomb.Bounds.Intersects(_eye1.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye2.WorldSprite.Bounds);
         }
 
         public override bool CollidesWithPlayer(PlayerController player)
