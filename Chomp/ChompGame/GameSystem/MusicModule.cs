@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using System.Collections;
 
 namespace ChompGame.GameSystem
 {
@@ -31,7 +32,9 @@ namespace ChompGame.GameSystem
             Infiltration,
             SystemMalfunction,
             VeryDefinitelyFinalDungeon,
-            FinalBossPart1
+            FinalBossPart1,
+            FinalBossPart1End,
+            FinalBossPart2
         }
 
         private GameByteEnum<SongName> _currentSong;
@@ -50,6 +53,10 @@ namespace ChompGame.GameSystem
                 }
             }
         }
+
+        public bool IsPlaying => MediaPlayer.State == MediaState.Playing;
+
+        public int PlayPosition => (int)MediaPlayer.PlayPosition.TotalMilliseconds;
 
         public MusicModule(MainSystem mainSystem, ContentManager contentManager) 
             : base(mainSystem)
@@ -106,6 +113,15 @@ namespace ChompGame.GameSystem
         {
         }
 
+        public bool CurrentSongRepeats()
+        {
+            return _currentSong.Value switch
+            {
+                SongName.FinalBossPart1End => false,
+                _ => true
+            };
+        }
+
         public void Update()
         {
             if (!Enabled)
@@ -124,7 +140,7 @@ namespace ChompGame.GameSystem
             try
             {
                 var song = _contentManager.Load<Song>(@"Music\" + _currentSong.Value.ToString());
-                MediaPlayer.IsRepeating = true;
+                MediaPlayer.IsRepeating = CurrentSongRepeats();
                 MediaPlayer.Play(song);
             }
             catch

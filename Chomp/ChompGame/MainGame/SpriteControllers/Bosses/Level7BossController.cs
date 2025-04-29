@@ -36,7 +36,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             EnemySpawn,
             BossReappear,
             EyeAttack,
-            Hurt
+            Hurt,
+            Transition,
+            BeginPart2
         }
 
         protected override int BossHP => 7;
@@ -104,6 +106,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 _eye1.Sprite.Palette = SpritePalette.Fire;
                 _eye2.Sprite.Palette = SpritePalette.Fire;
+            }
+            else if (p == Phase.Transition)
+            {
+                _eye1.Sprite.Palette = SpritePalette.Fire;
+                _eye2.Sprite.Palette = SpritePalette.Fire;
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart1End;
+
+                GameDebug.Watch3 = new DebugWatch("Music Timer", () => (int)_musicModule.PlayPosition);
+            }
+            else if (p == Phase.BeginPart2)
+            {
+                _eye1.Sprite.Palette = SpritePalette.Enemy1;
+                _eye2.Sprite.Palette = SpritePalette.Enemy1;
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2;
             }
         }
 
@@ -274,6 +290,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     }
                 }
             }
+            else if(_phase.Value == Phase.Transition)
+            {
+                SetEyePos();
+                if (_musicModule.PlayPosition >= 44100)
+                    SetPhase(Phase.BeginPart2);
+            }
         }
 
         private void SetEyePos()
@@ -369,7 +391,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             _audioService.PlaySound(ChompAudioService.Sound.Lightning);           
             _hitPoints.Value--;
-            SetPhase(Phase.Hurt);
+
+            if (_hitPoints.Value == BossHP - 3)
+                SetPhase(Phase.Transition);
+            else
+                SetPhase(Phase.Hurt);
          
             return BombCollisionResponse.Destroy;
         }
