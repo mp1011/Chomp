@@ -44,8 +44,21 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         protected override int BossHP => 7;
 
         protected override string BossTiles { get; } =
-            @"0000";
-           
+            @"00BAC00000008C00
+              0BIIAII9BCC8II9C
+              3IIIIII9IIIIIII4
+              0JIIIIIIIIIIII40
+              0063FIIIIIIIFH00
+              00000JIIIII40000
+              000006GIII400000
+              00000006F5000000
+              003II900008I9000
+              0003IIC00BII4000
+              00006GIAAIIK0000
+              000003IIII400000
+              000006IIIK000000
+              0000006G40000000";
+            
         protected override void UpdatePartPositions()
         {
             _eye1.UpdatePosition(WorldSprite);
@@ -79,7 +92,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart1;
 
-                SetBossTiles();
                 SetupBossParts();
                 WorldSprite.Visible = false;
 
@@ -120,6 +132,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye1.Sprite.Palette = SpritePalette.Enemy1;
                 _eye2.Sprite.Palette = SpritePalette.Enemy1;
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2;
+                _gameModule.CollissionDetector.BossBgHandling = true;
+                SetBossTiles();
             }
         }
 
@@ -222,7 +236,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 {
                     _stateTimer.Value++;
                     if (_stateTimer.Value == 0)
-                        SetPhase(Phase.EnemySpawn);
+                        SetPhase(Phase.Transition);
 
                     if (_stateTimer.Value < 8)
                         FadeIn(false);
@@ -296,6 +310,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (_musicModule.PlayPosition >= 44100)
                     SetPhase(Phase.BeginPart2);
             }
+            else if(_phase.Value == Phase.BeginPart2)
+            {
+                FadeIn(true);
+                WorldSprite.X = 0;
+                WorldSprite.Y = 72;
+                PositionBoss();
+            }
         }
 
         private void SetEyePos()
@@ -307,8 +328,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void PositionBoss()
         {
-            _position.X = (byte)(WorldSprite.X + 123 - _tileModule.Scroll.X);
-            _position.Y = (byte)(WorldSprite.Y - 77);
+            _position.X = (byte)(WorldSprite.X - _tileModule.Scroll.X);
+            _position.Y = (byte)(WorldSprite.Y - 56);
             UpdatePartPositions();
         }
 
