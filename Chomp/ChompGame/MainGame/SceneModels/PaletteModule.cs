@@ -879,6 +879,21 @@ namespace ChompGame.MainGame.SceneModels
                         Darken(BgPalette1, 3);
 
                 }
+                else if (_currentScene.Theme == ThemeType.FinalBoss)
+                {
+                    var pt = GameSystem.CoreGraphicsModule.GetBackgroundPalette(BgPalette.Background);
+
+                    byte c = (byte)pt.GetColorIndex(3);
+
+                    if (c == ColorIndex.Red1)
+                        pt.SetColor(3, ColorIndex.Red2);
+                    else if (c == ColorIndex.Red2)
+                        pt.SetColor(3, ColorIndex.Red3);
+                    else
+                        pt.SetColor(3, ColorIndex.Red1);
+
+                    BgPalette2.SetColor(3, (byte)pt.GetColorIndex(3));
+                }
             }
         
         

@@ -120,12 +120,14 @@ namespace ChompGame.Helpers
 
             var actorBounds = actor.Bounds;
 
+            var cend = BossBgHandling ? 15 : CollidableTileEnd;
+                
             _levelTileMap.ForEach(topLeftTile, bottomRightTile, (x, y, t) =>
             {
                 if (BossBgHandling && y < _levelTileMap.Height - 12)
                     return;
 
-                if (t < CollidableTileBegin || t > CollidableTileEnd)
+                if (t < CollidableTileBegin || t > cend)
                     return;
 
                 var tileBounds = new Rectangle(

@@ -1369,7 +1369,7 @@ namespace ChompGame.MainGame.SceneModels
                 spriteBuilder.AddBossSprites(_gameModule.CurrentLevel);
 
                 if(_sceneDefinition.HasSprite(SpriteType.LevelBoss))
-                    bgBuilder.AddBossBodyTiles();
+                    bgBuilder.AddBossBodyTiles(_sceneDefinition.Theme == ThemeType.FinalBoss);
             }
             else
             {

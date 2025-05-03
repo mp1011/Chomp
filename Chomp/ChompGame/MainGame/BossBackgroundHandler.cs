@@ -13,7 +13,8 @@ namespace ChompGame.MainGame
         SineWave,
         DissolveFromBottom,
         FadeFromTop,
-        VerticalStretch
+        VerticalStretch,
+        FinalBossLower
     }
 
     class BossBackgroundHandler : IHBlankHandler
@@ -113,6 +114,8 @@ namespace ChompGame.MainGame
                     OnHBlank_UpdateFadeFromTop();
                 else if (BossBgEffectType == BackgroundEffectType.VerticalStretch)
                     OnHBlank_VerticalStretch();
+                else if (BossBgEffectType == BackgroundEffectType.FinalBossLower)
+                    OnHBlank_FinalBossLower();
             }
 
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
@@ -132,6 +135,15 @@ namespace ChompGame.MainGame
 
                 sprite.Priority = value;
             }            
+        }
+
+        private void OnHBlank_FinalBossLower()
+        {
+            var bottomScreenBegin = _bossPosition.Y - 96;
+            if(_coreGraphicsModule.ScreenPoint.Y >= bottomScreenBegin)
+            {
+                _tileModule.Scroll.X += _bossBgEffectValue.Value;
+            }
         }
 
         private void OnHBlank_UpdateSineWave()

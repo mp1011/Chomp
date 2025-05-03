@@ -45,9 +45,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         protected override string BossTiles { get; } =
             @"00BAC00000008C00
-              0BIIAII9BCC8II9C
-              3IIIIII9IIIIIII4
-              0JIIIIIIIIIIII40
+              0BI1AII9BCC81I9C
+              3I1II1I9II1IIII4
+              0JIIII1II1II1I40
               0063FIIIIIIIFH00
               00000JIIIII40000
               000006GIII400000
@@ -125,15 +125,28 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye2.Sprite.Palette = SpritePalette.Fire;
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart1End;
 
+                SetBackgroundForPhase2();
+                _bossBackgroundHandler.ShowCoins = false;
+                _gameModule.CollissionDetector.BossBgHandling = true;
                 GameDebug.Watch3 = new DebugWatch("Music Timer", () => (int)_musicModule.PlayPosition);
             }
             else if (p == Phase.BeginPart2)
             {
                 _eye1.Sprite.Palette = SpritePalette.Enemy1;
                 _eye2.Sprite.Palette = SpritePalette.Enemy1;
+
+                _eye1.XOffset = -14;
+                _eye1.YOffset = 2;
+                _eye2.XOffset = 10;
+                _eye2.YOffset = 2;
+                _eye1.Sprite.Priority = true;
+                _eye2.Sprite.Priority = true;
+
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2;
-                _gameModule.CollissionDetector.BossBgHandling = true;
+               
                 SetBossTiles();
+                _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLower;
+                _bossBackgroundHandler.BossBgEffectValue = 0;
             }
         }
 
@@ -198,6 +211,27 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             });
         }
 
+        private void SetBackgroundForPhase2()
+        {
+            _worldScroller.ModifyTiles((t, a) =>
+            {
+                t.ForEach((x, y, b) =>
+                {
+                    if (y < t.Height - 2)
+                        t[x, y] = 0;
+                });
+
+                a.ForEach((x, y, b) =>
+                {
+                    if(y == a.Height-1)
+                        a[x, y] = 1;
+                    else
+                        a[x, y] = 0;
+                });
+
+            });
+        }
+
 
         private void SetupBossParts()
         {
@@ -231,17 +265,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             else if(_phase.Value == Phase.EyesAppear)
             {
                 SetEyePos();
-
+                
                 if(_levelTimer.IsMod(32))
                 {
                     _stateTimer.Value++;
                     if (_stateTimer.Value == 0)
-                        SetPhase(Phase.Transition);
+                        SetPhase(Phase.EnemySpawn);
 
                     if (_stateTimer.Value < 8)
                         FadeIn(false);
                     else
-                        FadeOut();
+                    {
+                        SetPhase(Phase.Transition);
+                     //   FadeOut();
+                    }
                 }
             }
             else if(_phase.Value == Phase.EnemySpawn)
@@ -312,9 +349,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.BeginPart2)
             {
-                FadeIn(true);
-                WorldSprite.X = 0;
-                WorldSprite.Y = 72;
+                // FadeIn(true);
+
+                WorldSprite.X = _player.X + 2;
+                WorldSprite.Y = _player.Y - 32;
+                _bossBackgroundHandler.BossBgEffectValue = (byte)(1 + (_levelTimer.Value % 3));
+
                 PositionBoss();
             }
         }
@@ -328,8 +368,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void PositionBoss()
         {
-            _position.X = (byte)(WorldSprite.X - _tileModule.Scroll.X);
-            _position.Y = (byte)(WorldSprite.Y - 56);
+            _position.X = (byte)(WorldSprite.X - _tileModule.Scroll.X - 32);
+            _position.Y = (byte)(WorldSprite.Y + 56);
             UpdatePartPositions();
         }
 

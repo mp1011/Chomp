@@ -145,7 +145,7 @@ namespace ChompGame.MainGame.SceneModels
                 _memory);
         }
 
-        public void AddBossBodyTiles()
+        public void AddBossBodyTiles(bool finalBoss)
         {
             _masterPatternTable.CopyTilesTo(
                destination: _vramPatternTable,
@@ -160,6 +160,16 @@ namespace ChompGame.MainGame.SceneModels
                destinationPoint: new Point(1, 2),
                _specs,
                _memory);
+
+            if(finalBoss)
+            {
+                _masterPatternTable.CopyTilesTo(
+                     destination: _vramPatternTable,
+               source: new InMemoryByteRectangle(11, 8, 1, 1),
+               destinationPoint: new Point(1, 2),
+               _specs,
+               _memory);
+            }
         }
 
         public void AddBossSprites(Level currentLevel)
