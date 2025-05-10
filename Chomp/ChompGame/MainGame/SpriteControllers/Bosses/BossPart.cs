@@ -29,7 +29,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _spriteDefinition = spriteDefinition;
         }
 
-        public Sprite PrepareSprite(SpriteTileIndex tileIndex)
+        public Sprite PrepareSprite(SpriteTileIndex tileIndex, SpritePalette palette = SpritePalette.Enemy1)
         {
             _worldSprite.AssignSpriteIndex();
             var partSprite = _worldSprite.Sprite;
@@ -38,7 +38,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             partSprite.SizeY = _spriteDefinition.SizeY;
             partSprite.Tile2Offset = 0;
             partSprite.Visible = true;
-            partSprite.Palette = SpritePalette.Enemy1;
+            partSprite.Palette = palette;
             partSprite.FlipX = false;
             return partSprite;
         }

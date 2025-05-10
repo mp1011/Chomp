@@ -34,7 +34,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public bool IsErased(int index) => GetWorldSprite(index).IsErased;
 
-        public void CreateTail(SpriteTileIndex tileIndex = SpriteTileIndex.Extra2)
+        public void CreateTail(SpriteTileIndex tileIndex = SpriteTileIndex.Extra2, int size=1)
         {
             for (int i = 0; i < _numSections; i++)
             {
@@ -43,12 +43,15 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 var sprite = tailSprite.Sprite;
                 sprite.Tile = (byte)(_spriteTileTable.GetTile(tileIndex));
-                sprite.SizeX = 1;
-                sprite.SizeY = 1;
+                sprite.SizeX = size;
+                sprite.SizeY = size;
                 sprite.Palette = SpritePalette.Enemy1;
                 sprite.Visible = true;
                 sprite.X = 0;
                 sprite.Y = 0;
+
+                if (size == 2)
+                    sprite.Tile2Offset = 1;
             }
         }
 

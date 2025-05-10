@@ -26,6 +26,9 @@ namespace ChompGame.MainGame
         private TileModule _tileModule;
         private GameByteGridPoint _bossPosition;
         private GameByte _bossBgEffectValue;
+        private LowNibble _finalBossLowerX;
+        private HighNibble _finalBossLowerY;
+
         private GameByteEnum<BackgroundEffectType> _bossBgEffectType;
         private RandomModule _rng;
         private GameBit _showCoins;
@@ -43,6 +46,19 @@ namespace ChompGame.MainGame
             get => _bossBgEffectValue.Value;
             set => _bossBgEffectValue.Value = value;
         }
+
+        public byte FinalBossLowerX
+        {
+            get => _finalBossLowerX.Value;
+            set => _finalBossLowerX.Value = value;
+        }
+
+        public byte FinalBossLowerY
+        {
+            get => _finalBossLowerY.Value;
+            set => _finalBossLowerY.Value = value;
+        }
+
 
         public BackgroundEffectType BossBgEffectType
         {
@@ -67,6 +83,9 @@ namespace ChompGame.MainGame
 
             _showCoins = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             _bossBgEffectType = new GameByteEnum<BackgroundEffectType>(memoryBuilder.AddMaskedByte(Bit.Right7));
+
+            _finalBossLowerX = new LowNibble(_bossBgEffectValue.Address, memoryBuilder.Memory);
+            _finalBossLowerY = new HighNibble(_bossBgEffectValue.Address, memoryBuilder.Memory);
         }
 
         public void OnHBlank()
@@ -139,10 +158,12 @@ namespace ChompGame.MainGame
 
         private void OnHBlank_FinalBossLower()
         {
-            var bottomScreenBegin = _bossPosition.Y - 96;
-            if(_coreGraphicsModule.ScreenPoint.Y >= bottomScreenBegin)
+            var bottomScreenBegin = _bossPosition.Y - 94;
+            if(_coreGraphicsModule.ScreenPoint.Y >= bottomScreenBegin &&
+                _coreGraphicsModule.ScreenPoint.Y < bottomScreenBegin + 22)
             {
-                _tileModule.Scroll.X += _bossBgEffectValue.Value;
+                _tileModule.Scroll.X -= (byte)(_finalBossLowerX.Value + 0);
+                _tileModule.Scroll.Y -= (byte)(_finalBossLowerY.Value - 3);
             }
         }
 

@@ -61,6 +61,11 @@ namespace ChompGame.MainGame.SceneModels
             }
         }
 
+        public void SetPhase2Sprite()
+        {
+            CopyEnemyVram(8, 9);
+        }
+
         private void PlaceEnemies(ICollidableSpriteControllerPool enemies)
         {
             PlaceEnemy(enemies,24, 96);

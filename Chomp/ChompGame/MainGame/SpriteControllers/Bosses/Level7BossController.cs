@@ -5,14 +5,19 @@ using ChompGame.Graphics;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
+using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level7BossController : LevelBossController
     {
+        private const int JawParts = 3;
         private NibbleEnum<Phase> _phase;
         private BossPart _eye1, _eye2;
+        private ChompTail _leftJaw, _rightJaw;
         private ICollidableSpriteControllerPool _enemies;
+
+        private GameBit _jawOpen;
       
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -27,6 +32,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
           
             _eye1 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
             _eye2 = CreatePart(memoryBuilder, new SpriteDefinition(SpriteType.LevelBoss, memoryBuilder.Memory));
+            _leftJaw = new ChompTail(memoryBuilder, JawParts, gameModule);
+            _rightJaw = new ChompTail(memoryBuilder, JawParts, gameModule);
+
+            _jawOpen = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
         }
 
         private enum Phase : byte
@@ -52,11 +62,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               00000JIIIII40000
               000006GIII400000
               00000006F5000000
+              0000000000000000
               003II900008I9000
               0003IIC00BII4000
               00006GIAAIIK0000
               000003IIII400000
-              000006IIIK000000
               0000006G40000000";
             
         protected override void UpdatePartPositions()
@@ -145,8 +155,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2;
                
                 SetBossTiles();
+                _gameModule.FinalBossHelper.SetPhase2Sprite();
                 _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLower;
                 _bossBackgroundHandler.BossBgEffectValue = 0;
+
+                CreateJaw();
             }
         }
 
@@ -254,6 +267,18 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             eye2Sprite.Visible = true;
         }
 
+        private void CreateJaw()
+        {
+            _leftJaw.CreateTail(SpriteTileIndex.Enemy2, 2);
+            _rightJaw.CreateTail(SpriteTileIndex.Enemy2,2);
+
+            for(int i = 0; i < JawParts; i++)
+            {
+                _leftJaw.GetSprite(i).Priority = false;
+                _rightJaw.GetSprite(i).Priority = false;
+            }
+        }
+
         protected override void UpdateActive()
         {
             if(_phase.Value == Phase.BeforeBoss)
@@ -349,14 +374,68 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.BeginPart2)
             {
-                // FadeIn(true);
+                if (_levelTimer.IsMod(32))
+                    _stateTimer.Value++;
 
-                WorldSprite.X = _player.X + 2;
-                WorldSprite.Y = _player.Y - 32;
-                _bossBackgroundHandler.BossBgEffectValue = (byte)(1 + (_levelTimer.Value % 3));
+                if(_stateTimer.Value.IsMod(5))
+                {
+                    if(WorldSprite.X < 58)
+                    {
+                        _motion.TargetXSpeed = 16;
+                        _motion.XAcceleration = 2;
+                    }
+                    else
+                    {
+                        _motion.TargetXSpeed = -16;
+                        _motion.XAcceleration = 2;
+                    }
+                }
 
+                if (_stateTimer.Value.IsMod(3))
+                {
+                    if (WorldSprite.Y < 78)
+                    {
+                        _motion.TargetYSpeed = 16;
+                        _motion.YAcceleration = 2;
+                    }
+                    else
+                    {
+                        _motion.TargetYSpeed = -16;
+                        _motion.YAcceleration = 2;
+                    }
+                }
+
+                PositionJaw();
                 PositionBoss();
+                _motionController.Update();
             }
+        }
+
+        private void PositionJaw()
+        {
+            if (!_levelTimer.IsMod(4))
+                return;
+
+            byte targetX, targetY;
+
+           // targetY = (byte)(_jawOpen.Value ? 5 : 0);
+            if (_motion.XSpeed > 0)
+                targetX = 0;
+            else if (_motion.XSpeed < 0)
+                targetX = 8;
+            else
+                targetX = 4;
+
+            if (_motion.YSpeed > 0)
+                targetY = 0;
+            else if (_motion.YSpeed < 0)
+                targetY = 5;
+            else
+                targetY = 2;
+
+
+            _bossBackgroundHandler.FinalBossLowerY = _bossBackgroundHandler.FinalBossLowerY.MoveToward(targetY, 1);
+            _bossBackgroundHandler.FinalBossLowerX = _bossBackgroundHandler.FinalBossLowerX.MoveToward(targetX, 1);
         }
 
         private void SetEyePos()
@@ -371,6 +450,36 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _position.X = (byte)(WorldSprite.X - _tileModule.Scroll.X - 32);
             _position.Y = (byte)(WorldSprite.Y + 56);
             UpdatePartPositions();
+
+            if (_phase.Value >= Phase.BeginPart2)
+            {
+                UpdateJaw(_leftJaw, -8, -18);
+                UpdateJaw(_rightJaw, 8,12);
+            }
+        }
+
+        private void UpdateJaw(ChompTail jaw, int xOffset1, int xOffset2)
+        {
+            int yOffset = 16;
+
+            var startAnchor = new Point(WorldSprite.X + xOffset1, WorldSprite.Y + yOffset);
+            var endAnchor = new Point(
+                WorldSprite.X + _bossBackgroundHandler.FinalBossLowerX + xOffset2, 
+                WorldSprite.Y + yOffset + 4 + _bossBackgroundHandler.FinalBossLowerY+ 4);
+                       
+            for (int i = 0; i < JawParts; i++)
+            {
+                var jawPart = jaw.GetWorldSprite(i);
+                float t = (float)(i+1) / (JawParts + 1);
+
+                // Interpolate the position between startAnchor and endAnchor
+                int interpolatedX = (int)(startAnchor.X + t * (endAnchor.X - startAnchor.X));
+                int interpolatedY = (int)(startAnchor.Y + t * (endAnchor.Y - startAnchor.Y));
+
+                // Update the position of the jaw part
+                jawPart.X = interpolatedX;
+                jawPart.Y = interpolatedY;
+            }
         }
 
         private void CreateRandomAimedBullet()

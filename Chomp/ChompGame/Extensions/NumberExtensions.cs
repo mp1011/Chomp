@@ -98,6 +98,16 @@ namespace ChompGame.Extensions
                 return target;
         }
 
+        public static byte MoveToward(this byte number, byte target, int step)
+        {
+            if (number < target - step)
+                return (byte)(number + step);
+            else if (number > target + step)
+                return (byte)(number - step);
+            else
+                return target;
+        }
+
         public static byte ByteClamp(this int i, byte max) =>
             (byte)i.Clamp(0, max);
 
