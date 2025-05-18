@@ -1204,7 +1204,7 @@ namespace ChompGame.MainGame.SceneModels
                     break;
                 case Level.Level7_40_FinalBoss:
                     bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                        8,
+                        16,
                         _gameModule.SpritesModule,
                         () => new Boss7BulletController(_gameModule, memoryBuilder, playerController.WorldSprite));
 

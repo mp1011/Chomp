@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.Graphics;
+using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
@@ -11,6 +12,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level7BossController : LevelBossController
     {
+        private const bool Debug_StartAtPhase2 = false;
+
         private const int JawParts = 3;
         private NibbleEnum<Phase> _phase;
         private BossPart _eye1, _eye2;
@@ -18,6 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private ICollidableSpriteControllerPool _enemies;
 
         private GameBit _jawOpen;
+        private MaskedByte _extraVar;
       
         protected override bool AlwaysActive => true;
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -36,6 +40,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _rightJaw = new ChompTail(memoryBuilder, JawParts, gameModule);
 
             _jawOpen = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit0, memoryBuilder.Memory);
+            _extraVar = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Left7, memoryBuilder.Memory, leftShift: 1);
             memoryBuilder.AddByte();
         }
 
@@ -48,7 +53,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             EyeAttack,
             Hurt,
             Transition,
-            BeginPart2
+            Attack1
         }
 
         protected override int BossHP => 7;
@@ -88,6 +93,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
             GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
             GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
+            GameDebug.Watch4 = new DebugWatch("Extra Var", () => _extraVar.Value);
 
             _phase.Value = p;
             _stateTimer.Value = 0;
@@ -140,8 +146,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _gameModule.CollissionDetector.BossBgHandling = true;
                 GameDebug.Watch3 = new DebugWatch("Music Timer", () => (int)_musicModule.PlayPosition);
             }
-            else if (p == Phase.BeginPart2)
+            else if (p == Phase.Attack1)
             {
+                _bossBackgroundHandler.ShowCoins = false;
                 _eye1.Sprite.Palette = SpritePalette.Enemy1;
                 _eye2.Sprite.Palette = SpritePalette.Enemy1;
 
@@ -159,6 +166,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLower;
                 _bossBackgroundHandler.BossBgEffectValue = 0;
 
+
+                _extraVar.Value = 0;
                 CreateJaw();
             }
         }
@@ -301,8 +310,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         FadeIn(false);
                     else
                     {
-                        SetPhase(Phase.Transition);
-                     //   FadeOut();
+                        if(Debug_StartAtPhase2)
+                            SetPhase(Phase.Transition);
+                        else
+                           FadeOut();
                     }
                 }
             }
@@ -370,45 +381,100 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 SetEyePos();
                 if (_musicModule.PlayPosition >= 44100)
-                    SetPhase(Phase.BeginPart2);
+                    SetPhase(Phase.Attack1);
             }
-            else if(_phase.Value == Phase.BeginPart2)
+            else if(_phase.Value == Phase.Attack1)
             {
-                if (_levelTimer.IsMod(32))
-                    _stateTimer.Value++;
-
-                if(_stateTimer.Value.IsMod(5))
+                BossMotion();
+                if (_levelTimer.IsMod(8))
                 {
-                    if(WorldSprite.X < 58)
+                    if (_extraVar.Value < 16)
                     {
-                        _motion.TargetXSpeed = 16;
-                        _motion.XAcceleration = 2;
-                    }
-                    else
-                    {
-                        _motion.TargetXSpeed = -16;
-                        _motion.XAcceleration = 2;
-                    }
-                }
+                        var angle = 300 + (_extraVar.Value * 8);
 
-                if (_stateTimer.Value.IsMod(3))
-                {
-                    if (WorldSprite.Y < 78)
-                    {
-                        _motion.TargetYSpeed = 16;
-                        _motion.YAcceleration = 2;
+                        FireBulletAtAngle(_eye1.WorldSprite.Center, angle, 100);
                     }
-                    else
+                    else if(_extraVar.Value >= 20 && _extraVar.Value < 36)
                     {
-                        _motion.TargetYSpeed = -16;
-                        _motion.YAcceleration = 2;
-                    }
-                }
+                        var angle = (60 - ((_extraVar - 20) * 8)) % 360;
 
-                PositionJaw();
-                PositionBoss();
-                _motionController.Update();
+                        FireBulletAtAngle(_eye2.WorldSprite.Center, angle, 100);
+                    }
+                    else if(_extraVar == 40)
+                    {
+                        for (int angle = -40; angle <= 40; angle += 8)
+                        {
+                            FireBulletAtAngle(_eye1.WorldSprite.Center, angle.NMod(360), 30);
+                            FireBulletAtAngle(_eye2.WorldSprite.Center, angle.NMod(360), 30);
+                        }
+                    }
+
+                    _extraVar.Value++;
+
+                        
+                    
+                }
             }
+        }
+
+        private void FireBulletAtAngle(Point origin, int angle, int speed)
+        {
+            var xy = GameMathHelper.PointFromAngle(angle, speed);
+            FireBullet(origin, xy.X, xy.Y);
+        }
+
+        private void FireBullet(Point origin, int x, int y)
+        {
+            var bullet = _bulletControllers.TryAddNew() as Boss7BulletController;
+            if (bullet == null)
+                return;
+
+            bullet.Mode = Boss7BulletController.BulletMode.NoCoin;
+
+            bullet.DestroyOnTimer = true;
+            bullet.DestroyOnCollision = true;
+            bullet.WorldSprite.Center = origin;
+            bullet.AcceleratedMotion.SetXSpeed(x);
+            bullet.AcceleratedMotion.SetYSpeed(y);
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+        }
+
+        private void BossMotion()
+        {
+            if (_levelTimer.IsMod(8))
+                _stateTimer.Value++;
+
+            if (_stateTimer.Value.IsMod(5))
+            {
+                if (WorldSprite.X < 58)
+                {
+                    _motion.TargetXSpeed = 16;
+                    _motion.XAcceleration = 2;
+                }
+                else
+                {
+                    _motion.TargetXSpeed = -16;
+                    _motion.XAcceleration = 2;
+                }
+            }
+
+            if (_stateTimer.Value.IsMod(3))
+            {
+                if (WorldSprite.Y < 78)
+                {
+                    _motion.TargetYSpeed = 16;
+                    _motion.YAcceleration = 2;
+                }
+                else
+                {
+                    _motion.TargetYSpeed = -16;
+                    _motion.YAcceleration = 2;
+                }
+            }
+
+            PositionJaw();
+            PositionBoss();
+            _motionController.Update();
         }
 
         private void PositionJaw()
@@ -451,7 +517,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _position.Y = (byte)(WorldSprite.Y + 56);
             UpdatePartPositions();
 
-            if (_phase.Value >= Phase.BeginPart2)
+            if (_phase.Value >= Phase.Attack1)
             {
                 UpdateJaw(_leftJaw, -8, -18);
                 UpdateJaw(_rightJaw, 8,12);

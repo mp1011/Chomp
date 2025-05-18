@@ -312,7 +312,7 @@ namespace ChompGame.Data
                 return (byte)(_memory[_address] & 15);
             }
             set
-            {
+            {                
                 _memory[_address] = (byte)(_memory[_address] & 240);
                 _memory[_address] = (byte)(_memory[_address] | value);
             }

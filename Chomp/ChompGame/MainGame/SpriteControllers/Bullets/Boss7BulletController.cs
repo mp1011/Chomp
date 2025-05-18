@@ -1,6 +1,7 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
+using ChompGame.GameSystem;
 using ChompGame.MainGame.SpriteModels;
 
 namespace ChompGame.MainGame.SpriteControllers
@@ -23,6 +24,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             Normal,
             RandomAimed,
+            NoCoin
         }
        
         public Boss7BulletController(
@@ -43,7 +45,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
 
         protected override void UpdateActive() 
-        {
+        {            
             if(_mode.Value == BulletMode.RandomAimed)
             {
                 if(_state.Value == 0)
@@ -76,6 +78,32 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else 
                 base.UpdateActive();
+        }
+
+
+        protected override void UpdateDying()
+        {
+            if (_mode.Value != BulletMode.NoCoin)
+            {
+                base.UpdateDying();
+                return;
+            }
+
+            AcceleratedMotion.Apply(WorldSprite);
+
+            if (_levelTimer.Value.IsMod(8))
+                _state.Value++;
+
+            var sprite = GetSprite();
+            if (_state.Value == 25)
+            {
+                Destroy();
+            }
+            else if (_state.Value > 20)
+            {
+                var baseTile = _spriteTileTable.GetTile(SpriteTileIndex.Explosion);
+                sprite.Tile = (byte)(baseTile + (_levelTimer.Value % 2));
+            }
         }
     }
 }
