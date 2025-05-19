@@ -2,6 +2,7 @@
 using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
+using ChompGame.Graphics;
 using ChompGame.MainGame.SpriteModels;
 using System;
 
@@ -14,7 +15,8 @@ namespace ChompGame.MainGame
         DissolveFromBottom,
         FadeFromTop,
         VerticalStretch,
-        FinalBossLower
+        FinalBossLower,
+        FinalBossLowerBeam
     }
 
     class BossBackgroundHandler : IHBlankHandler
@@ -135,6 +137,11 @@ namespace ChompGame.MainGame
                     OnHBlank_VerticalStretch();
                 else if (BossBgEffectType == BackgroundEffectType.FinalBossLower)
                     OnHBlank_FinalBossLower();
+                else if (BossBgEffectType == BackgroundEffectType.FinalBossLowerBeam)
+                {
+                    OnHBlank_FinalBossLower();
+                    OnHBlank_FinalBossLowerBeam();
+                }
             }
 
             if (_coreGraphicsModule.ScreenPoint.Y == groundPosition)
@@ -164,6 +171,34 @@ namespace ChompGame.MainGame
             {
                 _tileModule.Scroll.X -= (byte)(_finalBossLowerX.Value + 0);
                 _tileModule.Scroll.Y -= (byte)(_finalBossLowerY.Value - 3);
+            }
+        }
+
+        private void OnHBlank_FinalBossLowerBeam()
+        {
+            var beamStart = _bossPosition.Y - 100;
+            int beamEnd = beamStart + _finalBossLowerY.Value + 4;
+
+            int beamMid = beamStart + ((beamEnd - beamStart) / 2);
+
+            if (_coreGraphicsModule.ScreenPoint.Y >= beamStart &&
+                _coreGraphicsModule.ScreenPoint.Y < beamEnd)
+            {
+                var p = _coreGraphicsModule.GetBackgroundPalette(SceneModels.BgPalette.Background);
+
+                int shade;
+                if (_coreGraphicsModule.ScreenPoint.Y <= beamMid)
+                    shade = _coreGraphicsModule.ScreenPoint.Y - beamStart;
+                else
+                    shade = beamEnd - _coreGraphicsModule.ScreenPoint.Y;
+
+                p.SetColor(0, ColorIndex.Red(7 - shade).Value);
+            }
+            else if (_coreGraphicsModule.ScreenPoint.Y > beamEnd)
+            {
+                var p = _coreGraphicsModule.GetBackgroundPalette(SceneModels.BgPalette.Background);
+                p.SetColor(0, ColorIndex.Black);
+
             }
         }
 

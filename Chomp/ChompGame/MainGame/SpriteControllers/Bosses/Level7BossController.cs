@@ -7,6 +7,7 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
@@ -53,7 +54,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             EyeAttack,
             Hurt,
             Transition,
-            Attack1
+            Attack1,
+            BeamAttack            
         }
 
         protected override int BossHP => 7;
@@ -97,6 +99,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             _phase.Value = p;
             _stateTimer.Value = 0;
+            _extraVar.Value = 0;
 
             if (p == Phase.BeforeBoss)
             {
@@ -394,13 +397,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                         FireBulletAtAngle(_eye1.WorldSprite.Center, angle, 100);
                     }
-                    else if(_extraVar.Value >= 20 && _extraVar.Value < 36)
+                    else if (_extraVar.Value >= 20 && _extraVar.Value < 36)
                     {
                         var angle = (60 - ((_extraVar - 20) * 8)) % 360;
 
                         FireBulletAtAngle(_eye2.WorldSprite.Center, angle, 100);
                     }
-                    else if(_extraVar == 40)
+                    else if (_extraVar == 40)
                     {
                         for (int angle = -40; angle <= 40; angle += 8)
                         {
@@ -408,12 +411,54 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                             FireBulletAtAngle(_eye2.WorldSprite.Center, angle.NMod(360), 30);
                         }
                     }
+                    else if (_extraVar.Value == 60)
+                        SetPhase(Phase.BeamAttack);
 
                     _extraVar.Value++;
 
-                        
-                    
+                                           
                 }
+            }
+            else if (_phase.Value == Phase.BeamAttack)
+            {
+                _motion.TargetXSpeed = 0;
+                if (_stateTimer.Value == 0)
+                {
+                    _jawOpen.Value = false;
+                    MoveBossToY(70);
+
+                    if(Math.Abs(WorldSprite.Y - 70) < 2)
+                        _stateTimer.Value++;                            
+                }
+                else if (_stateTimer.Value == 1)
+                {
+                    if (_levelTimer.IsMod(16))
+                        _jawOpen.Value = !_jawOpen.Value;
+
+                    MoveBossToY(70);
+                    _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLowerBeam;
+                }
+                PositionJaw2();
+                PositionBoss();
+                _motionController.Update();
+            }
+        }
+
+        private void MoveBossToY(int y)
+        {
+            int distance = y - WorldSprite.Y;
+
+            if (Math.Abs(distance) > 4)
+            {
+                // Move quickly toward the target
+                _motion.TargetYSpeed = distance > 0 ? 16 : -16;
+                _motion.YAcceleration = 2;
+            }
+            else
+            {
+                // Slow down as we approach the target
+                _motion.TargetYSpeed = distance > 0 ? 2 : -2;
+                _motion.YAcceleration = 1;
             }
         }
 
@@ -499,6 +544,19 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             else
                 targetY = 2;
 
+
+            _bossBackgroundHandler.FinalBossLowerY = _bossBackgroundHandler.FinalBossLowerY.MoveToward(targetY, 1);
+            _bossBackgroundHandler.FinalBossLowerX = _bossBackgroundHandler.FinalBossLowerX.MoveToward(targetX, 1);
+        }
+        private void PositionJaw2()
+        {
+            if (!_levelTimer.IsMod(4))
+                return;
+
+            byte targetX, targetY;
+
+            targetX = 1;
+            targetY = _jawOpen.Value ? (byte)5 : (byte)0;
 
             _bossBackgroundHandler.FinalBossLowerY = _bossBackgroundHandler.FinalBossLowerY.MoveToward(targetY, 1);
             _bossBackgroundHandler.FinalBossLowerX = _bossBackgroundHandler.FinalBossLowerX.MoveToward(targetX, 1);
