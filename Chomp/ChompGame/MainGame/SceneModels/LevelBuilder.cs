@@ -878,7 +878,7 @@ namespace ChompGame.MainGame.SceneModels
             
             foreach(var sprite in _sceneDefinition.Sprites)
             {
-                AssignSpriteControllers(sprite, spritePools, memoryBuilder, playerController, prizeControllers);
+                AssignSpriteControllers(sprite, spritePools, memoryBuilder, playerController, prizeControllers, bombControllers);
             }
 
             turretControllers = new EnemyOrBulletSpriteControllerPool<TurretBulletController>(4, _gameModule.SpritesModule,
@@ -899,7 +899,8 @@ namespace ChompGame.MainGame.SceneModels
             ICollidableSpriteControllerPool[] spritePools,
             SystemMemoryBuilder memoryBuilder,
             PlayerController playerController,
-            SpriteControllerPool<PrizeController> prizeControllers)
+            SpriteControllerPool<PrizeController> prizeControllers,
+            SpriteControllerPool<BombController> bombControllers)
         {
             int enemyIndex = spritePools[0] == null ? 0 : 1;
             int extraIndex = spritePools[2] == null ? 2 : 3;
@@ -1018,7 +1019,7 @@ namespace ChompGame.MainGame.SceneModels
                 case SpriteType.Chomp:
                 case SpriteType.LevelBoss:
 
-                    AssignBossSpriteControllers(spritePools, memoryBuilder, playerController, prizeControllers);
+                    AssignBossSpriteControllers(spritePools, memoryBuilder, playerController, prizeControllers, bombControllers);
                     break;
             }
         }
@@ -1026,7 +1027,8 @@ namespace ChompGame.MainGame.SceneModels
         private void AssignBossSpriteControllers(ICollidableSpriteControllerPool[] spritePools,
             SystemMemoryBuilder memoryBuilder,
             PlayerController playerController,
-            SpriteControllerPool<PrizeController> prizeControllers)
+            SpriteControllerPool<PrizeController> prizeControllers,
+            SpriteControllerPool<BombController> bombControllers)
         {
             int enemyIndex = spritePools[0] == null ? 0 : 1;
             int extraIndex = spritePools[2] == null ? 2 : 3;
@@ -1212,10 +1214,11 @@ namespace ChompGame.MainGame.SceneModels
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<Level7BossController>(
                          size: 1,
                          spritesModule: _gameModule.SpritesModule,
-                         () => new Level7BossController(_gameModule, playerController.WorldSprite,
+                         () => new Level7BossController(_gameModule, playerController.WorldSprite,    
+                            bombControllers,
                             bossBulletControllers, memoryBuilder));
 
-                    AssignSpriteControllers(SpriteType.Lizard, spritePools, memoryBuilder, playerController, prizeControllers);
+                    AssignSpriteControllers(SpriteType.Lizard, spritePools, memoryBuilder, playerController, prizeControllers,bombControllers);
 
                     break;
                 default:
