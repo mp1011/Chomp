@@ -34,7 +34,9 @@ namespace ChompGame.GameSystem
             VeryDefinitelyFinalDungeon,
             FinalBossPart1,
             FinalBossPart1End,
-            FinalBossPart2
+            FinalBossPart2,
+            FinalBossPart2End,
+            FinalBossPart3
         }
 
         private GameByteEnum<SongName> _currentSong;

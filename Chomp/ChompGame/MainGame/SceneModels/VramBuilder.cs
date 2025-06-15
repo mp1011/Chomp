@@ -241,7 +241,13 @@ namespace ChompGame.MainGame.SceneModels
                     AddSprite(SpriteTileIndex.Extra2, 4, 0, 1, 1); // bullet
 
                     return;
-
+                case Level.Level7_41_FinalBossEpilogue:
+                    AddSprite(SpriteTileIndex.Enemy1, 8, 1, 4, 2);
+                    AddSprite(SpriteTileIndex.Enemy2, 11, 12, 2, 2); //eye
+                    AddSprite(SpriteTileIndex.Extra2, 7, 1, 1, 1);
+                    AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1);
+                    AddSprite(SpriteTileIndex.Explosion, 5, 0, 2, 1);
+                    return;
                 default:
                     AddSprite(SpriteTileIndex.Enemy1, 8, 1, 4, 2);
                     AddSprite(SpriteTileIndex.Extra1, 12, 2, 1, 1);

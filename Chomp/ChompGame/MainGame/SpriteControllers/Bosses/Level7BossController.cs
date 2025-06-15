@@ -62,6 +62,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             BeamAttack,
             Attack2,
             BeamAttack2,
+            Dying
         }
 
         protected override int BossHP => 7;
@@ -83,7 +84,23 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               00006GIAAIIK0000
               000003IIII400000
               0000006G40000000";
-            
+
+        private string BossTilesNoJaw { get; } =
+           @"00BAC00000008C00
+              0BI1AII9BCC81I9C
+              3I1II1I9II1IIII4
+              0JIIII1II1II1I40
+              0063FIIIIIIIFH00
+              00000JIIIII40000
+              000006GIII400000
+              00000006F5000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000";
+
+
         protected override void UpdatePartPositions()
         {
             _eye1.UpdatePosition(WorldSprite);
@@ -173,6 +190,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             else if (p == Phase.Attack2)
             {
                 _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLower;
+            }
+            else if (p == Phase.Dying)
+            {
+                _eye1.Sprite.Palette = SpritePalette.Fire;
+                _eye2.Sprite.Palette = SpritePalette.Fire;
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2End;
             }
         }
 
@@ -678,6 +701,87 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     _extraVar.Value++;
                 }
             }
+            else if (_phase.Value == Phase.Dying)
+            {
+                if (_levelTimer.IsMod(64) && _stateTimer.Value < 15)
+                    _stateTimer.Value++;
+
+                int jawDestroyTime = 8;
+                _motion.TargetXSpeed = 0;
+                _motion.TargetYSpeed = 0;
+
+                PositionJaw2();
+                PositionBoss();
+                _motionController.Update();
+
+                if (_levelTimer.Value.IsMod(2))
+                {
+                    _worldScroller.OffsetCamera(_rng.Generate(1), 1);
+
+                    if (_stateTimer.Value < jawDestroyTime)
+                    {
+                        _bossBackgroundHandler.FinalBossLowerY = _rng.Generate(2);
+                        _bossBackgroundHandler.FinalBossLowerX = 1;
+                    }
+                }
+
+                if (_stateTimer.Value >= 12)
+                {
+                    if (_levelTimer.IsMod(16))
+                        FadeOut();
+                }
+                else if(_stateTimer.Value == 15)
+                {
+                    FadeOut();
+                    EraseBossTiles();
+                }
+                else
+                {
+                    if (_levelTimer.IsMod(32))
+                    {
+                        _jawOpen.Value = !_jawOpen.Value;
+                        var bossPalette = _paletteModule.BgPalette2;
+                        bossPalette.SetColor(1, ColorIndex.Red3);
+                        bossPalette.SetColor(2, ColorIndex.Red2);
+                        bossPalette.SetColor(3, ColorIndex.Red1);
+                    }
+                    else if (_levelTimer.IsMod(4))
+                    {
+                        FadeIn(false);
+                    }
+
+                    if (_stateTimer.Value == jawDestroyTime)
+                    {
+                        EraseJawTiles();
+                        _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+                        _bossBackgroundHandler.BossBgEffectValue = 0;
+                    }
+
+                    if (_levelTimer.IsMod(3) || _levelTimer.IsMod(5))
+                    {
+                        _audioService.PlaySound(ChompAudioService.Sound.Break);
+                        CreateExplosion(WorldSprite.X + -20 + _rng.Generate(5), WorldSprite.Y + -2 + _rng.Generate(4));
+
+                        if (_stateTimer.Value < jawDestroyTime)
+                            CreateExplosion(WorldSprite.X + -16 + _rng.Generate(5), WorldSprite.Y + 28 + _rng.Generate(2));
+                    }
+                }
+
+
+                if (_musicModule.PlayPosition >= 26500)
+                    _exitsModule.GotoNextLevel();
+            }
+        }
+
+        private void EraseJawTiles()
+        {
+            var tileStart = 16;
+
+            _worldScroller.ModifyTiles((nt, _) =>
+            {
+                nt.SetFromString(0, 13, tileStart,
+                BossTilesNoJaw);
+            });
         }
 
         private void PrepBossTiles()
@@ -967,6 +1071,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         public override BombCollisionResponse HandleBombCollision(WorldSprite player)
         {
+            if (_phase.Value == Phase.Dying)
+                return BombCollisionResponse.None;
+
             _audioService.PlaySound(ChompAudioService.Sound.Break);         
             _hitPoints.Value--;
 
@@ -983,8 +1090,16 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 if (_hitPoints.Value == 0)
                 {
-                    _hitPoints.Value = (byte)BossHP;
-                    SetPhase(Phase.Attack2);
+                    if (_phase.Value < Phase.Attack2)
+                    {
+                        _hitPoints.Value = (byte)BossHP;
+                        SetPhase(Phase.Attack2);
+                    }
+                    else
+                    {
+                        SetPhase(Phase.Dying);
+                        return BombCollisionResponse.Destroy;
+                    }
                 }
                  
                 var bossPalette = _paletteModule.BgPalette2;

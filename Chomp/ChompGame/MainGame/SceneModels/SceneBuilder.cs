@@ -213,7 +213,9 @@ namespace ChompGame.MainGame.SceneModels
         Level7_37_BeforeBoss1,
         Level7_38_BeforeBoss2,
         Level7_39_BeforeBoss3,
-        Level7_40_FinalBoss
+        Level7_40_FinalBoss,
+        Level7_41_FinalBossEpilogue,
+
 
 
     }
@@ -2673,6 +2675,10 @@ namespace ChompGame.MainGame.SceneModels
 
             _ = Level.Level7_40_FinalBoss;
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.FinalBoss);
+
+            _ = Level.Level7_41_FinalBossEpilogue;
+            SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.FinalBoss);
+
         }
 
 
@@ -2811,7 +2817,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 52, y: 12, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 54, y: 12, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.SwitchBlock, topLeft: true, topRight: true, bottomLeft: true, bottomRight: true, x: 56, y: 12, definition: scene),
-                b => new SpriteScenePart(b, ScenePartType.Button, x: 60, y: 13, definition: scene)
+                b => new SpriteScenePart(b, ScenePartType.Button, x: 60, y: 11, definition: scene)
                 );
             CheckDestroyBits(Level.Level1_9_Platforms2, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
@@ -5313,6 +5319,8 @@ namespace ChompGame.MainGame.SceneModels
 
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 8, y: 0, definition: scene));
 
+            AddLevel(Level.Level7_41_FinalBossEpilogue, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
+              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, 8, 0, scene));
         }
 
         private static IEnumerable<Func<SystemMemoryBuilder, SceneDefinition, IScenePart>> CubeSceneParts(int x, int y)

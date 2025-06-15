@@ -68,6 +68,18 @@
 /processorParam:Quality=Best
 /build:Music/FinalBossPart2.ogg
 
+#begin Music/FinalBossPart2End.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/FinalBossPart2End.ogg
+
+#begin Music/FinalBossPart3.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/FinalBossPart3.ogg
+
 #begin Music/Flight.ogg
 /importer:OggImporter
 /processor:SongProcessor

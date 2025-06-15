@@ -46,15 +46,16 @@ namespace ChompGame.Helpers
         public byte this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public byte this[int x, int y]
         {
+            //  get => (y < 2 || y >= _realMap.Height + _statusBarRows) ? (byte)0 : _realMap[x, y - _statusBarRows];
             get
             {
                 if (y < 2)
                     y = 2;
-                else if (y >= _realMap.Height)
+                else if (y > _realMap.Height)
                     y = _realMap.Height + 1;
 
                 return _realMap[x, y - _statusBarRows];
-            } 
+            }
             set => _realMap[x, y - _statusBarRows] = value;
         }
         public int Width => _realMap.Width;

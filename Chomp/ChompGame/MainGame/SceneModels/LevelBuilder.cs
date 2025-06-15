@@ -1221,6 +1221,19 @@ namespace ChompGame.MainGame.SceneModels
                     AssignSpriteControllers(SpriteType.Lizard, spritePools, memoryBuilder, playerController, prizeControllers,bombControllers);
 
                     break;
+                case Level.Level7_41_FinalBossEpilogue:
+                    bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                        8,
+                        _gameModule.SpritesModule,
+                        () => new Boss6BulletController(_gameModule, memoryBuilder));
+
+                    spritePools[extraIndex] = bossBulletControllers;
+                    spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompFinalBossController>(
+                            size: 1,
+                            spritesModule: _gameModule.SpritesModule,
+                            () => new ChompFinalBossController(playerController.WorldSprite, bossBulletControllers, _gameModule, memoryBuilder));
+
+                    break;
                 default:
                     bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
                           15,
