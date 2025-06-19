@@ -14,7 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level7BossController : LevelBossController
     {
-        private const bool Debug_StartAtPhase2 = true;
+        private const bool Debug_StartAtPhase2 = false;
 
         private const int JawParts = 3;
         private NibbleEnum<Phase> _phase;

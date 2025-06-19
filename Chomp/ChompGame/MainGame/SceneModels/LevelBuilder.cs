@@ -1223,7 +1223,7 @@ namespace ChompGame.MainGame.SceneModels
                     break;
                 case Level.Level7_41_FinalBossEpilogue:
                     bossBulletControllers = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
-                        8,
+                        16,
                         _gameModule.SpritesModule,
                         () => new Boss6BulletController(_gameModule, memoryBuilder));
 
