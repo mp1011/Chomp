@@ -35,6 +35,9 @@ namespace ChompGame.MainGame
 
         public const bool InfiniteHp = false;
 
+        public const bool OneHp = true;
+
+
         private const DebugLogFlags _debugLogFlags = DebugLogFlags.LevelTransition | DebugLogFlags.SpriteSpawn | DebugLogFlags.Misc;
 
         private static List<string> _log = new List<string>();

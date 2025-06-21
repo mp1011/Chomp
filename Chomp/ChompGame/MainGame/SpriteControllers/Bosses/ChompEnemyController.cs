@@ -18,7 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly Specs _specs;
         private WorldSprite _player;
         private CoreGraphicsModule _graphics;
-
+        protected override int PointsForEnemy => 1000;
         protected override bool DestroyBombOnCollision => false;
         protected override bool AlwaysActive => true;
 

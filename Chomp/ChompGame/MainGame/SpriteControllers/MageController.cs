@@ -20,7 +20,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly EnemyOrBulletSpriteControllerPool<MageBulletController> _bulletControllers;
 
         private NibbleEnum<Phase> _phase;
-
+        protected override int PointsForEnemy => 400;
         public override bool CollidesWithPlayer(PlayerController player)
         {
             return false;

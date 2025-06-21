@@ -28,6 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private const int MaxY = 32;
         private const int MinY = 12;
 
+        protected override int PointsForEnemy => 1000;
 
         private Point Target => new Point(8 + _motionTarget.X * 4, 8 + _motionTarget.Y * 2);
      

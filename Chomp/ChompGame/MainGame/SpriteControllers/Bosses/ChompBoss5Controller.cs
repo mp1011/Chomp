@@ -28,7 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private CoreGraphicsModule _graphics;
         private BossBackgroundHandler _bossBgHandler;
         private GameByte _anchor;
-        
+        protected override int PointsForEnemy => 1000;
         enum Phase : byte 
         {
             Init,

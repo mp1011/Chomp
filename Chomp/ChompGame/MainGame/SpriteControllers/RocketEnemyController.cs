@@ -19,7 +19,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameBit _thrust;
         private GameBit _variation;
         private MaskedByte _thrustCount;
-
+        protected override int PointsForEnemy => 0;
         public byte Variation
         {
             get => (byte)(_variation.Value ? 1 : 0);

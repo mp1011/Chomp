@@ -18,7 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public const int Coin5Diag2 = 3;
 
         private readonly RewardsModule _rewardsModule;
-        public const byte HealthPerPickup = 2;
+        public const byte HealthPerPickup = 4;
         private CollisionDetector _collisionDetector;
         private IMotionController _motionController;
         private AcceleratedMotion _motion;
@@ -163,13 +163,13 @@ namespace ChompGame.MainGame.SpriteControllers
                 Destroy();
 
                 if (_variation.Value == ExtraHealth)
-                    OnCollected_ExtraExtraHealth();
+                    OnCollected_ExtraHealth();
                 else
                     OnCollected_Coin();
             }
         }
 
-        private void OnCollected_ExtraExtraHealth()
+        private void OnCollected_ExtraHealth()
         {
             if (_statusBar.Health < StatusBar.FullHealth - HealthPerPickup)
                 _statusBar.Health += HealthPerPickup;

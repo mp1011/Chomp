@@ -23,7 +23,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private CoreGraphicsModule _graphics;
         private BossPart _eye1, _eye2;
         private GameByte _rotation;
-
+        protected override int PointsForEnemy => 1000;
 
         enum Phase : byte 
         {

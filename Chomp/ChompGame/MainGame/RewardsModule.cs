@@ -9,12 +9,14 @@ namespace ChompGame.MainGame
 {
     class RewardsModule : Module
     {
+        private int[] _extraLifeScores = new int[] { 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000 };
         private const int FlashDuration = 60;
         private const int CoinsUntilReward = GameDebug.QuickReward ? 1 : 20;
 
         private readonly Specs _specs;
         private readonly ChompAudioService _audioService;
         private readonly SpritesModule _spritesModule;
+        private readonly RandomModule _randomModule;
         private SceneDefinition _currentScene;
         private GameByte _nextReward;
         private GameByte _timer;
@@ -24,6 +26,7 @@ namespace ChompGame.MainGame
         {
             _audioService = mainSystem.GetModule<ChompAudioService>();
             _spritesModule = mainSystem.GetModule<SpritesModule>();
+            _randomModule = mainSystem.GetModule<RandomModule>();
             _specs = mainSystem.Specs;
         }
 
@@ -80,6 +83,20 @@ namespace ChompGame.MainGame
             }
         }
 
+        public bool CheckExtraLife(uint scoreBefore, uint scoreAfter)
+        {
+            for (int i = 0; i < _extraLifeScores.Length; i++)
+            {
+                if (scoreBefore < _extraLifeScores[i] && scoreAfter >= _extraLifeScores[i])
+                {
+                    _audioService.PlaySound(ChompAudioService.Sound.Reward);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private bool RewardIsBomb(StatusBar statusBar)
         {
             if (_currentScene.IsMidBossScene || _currentScene.IsLevelBossScene)
@@ -88,7 +105,14 @@ namespace ChompGame.MainGame
             if (_currentScene.IsAutoScroll)
                 return false;
 
-            return statusBar.Health == StatusBar.FullHealth;
+            if (statusBar.Health == StatusBar.FullHealth)
+                return true;
+            else if (statusBar.Health <= 2)
+                return false;
+
+
+            var pct = (float)statusBar.Health / StatusBar.FullHealth;
+            return pct <= _randomModule.Generate(8) / 256.0;
         }
 
         private bool AddReward(StatusBar statusBar, SceneSpriteControllers sceneSpriteControllers)

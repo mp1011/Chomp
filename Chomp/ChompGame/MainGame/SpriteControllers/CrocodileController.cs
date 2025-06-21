@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private readonly WorldSprite _player;
         private readonly CollisionDetector _collisionDetector;
-
+        protected override int PointsForEnemy => 200;
         public CrocodileController(
             WorldSprite player,
             SpriteTileIndex index, 

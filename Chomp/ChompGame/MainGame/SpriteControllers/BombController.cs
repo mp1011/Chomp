@@ -6,6 +6,7 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.MotionControllers;
 using ChompGame.MainGame.SpriteModels;
+using System;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -99,9 +100,26 @@ namespace ChompGame.MainGame.SpriteControllers
                 
                 if ((int)_bombState.Value < 2 && (collisionInfo.YCorrection < 0 || collisionInfo.IsOnGround))
                 {
-                    _isThrown.Value = false;
-                    _motion.XSpeed = 0;
-                    _motion.TargetXSpeed = 0;
+                    if (_isThrown.Value)
+                    {
+                        if(Math.Abs(_motion.CurrentMotion.XSpeed) >= 30)
+                        {
+                            _motion.XSpeed = _motion.CurrentMotion.XSpeed / 2;
+                            _motion.XAcceleration = 1;
+                            _motion.TargetXSpeed = 0;
+                        }
+                        else
+                        {
+                            _isThrown.Value = false;
+                            _motion.XSpeed = 0;
+                            _motion.TargetXSpeed = 0;
+                        }
+                    }
+                    else
+                    {
+                        _motion.XSpeed = 0;
+                        _motion.TargetXSpeed = 0;
+                    }
                     _motion.YSpeed = (int)(-(ySpeed * 0.5));
                     _bombState.Value++;
                 }

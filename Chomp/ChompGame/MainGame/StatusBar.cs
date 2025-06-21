@@ -7,12 +7,13 @@ namespace ChompGame.MainGame
 {
     class StatusBar
     {
-        public const int FullHealth = 8;
+        public const int FullHealth = GameDebug.OneHp ? 1 : 8;
         public const int InitialLives = 3;
 
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
         private readonly ChompGameModule _gameModule;
+        private readonly RewardsModule _rewardsModule;
 
         private GameInteger _score;
         private LowNibble _lives;
@@ -54,6 +55,7 @@ namespace ChompGame.MainGame
             _tileModule = gameModule.TileModule;
             _specs = _tileModule.Specs;
             _coreGraphicsModule = _tileModule.GameSystem.CoreGraphicsModule;
+            _rewardsModule = gameModule.RewardsModule;
         }
 
         public void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -140,6 +142,11 @@ namespace ChompGame.MainGame
 
         public void AddToScore(uint value)
         {
+            if(_lives.Value < 9 && _rewardsModule.CheckExtraLife(_score.Value, _score.Value + value))
+            {
+                _lives.Value++;
+                SetLives(_lives.Value);
+            }
             _score.Value += value;
             DrawScore();
         }

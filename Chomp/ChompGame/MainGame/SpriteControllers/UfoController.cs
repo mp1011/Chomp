@@ -24,7 +24,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bulletControllers;
         private LowNibble _variation;
         private HighNibble _extra;
-
+        protected override int PointsForEnemy => 250;
         protected override bool DestroyWhenFarOutOfBounds => false;
 
         protected override bool DestroyWhenOutOfBounds => false;

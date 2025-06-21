@@ -16,7 +16,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private const int Brake = 2;
         private const int BulletSpeed = 20;
         private WorldSprite _player;
-        
+        protected override int PointsForEnemy => 0;
         public void AfterSpawn(ISpriteControllerPool pool)
         {
 

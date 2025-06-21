@@ -33,7 +33,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected WorldScroller _worldScroller;
         protected BossBackgroundHandler _bossBackgroundHandler;
         protected ExitsModule _exitsModule;
-
+        protected override int PointsForEnemy => 2000;
         protected override bool DestroyWhenFarOutOfBounds => false;
         protected override bool DestroyWhenOutOfBounds => false;
 

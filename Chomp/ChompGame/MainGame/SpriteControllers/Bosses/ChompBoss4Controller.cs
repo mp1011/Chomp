@@ -22,7 +22,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly Specs _specs;
         private WorldSprite _player;
         private PrecisionMotion _firstTailSectionMotion;
-
+        protected override int PointsForEnemy => 1000;
         enum Phase : byte 
         {
             Init,

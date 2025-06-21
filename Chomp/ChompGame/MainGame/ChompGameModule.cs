@@ -309,6 +309,13 @@ namespace ChompGame.MainGame
         {
             if(_deathTimer.Value == 0)
             {
+                for (int i = 0; i < Specs.MaxSprites; i++)
+                {
+                    var sprite = SpritesModule.GetSprite(i);
+                    sprite.Visible = false;
+                    sprite.Tile = 0;
+                }
+
                 GameSystem.CoreGraphicsModule.BackgroundPatternTable.Reset();
                 TileModule.NameTable.Reset();
                 TileModule.AttributeTable.Reset();
@@ -372,15 +379,42 @@ namespace ChompGame.MainGame
             _inputModule.OnLogicUpdate();
             if (_inputModule.Player1.StartKey == GameKeyState.Pressed)
             {
-                _gameState.Value = GameState.NewGame;
+                RestartLevel();
                 _deathTimer.Value = 0;
             }
+        }
+
+        private void RestartLevel()
+        {
+            _currentLevel.Value = GameOverRestartLevel();
+            _statusBar.Score = 0;
+            _statusBar.AddToScore(0);
+            _statusBar.SetLives(StatusBar.InitialLives);
+            RestartScene();
+        }
+
+        private Level GameOverRestartLevel()
+        {
+            if (_currentLevel.Value < Level.Level2_1_Intro)
+                return Level.Level1_1_Start;
+            else if (_currentLevel.Value < Level.Level3_1_City)
+                return Level.Level2_1_Intro;
+            else if (_currentLevel.Value < Level.Level4_1_Desert)
+                return Level.Level3_1_City;
+            else if (_currentLevel.Value < Level.Level5_1_Mist)
+                return Level.Level4_1_Desert;
+            else if (_currentLevel.Value < Level.Level6_1_Techbase)
+                return Level.Level5_1_Mist;
+            else if (_currentLevel.Value < Level.Level7_1_GlitchCore)
+                return Level.Level6_1_Techbase;
+            else
+                return Level.Level7_1_GlitchCore;
         }
 
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level3_1_City;
+            _currentLevel.Value = Level.Level1_12_Horizontal2;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly CollisionDetector _collisionDetector;
         private readonly ICollidableSpriteControllerPool _lizardBulletControllers;
         private readonly WorldSprite _player;
-      
+        protected override int PointsForEnemy => 100;
         public LizardEnemyController(
             ICollidableSpriteControllerPool lizardBulletControllers,
             SpriteTileIndex tileIndex,

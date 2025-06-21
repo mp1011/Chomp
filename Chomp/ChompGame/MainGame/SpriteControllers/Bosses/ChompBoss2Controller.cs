@@ -24,6 +24,9 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly RandomModule _randomModule;
         private const int NumTailSections = 6;
         private PrecisionMotion _firstTailSectionMotion;
+
+        protected override int PointsForEnemy => 500;
+
         enum Phase : byte 
         {
             Init=0,
@@ -309,8 +312,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 if (_stateTimer.Value == 14)
                 {
-                    _playerController.OnBossDead();
-                    _statusBar.AddToScore(100); //todo - score per enemy type                    
+                    _playerController.OnBossDead();             
                     WorldSprite.Destroy();
                     _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
                     _stateTimer.Value = 15;

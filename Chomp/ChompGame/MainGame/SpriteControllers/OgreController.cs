@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly WorldSprite _player;
         private readonly CollisionDetector _collisionDetector;
         private readonly ICollidableSpriteControllerPool _bulletControllers;
-
+        protected override int PointsForEnemy => 250;
         public OgreController(ICollidableSpriteControllerPool bulletControllers, SpriteTileIndex index, ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder, WorldSprite player) 
             : base(SpriteType.Ogre, index, gameModule, memoryBuilder)
         {

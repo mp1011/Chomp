@@ -22,7 +22,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private GameShort _armAngle;
         private GameByte _armLength;
         private Arm _arm1, _arm2;
-
+        protected override int PointsForEnemy => 1000;
         enum Phase : byte 
         {
             Init,

@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly CollisionDetector _collisionDetector;
         private readonly WorldSprite _player;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bulletControllers;
-
+        protected override int PointsForEnemy => 500;
         public BoulderEnemyController(EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SpriteTileIndex index, ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder, WorldSprite player) 
             : base(SpriteType.Boulder, index, gameModule, memoryBuilder)
         {

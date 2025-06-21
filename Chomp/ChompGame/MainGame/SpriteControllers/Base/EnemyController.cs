@@ -20,6 +20,8 @@ namespace ChompGame.MainGame.SpriteControllers.Base
         protected AcceleratedMotion _motion;
         public override IMotion Motion => _motion;
 
+        protected abstract int PointsForEnemy { get; }
+
         protected virtual bool DestroyBombOnCollision => false;
 
         protected EnemyController(SpriteType spriteType,
@@ -49,7 +51,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             {
                 if (_hitPoints.Value == 0)
                 {
-                    _statusBar.AddToScore(100); //todo - score per enemy type                    
+                    _statusBar.AddToScore((uint)PointsForEnemy);
                     WorldSprite.Destroy();
                     _scenePartsDestroyed.SetDestroyed(DestructionBitOffset);
                 }

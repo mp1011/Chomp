@@ -37,7 +37,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private ByteVector _arm1Pos, _arm2Pos;
         private ChompTail _arm1, _arm2;
-
+        protected override int PointsForEnemy => 1000;
         enum Phase : byte 
         {
             Init,

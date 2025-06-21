@@ -227,7 +227,9 @@ namespace ChompGame.MainGame.SpriteControllers
             if (collisionInfo.DynamicBlockCollision)
             {
                 int coinsCollected = _dynamicBlockController.HandleCoinCollision(collisionInfo, WorldSprite);
-                _statusBar.AddToScore((uint)(coinsCollected * 25));
+
+                if(!_scene.IsMidBossScene && !_scene.IsLevelBossScene)
+                    _statusBar.AddToScore((uint)(coinsCollected * 25));
             }
 
             _inputModule.OnLogicUpdate();

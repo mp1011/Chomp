@@ -302,7 +302,13 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private bool AllowGraceBomb(BaseScenePart sp)
         {
-            return sp.Type == ScenePartType.Bomb && !_playerController.IsHoldingBomb;
+            switch(_gameModule.CurrentLevel)
+            {
+                case Level.Level1_4_DeadEnd:
+                    return sp.Type == ScenePartType.Bomb && !_playerController.IsHoldingBomb;
+                default:
+                    return false;
+            }
         }
 
         private int GetGroundPosition(byte tileX)

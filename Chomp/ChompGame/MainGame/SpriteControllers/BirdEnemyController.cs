@@ -14,7 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private LowNibble _variation;
         private NibbleEnum<BirdState> _state;
-
+        protected override int PointsForEnemy => 100;
         private enum BirdState : byte
         {
             Hover,
