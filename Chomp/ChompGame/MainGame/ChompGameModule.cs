@@ -36,7 +36,8 @@ namespace ChompGame.MainGame
             PlayScene,
             Test,
             GameOver,
-            TileEditor
+            TileEditor,
+            LevelCard
         }
 
 
@@ -74,6 +75,8 @@ namespace ChompGame.MainGame
 
         private GlitchCoreBgModule _glitchCoreBgModule;
         private FinalBossHelper _finalBossHelper;
+
+        private LevelCard _levelCard;
 
         public GameBit BossBackgroundHandling => _bossBackgroundHandling;
 
@@ -196,6 +199,7 @@ namespace ChompGame.MainGame
             ThemeBuilder.BuildThemes(memoryBuilder);
 
             _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
+            _levelCard = new LevelCard(this, _longTimer, _masterPatternTable);
         }
 
         public override void OnStartup()
@@ -220,13 +224,6 @@ namespace ChompGame.MainGame
             _audioService.Update();
             _timer.Value++;
 
-            if (_timer.Value.IsMod(16))
-                _longTimer.Value++;
-
-            if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed)
-            {
-                ExitsModule.GotoNextLevel();
-            }
 
             switch (_gameState.Value)
             {
@@ -240,6 +237,12 @@ namespace ChompGame.MainGame
                     LoadScene();
                     break;
                 case GameState.PlayScene:
+                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed)                    
+                        ExitsModule.GotoNextLevel();
+                    
+                    if (_timer.Value.IsMod(16))
+                        _longTimer.Value++;
+
                     if (_tileEditor.CheckActivation())
                         _gameState.Value = GameState.TileEditor;
                     else 
@@ -254,6 +257,12 @@ namespace ChompGame.MainGame
                     if(!_tileEditor.Update())
                         _gameState.Value = GameState.PlayScene;
                     break;
+                case GameState.LevelCard:
+                    _inputModule.OnLogicUpdate();
+                    if (_levelCard.Update())
+                        _gameState.Value = GameState.LoadScene;
+                    break;
+
             }
         }
 
@@ -332,19 +341,20 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_40_FinalBoss;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.LoadScene;
+            _gameState.Value = GameState.LevelCard;
         }
 
         public void RestartScene()
         {
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.LoadScene;
+            _gameState.Value = GameState.LevelCard;
+            _levelCard.Reset();
             _scenePartsDestroyed.OnSceneRestart(this);
         }
 
@@ -556,6 +566,8 @@ namespace ChompGame.MainGame
             {
                 _rasterInterrupts.OnHBlank();
                 _bossBackgroundHandler.OnHBlank();
+                if (_gameState.Value == GameState.LevelCard)
+                    _levelCard.OnHBlank();
             }
 
             PaletteModule.OnHBlank();

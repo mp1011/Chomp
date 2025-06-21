@@ -31,9 +31,9 @@ namespace ChompGame.MainGame
 
         public const bool QuickReward = false;
 
-        public const bool LevelSkipEnabled = true;
+        public const bool LevelSkipEnabled = false;
 
-        public const bool InfiniteHp = true;
+        public const bool InfiniteHp = false;
 
         private const DebugLogFlags _debugLogFlags = DebugLogFlags.LevelTransition | DebugLogFlags.SpriteSpawn | DebugLogFlags.Misc;
 
