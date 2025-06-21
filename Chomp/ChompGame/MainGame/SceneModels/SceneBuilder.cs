@@ -5,10 +5,10 @@ using ChompGame.MainGame.SceneModels.SceneParts;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
+using BitArray = ChompGame.Data.BitArray;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -215,43 +215,56 @@ namespace ChompGame.MainGame.SceneModels
         Level7_39_BeforeBoss3,
         Level7_40_FinalBoss,
         Level7_41_FinalBossEpilogue,
-
-
-
     }
 
     class SceneBuilder
     {
-        public static Level[] TransitionLevels = {
-            Level.Level1_1_Start,
-            Level.Level1_5_Vertical,
-            Level.Level1_10_Stair,
-            Level.Level1_17_Boss,
-            Level.Level2_1_Intro,
-            Level.Level2_3_Beach,
-            Level.Level3_1_City,
-            Level.Level3_7_Building2,
-            Level.Level3_13_Building3_Room3,
-            Level.Level3_21_CityAfterMidboss,
-            Level.Level3_23_CityTrain2,
-            Level.Level3_24_CityTrain3,
-            Level.Level4_1_Desert,
-            Level.Level4_16_PyramidEntrance2,
-            Level.Level4_31_Midboss,
-            Level.Level4_34_DesertRain1,
-            Level.Level5_1_Mist,
-            Level.Level5_5_Forest,
-            Level.Level5_13_Forest_Corner2,
-            Level.Level5_23_Plane_Begin,
-            Level.Level6_1_Techbase,
-            Level.Level6_7_Techbase4,
-            Level.Level6_13_Techbase7,
-            Level.Level6_18_Techbase11,
-            Level.Level7_1_GlitchCore,
-            Level.Level7_9_TotalGlitch,
-            Level.Level7_16_RunRoom,
-            Level.Level7_40_FinalBoss
-        };
+        private static BitArray _transitionLevels;
+
+        public static bool IsTransitionLevel(Level level) =>
+            _transitionLevels[(int)level];
+
+        public static void SetTransitionLevels(SystemMemoryBuilder memoryBuilder)
+        {
+            _transitionLevels = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            memoryBuilder.AddBytes(26);
+            _transitionLevels[(int)Level.Level1_1_Start] = true;
+            _transitionLevels[(int)Level.Level1_5_Vertical] = true;
+            _transitionLevels[(int)Level.Level1_10_Stair] = true;
+            _transitionLevels[(int)Level.Level1_12_Horizontal2] = true;
+            _transitionLevels[(int)Level.Level1_17_Boss] = true;
+            _transitionLevels[(int)Level.Level2_1_Intro] = true;
+            _transitionLevels[(int)Level.Level2_3_Beach] = true;
+            _transitionLevels[(int)Level.Level2_12_Boss] = true;
+            _transitionLevels[(int)Level.Level3_1_City] = true;
+            _transitionLevels[(int)Level.Level3_7_Building2] = true;
+            _transitionLevels[(int)Level.Level3_13_Building3_Room3] = true;
+            _transitionLevels[(int)Level.Level3_20_Midboss] = true;
+            _transitionLevels[(int)Level.Level3_21_CityAfterMidboss] = true;
+            _transitionLevels[(int)Level.Level3_23_CityTrain2] = true;
+            _transitionLevels[(int)Level.Level3_24_CityTrain3] = true;
+            _transitionLevels[(int)Level.Level3_26_Boss] = true;
+            _transitionLevels[(int)Level.Level4_1_Desert] = true;
+            _transitionLevels[(int)Level.Level4_16_PyramidEntrance2] = true;
+            _transitionLevels[(int)Level.Level4_31_Midboss] = true;
+            _transitionLevels[(int)Level.Level4_32_Desert4] = true;
+            _transitionLevels[(int)Level.Level4_34_DesertRain1] = true;
+            _transitionLevels[(int)Level.Level5_1_Mist] = true;
+            _transitionLevels[(int)Level.Level5_5_Forest] = true;
+            _transitionLevels[(int)Level.Level5_13_Forest_Corner2] = true;
+            _transitionLevels[(int)Level.Level5_22_MidBoss] = true;
+            _transitionLevels[(int)Level.Level5_23_Plane_Begin] = true;
+            _transitionLevels[(int)Level.Level6_1_Techbase] = true;
+            _transitionLevels[(int)Level.Level6_7_Techbase4] = true;
+            _transitionLevels[(int)Level.Level6_13_Techbase7] = true;
+            _transitionLevels[(int)Level.Level6_17_Midboss] = true;
+            _transitionLevels[(int)Level.Level6_18_Techbase11] = true;
+            _transitionLevels[(int)Level.Level7_1_GlitchCore] = true;
+            _transitionLevels[(int)Level.Level7_9_TotalGlitch] = true;
+            _transitionLevels[(int)Level.Level7_16_RunRoom] = true;
+            _transitionLevels[(int)Level.Level7_40_FinalBoss] = true;
+            _transitionLevels[(int)Level.Level7_41_FinalBossEpilogue] = true;
+        }
 
         public static void AddSceneHeaders(SystemMemoryBuilder memoryBuilder, Specs specs)
         {
@@ -5407,7 +5420,7 @@ namespace ChompGame.MainGame.SceneModels
         {
             var extraBitsNeeded = header.DestroyBitsNeeded(scene, specs);
 
-            if (TransitionLevels.Contains(level))
+            if (IsTransitionLevel(level))
             {
                 maxDestroyBitsRequired = Math.Max(maxDestroyBitsRequired, destroyBitsRequired);
                 if (maxDestroyBitsRequired > 127)

@@ -35,7 +35,7 @@ namespace ChompGame.MainGame.SceneModels
         public void SetCurrentLevel(Level level, SystemMemory memory)
         {
             Level transitionLevel = level;
-            while (!SceneBuilder.TransitionLevels.Contains(transitionLevel))
+            while (!SceneBuilder.IsTransitionLevel(transitionLevel))
                 transitionLevel--;
 
             byte sceneOffset=1;
@@ -50,29 +50,6 @@ namespace ChompGame.MainGame.SceneModels
 
             _sceneOffset.Value = sceneOffset;
         }
-
-        public void OnSceneRestart(ChompGameModule gameModule)
-        {
-            byte nextDestructionBitOffset = 0;
-
-            for (int i = 0; i < gameModule.CurrentScenePartHeader.PartsCount; i++)
-            {
-                var sp = gameModule.CurrentScenePartHeader.GetScenePart(i, gameModule.CurrentScene, gameModule.Specs);
-                
-                switch(sp.Type)
-                {
-                    case ScenePartType.EnemyType1:
-                    case ScenePartType.EnemyType2:
-                    case ScenePartType.Bomb:
-                    case ScenePartType.DestructibleBlock:
-                        _partsDestroyed[_sceneOffset.Value + nextDestructionBitOffset] = false;
-                        break;
-                }
-
-                nextDestructionBitOffset += sp.DestroyBitsRequired;
-            }
-        }
-
 
         public bool IsDestroyed2(int offset) => _partsDestroyed[offset];
 

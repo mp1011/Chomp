@@ -28,7 +28,7 @@ namespace ChompGame.MainGame
 
     class ChompGameModule : Module, IMasterModule
     {
-        enum GameState : byte
+        public enum GameState : byte
         {
             NewGame,
             RestartScene,
@@ -37,7 +37,8 @@ namespace ChompGame.MainGame
             Test,
             GameOver,
             TileEditor,
-            LevelCard
+            LevelCard,
+            Paused
         }
 
 
@@ -57,6 +58,8 @@ namespace ChompGame.MainGame
         private GameByteEnum<GameState> _gameState;
         private GameByteEnum<Level> _currentLevel;
         private NibbleEnum<ExitType> _lastExitType;
+        private NibbleEnum<ExitType> _lastTransitionExitType;
+
         private GameBit _carryingBomb;
 
         private GameByte _timer;
@@ -77,6 +80,7 @@ namespace ChompGame.MainGame
         private FinalBossHelper _finalBossHelper;
 
         private LevelCard _levelCard;
+        private PlayerDeathHandler _deathHandler;
 
         public GameBit BossBackgroundHandling => _bossBackgroundHandling;
 
@@ -157,8 +161,12 @@ namespace ChompGame.MainGame
             _lastExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
             _carryingBomb = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
             _bossBackgroundHandling = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
-
             memoryBuilder.AddByte();
+
+            _lastTransitionExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
+            // unused bits
+            memoryBuilder.AddByte();
+            _lastTransitionExitType.Value = ExitType.Right;
 
             _rasterInterrupts = new RasterInterrupts(this, GameSystem.CoreGraphicsModule);
             _bossBackgroundHandler = new BossBackgroundHandler(this, _rasterInterrupts);
@@ -192,6 +200,7 @@ namespace ChompGame.MainGame
             memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
 
             SceneBuilder.AddSceneHeaders(memoryBuilder, Specs);
+            SceneBuilder.SetTransitionLevels(memoryBuilder);
 
             memoryBuilder.AddLabel(AddressLabels.SceneParts);
             SceneBuilder.AddSceneParts(memoryBuilder, Specs);
@@ -200,6 +209,7 @@ namespace ChompGame.MainGame
 
             _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
             _levelCard = new LevelCard(this, _longTimer, _masterPatternTable);
+            _deathHandler = new PlayerDeathHandler(this, _deathTimer, _statusBar, _gameState);
         }
 
         public override void OnStartup()
@@ -222,8 +232,9 @@ namespace ChompGame.MainGame
         {
             _musicModule.Update();
             _audioService.Update();
-            _timer.Value++;
 
+            if(_gameState.Value != GameState.Paused)
+                _timer.Value++;
 
             switch (_gameState.Value)
             {
@@ -237,7 +248,7 @@ namespace ChompGame.MainGame
                     LoadScene();
                     break;
                 case GameState.PlayScene:
-                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed)                    
+                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed && _inputModule.Player1.UpKey == GameKeyState.Pressed)                    
                         ExitsModule.GotoNextLevel();
                     
                     if (_timer.Value.IsMod(16))
@@ -245,8 +256,12 @@ namespace ChompGame.MainGame
 
                     if (_tileEditor.CheckActivation())
                         _gameState.Value = GameState.TileEditor;
-                    else 
+                    else
                         PlayScene();
+
+                    if (CheckPause())
+                        _gameState.Value = GameState.Paused;
+
                     break;
                 case GameState.Test:
                     break;
@@ -262,9 +277,33 @@ namespace ChompGame.MainGame
                     if (_levelCard.Update())
                         _gameState.Value = GameState.LoadScene;
                     break;
+                case GameState.Paused:
+                    _inputModule.OnLogicUpdate();
+                    if (_inputModule.Player1.StartKey == GameKeyState.Pressed)
+                    {
+                        GameSystem.CoreGraphicsModule.FadeAmount = 0;
+                        _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                        _musicModule.Resume();
+                        _gameState.Value = GameState.PlayScene;
+                    }
+                    break;
 
             }
         }
+
+        private bool CheckPause()
+        {
+            if(_deathTimer.Value == 0 && _inputModule.Player1.StartKey == GameKeyState.Pressed)
+            {
+                _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                _musicModule.Pause(); 
+                GameSystem.CoreGraphicsModule.FadeAmount = 2;
+                return true;
+            }
+
+            return false;
+        }
+
 
         private void GameOver()
         {
@@ -341,7 +380,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level3_1_City;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -355,7 +394,8 @@ namespace ChompGame.MainGame
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LevelCard;
             _levelCard.Reset();
-            _scenePartsDestroyed.OnSceneRestart(this);
+            _scenePartsDestroyed.Reset(GameSystem.Memory);
+            _lastExitType.Value = _lastTransitionExitType.Value;
         }
 
         public void LoadScene()
@@ -502,7 +542,7 @@ namespace ChompGame.MainGame
 
                 _gameState.Value = GameState.LoadScene;
                 var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
-                if(newLevel > CurrentLevel && SceneBuilder.TransitionLevels.Contains(newLevel))
+                if(newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
                 {
                     _scenePartsDestroyed.Reset(GameSystem.Memory);
                 }
@@ -511,6 +551,8 @@ namespace ChompGame.MainGame
 
 
                 _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
+                if (SceneBuilder.IsTransitionLevel(CurrentLevel))
+                    _lastTransitionExitType.Value = _lastExitType.Value;
 
                 _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
 
@@ -528,30 +570,7 @@ namespace ChompGame.MainGame
 
         private void HandlePlayerDeath()
         {
-            if (_deathTimer.Value == 0 && _statusBar.Health == 0)
-            {
-                _musicModule.CurrentSong = MusicModule.SongName.None;
-                _audioService.PlaySound(ChompAudioService.Sound.PlayerDie);
-                _deathTimer.Value = 1;
-            }
-
-            if (_deathTimer.Value > 0)
-            {
-                _deathTimer.Value++;
-
-                if (_deathTimer > 64 && (_deathTimer.Value % 8)==0)
-                    GameSystem.CoreGraphicsModule.FadeAmount++;
-
-                if (_deathTimer.Value == 255)
-                {
-                    if(_statusBar.Lives > 0)
-                        _gameState.Value = GameState.RestartScene;
-                    else
-                        _gameState.Value = GameState.GameOver;
-                    _deathTimer.Value = 0;
-                }
-            }
-
+            _deathHandler.HandlePlayerDeath();
         }
 
         public void OnVBlank()

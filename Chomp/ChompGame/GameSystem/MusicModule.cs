@@ -124,6 +124,16 @@ namespace ChompGame.GameSystem
             };
         }
 
+        public void Pause()
+        {
+            MediaPlayer.Pause();
+        }
+
+        public void Resume()
+        {
+            MediaPlayer.Resume();
+        }
+
         public void Update()
         {
             if (!Enabled)

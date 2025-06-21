@@ -40,7 +40,6 @@ namespace ChompGame.MainGame.SceneModels
 
         public void Reset()
         {
-            CoreGraphicsModule.FadeAmount = 0;
             _timer.Value = 0;
             _state.Value = Phase.Load;
         }
@@ -67,6 +66,7 @@ namespace ChompGame.MainGame.SceneModels
                     SetTiles(CurrentLevel());
                     ResetSprites();
                     SetPalette();
+                    CoreGraphicsModule.FadeAmount = 0;
                     _state.Value = Phase.FadeIn;
                     return false;
                 case Phase.FadeIn:
