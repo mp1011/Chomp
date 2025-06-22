@@ -36,7 +36,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 bool isSolid = nameTable[x * 2, y * 2] != 0
                     || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
 
-                if (isSolid)
+                if (isSolid || y > 3)
                     attributeTable[x, y] = 1;
                 else
                     attributeTable[x, y] = 0;

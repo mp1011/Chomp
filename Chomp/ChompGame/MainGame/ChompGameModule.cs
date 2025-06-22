@@ -247,10 +247,7 @@ namespace ChompGame.MainGame
                 case GameState.LoadScene:
                     LoadScene();
                     break;
-                case GameState.PlayScene:
-                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed && _inputModule.Player1.UpKey == GameKeyState.Pressed)                    
-                        ExitsModule.GotoNextLevel();
-                    
+                case GameState.PlayScene:                  
                     if (_timer.Value.IsMod(16))
                         _longTimer.Value++;
 
@@ -259,7 +256,9 @@ namespace ChompGame.MainGame
                     else
                         PlayScene();
 
-                    if (CheckPause())
+                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed && _inputModule.Player1.UpKey == GameKeyState.Down)                    
+                        ExitsModule.GotoNextLevel();
+                    else if (CheckPause())
                         _gameState.Value = GameState.Paused;
 
                     break;
@@ -414,7 +413,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_17_Boss;
+            _currentLevel.Value = Level.Level3_11_Building3_Room1;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

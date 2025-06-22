@@ -11,11 +11,19 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)
         {
-           
+
         }
 
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
         {
+            // "sky"
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(4, 4, 1, 1),
+                destinationPoint: new Point(7, 0),
+                _specs,
+                memory);
+
             //bg buildings
             masterPatternTable.CopyTilesTo(
                 destination: vramPatternTable,
@@ -46,6 +54,20 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 destinationPoint: new Point(0, 1),
                 _specs,
                 memory);
+        }
+    }
+
+    class CityInteriorWindowsThemeSetup : CityInteriorThemeSetup
+    {
+        public CityInteriorWindowsThemeSetup(ChompGameModule m) : base(m) { }
+
+
+        public override IEnumerable<SmartBackgroundBlock> SmartBackgroundBlocks
+        {
+            get
+            {
+                yield return new BuildingWindow(_sceneDefinition, _gameModule);
+            }
         }
     }
 }

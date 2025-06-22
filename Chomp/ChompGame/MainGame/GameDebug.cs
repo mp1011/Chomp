@@ -18,6 +18,7 @@ namespace ChompGame.MainGame
 
     public enum DebugLogFlags : byte
     {
+        None = 0,
         Misc = 1,
         SpriteSpawn = 2,
         WorldScroller = 4,
@@ -31,14 +32,14 @@ namespace ChompGame.MainGame
 
         public const bool QuickReward = false;
 
-        public const bool LevelSkipEnabled = false;
+        public const bool LevelSkipEnabled = true;
 
         public const bool InfiniteHp = true;
 
         public const bool OneHp = false;
 
 
-        private const DebugLogFlags _debugLogFlags = DebugLogFlags.LevelTransition | DebugLogFlags.SpriteSpawn | DebugLogFlags.Misc;
+        private const DebugLogFlags _debugLogFlags = DebugLogFlags.LevelTransition;
 
         private static List<string> _log = new List<string>();
 

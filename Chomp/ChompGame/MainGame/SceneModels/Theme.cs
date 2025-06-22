@@ -20,6 +20,7 @@ namespace ChompGame.MainGame.SceneModels
         DesertRain,
         City,
         CityInterior,
+        CityInteriorWindows,
         CityBoss,
         CityEvening,
         CityTrain,
@@ -184,6 +185,16 @@ namespace ChompGame.MainGame.SceneModels
                 bg2: PaletteKey.CityInterior,
                 fg1: PaletteKey.CityFg,
                 fg2: PaletteKey.BombLight,
+                bomb: PaletteKey.BombLight,
+                enemy1: PaletteKey.BlueGrayEnemy,
+                enemy2: PaletteKey.BombLight);
+
+            _ = ThemeType.CityInteriorWindows;
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.CityInterior,
+                bg2: PaletteKey.CityInterior,
+                fg1: PaletteKey.CityFg,
+                fg2: PaletteKey.CitySky,
                 bomb: PaletteKey.BombLight,
                 enemy1: PaletteKey.BlueGrayEnemy,
                 enemy2: PaletteKey.BombLight);

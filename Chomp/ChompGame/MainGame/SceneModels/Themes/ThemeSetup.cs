@@ -61,6 +61,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.CityEvening => new CityThemeSetup(chompGameModule),
                 ThemeType.CityTrain => new CityTrainThemeSetup(chompGameModule),
                 ThemeType.CityInterior => new CityInteriorThemeSetup(chompGameModule),
+                ThemeType.CityInteriorWindows => new CityInteriorWindowsThemeSetup(chompGameModule),
                 ThemeType.CityBoss => new CityBossThemeSetup(chompGameModule),
                 ThemeType.Desert => new DesertThemeSetup(chompGameModule),
                 ThemeType.DesertInterior => new DesertInteriorThemeSetup(chompGameModule),

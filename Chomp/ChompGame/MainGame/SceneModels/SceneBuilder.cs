@@ -714,7 +714,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NametableScroll(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityInteriorWindows,
                 shape: LevelShape.TwoHorizontalChambers,
                 spriteGroup: SpriteGroup.Normal,
                 top: 2,
@@ -767,7 +767,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                memoryBuilder: memoryBuilder,
                specs: specs,
-               theme: ThemeType.CityInterior,
+               theme: ThemeType.CityInteriorWindows,
                spriteGroup: SpriteGroup.Normal,
                enemy1: EnemyIndex.Bird,
                enemy2: EnemyIndex.Ogre,
@@ -808,7 +808,7 @@ namespace ChompGame.MainGame.SceneModels
                 memoryBuilder: memoryBuilder,
                 specs: specs,
                 spriteGroup: SpriteGroup.Normal,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityInteriorWindows,
                 shape: LevelShape.FourChambers,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Ogre,
@@ -835,7 +835,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityInteriorWindows,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
@@ -863,7 +863,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityInteriorWindows,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Ogre,
@@ -891,7 +891,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.NoScrollFlat(
                 memoryBuilder: memoryBuilder,
                 specs: specs,
-                theme: ThemeType.CityInterior,
+                theme: ThemeType.CityInteriorWindows,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
                 enemy2: EnemyIndex.Bird,
@@ -3139,10 +3139,10 @@ namespace ChompGame.MainGame.SceneModels
             header = new ScenePartsHeader(builder,
                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
 
-                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 12, 12, scene),
-                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 30, 4, scene),
-                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 40, 4, scene),
-                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 4, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 12, 0, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 30, 0, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 40, 0, scene),
+                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 50, 0, scene),
 
                 b => new ExitScenePart(b, ExitType.Right, 1, scene)
             );
