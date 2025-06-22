@@ -202,6 +202,7 @@ namespace ChompGame.MainGame
             sprite.SizeY = _spriteDefinition.SizeY;
             sprite.Visible = true;
             sprite.Palette = _palette.Value;
+            sprite.Priority = true;
             Visible = true;
 
             GameDebug.DebugLog($"Configure sprite #{SpriteIndex}, Tile={sprite.Tile}, SX={sprite.SizeX}, SY={sprite.SizeY}, T20={sprite.Tile2Offset},,,", DebugLogFlags.SpriteSpawn);

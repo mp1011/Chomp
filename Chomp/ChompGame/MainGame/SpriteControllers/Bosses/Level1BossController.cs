@@ -37,11 +37,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private SpriteDefinition _jawSpriteDefinition;
 
         protected override string BossTiles { get; } =
-            @"13335
-              98BBD
-              67BBA
-              00CA0";
-
+            @"BAAAC
+              GFII4
+              DDIIK
+              00M50";
+        
         protected override string BlankBossTiles { get; } =
             @"00000
               00000

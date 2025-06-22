@@ -71,7 +71,9 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     var sprite = GetSprite();
                     sprite.Palette = SpritePalette.Fire;
-                    sprite.Tile = (byte)(6 + (_levelTimer.Value % 3));
+
+                    var baseTile = _spriteTileTable.GetTile(SpriteTileIndex.Explosion);
+                    sprite.Tile = (byte)(baseTile + (_levelTimer.Value % 2));
                 }
 
                 if (_levelTimer.IsMod(2))

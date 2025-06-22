@@ -305,6 +305,8 @@ namespace ChompGame.MainGame.SpriteControllers
             switch(_gameModule.CurrentLevel)
             {
                 case Level.Level1_4_DeadEnd:
+                case Level.Level3_19_Building3_Room9:
+                case Level.Level6_3_Techbase3:
                     return sp.Type == ScenePartType.Bomb && !_playerController.IsHoldingBomb;
                 default:
                     return false;
