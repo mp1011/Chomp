@@ -588,7 +588,7 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg1;
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
-                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg1;
             }
             else if (_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
             {

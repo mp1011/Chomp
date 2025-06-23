@@ -99,7 +99,9 @@ namespace ChompGame.MainGame
             }
             else if (_sceneDefinition.ScrollStyle == ScrollStyle.Horizontal)
             {
-                if (_sceneDefinition.Theme == ThemeType.TechBase || _sceneDefinition.Theme == ThemeType.TechBase2)
+                if (_sceneDefinition.HorizontalScrollStyle == HorizontalScrollStyle.Flat)
+                    return;
+                else if (_sceneDefinition.Theme == ThemeType.TechBase || _sceneDefinition.Theme == ThemeType.TechBase2)
                     HandleParallax2();
                 else
                     HandleParallax();

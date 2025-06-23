@@ -27,6 +27,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _motion.TargetXSpeed = _motionController.WalkSpeed;
             _motion.XSpeed = _motionController.WalkSpeed;
             _motion.XAcceleration = _motionController.WalkAccel;
+            sprite.Tile2Offset = 1;
             _hitPoints.Value = 2;
             _stateTimer.Value = 0;
         }

@@ -74,7 +74,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
             masterPatternTable.CopyTilesTo(
                destination: vramPatternTable,
-               source: new InMemoryByteRectangle(4, 4, 1, 1),
+               source: new InMemoryByteRectangle(5, 5, 1, 1),
                destinationPoint: new Point(5, 3),
                _specs,
                memory);

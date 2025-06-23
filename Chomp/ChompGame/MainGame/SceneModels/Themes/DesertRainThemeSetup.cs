@@ -21,6 +21,23 @@ namespace ChompGame.MainGame.SceneModels.Themes
             });
         }
 
+        public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
+        {
+            attributeTable.ForEach((x, y, b) =>
+            {
+                bool isSolid = nameTable[x * 2, y * 2] != 0
+                    || nameTable[(x * 2) + 1, (y * 2) + 1] != 0;
+
+                if (isSolid)
+                    attributeTable[x, y] = 1;
+                else
+                    attributeTable[x, y] = 0;
+
+            });
+
+            return attributeTable;
+        }
+
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
         {
             // sand
