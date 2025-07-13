@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class ChompBoss4Controller : EnemyController
     {
         public const int NumTailSections = 6;
-        public const int BossHp = 3;
+        public const int BossHp = GameDebug.BossTest ? 1 : 3;
         private const int Speed = 40;
         private readonly ChompTail _tail;
 
@@ -345,6 +345,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if(_phase.Value != Phase.Dying)
             {
+                _statusBar.AddToScore((uint)PointsForEnemy);
+
                 _music.CurrentSong = MusicModule.SongName.None;
 
                 _stateTimer.Value = 0;

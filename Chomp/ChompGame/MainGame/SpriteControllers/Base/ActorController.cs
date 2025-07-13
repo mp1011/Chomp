@@ -125,6 +125,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             Status = WorldSpriteStatus.Active;
             var sprite = GetSprite();
             sprite.FlipY = false;
+            sprite.FlipX = false;
             WorldSprite.ConfigureSprite(sprite);
             sprite.Palette = _palette.Value;
             Palette = _palette.Value;

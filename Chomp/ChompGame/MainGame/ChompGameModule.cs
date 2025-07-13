@@ -414,7 +414,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level5_23_Plane_Begin;
+            _currentLevel.Value = Level.Level7_40_FinalBoss;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -580,13 +580,15 @@ namespace ChompGame.MainGame
             {
                 GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}", DebugLogFlags.LevelTransition);
 
-                _gameState.Value = GameState.LoadScene;
                 var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
                 if(newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
                 {
                     _scenePartsDestroyed.Reset(GameSystem.Memory);
                 }
                 CurrentLevel = newLevel;
+
+                _gameState.Value = IsLevelStart(newLevel) ? GameState.LevelCard : GameState.LoadScene;
+                _levelCard.Reset();
                 GameDebug.DebugLog($"Entering level {CurrentLevel}", DebugLogFlags.LevelTransition);
 
 
@@ -612,6 +614,16 @@ namespace ChompGame.MainGame
             }
         }
 
+        private bool IsLevelStart(Level level)
+        {
+            return level == Level.Level1_1_Start
+                || level == Level.Level2_1_Intro
+                || level == Level.Level3_1_City
+                || level == Level.Level4_1_Desert
+                || level == Level.Level5_1_Mist
+                || level == Level.Level6_1_Techbase
+                || level == Level.Level7_1_GlitchCore;
+        }
         private void HandlePlayerDeath()
         {
             _deathHandler.HandlePlayerDeath();

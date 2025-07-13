@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level1BossController : LevelBossController
     {
-        protected override int BossHP => 4;
+        protected override int BossHP => GameDebug.BossTest ? 1 : 4;
         private enum Phase : byte
         {
             Init,
@@ -443,6 +443,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (_phase.Value < Phase.Dying)
             {
                 _internalTimer.Value = 0;
+                _statusBar.AddToScore((uint)PointsForEnemy);
                 _phase.Value = Phase.Dying;
             }
 

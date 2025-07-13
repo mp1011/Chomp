@@ -13,7 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss1Controller : EnemyController
     {
-        public const int BossHp = 3;
+        public const int BossHp = GameDebug.BossTest ? 1 : 3;
         public const int NumTailSections = 4;
 
         private readonly WorldSprite _player;

@@ -11,7 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level2BossController : LevelBossController
     {
-        protected override int BossHP => 1;
+        protected override int BossHP => GameDebug.BossTest ? 1 : 4;
         private BossPart _eye2, _eye3, _eye4, _arm1, _arm2;
         private Tentacle _tentacle1, _tentacle2;
         private NibbleEnum<Phase> _phase;      
@@ -375,6 +375,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         && pt2.X == 0 && pt2.Y == 0)
                     {
                         _stateTimer.Value = 1;
+                        _statusBar.AddToScore((uint)PointsForEnemy);
+
                         var s1 = _arm1.Sprite;
                         var s2 = _arm2.Sprite;
                         CreateExplosion(s1.X, s1.Y);

@@ -48,7 +48,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             Finish
         }
 
-        protected override int BossHP => 5;
+        protected override int BossHP => GameDebug.BossTest ? 1 : 5;
 
         protected override string BossTiles { get; } =
             @"BAAAAA9008AAAAAC
@@ -374,6 +374,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             if(_phase.Value < Phase.Explosions)
             {
+                _statusBar.AddToScore((uint)PointsForEnemy);
                 _musicModule.CurrentSong = MusicModule.SongName.None;
                 _phase.Value = Phase.Explosions;
                 _stateTimer.Value = 0;

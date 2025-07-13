@@ -624,7 +624,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         protected override void UpdateDying()
         {
             if (_phase.Value < Phase.Dying1)
+            {
                 SetPhase(Phase.Dying1);
+                _statusBar.AddToScore((uint)PointsForEnemy);
+
+            }
 
             PositionBoss();
 

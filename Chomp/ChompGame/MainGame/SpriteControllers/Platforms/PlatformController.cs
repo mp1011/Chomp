@@ -132,6 +132,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 && playerBounds.Right >= platformBounds.Left
                 && playerBounds.Left <= platformBounds.Right)
             {
+                playerController.WorldSprite.Y = platformBounds.Top - playerController.WorldSprite.Bounds.Height;
                 return new CollisionInfo { IsOnGround = true };
             }
 
@@ -143,8 +144,11 @@ namespace ChompGame.MainGame.SpriteControllers
             if (topYOverlap > 3)
                 topYOverlap = -1;
 
-            if(topYOverlap >= 0 && playerController.Motion.YSpeed >= 0)
+            if (topYOverlap >= 0 && playerController.Motion.YSpeed >= 0)
+            {
+                playerController.WorldSprite.Y = platformBounds.Top - playerController.WorldSprite.Bounds.Height;
                 return new CollisionInfo { IsOnGround = true };
+            }
             
             return new CollisionInfo();
         }

@@ -11,7 +11,8 @@ namespace ChompGame.MainGame
     {
         private int[] _extraLifeScores = new int[] { 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000 };
         private const int FlashDuration = 60;
-        private const int CoinsUntilReward = GameDebug.QuickReward ? 1 : 20;
+        private const byte CoinsUntilRewardForLevel = GameDebug.QuickReward ? 1 : 20;
+        private const byte CoinsUntilRewardForBoss = GameDebug.QuickReward ? 1 : 10;
 
         private readonly Specs _specs;
         private readonly ChompAudioService _audioService;
@@ -30,6 +31,8 @@ namespace ChompGame.MainGame
             _specs = mainSystem.Specs;
         }
 
+        public byte CoinsUntilReward => (_currentScene != null && (_currentScene.IsLevelBossScene || _currentScene.IsMidBossScene)) ? CoinsUntilRewardForBoss : CoinsUntilRewardForLevel;
+       
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
         {
             _nextReward = memoryBuilder.AddByte();

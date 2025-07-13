@@ -514,6 +514,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 if (_phase.Value < Phase.Dying)
                 {
+                    _statusBar.AddToScore((uint)PointsForEnemy);
+
                     SetPhase(Phase.Dying);
 
                     _bulletControllers.Execute(b =>

@@ -42,10 +42,15 @@ namespace ChompGame.MainGame.SceneModels
         {
             _timer.Value = 0;
             _state.Value = Phase.Load;
+            _gameModule.TileModule.Scroll.X = 0;
+            _gameModule.TileModule.Scroll.Y = 0;
         }
 
         public bool Update()
         {
+            GameDebug.Watch1 = new DebugWatch("Timer", () => _timer.Value);
+            GameDebug.Watch2 = new DebugWatch("State", () => (int)_state.Value);
+
 
             if (_gameModule.InputModule.Player1.StartKey.IsDown() ||
                 _gameModule.InputModule.Player1.AKey.IsDown() ||
@@ -168,6 +173,11 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.TileModule.Scroll.Y = 0;
                       //  p.SetColor(0, ColorIndex.Black);
                     }
+                    _gameModule.TileModule.Scroll.X = 0;
+                    break;
+                case Phase.Display:
+                    _gameModule.TileModule.Scroll.X = 0;
+                    _gameModule.TileModule.Scroll.Y = 0;
                     break;
                 case Phase.FadeOut:
                     mod = (_timer.Value / 64.0);

@@ -12,7 +12,7 @@ namespace ChompGame.MainGame.SpriteControllers
     class ChompBoss2Controller : EnemyController
     {
         public const int TurnAngle = 4;
-        public const int BossHp = 4;
+        public const int BossHp = GameDebug.BossTest ? 1 : 4;
 
         private readonly PlayerController _playerController;
         private WorldSprite _player => _playerController.WorldSprite;

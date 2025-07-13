@@ -26,7 +26,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public AcceleratedMotion AcceleratedMotion => _motion;
 
         protected override bool DestroyWhenFarOutOfBounds => true;
-        protected override bool DestroyWhenOutOfBounds => true;
+        protected override bool DestroyWhenOutOfBounds => false;
 
         protected enum BombState : byte
         {

@@ -181,7 +181,9 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void OnCollected_Coin()
         {
-            _statusBar.AddToScore(25);
+            if(_gameModule.CurrentLevel != Level.Level2_2_Fly2)
+                _statusBar.AddToScore(25);
+
             _rewardsModule.CheckRewards(1);
             _audioService.PlaySound(ChompAudioService.Sound.CollectCoin);
         }

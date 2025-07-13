@@ -335,6 +335,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_phase.Value < Phase.Dying)
             {
+                _statusBar.AddToScore((uint)PointsForEnemy);
+
                 _music.CurrentSong = MusicModule.SongName.None;
 
                 _stateTimer.Value = 0;

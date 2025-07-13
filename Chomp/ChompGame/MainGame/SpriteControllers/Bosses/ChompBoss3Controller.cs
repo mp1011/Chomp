@@ -11,7 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss3Controller : EnemyController
     {
-        public const int BossHp = 4;
+        public const int BossHp = GameDebug.BossTest ? 1 : 4;
         private const int StopY = 20;
 
         private readonly WorldScroller _scroller;
@@ -311,6 +311,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (_phase.Value != Phase.Dying)
             {
+                _statusBar.AddToScore((uint)PointsForEnemy);
                 _music.CurrentSong = MusicModule.SongName.None;
                 _phase.Value = Phase.Dying;
                 _stateTimer.Value = 0;
