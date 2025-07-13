@@ -509,7 +509,7 @@ namespace ChompGame.MainGame.SceneModels
 
             LoadPalette(levelTheme.Background2, backgroundPalette);
 
-            if (_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist)
+            if (_currentScene.Theme == ThemeType.DesertInterior || _currentScene.Theme == ThemeType.Forest || _currentScene.Theme == ThemeType.Mist || _currentScene.Theme == ThemeType.MistAutoscroll)
                 _bgColor.Value = (byte)backgroundPalette.GetColorIndex(0);
             else if (_currentScene.Theme == ThemeType.TechBase || _currentScene.Theme == ThemeType.TechBase2)
             {
@@ -562,7 +562,14 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
             }
-            else if(_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
+            else if(_currentScene.Theme == ThemeType.MistAutoscroll)
+            {
+                _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
+                _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg2;
+            }
+            else if (_currentScene.Theme == ThemeType.Desert || _currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
@@ -615,13 +622,13 @@ namespace ChompGame.MainGame.SceneModels
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg1;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.Bg1;
             }
-            else if(_currentScene.Theme == ThemeType.DesertInterior)
+            else if (_currentScene.Theme == ThemeType.DesertInterior)
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Upper] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Middle] = (byte)PaletteChange.Bg2;
                 _paletteChangeTable[(byte)BackgroundPart.Lower] = (byte)PaletteChange.None;
-            }            
+            }
             else
             {
                 _paletteChangeTable[(byte)BackgroundPart.Top] = (byte)PaletteChange.Bg1;

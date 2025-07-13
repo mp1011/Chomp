@@ -4497,7 +4497,7 @@ namespace ChompGame.MainGame.SceneModels
 
             (b, scene) => new PlatformScenePart(b, ScenePartType.Platform_Vanishing, PlatformDistance.Len16, 40, 10, scene),
 
-            (b, scene) => new SpriteScenePart(b, ScenePartType.DoorBackExit, 4, 10, scene),
+            (b, scene) => new SpriteScenePart(b, ScenePartType.DoorBackExit, 2, 12, scene),
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene)
          );
 

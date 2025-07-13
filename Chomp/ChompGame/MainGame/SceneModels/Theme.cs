@@ -124,7 +124,7 @@ namespace ChompGame.MainGame.SceneModels
                bomb: PaletteKey.Gray,
                bg1: PaletteKey.NightMist,
                bg2: PaletteKey.NightMist,
-               fg1: PaletteKey.ForestGround,
+               fg1: PaletteKey.GreenEnemy2,
                fg2: PaletteKey.BombLight,
                enemy1: PaletteKey.BrownBrick,
                enemy2: PaletteKey.Gray);

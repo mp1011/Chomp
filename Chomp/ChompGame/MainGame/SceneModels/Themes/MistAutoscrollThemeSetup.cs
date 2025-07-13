@@ -38,18 +38,15 @@ namespace ChompGame.MainGame.SceneModels.Themes
             });
         }
 
-        //public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
-        //{
-        //    attributeTable.ForEach((x, y, b) =>
-        //    {
-        //        if (y >= 4)
-        //        {
-        //            attributeTable[x, y] = 2;
-        //        }
-        //    });
+        public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)
+        {
+            attributeTable.ForEach((x, y, b) =>
+            {
+                attributeTable[x, y] = 0;                
+            });
 
-        //    return attributeTable;
-        //}
+            return attributeTable;
+        }
 
         public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
         {
@@ -106,6 +103,14 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 destination: vramPatternTable,
                 source: new InMemoryByteRectangle(7, 10, 1, 1),
                 destinationPoint: new Point(5, 0),
+                _specs,
+                memory);
+
+            // star 
+            masterPatternTable.CopyTilesTo(
+                destination: vramPatternTable,
+                source: new InMemoryByteRectangle(5, 6, 1, 1),
+                destinationPoint: new Point(6, 0),
                 _specs,
                 memory);
         }

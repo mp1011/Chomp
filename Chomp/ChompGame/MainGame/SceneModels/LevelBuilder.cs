@@ -831,7 +831,7 @@ namespace ChompGame.MainGame.SceneModels
 
             if(_sceneDefinition.IsAutoScroll)
             {
-                playerController = new PlayerPlaneController(_gameModule, memoryBuilder);
+                 playerController = new PlayerPlaneController(_gameModule, memoryBuilder);
                 bombControllers = new SpriteControllerPool<BombController>(
                    size: 2,
                    _gameModule.SpritesModule,

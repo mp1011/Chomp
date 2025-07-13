@@ -8,6 +8,9 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private GameByte _headSpriteIndex;
         private ExitsModule _exitModule;
+
+        protected override bool AlwaysActive => true;
+        
         public PlayerPlaneController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(gameModule, memoryBuilder, SpriteModels.SpriteType.Plane, SpriteModels.SpriteTileIndex.Plane)
         {

@@ -581,23 +581,36 @@ namespace ChompGame.MainGame.SceneModels
             return GroundTopBegin + index;
         }
 
-        public int LevelTileWidth => 
-            HasSprite(SpriteType.Plane) ? (_specs.ScreenWidth / _specs.TileWidth) * 3
-            :   ScrollStyle switch {
-                    ScrollStyle.None => _specs.ScreenWidth / _specs.TileWidth,
-                    ScrollStyle.Vertical => _specs.ScreenWidth / _specs.TileWidth,
-                    ScrollStyle.NameTable => _specs.NameTableWidth,
-                    ScrollStyle.Horizontal => (_specs.ScreenWidth / _specs.TileWidth) * 4,
-                    _ => throw new NotImplementedException()
-                };
+        public int LevelTileWidth
+        {
+            get
+            {
+                if (_theme.Value == ThemeType.MistAutoscroll)
+                    return _specs.NameTableWidth;
+                else if (HasSprite(SpriteType.Plane))
+                    return (_specs.ScreenWidth / _specs.TileWidth) * 3;
+                else
+                {
+                    return ScrollStyle switch {
+                        ScrollStyle.None => _specs.ScreenWidth / _specs.TileWidth,
+                        ScrollStyle.Vertical => _specs.ScreenWidth / _specs.TileWidth,
+                        ScrollStyle.NameTable => _specs.NameTableWidth,
+                        ScrollStyle.Horizontal => (_specs.ScreenWidth / _specs.TileWidth) * 4,
+                        _ => throw new NotImplementedException()
+                    };
+                }
+            }
+        }
 
         public int LevelTileHeight =>
-             ScrollStyle switch {
-                 ScrollStyle.None => (_specs.ScreenHeight / _specs.TileHeight) - StatusBarTiles,
-                 ScrollStyle.Horizontal => (_specs.ScreenHeight / _specs.TileHeight) - StatusBarTiles,
-                 ScrollStyle.NameTable => _specs.NameTableHeight - StatusBarTiles,
-                 ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 4,
-                 _ => throw new NotImplementedException()
-             };
+            _theme.Value == ThemeType.MistAutoscroll ?
+              (_specs.NameTableHeight - StatusBarTiles) :
+                 ScrollStyle switch {
+                     ScrollStyle.None => (_specs.ScreenHeight / _specs.TileHeight) - StatusBarTiles,
+                     ScrollStyle.Horizontal => (_specs.ScreenHeight / _specs.TileHeight) - StatusBarTiles,
+                     ScrollStyle.NameTable => _specs.NameTableHeight - StatusBarTiles,
+                     ScrollStyle.Vertical => (_specs.ScreenHeight / _specs.TileHeight) * 4,
+                     _ => throw new NotImplementedException()
+                 };
     }
 }

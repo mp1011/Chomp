@@ -45,6 +45,11 @@ namespace ChompGame.MainGame.SpriteControllers
             bullet.WorldSprite.FlipX = WorldSprite.FlipX;
         }
 
+        protected override void UpdateHidden()
+        {
+            _worldScroller.OffsetCamera(0, 0);
+        }
+
         protected override void UpdateActive()
         {
             _motion.XAcceleration = _motionController.WalkAccel;
@@ -53,6 +58,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _motionController.Update();
             var collision = _collisionDetector.DetectCollisions(WorldSprite, _motion);
             _motionController.AfterCollision(collision);
+            _worldScroller.OffsetCamera(0, 0);
 
             if (_stateTimer.Value == 0)
             {
@@ -112,7 +118,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 _worldScroller.OffsetCamera(0, 0);
                 _stateTimer.Value = 0;
-            }
+            }          
         }
     }
 }

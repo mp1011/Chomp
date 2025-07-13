@@ -52,6 +52,8 @@ namespace ChompGame.MainGame.SceneModels.SmartBackground
                         inPit = false;
                         int pitHeight = pitLeftHeight > groundHeight ? groundHeight : pitLeftHeight;
                         pitHeight = (pitHeight / 2) * 2;
+                        if (pitHeight < 2)
+                            pitHeight = 2;
                         yield return new Rectangle(pitBegin, nameTable.Height - pitHeight, x - pitBegin, pitHeight);
                     }
 

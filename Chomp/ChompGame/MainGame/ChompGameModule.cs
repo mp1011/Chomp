@@ -77,6 +77,7 @@ namespace ChompGame.MainGame
         private TileEditor _tileEditor;
 
         private GlitchCoreBgModule _glitchCoreBgModule;
+        private MistAutoscrollBgModule _mistAutoscrollBgModule;
         private FinalBossHelper _finalBossHelper;
 
         private LevelCard _levelCard;
@@ -413,7 +414,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level4_34_DesertRain1;
+            _currentLevel.Value = Level.Level5_23_Plane_Begin;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -452,14 +453,16 @@ namespace ChompGame.MainGame
                 GameRAM);
 
             if (_currentScene.IsAutoScroll)
-                _worldScroller = new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
-            else if(_currentScene.Theme == ThemeType.TechBaseBoss)
+            {
+                _worldScroller = new AutoscrollWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule);
+            }
+            else if (_currentScene.Theme == ThemeType.TechBaseBoss)
                 _worldScroller = new Level6BossScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _timer);
-            else 
+            else
                 _worldScroller = _currentScene.ScrollStyle switch {
                     ScrollStyle.Horizontal => new HorizontalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule),
                     ScrollStyle.Vertical => new VerticalWorldScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _statusBar),
-                    ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsLevelBossScene), 
+                    ScrollStyle.NameTable => new NametableScroller(memoryBuilder, Specs, _tileModule, _spritesModule, _currentScene.IsLevelBossScene),
                     _ => new NoScroller(memoryBuilder, Specs, _tileModule, _spritesModule)
                 };
 
@@ -534,6 +537,10 @@ namespace ChompGame.MainGame
                     GameSystem.CoreGraphicsModule,
                     GameSystem.Memory);
             }
+            else if(_currentScene.Theme == ThemeType.MistAutoscroll)
+            {
+                _mistAutoscrollBgModule = new MistAutoscrollBgModule(this);
+            }
         }
 
         private void ResetSprites()
@@ -598,6 +605,10 @@ namespace ChompGame.MainGame
             if(_currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
             {
                 _glitchCoreBgModule.Update();
+            }
+            else if(_currentScene.Theme == ThemeType.MistAutoscroll)
+            {
+                _mistAutoscrollBgModule.Update();
             }
         }
 

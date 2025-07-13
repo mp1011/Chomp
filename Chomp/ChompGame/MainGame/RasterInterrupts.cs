@@ -126,8 +126,13 @@ namespace ChompGame.MainGame
             }
             else
             {
-                var cloudEnd = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true);
-                if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight && 
+                int scrollAmount = (256 - _tileModule.Scroll.Y).NMod(256);
+
+                var cloudBegin = Constants.StatusBarHeight + scrollAmount;
+                var cloudEnd = _sceneDefinition.GetBackgroundLayerPixel(BackgroundPart.Middle, includeStatusBar: true) + scrollAmount
+                ;
+
+                if (_coreGraphicsModule.ScreenPoint.Y >= cloudBegin && 
                     _coreGraphicsModule.ScreenPoint.Y < cloudEnd)
                 {
                     int cloudY = _coreGraphicsModule.ScreenPoint.Y - cloudEnd;
@@ -136,6 +141,31 @@ namespace ChompGame.MainGame
                 else if (_coreGraphicsModule.ScreenPoint.Y >= cloudEnd)
                 {
                     _tileModule.Scroll.X = _autoScroll.Value;
+                }
+                else if (_coreGraphicsModule.ScreenPoint.Y < Constants.StatusBarHeight)
+                {
+                    _tileModule.Scroll.X = 0;
+                }
+                else if(_coreGraphicsModule.ScreenPoint.Y < cloudBegin)
+                {
+                    var r = _gameModule.RandomModule.FixedRandom((byte)(cloudBegin - _coreGraphicsModule.ScreenPoint.Y), 2);
+                   _tileModule.Scroll.X = r switch {
+                        0 => (byte)(_autoScroll.Value / 4),
+                        1 => (byte)(_autoScroll.Value / 2),
+                        2 => (byte)(_autoScroll.Value),
+                        _ => (byte)(_autoScroll.Value * 2)
+                    };
+                }
+                else if (_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight)
+                {
+                    _tileModule.Scroll.X = _autoScroll.Value;
+                }
+
+
+                var renderY = (_coreGraphicsModule.ScreenPoint.Y + _tileModule.Scroll.Y).NMod(256);
+                if(_coreGraphicsModule.ScreenPoint.Y >= Constants.StatusBarHeight && renderY < Constants.StatusBarHeight)
+                {
+                    _tileModule.Scroll.X = (byte)_specs.ScreenWidth;
                 }
             }
         }
