@@ -56,8 +56,6 @@ namespace ChompGame.Data
                 return GameKeyState.Up;
         }
 
-
-
         public void Update()
         {
             _lastState.Value = _currentState.Value;

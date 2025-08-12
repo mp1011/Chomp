@@ -234,12 +234,10 @@ namespace ChompGame
             _screenRenderSize.Update((int)(Window.ClientBounds.Width * 0.90), (int)(Window.ClientBounds.Height * 0.95), aspectRatio);
           
 
-          
-
             // Set CRT shader parameters (DX11 compatible)
             if (_useCrtEffect && _crtEffect != null)
             {
-                _crtEffect.Parameters["ScreenSize"]?.SetValue(new Vector2(_screenRenderSize.Width, _screenRenderSize.Height));
+                _crtEffect.Parameters["ScreenSize"]?.SetValue(new Vector2(_themeScreenRenderSize.Width * 0.60f, _themeScreenRenderSize.Height * 0.65f));
                 _crtEffect.Parameters["Time"]?.SetValue((float)gameTime.TotalGameTime.TotalSeconds);
 
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _crtEffect);
@@ -250,7 +248,7 @@ namespace ChompGame
             }
 
             _spriteBatch.Draw(_renderTarget, new Rectangle(
-                               x: (int)(_themeScreenRenderSize.X + (_themeScreenRenderSize.Width * 0.09)),
+                               x: (int)(_themeScreenRenderSize.X + (_themeScreenRenderSize.Width * 0.090)),
                                y: (int)(_themeScreenRenderSize.Y + (_themeScreenRenderSize.Height * 0.15)),
                                width: (int)(_themeScreenRenderSize.Width * 0.60),
                                height: (int)(_themeScreenRenderSize.Height * 0.65)), Color.White);

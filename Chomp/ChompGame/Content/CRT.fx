@@ -21,17 +21,31 @@ float4 main(float2 uv : TEXCOORD0) : COLOR0
     // Simulate scanlines
     float scanline = 0.85 + 0.15 * sin(pixel.y * 3.14159);
 
-    // Slight curvature (already handled by bulge, but keep for intensity)
-    float curve = 1.0; // - 0.07 * dist2;
-
     // Slight color offset for chromatic aberration
     float3 color;
     color.r = tex2D(inputSampler, bulgedUV + float2(0.001, 0)).r;
     color.g = tex2D(inputSampler, bulgedUV).g;
     color.b = tex2D(inputSampler, bulgedUV - float2(0.001, 0)).b;
 
-    color *= scanline * curve;
+    color *= scanline;
 
+    // --- Screen glare effect ---
+    // Elliptical highlight near top left, simulating glass reflection
+    float2 glareCenter = float2(0.32, 0.18); // position of glare
+    float2 glareDist = (uv - glareCenter);
+    float glareRadius = 0.28;
+    float glare = 0.0;
+
+    // Soft elliptical falloff
+    float glareFalloff = dot(glareDist / float2(1.0, 0.6), glareDist / float2(1.0, 0.6));
+    glare = 0.18 * exp(-glareFalloff / (glareRadius * glareRadius));
+
+    // Add a subtle streak for realism
+    glare += 0.18 * exp(-pow((uv.y - 0.13) * 3.5, 2.0)) * exp(-pow((uv.x - 0.32) * 1.5, 2.0));
+
+    // Blend glare with color, using additive blend for highlight
+    color += glare;
+    
     return float4(color, 1.0);
 }
 

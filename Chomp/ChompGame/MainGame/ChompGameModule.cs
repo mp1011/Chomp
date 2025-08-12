@@ -261,8 +261,10 @@ namespace ChompGame.MainGame
                     else
                         PlayScene();
 
-                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed && _inputModule.Player1.UpKey == GameKeyState.Down)                    
+                    if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed && _inputModule.Player1.UpKey == GameKeyState.Down)
+                    {
                         ExitsModule.GotoNextLevel();
+                    }
                     else if (CheckPause())
                         _gameState.Value = GameState.Paused;
 
@@ -422,13 +424,13 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level5_1_Mist;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.LoadScene;
+            _gameState.Value = GameState.LevelCard;
         }
 
         public void RestartScene()
@@ -596,6 +598,9 @@ namespace ChompGame.MainGame
                 CurrentLevel = newLevel;
 
                 _gameState.Value = IsLevelStart(newLevel) ? GameState.LevelCard : GameState.LoadScene;
+                if (ExitsModule.ActiveExit.ExitLevelOffset == -1)
+                    _gameState.Value = GameState.LoadScene;
+
                 _levelCard.Reset();
                 GameDebug.DebugLog($"Entering level {CurrentLevel}", DebugLogFlags.LevelTransition);
 
