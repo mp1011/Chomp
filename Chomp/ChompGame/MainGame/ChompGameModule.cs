@@ -38,7 +38,8 @@ namespace ChompGame.MainGame
             GameOver,
             TileEditor,
             LevelCard,
-            Paused
+            Paused,
+            Title
         }
 
 
@@ -80,6 +81,7 @@ namespace ChompGame.MainGame
         private MistAutoscrollBgModule _mistAutoscrollBgModule;
         private FinalBossHelper _finalBossHelper;
 
+        private TitleScreen _titleScreen;
         private LevelCard _levelCard;
         private PlayerDeathHandler _deathHandler;
 
@@ -210,6 +212,8 @@ namespace ChompGame.MainGame
 
             _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
             _levelCard = new LevelCard(this, _longTimer, _masterPatternTable);
+            _titleScreen = new TitleScreen(this, _longTimer, _masterPatternTable);
+
             _deathHandler = new PlayerDeathHandler(this, _deathTimer, _statusBar, _gameState);
         }
 
@@ -276,6 +280,10 @@ namespace ChompGame.MainGame
                     _inputModule.OnLogicUpdate();
                     if (_levelCard.Update())
                         _gameState.Value = GameState.LoadScene;
+                    break;
+                case GameState.Title:
+                    _inputModule.OnLogicUpdate();
+                    _titleScreen.Update();
                     break;
                 case GameState.Paused:
                     _inputModule.OnLogicUpdate();
@@ -414,13 +422,13 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_40_FinalBoss;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.LevelCard;
+            _gameState.Value = GameState.LoadScene;
         }
 
         public void RestartScene()

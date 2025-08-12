@@ -11,19 +11,19 @@ namespace ChompGame.GameSystem
 
         public int Y { get; set; }
 
-        public void Update(GameWindow window, double aspectRatio)
+        public void Update(int windowWidth, int windowHeight, double aspectRatio)
         {
-            Width = window.ClientBounds.Width;
+            Width = windowWidth;
             Height = (int)(Width * aspectRatio);
 
-            if (Height > window.ClientBounds.Height)
+            if (Height > windowHeight)
             {
-                Height = window.ClientBounds.Height;
+                Height = windowHeight;
                 Width = (int)(Height / aspectRatio);
             }
 
-            X = 16 + (window.ClientBounds.Width - Width) / 2;
-            Y = (window.ClientBounds.Height - Height) / 2;
+            X = (windowWidth - Width) / 2;
+            Y = (windowHeight - Height) / 2;
         }
     }
 }

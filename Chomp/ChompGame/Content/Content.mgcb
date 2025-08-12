@@ -13,6 +13,24 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin CRT.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:CRT.fx
+
+#begin CRT.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CRT.png;CRT_Image.png
+
 #begin Font.spritefont
 /importer:FontDescriptionImporter
 /processor:LocalizedFontProcessor
@@ -43,18 +61,6 @@
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:Music/CommandCenter.ogg
-
-#begin Music/Dusk.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/Dusk.ogg
-
-#begin Music/Dusk.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/Dusk.ogg
 
 #begin Music/Dusk.ogg
 /importer:OggImporter
@@ -133,6 +139,12 @@
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:Music/Space.ogg
+
+#begin Music/Story.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Story.ogg
 
 #begin Music/Stronghold.ogg
 /importer:OggImporter
