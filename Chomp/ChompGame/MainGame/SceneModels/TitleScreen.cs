@@ -4,11 +4,36 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
+using System.ComponentModel;
 
 namespace ChompGame.MainGame.SceneModels
 {
     internal class TitleScreen
     {
+
+        const int Let_E = 3;
+        const int Let_S = 4;
+        const int Let_O = 6;
+        const int Let_R = 7;
+        const int Let_L = 8;
+        const int Let_D = 9;
+        const int Let_T2 = 10;
+
+        const int Let_T = 12;
+        const int Let_A = 13;
+
+        const int Solid = 25;
+        const int M_Mid = 26;
+        const int Left = 27;
+        const int Right = 28;
+        const int P_Top = 29;
+        const int P_Bottom = 30;
+
+        const int StartY = 24;
+        const int LoadY = 30;
+        const int DelY = 38;
+
+
         private readonly ChompGameModule _gameModule;
         
         private GameByteEnum<State> _state;
@@ -23,7 +48,8 @@ namespace ChompGame.MainGame.SceneModels
             ChompsEat = 4,
             ChompsEscape = 24,
             TitleFadeIn = 25,
-            Title = 26
+            Title = 26,
+            StartGame = 27,
         }
 
         public TitleScreen(ChompGameModule gameModule, GameByte state, SystemMemoryBuilder builder)
@@ -34,7 +60,21 @@ namespace ChompGame.MainGame.SceneModels
 
         public void Update()
         {
-            _gameModule.TileCopier.AnalyzeTileUsage();
+            GemPalette();
+
+            if (_state.Value >= State.StarFadein && _state.Value < State.Title)
+            {
+                if(_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
+                {
+                    SetTitleTiles();
+                    SetTitleSprites();
+                    _gameModule.GameSystem.CoreGraphicsModule.FadeAmount = 0;
+                    _gameModule.TileModule.Scroll.Y = 0;
+                    _state.Value = State.Title;
+                    return;
+                }
+            }
+            
             if (_state.Value == State.Init)
             {
                 _gameModule.MusicModule.CurrentSong = MusicModule.SongName.Story;
@@ -159,6 +199,7 @@ namespace ChompGame.MainGame.SceneModels
                         {
                             _state.Value = State.TitleFadeIn;
                             SetTitleTiles();
+                            SetTitleSprites();
                         }
                     }
                 }
@@ -176,30 +217,165 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if(_state.Value == State.Title)
             {
-                // add tiles for menu cursor, title graphic
-                // erase sprites
-                // set tiles to spell title
-                // sprite for menu options
-                // tiles for options
+                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
+                {
+                    if (menuSprite.Y < DelY)
+                    {
+                        menuSprite.Y += 8;
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
+                    }
+                }
+                else if (_gameModule.InputModule.Player1.UpKey == GameKeyState.Pressed)
+                {
+                    if (menuSprite.Y > StartY)
+                    {
+                        menuSprite.Y -= 8;
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
+                    }
+                }
+                else if(_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
+                {
+                    if (menuSprite.Y == StartY)
+                    {
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                        _state.Value = State.StartGame;
+                    }
+                    else if (menuSprite.Y == LoadY)
+                    {
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                    }
+                    else if (menuSprite.Y == DelY)
+                    {
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                    }
+                }
+            }
+            else if (_state.Value == State.StartGame)
+            {
+                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                var chompSprite = _gameModule.SpritesModule.GetSprite(1);
 
+                if (!chompSprite.Visible)
+                {
+                    _gameModule.MusicModule.CurrentSong = MusicModule.SongName.None;
+                    chompSprite.Visible = true;
+                    chompSprite.X = (byte)(_gameModule.Specs.NameTablePixelWidth - 7);
+                    chompSprite.Y = (byte)(menuSprite.Y - 2);
+                }
+
+                if (_gameModule.LevelTimer.IsMod(2))
+                {
+                    if (menuSprite.Visible)
+                    {
+                        chompSprite.X++;
+                        if (chompSprite.X == menuSprite.X)
+                        {
+                            menuSprite.Visible = false;
+                        }
+                    }
+                    else if(chompSprite.X != (byte)(_gameModule.Specs.NameTablePixelWidth - 8))
+                    {
+                        chompSprite.X--;
+                    }
+                    else
+                    {
+                        _gameModule.GameSystem.CoreGraphicsModule.FadeAmount++;
+                        if(_gameModule.GameSystem.CoreGraphicsModule.FadeAmount == 15)
+                        {
+                            _gameModule.StartGame();
+                        }
+                    }
+                }
             }
 
-            GemPalette();
+        }
+
+        private void SetTitleSprites()
+        {
+            for (int i = 0; i < _gameModule.Specs.MaxSprites; i++)
+            {
+                var sprite = _gameModule.SpritesModule.GetSprite(i);
+                sprite.Tile = 0;
+            }
+
+            int gemIndex = CreateGemSprite();
+            int chompIndex = CreateChompSprite();
+
+            var gem = _gameModule.SpritesModule.GetSprite(gemIndex);
+            var chomp = _gameModule.SpritesModule.GetSprite(chompIndex);
+
+            chomp.Visible = false;
+
+            gem.Visible = true;
+            gem.X = 12;
+            gem.Y = StartY;
         }
 
         private void SetTitleTiles()
         {
             _gameModule.TileModule.NameTable.ForEach((x, y, b) => _gameModule.TileModule.NameTable[x, y] = 0);
 
-            // C
-            _gameModule.TileModule.NameTable[1, 2] = 25;
-            _gameModule.TileModule.NameTable[2, 2] = 25;
-            _gameModule.TileModule.NameTable[3, 2] = 25;
-            _gameModule.TileModule.NameTable[1, 3] = 25;
-            _gameModule.TileModule.NameTable[1, 4] = 25;
-            _gameModule.TileModule.NameTable[2, 4] = 25;
-            _gameModule.TileModule.NameTable[3, 4] = 25;
+            int x = 3;
 
+            // C
+            _gameModule.TileModule.NameTable[x, 2] = Solid;
+            _gameModule.TileModule.NameTable[x, 3] = Left;
+            _gameModule.TileModule.NameTable[x, 4] = Solid;
+
+            // H
+            _gameModule.TileModule.NameTable[x + 1, 2] = Right;
+            _gameModule.TileModule.NameTable[x + 1, 3] = Right;
+            _gameModule.TileModule.NameTable[x + 1, 4] = Right;
+            _gameModule.TileModule.NameTable[x + 2, 2] = Right;
+            _gameModule.TileModule.NameTable[x + 2, 3] = Solid;
+            _gameModule.TileModule.NameTable[x + 2, 4] = Right;
+
+            // O
+            _gameModule.TileModule.NameTable[x + 3, 2] = Right;
+            _gameModule.TileModule.NameTable[x + 3, 3] = Right;
+            _gameModule.TileModule.NameTable[x + 3, 4] = Right;
+            _gameModule.TileModule.NameTable[x + 4, 2] = Solid;
+            _gameModule.TileModule.NameTable[x + 4, 3] = Right;
+            _gameModule.TileModule.NameTable[x + 4, 4] = Solid;
+
+
+            // M
+            _gameModule.TileModule.NameTable[x + 5, 2] = Right;
+            _gameModule.TileModule.NameTable[x + 5, 3] = Right;
+            _gameModule.TileModule.NameTable[x + 5, 4] = Right;
+            _gameModule.TileModule.NameTable[x + 7, 2] = Left;
+            _gameModule.TileModule.NameTable[x + 7, 3] = Left;
+            _gameModule.TileModule.NameTable[x + 7, 4] = Left;
+            _gameModule.TileModule.NameTable[x + 6, 3] = M_Mid;
+
+            // P
+            _gameModule.TileModule.NameTable[x + 8, 2] = P_Top;
+            _gameModule.TileModule.NameTable[x + 8, 3] = P_Bottom;
+            _gameModule.TileModule.NameTable[x + 8, 4] = Left;
+            _gameModule.TileModule.NameTable[x + 9, 2] = Left;
+            _gameModule.TileModule.NameTable[x + 9, 3] = Left;
+
+            x = 4;
+            int y = 6;
+
+            // START
+            _gameModule.TileModule.NameTable[x, y] = Let_S;
+            _gameModule.TileModule.NameTable[x + 1, y] = Let_T;
+            _gameModule.TileModule.NameTable[x + 2, y] = Let_A;
+            _gameModule.TileModule.NameTable[x + 3, y] = Let_R;
+            _gameModule.TileModule.NameTable[x + 4, y] = Let_T2;
+
+            // LOAD
+            _gameModule.TileModule.NameTable[x, y + 2] = Let_L;
+            _gameModule.TileModule.NameTable[x + 1, y + 2] = Let_O;
+            _gameModule.TileModule.NameTable[x + 2, y + 2] = Let_A;
+            _gameModule.TileModule.NameTable[x + 3, y + 2] = Let_D;
+
+            // DEL
+            _gameModule.TileModule.NameTable[x, y + 4] = Let_D;
+            _gameModule.TileModule.NameTable[x + 1, y + 4] = Let_E;
+            _gameModule.TileModule.NameTable[x + 2, y + 4] = Let_L;
 
         }
 
@@ -247,7 +423,7 @@ namespace ChompGame.MainGame.SceneModels
 
         }
 
-        private void CreateGemSprite()
+        private int CreateGemSprite()
         {
             var spriteIndex = _gameModule.SpritesModule.GetFreeSpriteIndex();
             var sprite = _gameModule.SpritesModule.GetSprite(spriteIndex);
@@ -259,6 +435,7 @@ namespace ChompGame.MainGame.SceneModels
             sprite.Y = 16;
             sprite.Visible = true;
             sprite.Palette = SpritePalette.Player;
+            return spriteIndex;
         }
 
         private int CreateChompSprite()

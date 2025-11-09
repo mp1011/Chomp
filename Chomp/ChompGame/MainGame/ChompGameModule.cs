@@ -421,7 +421,7 @@ namespace ChompGame.MainGame
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.LoadScene;
+            _gameState.Value = GameState.Title;
         }
 
         public void RestartScene()
@@ -431,6 +431,21 @@ namespace ChompGame.MainGame
             _levelCard.Reset();
             _scenePartsDestroyed.Reset(GameSystem.Memory);
             _lastExitType.Value = _lastTransitionExitType.Value;
+        }
+
+        public void StartGame()
+        {
+            _longTimer.Value = 0;
+            _timer.Value = 0;
+            _gameState.Value = GameState.LevelCard;
+            _currentLevel.Value = Level.Level1_1_Start;
+
+            _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+            _lastExitType.Value = ExitType.Right;
+            GameSystem.CoreGraphicsModule.FadeAmount = 0;
+            _statusBar.Score = 0;
+            _statusBar.SetLives(StatusBar.InitialLives);
+            _statusBar.Health = StatusBar.FullHealth;
         }
 
         public void LoadScene()

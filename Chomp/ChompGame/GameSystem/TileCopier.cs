@@ -118,6 +118,22 @@ namespace ChompGame.GameSystem
                 _gameModule.Specs,
                 GameSystem.Memory);
 
+            // M mid
+            _masterPatternTable.CopyTilesTo(
+                destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+                source: new InMemoryByteRectangle(4, 6, 1, 1),
+                destinationPoint: new Point(2, 3),
+                _gameModule.Specs,
+                GameSystem.Memory);
+
+            // Other Text
+            _masterPatternTable.CopyTilesTo(
+                destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+                source: new InMemoryByteRectangle(0, 9, 4, 1),
+                destinationPoint: new Point(3, 3),
+                _gameModule.Specs,
+                GameSystem.Memory);
+
             // gem sprite
             _masterPatternTable.CopyTilesTo(
                 destination: GameSystem.CoreGraphicsModule.SpritePatternTable,
