@@ -15,8 +15,6 @@ namespace ChompGame.MainGame.SceneModels
         private GameByteEnum<Phase> _state;
         private GameByte _timer;
         private ChompGameModule _gameModule;
-        private NBitPlane _masterPatternTable;
-
         private MainSystem GameSystem => _gameModule.GameSystem;
         private CoreGraphicsModule CoreGraphicsModule => GameSystem.CoreGraphicsModule;
 
@@ -30,11 +28,10 @@ namespace ChompGame.MainGame.SceneModels
         }
         
 
-        public LevelCard(ChompGameModule gameModule, GameByte state, NBitPlane masterPatternTable)
+        public LevelCard(ChompGameModule gameModule, GameByte state)
         {
             _state = new GameByteEnum<Phase>(state);
             _gameModule = gameModule;
-            _masterPatternTable = masterPatternTable;
             _timer = gameModule.LevelTimer;
         }
 
@@ -210,26 +207,7 @@ namespace ChompGame.MainGame.SceneModels
             palette.SetColor(0, ColorIndex.Black);
             palette.SetColor(2, ColorIndex.Red1);
 
-            _masterPatternTable.CopyTilesTo(
-                destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
-                source: new InMemoryByteRectangle(7, 3, 1, 1),
-                destinationPoint: new Point(1, 0),
-                _gameModule.Specs,
-                GameSystem.Memory);
-
-            _masterPatternTable.CopyTilesTo(
-               destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
-               source: new InMemoryByteRectangle(8, 5, 4, 1),
-               destinationPoint: new Point(2, 0),
-               _gameModule.Specs,
-               GameSystem.Memory);
-
-            _masterPatternTable.CopyTilesTo(
-              destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
-              source: new InMemoryByteRectangle(6, 4, 8, 1),
-              destinationPoint: new Point(0, 1),
-              _gameModule.Specs,
-              GameSystem.Memory);
+            _gameModule.TileCopier.CopyTilesForLevelCard();
 
             _gameModule.TileModule.Scroll.X = 0;
             _gameModule.TileModule.Scroll.Y = 0;

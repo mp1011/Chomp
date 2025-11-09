@@ -121,6 +121,7 @@ namespace ChompGame.GameSystem
             return _currentSong.Value switch
             {
                 SongName.FinalBossPart1End => false,
+                SongName.Story => false,
                 _ => true
             };
         }

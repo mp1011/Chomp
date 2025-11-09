@@ -6,26 +6,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
     class PlainsThemeSetup : ThemeSetup
     {
         public PlainsThemeSetup(ChompGameModule m) : base(m) { }
-        public override void SetupVRAMPatternTable(
-          NBitPlane masterPatternTable,
-          NBitPlane vramPatternTable,
-          SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {                
-            //tile row 1
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 5, 6, 1),
-                destinationPoint: new Point(1, 0),
-                _specs,
-                memory);
-
-            //tile row 2
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 12, 8, 1),
-                destinationPoint: new Point(0, 1),
-                _specs,
-                memory);                            
+            _gameModule.TileCopier.CopyTilesForPlainsTheme();
         }
 
         public override void BuildBackgroundNameTable(NBitPlane nameTable)

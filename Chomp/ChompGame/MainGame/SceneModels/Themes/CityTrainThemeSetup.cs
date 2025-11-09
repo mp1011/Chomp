@@ -1,6 +1,5 @@
 ﻿using ChompGame.Data;
 using ChompGame.MainGame.SceneModels.SmartBackground;
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.Themes
@@ -33,51 +32,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             }
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {
-            //bg buildings
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 7, 8, 1),
-                destinationPoint: new Point(0, 3),
-                _specs,
-                memory);
-
-            //train car
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(8, 7, 4, 1),
-               destinationPoint: new Point(0, 1),
-               _specs,
-               memory);
-
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(8, 12, 3, 1),
-               destinationPoint: new Point(4, 1),
-               _specs,
-               memory);
-
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(13, 12, 3, 1),
-               destinationPoint: new Point(0, 2),
-               _specs,
-               memory);
-
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(0, 14, 2, 1),
-               destinationPoint: new Point(1, 0),
-               _specs,
-               memory);
-
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(13, 10, 2, 1),
-              destinationPoint: new Point(3, 0),
-              _specs,
-              memory);
+            _gameModule.TileCopier.CopyTilesForCityTrainTheme();
         }
     }
 }

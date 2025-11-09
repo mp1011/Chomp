@@ -1,14 +1,17 @@
 ﻿using ChompGame.Extensions;
 using ChompGame.GameSystem;
-using ChompGame.MainGame;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace ChompGame.Data
 {
+    public static class BitPlaneCopyStats
+    {
+        public static List<ByteRectangleBase> Sources { get; } = new List<ByteRectangleBase>();
+    }
+
     public abstract class NBitPlane : IGrid<byte>
     {
         protected BitPlane[] _planes;
@@ -144,6 +147,9 @@ namespace ChompGame.Data
             Specs specs,
             SystemMemory memory)
         {
+#if DEBUG
+            BitPlaneCopyStats.Sources.Add(source);
+#endif
             int planeIndex = 0;
             foreach(var bitPlane in _planes)
             {

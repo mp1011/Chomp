@@ -32,46 +32,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             }
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {
-            //bg buildings
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 7, 8, 1),
-                destinationPoint: new Point(0, 3),
-                _specs,
-                memory);
-
-            // fg buildings
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(0, 8, 8, 1),
-               destinationPoint: new Point(0, 4),
-               _specs,
-               memory);
-
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(8, 8, 4, 1),
-              destinationPoint: new Point(1, 0),
-              _specs,
-              memory);
-
-            //fg
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 14, 8, 1),
-                destinationPoint: new Point(0, 1),
-                _specs,
-                memory);
-
-            //black tile
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(10, 10, 1, 1),
-                destinationPoint: new Point(4, 0),
-                _specs,
-                memory);
+            _gameModule.TileCopier.CopyTilesForCityTheme();
         }
     }
 }

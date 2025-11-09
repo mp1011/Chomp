@@ -7,21 +7,22 @@ namespace ChompGame.MainGame.SceneModels
 {
     class VramBuilder
     {
-        private readonly NBitPlane _masterPatternTable, _vramPatternTable;
+        private readonly TileCopier _tileCopier;
+        private readonly NBitPlane _vramPatternTable;
         private readonly SpriteTileTable _spriteTileTable;
         private readonly SystemMemory _memory;
         private readonly Specs _specs;
                 
         private bool _enemy1Used, _extra1Used;
         public VramBuilder(
-            NBitPlane masterPatternTable,
+            TileCopier tileCopier,
             NBitPlane vramPatternTable,
             SpriteTileTable spriteTileTable,
             SystemMemory memory,
             Specs specs)
         {
             _specs = specs;
-            _masterPatternTable = masterPatternTable;
+            _tileCopier = tileCopier;
             _vramPatternTable = vramPatternTable;
             _spriteTileTable = spriteTileTable;
             _memory = memory;
@@ -30,12 +31,8 @@ namespace ChompGame.MainGame.SceneModels
         public byte AddSprite(int x, int y, int width, int height, Point? destination = null)
         {
             Point spriteDestination = destination ?? CalcSpriteDestination(width, height);
-            _masterPatternTable.CopyTilesTo(
-                   destination: _vramPatternTable,
-                   source: new InMemoryByteRectangle(x, y, width, height),
-                   destinationPoint: new Point(spriteDestination.X, spriteDestination.Y),
-                   _specs,
-                   _memory);
+
+            _tileCopier.CopyTilesForSprite(x, y, width, height, spriteDestination.X, spriteDestination.Y, _vramPatternTable);
 
             var index = (byte)((spriteDestination.Y * _specs.PatternTableTilesAcross)
                 + spriteDestination.X);
@@ -105,6 +102,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public byte AddSprite(SpriteTileIndex spriteIndex, int x, int y, int width, int height, Point? destination=null)
         {
+#if DEBUG
+            BitPlaneCopyStats.Sources.Add(new InMemoryByteRectangle(x, y, width, height));
+#endif
             var tile = AddSprite(x, y, width, height, destination);
             _spriteTileTable.SetTile(spriteIndex, tile);
             return tile;
@@ -112,64 +112,12 @@ namespace ChompGame.MainGame.SceneModels
 
         public void AddStatusBarTiles()
         {
-            //row 0 - top status bar text
-            _masterPatternTable.CopyTilesTo(
-                destination: _vramPatternTable,
-                source: new InMemoryByteRectangle(4, 3, 7, 1),
-                destinationPoint: new Point(1, 5),
-                _specs,
-                _memory);
-
-            //row 1 - bottom status bar text
-            _masterPatternTable.CopyTilesTo(
-                destination: _vramPatternTable,
-                source: new InMemoryByteRectangle(5, 4, 8, 1),
-                destinationPoint: new Point(0, 6),
-                _specs,
-                _memory);
-
-            // row 2 - more text
-            _masterPatternTable.CopyTilesTo(
-                destination: _vramPatternTable,
-                source: new InMemoryByteRectangle(13, 4, 2, 1),
-                destinationPoint: new Point(6, 7),
-                _specs,
-                _memory);
-
-            // row 2 - health guage, filled tile
-            _masterPatternTable.CopyTilesTo(
-                destination: _vramPatternTable,
-                source: new InMemoryByteRectangle(0, 4, 5, 1),
-                destinationPoint: new Point(1, 7),
-                _specs,
-                _memory);
+            _tileCopier.CopyTilesForStatusBar();            
         }
 
         public void AddBossBodyTiles(bool finalBoss)
         {
-            _masterPatternTable.CopyTilesTo(
-               destination: _vramPatternTable,
-               source: new InMemoryByteRectangle(8, 9, 8, 2),
-               destinationPoint: new Point(0, 3),
-               _specs,
-               _memory);
-
-            _masterPatternTable.CopyTilesTo(
-               destination: _vramPatternTable,
-               source: new InMemoryByteRectangle(5, 11, 7, 1),
-               destinationPoint: new Point(1, 2),
-               _specs,
-               _memory);
-
-            if(finalBoss)
-            {
-                _masterPatternTable.CopyTilesTo(
-                     destination: _vramPatternTable,
-               source: new InMemoryByteRectangle(11, 8, 1, 1),
-               destinationPoint: new Point(1, 2),
-               _specs,
-               _memory);
-            }
+            _tileCopier.CopyTilesForBossBody(finalBoss);
         }
 
         public void AddBossSprites(Level currentLevel)

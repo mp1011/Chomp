@@ -76,53 +76,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             return attributeTable;
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
-        {            
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(0, 15, 6, 1),
-              destinationPoint: new Point(0, 1),
-              _specs,
-              memory);
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(14, 15, 1, 1),
-             destinationPoint: new Point(6, 1),
-             _specs,
-             memory);
-
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(15, 13, 1, 1),
-             destinationPoint: new Point(7, 1),
-             _specs,
-             memory);
-
-            // bricks
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 14, 2, 1),
-                destinationPoint: new Point(1, 0),
-                _specs,
-                memory);
-
-            // pipe
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(6, 0, 1, 1),
-              destinationPoint: new Point(3, 0),
-              _specs,
-              memory);
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(6, 6, 1, 1),
-             destinationPoint: new Point(4, 0),
-             _specs,
-             memory);
-
+        public override void SetupVRAMPatternTable()
+        {
+            _gameModule.TileCopier.CopyTilesForFinalArea();
         }
     }
 }

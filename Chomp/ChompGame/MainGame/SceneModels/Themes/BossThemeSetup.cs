@@ -13,17 +13,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
 
         protected abstract ByteRectangleBase FloorTiles { get; }
 
-        public override void SetupVRAMPatternTable(
-         NBitPlane masterPatternTable,
-         NBitPlane vramPatternTable,
-         SystemMemory memory)
-        {          
-            masterPatternTable.CopyTilesTo(
-                    destination: vramPatternTable,
-                    source: FloorTiles,
-                    destinationPoint: new Point(0, 1),
-                    _specs,
-                    memory);          
+        public override void SetupVRAMPatternTable()
+        {
+            _gameModule.TileCopier.CopyTilesForBossTheme(FloorTiles);
         }
 
         public override NBitPlane BuildAttributeTable(NBitPlane attributeTable, NBitPlane nameTable)

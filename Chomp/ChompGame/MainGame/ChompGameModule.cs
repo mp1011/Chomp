@@ -120,6 +120,8 @@ namespace ChompGame.MainGame
 
         public RandomModule RandomModule { get; }
 
+        public TileCopier TileCopier { get; private set; }
+
         public FinalBossHelper FinalBossHelper => _finalBossHelper;
 
         public Level CurrentLevel
@@ -210,9 +212,10 @@ namespace ChompGame.MainGame
 
             ThemeBuilder.BuildThemes(memoryBuilder);
 
+            TileCopier = new TileCopier(_masterPatternTable, this);
             _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
-            _levelCard = new LevelCard(this, _longTimer, _masterPatternTable);
-            _titleScreen = new TitleScreen(this, _longTimer, _masterPatternTable);
+            _levelCard = new LevelCard(this, _longTimer);
+            _titleScreen = new TitleScreen(this, _longTimer, memoryBuilder);
 
             _deathHandler = new PlayerDeathHandler(this, _deathTimer, _statusBar, _gameState);
         }
@@ -337,19 +340,7 @@ namespace ChompGame.MainGame
                 palette.SetColor(0, ColorIndex.Black);
                 palette.SetColor(2, ColorIndex.Red1);
 
-                _masterPatternTable.CopyTilesTo(
-                    destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
-                    source: new InMemoryByteRectangle(4, 3, 7, 1),
-                    destinationPoint: new Point(1, 0),
-                    Specs,
-                    GameSystem.Memory);
-
-                _masterPatternTable.CopyTilesTo(
-                   destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
-                   source: new InMemoryByteRectangle(11, 3, 5, 1),
-                   destinationPoint: new Point(0, 1),
-                   Specs,
-                   GameSystem.Memory);
+                TileCopier.CopyTilesForGameOver();
 
                 TileModule.Scroll.X = 0;
                 TileModule.Scroll.Y = 0;
@@ -424,13 +415,13 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level5_1_Mist;
+            _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.LevelCard;
+            _gameState.Value = GameState.LoadScene;
         }
 
         public void RestartScene()
@@ -479,7 +470,6 @@ namespace ChompGame.MainGame
             _sceneSpriteControllers = _levelBuilder.CreateSpriteControllers(memoryBuilder);
 
             _levelBuilder.SetupVRAMPatternTable(
-                _masterPatternTable,
                 GameSystem.CoreGraphicsModule.BackgroundPatternTable,
                 GameSystem.CoreGraphicsModule.SpritePatternTable,
                 GameSystem.Memory);

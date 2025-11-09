@@ -1,5 +1,4 @@
 ﻿using ChompGame.Data;
-using Microsoft.Xna.Framework;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
@@ -55,47 +54,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             return attributeTable;
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {
-            //trees1
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(9, 8, 2, 1),
-                destinationPoint: new Point(1, 0),
-                _specs,
-                memory);
-
-            //trees2
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(11, 15, 3, 1),
-                destinationPoint: new Point(3, 0),
-                _specs,
-                memory);
-
-            //solid
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(5, 7, 1, 1),
-                destinationPoint: new Point(6, 0),
-                _specs,
-                memory);
-
-            //trunk
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(6, 12, 1, 1),
-               destinationPoint: new Point(7, 0),
-               _specs,
-               memory);
-
-            //bg
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 12, 8, 1),
-                destinationPoint: new Point(0, 1),
-                _specs,
-                memory);
+            _gameModule.TileCopier.CopyTilesForForestTheme();
         }
     }
 }

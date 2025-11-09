@@ -1,8 +1,4 @@
 ﻿using ChompGame.Data;
-using ChompGame.GameSystem;
-using ChompGame.MainGame.SceneModels.SmartBackground;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace ChompGame.MainGame.SceneModels.Themes
 {
@@ -85,30 +81,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             return attributeTable;
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(8, 14, 2, 1),
-                destinationPoint: new Point(0, 1),
-                _specs,
-                memory);
-
-            masterPatternTable.CopyTilesTo(
-                 destination: vramPatternTable,
-                 source: new InMemoryByteRectangle(2, 12, 6, 1),
-                 destinationPoint: new Point(2, 1),
-                 _specs,
-                 memory);
-
-
-            masterPatternTable.CopyTilesTo(
-                 destination: vramPatternTable,
-                 source: new InMemoryByteRectangle(10, 14, 3, 1),
-                 destinationPoint: new Point(1, 0),
-                 _specs,
-                 memory);
-
+            _gameModule.TileCopier.CopyTilesForDesertInteriorTheme();
         }
     }
 }

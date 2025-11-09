@@ -12,10 +12,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
         protected SceneDefinition _sceneDefinition;
         protected ChompGameModule _gameModule;
 
-        public abstract void SetupVRAMPatternTable(
-          NBitPlane masterPatternTable,
-          NBitPlane vramPatternTable,
-          SystemMemory memory);
+        public abstract void SetupVRAMPatternTable();
 
         protected ThemeSetup(ChompGameModule gameModule)
         {

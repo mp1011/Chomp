@@ -46,22 +46,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             return attributeTable;
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
-        {            
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(0, 0, 7, 1),
-              destinationPoint: new Point(1, 0),
-              _specs,
-              memory);
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(2, 1, 8, 2),
-             destinationPoint: new Point(0, 1),
-             _specs,
-             memory);
-
+        public override void SetupVRAMPatternTable()
+        {
+            _gameModule.TileCopier.CopyTilesForGlitchCore();
         }
     }
 }

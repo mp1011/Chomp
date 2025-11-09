@@ -82,96 +82,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
              
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {
-            //bg
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(0, 10, 3, 1),
-              destinationPoint: new Point(1, 0),
-              _specs,
-              memory);
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(0, 11, 3, 1),
-             destinationPoint: new Point(4, 0),
-             _specs,
-             memory);
-
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(5, 7, 1, 1),
-               destinationPoint: new Point(7, 0),
-               _specs,
-               memory);
-
-            //bg extra
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(6, 11, 1, 1),
-             destinationPoint: new Point(0, 3),
-             _specs,
-             memory);
-
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(15, 10, 1, 1),
-                destinationPoint: new Point(1, 3),
-                _specs,
-                memory);
-
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(3, 11, 2, 1),
-              destinationPoint: new Point(2, 3),
-              _specs,
-              memory);
-
-
-            // fg
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(5, 7, 1, 1),
-                destinationPoint: new Point(0, 1),
-                _specs,
-                memory);
-
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(5, 7, 1, 1),
-              destinationPoint: new Point(1, 1),
-              _specs,
-              memory);
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(2, 12, 3, 1),
-             destinationPoint: new Point(2, 1),
-             _specs,
-             memory);
-
-            //masterPatternTable.CopyTilesTo(
-            //   destination: vramPatternTable,
-            //   source: new InMemoryByteRectangle(3, 12, 1, 1),
-            //   destinationPoint: new Point(4, 1),
-            //   _specs,
-            //   memory);
-
-
-            masterPatternTable.CopyTilesTo(
-               destination: vramPatternTable,
-               source: new InMemoryByteRectangle(5, 12, 1, 1),
-               destinationPoint: new Point(5, 1),
-               _specs,
-               memory);
-
-            masterPatternTable.CopyTilesTo(
-             destination: vramPatternTable,
-             source: new InMemoryByteRectangle(8, 12, 2, 1),
-             destinationPoint: new Point(6, 1),
-             _specs,
-             memory);
+            _gameModule.TileCopier.CopyTilesForTechBaseTheme();
         }
     }
 }

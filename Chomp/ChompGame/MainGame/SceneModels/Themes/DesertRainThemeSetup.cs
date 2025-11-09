@@ -38,24 +38,9 @@ namespace ChompGame.MainGame.SceneModels.Themes
             return attributeTable;
         }
 
-        public override void SetupVRAMPatternTable(NBitPlane masterPatternTable, NBitPlane vramPatternTable, SystemMemory memory)
+        public override void SetupVRAMPatternTable()
         {
-            // sand
-            masterPatternTable.CopyTilesTo(
-                destination: vramPatternTable,
-                source: new InMemoryByteRectangle(0, 13, 8, 1),
-                destinationPoint: new Point(0, 1),
-                _specs,
-                memory);
-
-            // rain
-            masterPatternTable.CopyTilesTo(
-              destination: vramPatternTable,
-              source: new InMemoryByteRectangle(8, 15, 4, 1),
-              destinationPoint: new Point(1, 0),
-              _specs,
-              memory);
-
+            _gameModule.TileCopier.CopyTilesForDesertRainTheme();
         }
     }
 }

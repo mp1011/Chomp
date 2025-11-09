@@ -1350,20 +1350,20 @@ namespace ChompGame.MainGame.SceneModels
         }
 
         public void SetupVRAMPatternTable(
-           NBitPlane masterPatternTable,
            NBitPlane bgPatternTable,
            NBitPlane spritePatternTable,
            SystemMemory memory)
         {
+            var tileCopier = _gameModule.TileCopier;
             bgPatternTable.Reset();
             spritePatternTable.Reset();
 
-            var spriteBuilder = new VramBuilder(masterPatternTable, spritePatternTable, _spriteTileTable, memory, _gameModule.Specs);
-            var bgBuilder = new VramBuilder(masterPatternTable, bgPatternTable, _spriteTileTable, memory, _gameModule.Specs);
+            var spriteBuilder = new VramBuilder(_gameModule.TileCopier, spritePatternTable, _spriteTileTable, memory, _gameModule.Specs);
+            var bgBuilder = new VramBuilder(_gameModule.TileCopier, bgPatternTable, _spriteTileTable, memory, _gameModule.Specs);
 
             bgBuilder.AddStatusBarTiles();            
             _sceneDefinition.CreateThemeSetup(_gameModule)
-                            .SetupVRAMPatternTable(masterPatternTable, bgPatternTable, memory);
+                            .SetupVRAMPatternTable();
             if(_sceneDefinition.IsAutoScroll)
             {
                 //player sprite
