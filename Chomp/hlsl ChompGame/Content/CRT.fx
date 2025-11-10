@@ -36,8 +36,8 @@ float4 main(float2 uv : TEXCOORD0) : COLOR0
     color *= scanline;
 
     // --- Subtle grain effect ---
-    float grainStrength = 0.04; // Adjust for more/less grain
-    float grain = random(uv * ScreenSize) * 2.0 - 1.0;
+    float grainStrength = 0.5; // Adjust for more/less grain
+    float grain = random(uv * ScreenSize) * 2.0 - 0.3;
     color += grainStrength * grain;
 
     // --- Screen glare effect ---

@@ -37,8 +37,6 @@ namespace ChompGame.MainGame.SceneModels
     {
         public static void BuildThemes(SystemMemoryBuilder memoryBuilder)
         {
-            memoryBuilder.Memory.AddLabel(AddressLabels.Themes, memoryBuilder.CurrentAddress);
-
             ThemeType _;
 
             _ = ThemeType.Plains;

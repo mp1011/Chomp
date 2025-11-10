@@ -38,6 +38,11 @@ namespace ChompGame.Data.Memory
             _systemMemory.AddLabel(label, CurrentAddress);
         }
 
+        public void AddLabel(AddressLabels label, int address)
+        {
+            _systemMemory.AddLabel(label, address);
+        }
+
         public FixedMemoryBlock Build()
         {
             return Bytes.ToFixed();

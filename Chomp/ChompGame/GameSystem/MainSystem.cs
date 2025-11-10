@@ -46,6 +46,9 @@ namespace ChompGame.GameSystem
             CoreGraphicsModule.OnStartup();
             foreach (var module in _modules)
                 module.OnStartup();
+
+            var romBegin = Memory.GetAddress(MainGame.AddressLabels.ROMBegin);
+            System.IO.File.WriteAllBytes("chomp.rom", Memory.ToArray().Skip(romBegin).ToArray());
         }
 
         public T GetModule<T>() where T:IModule

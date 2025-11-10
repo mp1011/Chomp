@@ -244,6 +244,8 @@ namespace ChompGame.Data
             _memory = memory;
             _address = address;
         }
+
+        public override string ToString() => Value.ToString();
     }
 
     public class GameInteger

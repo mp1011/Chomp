@@ -10,24 +10,33 @@ using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using ChompGame.MainGame.WorldScrollers;
 using ChompGame.ROM;
-using Microsoft.Xna.Framework;
 using System.Linq;
 
 namespace ChompGame.MainGame
 {
+    public enum RomLoad
+    {
+        Code,
+        Disk
+    }
+
     public enum AddressLabels
     {
         MainTimer,
-        NameTables,
         SceneDefinitions,
+        TransitionLevels,
         SpriteDefinitions,
+        MasterPatternTable,
         SceneParts,
         FreeRAM,
-        Themes
+        Themes,
+        ROMBegin
     }
 
     class ChompGameModule : Module, IMasterModule
     {
+        private readonly RomLoad _romLoad;
+
         public enum GameState : byte
         {
             NewGame,
@@ -130,11 +139,12 @@ namespace ChompGame.MainGame
             set => _currentLevel.Value = value;
         }
 
-        public ChompGameModule(MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
+        public ChompGameModule(RomLoad romLoad, MainSystem mainSystem, InputModule inputModule, BankAudioModule audioModule,
            SpritesModule spritesModule, TileModule tileModule, MusicModule musicModule, RewardsModule rewardsModule,
            PaletteModule paletteModule)
            : base(mainSystem)
         {
+            _romLoad = romLoad;
             _audioService = mainSystem.GetModule<ChompAudioService>();
             RandomModule = mainSystem.GetModule<RandomModule>();
             _inputModule = inputModule;
@@ -193,24 +203,67 @@ namespace ChompGame.MainGame
             memoryBuilder.AddLabel(AddressLabels.FreeRAM);
             memoryBuilder.AddBytes(Specs.GameRAMSize);
 
-            memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
 
-            SpriteDefinitionBuilder.BuildSpriteDefinitions(memoryBuilder);
+            memoryBuilder.AddLabel(AddressLabels.ROMBegin);
 
-            _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
+            if (_romLoad == RomLoad.Disk)
+            {
+                var romBytes = System.IO.File.ReadAllBytes("chomp.rom");
+                int romBegin = memoryBuilder.CurrentAddress; // 3922
 
-            memoryBuilder.AddLabel(AddressLabels.NameTables);
-            memoryBuilder.AddNBitPlane(Specs.NameTableBitPlanes, Specs.NameTableWidth, Specs.NameTableHeight);
+                foreach (var b in romBytes)
+                {
+                    memoryBuilder.AddByte(b);
+                }
 
-            memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
+                var masterPatternTableAddress = new GameShort(romBegin, memoryBuilder.Memory);
+                var sceneDefinitionsAddress = new GameShort(romBegin + 2, memoryBuilder.Memory);
+                var transitionLevelsAddress = new GameShort(romBegin + 4, memoryBuilder.Memory);
+                var scenePartsAddress = new GameShort(romBegin + 6, memoryBuilder.Memory);
+                var themesAddress = new GameShort(romBegin + 8, memoryBuilder.Memory);
 
-            SceneBuilder.AddSceneHeaders(memoryBuilder, Specs);
-            SceneBuilder.SetTransitionLevels(memoryBuilder);
+                memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions, romBegin + 10);
+                memoryBuilder.AddLabel(AddressLabels.MasterPatternTable, masterPatternTableAddress.Value);
+                memoryBuilder.AddLabel(AddressLabels.SceneDefinitions, sceneDefinitionsAddress.Value);
+                memoryBuilder.AddLabel(AddressLabels.TransitionLevels, transitionLevelsAddress.Value);
+                memoryBuilder.AddLabel(AddressLabels.SceneParts, scenePartsAddress.Value);
+                memoryBuilder.AddLabel(AddressLabels.Themes, themesAddress.Value);
 
-            memoryBuilder.AddLabel(AddressLabels.SceneParts);
-            SceneBuilder.AddSceneParts(memoryBuilder, Specs);
+                _masterPatternTable = NBitPlane.Create(masterPatternTableAddress.Value, memoryBuilder.Memory, Specs.PatternTablePlanes, 64, 64);
+                SceneBuilder.LoadTransitionLevels(memoryBuilder.Memory);
+            }
+            else
+            {
+                var masterPatternTableAddress = memoryBuilder.AddShort(); 
+                var sceneDefinitionsAddress = memoryBuilder.AddShort();
+                var transitionLevelsAddress = memoryBuilder.AddShort();
+                var scenePartsAddress = memoryBuilder.AddShort();
+                var themesAddress = memoryBuilder.AddShort();
 
-            ThemeBuilder.BuildThemes(memoryBuilder);
+                memoryBuilder.AddLabel(AddressLabels.SpriteDefinitions);
+                SpriteDefinitionBuilder.BuildSpriteDefinitions(memoryBuilder);
+
+                memoryBuilder.AddLabel(AddressLabels.MasterPatternTable);
+                _masterPatternTable = memoryBuilder.AddNBitPlane(Specs.PatternTablePlanes, 64, 64);
+               
+                memoryBuilder.AddLabel(AddressLabels.SceneDefinitions);
+                SceneBuilder.AddSceneHeaders(memoryBuilder, Specs);
+
+                memoryBuilder.AddLabel(AddressLabels.TransitionLevels);
+                SceneBuilder.SetTransitionLevels(memoryBuilder);
+
+                memoryBuilder.AddLabel(AddressLabels.SceneParts);
+                SceneBuilder.AddSceneParts(memoryBuilder, Specs);
+
+                memoryBuilder.AddLabel(AddressLabels.Themes);
+                ThemeBuilder.BuildThemes(memoryBuilder);
+
+                masterPatternTableAddress.Value = (ushort)memoryBuilder.Memory.GetAddress(AddressLabels.MasterPatternTable);
+                sceneDefinitionsAddress.Value = (ushort)memoryBuilder.Memory.GetAddress(AddressLabels.SceneDefinitions);
+                transitionLevelsAddress.Value = (ushort)memoryBuilder.Memory.GetAddress(AddressLabels.TransitionLevels);
+                scenePartsAddress.Value = (ushort)memoryBuilder.Memory.GetAddress(AddressLabels.SceneParts);
+                themesAddress.Value = (ushort)memoryBuilder.Memory.GetAddress(AddressLabels.Themes);
+            }
 
             TileCopier = new TileCopier(_masterPatternTable, this);
             _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
@@ -222,14 +275,17 @@ namespace ChompGame.MainGame
 
         public override void OnStartup()
         {
-            PatternTableCreator.SetupMasterPatternTable(
-                _masterPatternTable,
-                GameSystem.GraphicsDevice,
-                Specs);
+            if (_romLoad == RomLoad.Code)
+            {
+                PatternTableCreator.SetupMasterPatternTable(
+                    _masterPatternTable,
+                    GameSystem.GraphicsDevice,
+                    Specs);
 
-            new DiskNBitPlaneLoader()
-                .Load(new DiskFile(ContentFolder.PatternTables, "master.pt"),
-                    _masterPatternTable);
+                new DiskNBitPlaneLoader()
+                    .Load(new DiskFile(ContentFolder.PatternTables, "master.pt"),
+                        _masterPatternTable);
+            }
 
             _gameState.Value = GameState.NewGame;
             _audioService.OnStartup();

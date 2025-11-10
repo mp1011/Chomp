@@ -1,4 +1,5 @@
-﻿using ChompGame.Data.Memory;
+﻿using ChompGame.Data;
+using ChompGame.Data.Memory;
 using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.MainGame.SceneModels.SceneParts;
@@ -223,6 +224,13 @@ namespace ChompGame.MainGame.SceneModels
 
         public static bool IsTransitionLevel(Level level) =>
             _transitionLevels[(int)level];
+
+        public static void LoadTransitionLevels(SystemMemory memory)
+        {
+            _transitionLevels = new BitArray(
+                memory.GetAddress(AddressLabels.TransitionLevels),
+                memory);
+        }
 
         public static void SetTransitionLevels(SystemMemoryBuilder memoryBuilder)
         {
