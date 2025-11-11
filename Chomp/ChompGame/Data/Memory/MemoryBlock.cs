@@ -10,8 +10,12 @@ namespace ChompGame.Data.Memory
     {
         public abstract byte this[int index] { get; set; }
         public abstract void BlockCopy(int sourceStart, int destinationStart, int length);
-
         public abstract byte[] ToArray();
+
+        public virtual byte[] Span(int index, int length)
+        {
+            throw new NotSupportedException();
+        }
     }
 
     public class FixedMemoryBlock : MemoryBlock
@@ -21,6 +25,15 @@ namespace ChompGame.Data.Memory
         public FixedMemoryBlock(byte[] memory)
         {
             _memory = memory;
+        }
+
+        public override byte[] Span(int index, int length)
+        {
+            if (length == -1 )
+                length = _memory.Length - index;
+            byte[] buffer = new byte[length];            
+            Array.Copy(_memory, index, buffer, 0, length);
+            return buffer;
         }
 
         public override byte this[int index]

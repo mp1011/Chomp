@@ -27,6 +27,8 @@ namespace ChompGame.MainGame
         private readonly byte _tileHalf = 59;
         private readonly byte _tileFull = 60;
 
+        public int ScorePtr => _score.Address;
+
         public int Score
         {
             get => (int)_score.Value;

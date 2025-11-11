@@ -1,11 +1,9 @@
 ﻿using ChompGame.GameSystem;
-using ChompGame.Graphics;
 using ChompGame.MainGame;
 using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Threading.Tasks;
 
 namespace ChompGame
 {

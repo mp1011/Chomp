@@ -32,8 +32,8 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="chomp.rom">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="chomp.cart">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

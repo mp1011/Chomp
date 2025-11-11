@@ -30,12 +30,15 @@ namespace ChompGame.MainGame
         SceneParts,
         FreeRAM,
         Themes,
-        ROMBegin
+        CartMemory,
+        ROMBegin,
+
     }
 
     class ChompGameModule : Module, IMasterModule
     {
         private readonly RomLoad _romLoad;
+        private const int CartMemorySize = 100;
 
         public enum GameState : byte
         {
@@ -67,6 +70,7 @@ namespace ChompGame.MainGame
 
         private GameByteEnum<GameState> _gameState;
         private GameByteEnum<Level> _currentLevel;
+        private TwoBit _saveSlot;
         private NibbleEnum<ExitType> _lastExitType;
         private NibbleEnum<ExitType> _lastTransitionExitType;
 
@@ -172,10 +176,11 @@ namespace ChompGame.MainGame
             _deathTimer = memoryBuilder.AddByte();
             _currentLevel = new GameByteEnum<Level>(memoryBuilder.AddByte());
 
-            //unused bits here
             _lastExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
             _carryingBomb = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
             _bossBackgroundHandling = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
+            _saveSlot = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+
             memoryBuilder.AddByte();
 
             _lastTransitionExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
@@ -204,13 +209,14 @@ namespace ChompGame.MainGame
             memoryBuilder.AddBytes(Specs.GameRAMSize);
 
 
-            memoryBuilder.AddLabel(AddressLabels.ROMBegin);
-
             if (_romLoad == RomLoad.Disk)
             {
-                var romBytes = System.IO.File.ReadAllBytes("chomp.rom");
-                int romBegin = memoryBuilder.CurrentAddress; // 3922
+                var romBytes = System.IO.File.ReadAllBytes("chomp.cart");
+                memoryBuilder.AddLabel(AddressLabels.CartMemory);
+                int romBegin = memoryBuilder.CurrentAddress + CartMemorySize;
 
+                memoryBuilder.AddLabel(AddressLabels.ROMBegin, romBegin);
+               
                 foreach (var b in romBytes)
                 {
                     memoryBuilder.AddByte(b);
@@ -234,6 +240,10 @@ namespace ChompGame.MainGame
             }
             else
             {
+                memoryBuilder.AddLabel(AddressLabels.CartMemory);
+                memoryBuilder.AddBytes(CartMemorySize);
+                memoryBuilder.AddLabel(AddressLabels.ROMBegin);
+
                 var masterPatternTableAddress = memoryBuilder.AddShort(); 
                 var sceneDefinitionsAddress = memoryBuilder.AddShort();
                 var transitionLevelsAddress = memoryBuilder.AddShort();
@@ -506,6 +516,7 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
+            SaveCurrentGame();
             _bossBackgroundHandling.Value = false;
             _longTimer.Value = 0;
             _tileModule.NameTable.Reset();
@@ -688,19 +699,48 @@ namespace ChompGame.MainGame
             }
         }
 
-        private bool IsLevelStart(Level level)
+        private void SaveCurrentGame()
         {
-            return level == Level.Level1_1_Start
-                || level == Level.Level2_1_Intro
-                || level == Level.Level3_1_City
-                || level == Level.Level4_1_Desert
-                || level == Level.Level5_1_Mist
-                || level == Level.Level6_1_Techbase
-                || level == Level.Level7_1_GlitchCore;
+            // 0: current level
+            // 1 - 4: score
+            // 5: lives
+            // 6-21: scene parts destroyed
+            // 22-23: two-byte Fletcher-16 checksum (high, low)
+
+            int index = _saveSlot.Value * 24;
+            GameSystem.Memory[index] = (byte)_currentLevel.Value;
+
+            GameSystem.Memory.BlockCopy(_statusBar.ScorePtr, ++index, 4);
+            index += 4;
+            GameSystem.Memory[++index] = _statusBar.Lives;
+            index = _scenePartsDestroyed.WriteToSaveBuffer(GameSystem.Memory, index);
+
+            // compute 16-bit checksum over all bytes except the final two checksum bytes
+            byte[] saveBuffer = GameSystem.Memory.Span(_saveSlot.Value * 24, 24);
+            ushort checksum = ComputeFletcher16(saveBuffer, saveBuffer.Length - 2);
+
+            // store checksum high then low at the end of the buffer
+            GameSystem.Memory[++index] = (byte)(checksum >> 8);
+            GameSystem.Memory[++index] = (byte)(checksum & 0xFF);
+
+            // write cart to disk
+            var cart = GameSystem.Memory.Span(GameSystem.Memory.GetAddress(AddressLabels.CartMemory), -1);
+            System.IO.File.WriteAllBytes("chomp.cart", cart);
         }
-        private void HandlePlayerDeath()
+
+        // Simple Fletcher-16 checksum
+        private static ushort ComputeFletcher16(byte[] data, int length)
         {
-            _deathHandler.HandlePlayerDeath();
+            int sum1 = 0;
+            int sum2 = 0;
+
+            for (int i = 0; i < length; i++)
+            {
+                sum1 = (sum1 + data[i]) % 255;
+                sum2 = (sum2 + sum1) % 255;
+            }
+
+            return (ushort)((sum2 << 8) | sum1);
         }
 
         public void OnVBlank()
@@ -717,6 +757,8 @@ namespace ChompGame.MainGame
                 _bossBackgroundHandler.OnHBlank();
                 if (_gameState.Value == GameState.LevelCard)
                     _levelCard.OnHBlank();
+                else if (_gameState.Value == GameState.Title)
+                    _titleScreen.OnHBlank();
             }
 
             PaletteModule.OnHBlank();
@@ -724,6 +766,22 @@ namespace ChompGame.MainGame
             _spritesModule.OnHBlank();
 
             _bossBackgroundHandler.OnHBlank();
+        }
+
+        private bool IsLevelStart(Level level)
+        {
+            return level == Level.Level1_1_Start
+                || level == Level.Level2_1_Intro
+                || level == Level.Level3_1_City
+                || level == Level.Level4_1_Desert
+                || level == Level.Level5_1_Mist
+                || level == Level.Level6_1_Techbase
+                || level == Level.Level7_1_GlitchCore;
+        }
+
+        private void HandlePlayerDeath()
+        {
+            _deathHandler.HandlePlayerDeath();
         }
     }
 }

@@ -250,6 +250,7 @@ namespace ChompGame.Data
 
     public class GameInteger
     {
+        public int Address => _address; 
         private int _address;
         private SystemMemory _memory;
 

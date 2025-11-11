@@ -21,6 +21,8 @@ namespace ChompGame.Data
             set => _memory[index] = value;
         }
 
+        public byte[] Span(int index, int length) => _memory.Span(index, length);
+
         public void BlockCopy(int sourceStart, int destinationStart, int length)
         {
             _memory.BlockCopy(sourceStart, destinationStart, length);

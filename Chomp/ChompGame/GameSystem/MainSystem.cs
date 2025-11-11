@@ -47,8 +47,8 @@ namespace ChompGame.GameSystem
             foreach (var module in _modules)
                 module.OnStartup();
 
-            var romBegin = Memory.GetAddress(MainGame.AddressLabels.ROMBegin);
-            System.IO.File.WriteAllBytes("chomp.rom", Memory.ToArray().Skip(romBegin).ToArray());
+            var romBegin = Memory.GetAddress(MainGame.AddressLabels.CartMemory);
+            System.IO.File.WriteAllBytes("chomp.cart", Memory.ToArray().Skip(romBegin).ToArray());
         }
 
         public T GetModule<T>() where T:IModule

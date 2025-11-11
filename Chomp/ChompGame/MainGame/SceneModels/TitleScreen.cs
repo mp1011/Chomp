@@ -4,7 +4,6 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using Microsoft.Xna.Framework;
-using System.ComponentModel;
 
 namespace ChompGame.MainGame.SceneModels
 {
@@ -30,8 +29,8 @@ namespace ChompGame.MainGame.SceneModels
         const int P_Bottom = 30;
 
         const int StartY = 24;
-        const int LoadY = 30;
-        const int DelY = 38;
+        const int LoadY = 32;
+        const int DelY = 40;
 
 
         private readonly ChompGameModule _gameModule;
@@ -68,6 +67,7 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     SetTitleTiles();
                     SetTitleSprites();
+                    _gameModule.MusicModule.CurrentSong = MusicModule.SongName.None;
                     _gameModule.GameSystem.CoreGraphicsModule.FadeAmount = 0;
                     _gameModule.TileModule.Scroll.Y = 0;
                     _state.Value = State.Title;
@@ -236,6 +236,17 @@ namespace ChompGame.MainGame.SceneModels
                 }
                 else if(_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
                 {
+                    // TODO
+                    // on Load, show numbers for each valid save file
+                    // left/right to select (color via attribute table)
+                    // hit start again to load
+
+                    // on start, pick first unused save slot 
+
+                    // delete handled same way as load
+
+                    // if no free save slots, "start" option can't be selected
+
                     if (menuSprite.Y == StartY)
                     {
                         _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
@@ -524,6 +535,30 @@ namespace ChompGame.MainGame.SceneModels
 
                 _gameModule.RandomModule.Generate(3);
             });
+        }
+
+        public void OnHBlank()
+        {
+            if (_state.Value != State.Title)
+                return;
+
+            var screenY = _gameModule.GameSystem.CoreGraphicsModule.ScreenPoint.Y;
+            var cursor = _gameModule.SpritesModule.GetSprite(0).Y;
+            if (screenY >= cursor)
+            {
+                if(screenY < cursor + 4)
+                {
+                    int y = screenY - cursor;
+                    int c = 3 + (y + _gameModule.LevelTimer.Value / 4) % 4;
+                    var palette = _gameModule.GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
+                    palette.SetColor(2, ColorIndex.Red(c).Value);
+                }
+                else
+                {
+                    var palette = _gameModule.GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
+                    palette.SetColor(2, ColorIndex.Gray2);
+                }
+            }
         }
     }
 }
