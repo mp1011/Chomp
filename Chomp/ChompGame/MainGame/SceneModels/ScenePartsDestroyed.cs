@@ -32,6 +32,11 @@ namespace ChompGame.MainGame.SceneModels
             return destOffset + 16;
         }
 
+        public void ReadFromSaveBuffer(SystemMemory memory, int sourceOffset)
+        {
+            memory.BlockCopy(sourceOffset, _sceneOffset.Address, 16);
+        }
+
         public void Reset(SystemMemory memory)
         {
             for (int i = 0; i < 16; i++)

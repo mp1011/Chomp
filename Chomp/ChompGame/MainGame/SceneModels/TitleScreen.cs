@@ -49,6 +49,8 @@ namespace ChompGame.MainGame.SceneModels
             TitleFadeIn = 25,
             Title = 26,
             StartGame = 27,
+            Load = 28,
+            StartLoadedGame = 29
         }
 
         public TitleScreen(ChompGameModule gameModule, GameByte state, SystemMemoryBuilder builder)
@@ -74,7 +76,7 @@ namespace ChompGame.MainGame.SceneModels
                     return;
                 }
             }
-            
+
             if (_state.Value == State.Init)
             {
                 _gameModule.MusicModule.CurrentSong = MusicModule.SongName.Story;
@@ -166,13 +168,13 @@ namespace ChompGame.MainGame.SceneModels
                 if (_gameModule.LevelTimer.IsMod(8))
                 {
                     _state.Value++;
-                    if(_state.Value == State.ChompsEscape)
+                    if (_state.Value == State.ChompsEscape)
                     {
                         DestroyGems();
                     }
                 }
             }
-            else if(_state.Value == State.ChompsEscape)
+            else if (_state.Value == State.ChompsEscape)
             {
                 _gameModule.TileModule.Scroll.X = 0;
                 _gameModule.TileModule.Scroll.Y = 0;
@@ -204,7 +206,7 @@ namespace ChompGame.MainGame.SceneModels
                     }
                 }
             }
-            else if(_state.Value == State.TitleFadeIn)
+            else if (_state.Value == State.TitleFadeIn)
             {
                 if (_gameModule.LevelTimer.Value.IsMod(16))
                 {
@@ -215,7 +217,7 @@ namespace ChompGame.MainGame.SceneModels
                     }
                 }
             }
-            else if(_state.Value == State.Title)
+            else if (_state.Value == State.Title)
             {
                 var menuSprite = _gameModule.SpritesModule.GetSprite(0);
                 if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
@@ -234,7 +236,7 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
                     }
                 }
-                else if(_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
+                else if (_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
                 {
                     // TODO
                     // on Load, show numbers for each valid save file
@@ -254,7 +256,16 @@ namespace ChompGame.MainGame.SceneModels
                     }
                     else if (menuSprite.Y == LoadY)
                     {
-                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                        if (SetTilesForLoad())
+                        {
+                            _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                            _state.Value = State.Load;
+                        }
+                        else
+                        {
+                            _gameModule.AudioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                            SetTitleTiles();
+                        }
                     }
                     else if (menuSprite.Y == DelY)
                     {
@@ -262,7 +273,25 @@ namespace ChompGame.MainGame.SceneModels
                     }
                 }
             }
-            else if (_state.Value == State.StartGame)
+            else if (_state.Value == State.Load)
+            {
+                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+
+                
+                if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
+                {
+                    MoveSaveCursor(1);
+                }
+                else if (_gameModule.InputModule.Player1.UpKey == GameKeyState.Pressed)
+                {
+                    MoveSaveCursor(-1);
+                }
+                else if (_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
+                {
+                    _state.Value = State.StartLoadedGame;
+                }
+            }
+            else if (_state.Value == State.StartGame || _state.Value == State.StartLoadedGame)
             {
                 var menuSprite = _gameModule.SpritesModule.GetSprite(0);
                 var chompSprite = _gameModule.SpritesModule.GetSprite(1);
@@ -285,21 +314,40 @@ namespace ChompGame.MainGame.SceneModels
                             menuSprite.Visible = false;
                         }
                     }
-                    else if(chompSprite.X != (byte)(_gameModule.Specs.NameTablePixelWidth - 8))
+                    else if (chompSprite.X != (byte)(_gameModule.Specs.NameTablePixelWidth - 8))
                     {
                         chompSprite.X--;
                     }
                     else
                     {
                         _gameModule.GameSystem.CoreGraphicsModule.FadeAmount++;
-                        if(_gameModule.GameSystem.CoreGraphicsModule.FadeAmount == 15)
+                        if (_gameModule.GameSystem.CoreGraphicsModule.FadeAmount == 15)
                         {
-                            _gameModule.StartGame();
+                            if (_state.Value == State.StartGame)
+                                _gameModule.StartGame();
+                            else
+                                _gameModule.LoadGame(CursorSaveSlot);
                         }
                     }
                 }
             }
 
+        }
+
+        private void MoveSaveCursor(int direction)
+        {
+            var current = CursorSaveSlot;
+
+            var next = current + direction;            
+            while(!IsSlotAvailable(next))
+            {
+                if (next < 0 || next > 3)
+                    return;
+
+                next += direction;
+            }
+
+            CursorSaveSlot = next;
         }
 
         private void SetTitleSprites()
@@ -389,6 +437,64 @@ namespace ChompGame.MainGame.SceneModels
             _gameModule.TileModule.NameTable[x + 2, y + 4] = Let_L;
 
         }
+
+        private bool IsSlotAvailable(int slot)
+        {
+            if (slot < 0 || slot > 3)
+                return false;
+
+            return _gameModule.TileModule.NameTable[4, 8 + (2*slot)] != 0;
+        }
+
+        private bool SetTilesForLoad()
+        {
+            _gameModule.TileModule.NameTable.ForEach((x, y, b) =>
+            {
+                if (y >= 6)
+                    _gameModule.TileModule.NameTable[x, y] = 0;
+            });
+
+            int x = 4;
+            int y = 6;
+
+            // LOAD
+            _gameModule.TileModule.NameTable[x, y] = Let_L;
+            _gameModule.TileModule.NameTable[x + 1, y] = Let_O;
+            _gameModule.TileModule.NameTable[x + 2, y] = Let_A;
+            _gameModule.TileModule.NameTable[x + 3, y] = Let_D;
+            
+            bool anyValid = false;
+            for (int i =0; i < 4; i++)
+            {
+                y += 2;
+                if(IsSaveValid(i))
+                {
+                    anyValid = true;
+                    _gameModule.TileModule.NameTable[x, y] = (byte)(16 + i);
+                }
+            }
+
+            return anyValid;
+        }
+
+        private int CursorSaveSlot
+        {
+            get
+            {
+                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                int tileY = menuSprite.Y / _gameModule.Specs.TileHeight;
+
+                return (tileY - 8) / 2;
+            }
+            set
+            {
+                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                menuSprite.Y = (byte)((8 + (value * 2)) * _gameModule.Specs.TileHeight);
+            }
+        }
+
+        private bool IsSaveValid(int slot) => _gameModule.SaveManager.IsSaveSlotValid(slot);
+        
 
         private void DestroyGems()
         {

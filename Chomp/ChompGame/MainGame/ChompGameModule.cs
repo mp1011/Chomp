@@ -38,7 +38,6 @@ namespace ChompGame.MainGame
     class ChompGameModule : Module, IMasterModule
     {
         private readonly RomLoad _romLoad;
-        private const int CartMemorySize = 100;
 
         public enum GameState : byte
         {
@@ -135,6 +134,8 @@ namespace ChompGame.MainGame
 
         public TileCopier TileCopier { get; private set; }
 
+        public SaveManager SaveManager { get; }
+
         public FinalBossHelper FinalBossHelper => _finalBossHelper;
 
         public Level CurrentLevel
@@ -163,6 +164,8 @@ namespace ChompGame.MainGame
             SpriteTileTable = new SpriteTileTable();
             _dynamicBlockController = new DynamicBlockController(this, SpriteTileTable);
             _tileEditor = new TileEditor(_tileModule);
+
+            SaveManager = new SaveManager(this);
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -213,7 +216,7 @@ namespace ChompGame.MainGame
             {
                 var romBytes = System.IO.File.ReadAllBytes("chomp.cart");
                 memoryBuilder.AddLabel(AddressLabels.CartMemory);
-                int romBegin = memoryBuilder.CurrentAddress + CartMemorySize;
+                int romBegin = memoryBuilder.CurrentAddress + SaveManager.CartMemorySize;
 
                 memoryBuilder.AddLabel(AddressLabels.ROMBegin, romBegin);
                
@@ -241,7 +244,7 @@ namespace ChompGame.MainGame
             else
             {
                 memoryBuilder.AddLabel(AddressLabels.CartMemory);
-                memoryBuilder.AddBytes(CartMemorySize);
+                memoryBuilder.AddBytes(SaveManager.CartMemorySize);
                 memoryBuilder.AddLabel(AddressLabels.ROMBegin);
 
                 var masterPatternTableAddress = memoryBuilder.AddShort(); 
@@ -501,6 +504,7 @@ namespace ChompGame.MainGame
 
         public void StartGame()
         {
+            _saveSlot.Value = (byte)SaveManager.FreeSlot();
             _longTimer.Value = 0;
             _timer.Value = 0;
             _gameState.Value = GameState.LevelCard;
@@ -511,6 +515,30 @@ namespace ChompGame.MainGame
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
+            _statusBar.Health = StatusBar.FullHealth;
+        }
+
+        public void LoadGame(int saveSlot)
+        {
+            _saveSlot.Value = (byte)saveSlot;
+
+            var saveAddress = SaveManager.SaveSlotAddress(saveSlot);
+
+            // 0: current level
+            // 1 - 4: score
+            // 5: lives
+            // 6-21: scene parts destroyed
+            _currentLevel.Value = (Level)GameSystem.Memory[saveAddress];
+            GameSystem.Memory.BlockCopy(saveAddress + 1, _statusBar.ScorePtr, 4);
+            _statusBar.SetLives(GameSystem.Memory[saveAddress + 5]);
+            _scenePartsDestroyed.ReadFromSaveBuffer(GameSystem.Memory, saveAddress + 6);
+
+            _longTimer.Value = 0;
+            _timer.Value = 0;
+            _gameState.Value = GameState.LevelCard;
+            _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+            _lastExitType.Value = ExitType.Right; // need to save this
+            GameSystem.CoreGraphicsModule.FadeAmount = 0;       
             _statusBar.Health = StatusBar.FullHealth;
         }
 
@@ -701,46 +729,7 @@ namespace ChompGame.MainGame
 
         private void SaveCurrentGame()
         {
-            // 0: current level
-            // 1 - 4: score
-            // 5: lives
-            // 6-21: scene parts destroyed
-            // 22-23: two-byte Fletcher-16 checksum (high, low)
-
-            int index = _saveSlot.Value * 24;
-            GameSystem.Memory[index] = (byte)_currentLevel.Value;
-
-            GameSystem.Memory.BlockCopy(_statusBar.ScorePtr, ++index, 4);
-            index += 4;
-            GameSystem.Memory[++index] = _statusBar.Lives;
-            index = _scenePartsDestroyed.WriteToSaveBuffer(GameSystem.Memory, index);
-
-            // compute 16-bit checksum over all bytes except the final two checksum bytes
-            byte[] saveBuffer = GameSystem.Memory.Span(_saveSlot.Value * 24, 24);
-            ushort checksum = ComputeFletcher16(saveBuffer, saveBuffer.Length - 2);
-
-            // store checksum high then low at the end of the buffer
-            GameSystem.Memory[++index] = (byte)(checksum >> 8);
-            GameSystem.Memory[++index] = (byte)(checksum & 0xFF);
-
-            // write cart to disk
-            var cart = GameSystem.Memory.Span(GameSystem.Memory.GetAddress(AddressLabels.CartMemory), -1);
-            System.IO.File.WriteAllBytes("chomp.cart", cart);
-        }
-
-        // Simple Fletcher-16 checksum
-        private static ushort ComputeFletcher16(byte[] data, int length)
-        {
-            int sum1 = 0;
-            int sum2 = 0;
-
-            for (int i = 0; i < length; i++)
-            {
-                sum1 = (sum1 + data[i]) % 255;
-                sum2 = (sum2 + sum1) % 255;
-            }
-
-            return (ushort)((sum2 << 8) | sum1);
+            SaveManager.SaveCurrentGame(_saveSlot.Value);
         }
 
         public void OnVBlank()
