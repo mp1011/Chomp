@@ -73,6 +73,8 @@ namespace ChompGame.MainGame
         private NibbleEnum<ExitType> _lastExitType;
         private NibbleEnum<ExitType> _lastTransitionExitType;
 
+        public ExitType LastExitType => _lastExitType.Value;
+
         private GameBit _carryingBomb;
 
         private GameByte _timer;
@@ -486,11 +488,11 @@ namespace ChompGame.MainGame
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
             _currentLevel.Value = Level.Level1_1_Start;
             _lastExitType.Value = ExitType.Right;
+            _gameState.Value = GameState.Title;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _gameState.Value = GameState.Title;
         }
 
         public void RestartScene()
@@ -527,17 +529,18 @@ namespace ChompGame.MainGame
             // 0: current level
             // 1 - 4: score
             // 5: lives
-            // 6-21: scene parts destroyed
+            // 6: last exit-type
+            // 7-22: scene parts destroyed
             _currentLevel.Value = (Level)GameSystem.Memory[saveAddress];
             GameSystem.Memory.BlockCopy(saveAddress + 1, _statusBar.ScorePtr, 4);
             _statusBar.SetLives(GameSystem.Memory[saveAddress + 5]);
-            _scenePartsDestroyed.ReadFromSaveBuffer(GameSystem.Memory, saveAddress + 6);
+            _lastExitType.Value = (ExitType)(GameSystem.Memory[saveAddress + 6]);
+            _scenePartsDestroyed.ReadFromSaveBuffer(GameSystem.Memory, saveAddress + 7);
 
             _longTimer.Value = 0;
             _timer.Value = 0;
             _gameState.Value = GameState.LevelCard;
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _lastExitType.Value = ExitType.Right; // need to save this
             GameSystem.CoreGraphicsModule.FadeAmount = 0;       
             _statusBar.Health = StatusBar.FullHealth;
         }

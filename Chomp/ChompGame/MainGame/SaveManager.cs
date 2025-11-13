@@ -6,7 +6,7 @@ namespace ChompGame.MainGame
     internal class SaveManager
     {
         public const int CartMemorySize = 100;
-        private const int SaveSlotSize = 24;
+        private const int SaveSlotSize = 25;
         private ChompGameModule _gameModule;
 
         private MainSystem GameSystem => _gameModule.GameSystem;
@@ -29,7 +29,7 @@ namespace ChompGame.MainGame
         public bool IsSaveSlotValid(int slot)
         {
             byte[] buffer = GameSystem.Memory.Span(
-                GameSystem.Memory.GetAddress(AddressLabels.CartMemory) + (slot * 24), 24);
+                GameSystem.Memory.GetAddress(AddressLabels.CartMemory) + (slot * SaveSlotSize), SaveSlotSize);
 
             if (buffer.All(p => p == 0))
                 return false;
@@ -61,6 +61,16 @@ namespace ChompGame.MainGame
             return _gameModule.GameSystem.Memory.Span(addr, SaveSlotSize);
         }
 
+        public void DeleteSaveSlot(int slot)
+        {
+            int address = SaveSlotAddress(slot);
+
+            for (int i = 0; i < SaveSlotSize; i++)
+            {
+                GameSystem.Memory[address + i] = 0;
+            }
+        }
+
         public void SaveCurrentGame(int slot)
         {
             var statusBar = _gameModule.StatusBar;
@@ -68,15 +78,18 @@ namespace ChompGame.MainGame
             // 0: current level
             // 1 - 4: score
             // 5: lives
-            // 6-21: scene parts destroyed
-            // 22-23: two-byte Fletcher-16 checksum (high, low)
+            // 6: last exit-type
+            // 7-22: scene parts destroyed
+            // 23-24: two-byte Fletcher-16 checksum (high, low)
 
             int index = SaveSlotAddress(slot);
             GameSystem.Memory[index] = (byte)_gameModule.CurrentLevel;
 
             GameSystem.Memory.BlockCopy(statusBar.ScorePtr, ++index, 4);
             index += 4;
-            GameSystem.Memory[++index] = statusBar.Lives;
+            GameSystem.Memory[index++] = statusBar.Lives;
+            GameSystem.Memory[index++] = (byte)_gameModule.LastExitType;
+
             index = _gameModule.ScenePartsDestroyed.WriteToSaveBuffer(GameSystem.Memory, index);
 
             // compute 16-bit checksum over all bytes except the final two checksum bytes

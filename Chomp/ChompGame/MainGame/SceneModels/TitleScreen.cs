@@ -50,7 +50,8 @@ namespace ChompGame.MainGame.SceneModels
             Title = 26,
             StartGame = 27,
             Load = 28,
-            StartLoadedGame = 29
+            StartLoadedGame = 29,
+            Delete = 30
         }
 
         public TitleScreen(ChompGameModule gameModule, GameByte state, SystemMemoryBuilder builder)
@@ -238,17 +239,6 @@ namespace ChompGame.MainGame.SceneModels
                 }
                 else if (_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
                 {
-                    // TODO
-                    // on Load, show numbers for each valid save file
-                    // left/right to select (color via attribute table)
-                    // hit start again to load
-
-                    // on start, pick first unused save slot 
-
-                    // delete handled same way as load
-
-                    // if no free save slots, "start" option can't be selected
-
                     if (menuSprite.Y == StartY)
                     {
                         _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
@@ -258,6 +248,7 @@ namespace ChompGame.MainGame.SceneModels
                     {
                         if (SetTilesForLoad())
                         {
+                            InitSaveCursor();
                             _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
                             _state.Value = State.Load;
                         }
@@ -269,26 +260,53 @@ namespace ChompGame.MainGame.SceneModels
                     }
                     else if (menuSprite.Y == DelY)
                     {
-                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                        if (SetTilesForDelete())
+                        {
+                            InitSaveCursor();
+                            _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                            _state.Value = State.Delete;
+                        }
+                        else
+                        {
+                            _gameModule.AudioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                            SetTitleTiles();
+                        }
                     }
                 }
             }
-            else if (_state.Value == State.Load)
+            else if (_state.Value == State.Load || _state.Value == State.Delete)
             {
                 var menuSprite = _gameModule.SpritesModule.GetSprite(0);
 
-                
+
                 if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
                 {
+                    _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
                     MoveSaveCursor(1);
                 }
                 else if (_gameModule.InputModule.Player1.UpKey == GameKeyState.Pressed)
                 {
+                    _gameModule.AudioService.PlaySound(ChompAudioService.Sound.CollectCoin);
                     MoveSaveCursor(-1);
                 }
                 else if (_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
                 {
-                    _state.Value = State.StartLoadedGame;
+                    if (_state.Value == State.Load)
+                        _state.Value = State.StartLoadedGame;
+                    else
+                    {
+                        _gameModule.SaveManager.DeleteSaveSlot(CursorSaveSlot);
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Break);
+                        SetTitleTiles();
+                        _state.Value = State.Title;
+                    }
+                }
+                else if (_gameModule.InputModule.Player1.AKey == GameKeyState.Pressed ||
+                    _gameModule.InputModule.Player1.BKey == GameKeyState.Pressed)
+                {
+                    _gameModule.AudioService.PlaySound(ChompAudioService.Sound.DoorClose);
+                    SetTitleTiles();
+                    _state.Value = State.Title;
                 }
             }
             else if (_state.Value == State.StartGame || _state.Value == State.StartLoadedGame)
@@ -348,6 +366,20 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             CursorSaveSlot = next;
+        }
+
+        private void InitSaveCursor()
+        {
+            var start = 0;
+            while (!IsSlotAvailable(start))
+            {
+                if (start > 3)
+                    return;
+
+                start++;
+            }
+
+            CursorSaveSlot = start;
         }
 
         private void SetTitleSprites()
@@ -444,6 +476,36 @@ namespace ChompGame.MainGame.SceneModels
                 return false;
 
             return _gameModule.TileModule.NameTable[4, 8 + (2*slot)] != 0;
+        }
+
+        private bool SetTilesForDelete()
+        {
+            _gameModule.TileModule.NameTable.ForEach((x, y, b) =>
+            {
+                if (y >= 6)
+                    _gameModule.TileModule.NameTable[x, y] = 0;
+            });
+
+            int x = 4;
+            int y = 6;
+
+            // DEL
+            _gameModule.TileModule.NameTable[x, y] = Let_D;
+            _gameModule.TileModule.NameTable[x + 1, y] = Let_E;
+            _gameModule.TileModule.NameTable[x + 2, y] = Let_L;
+
+            bool anyValid = false;
+            for (int i = 0; i < 4; i++)
+            {
+                y += 2;
+                if (IsSaveValid(i))
+                {
+                    anyValid = true;
+                    _gameModule.TileModule.NameTable[x, y] = (byte)(16 + i);
+                }
+            }
+
+            return anyValid;
         }
 
         private bool SetTilesForLoad()
@@ -645,7 +707,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public void OnHBlank()
         {
-            if (_state.Value != State.Title)
+            if (_state.Value < State.Title)
                 return;
 
             var screenY = _gameModule.GameSystem.CoreGraphicsModule.ScreenPoint.Y;
@@ -658,11 +720,14 @@ namespace ChompGame.MainGame.SceneModels
                     int c = 3 + (y + _gameModule.LevelTimer.Value / 4) % 4;
                     var palette = _gameModule.GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
                     palette.SetColor(2, ColorIndex.Red(c).Value);
+                    palette.SetColor(3, ColorIndex.Red(c).Value);
+
                 }
                 else
                 {
                     var palette = _gameModule.GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
                     palette.SetColor(2, ColorIndex.Gray2);
+                    palette.SetColor(3, ColorIndex.White);
                 }
             }
         }

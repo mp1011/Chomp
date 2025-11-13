@@ -157,21 +157,6 @@ namespace ChompGame
                 _gameSystem.Memory[i] = state[i];
         }
 
-        private void GenerateFilter()
-        {
-            byte[] rgb = new byte[3];
-            for (int i = 0; i < _filterPixels.Length; i++)
-            {
-                _filterPixels[i] = new Color(
-                    (byte)_rng.Next(0, 15),
-                    (byte)_rng.Next(0, 15),
-                    (byte)_rng.Next(0, 15),
-                    (byte)5);
-            }
-
-            _filter.SetData(_filterPixels);
-        }
-
         private void WriteMouseTile(int x, int y)
         {
             var tm = _gameSystem.GetModule<TileModule>();
@@ -206,8 +191,6 @@ namespace ChompGame
             _renderTimer.Restart();
             GraphicsDevice.SetRenderTarget(_renderTarget);
             GraphicsDevice.Clear(Color.White);
-
-            GenerateFilter();
 
             _spriteBatch.Begin();
 
