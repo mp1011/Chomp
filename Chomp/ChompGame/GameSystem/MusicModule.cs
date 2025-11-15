@@ -3,6 +3,7 @@ using ChompGame.Data.Memory;
 using ChompGame.MainGame.SceneModels;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using System;
 using System.Collections;
 
 namespace ChompGame.GameSystem
@@ -59,7 +60,16 @@ namespace ChompGame.GameSystem
 
         public bool IsPlaying => MediaPlayer.State == MediaState.Playing;
 
-        public int PlayPosition => (int)MediaPlayer.PlayPosition.TotalMilliseconds;
+        public int PlayPosition
+        {
+            get => (int)MediaPlayer.PlayPosition.TotalMilliseconds;
+            set
+            {
+                var song = _contentManager.Load<Song>(@"Music\" + _currentSong.Value.ToString());
+                MediaPlayer.IsRepeating = CurrentSongRepeats();
+                MediaPlayer.Play(song, TimeSpan.FromMilliseconds(value));
+            }
+        }
 
         public MusicModule(MainSystem mainSystem, ContentManager contentManager) 
             : base(mainSystem)

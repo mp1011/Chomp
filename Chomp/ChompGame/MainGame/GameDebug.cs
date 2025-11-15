@@ -28,13 +28,13 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
-        public const bool BossTest = true;
+        public const bool BossTest = false;
 
         public const bool QuickReward = false;
 
-        public const bool LevelSkipEnabled = true;
+        public const bool LevelSkipEnabled = false;
 
-        public const bool InfiniteHp = true;
+        public const bool InfiniteHp = false;
 
         public const bool OneHp = false;
 

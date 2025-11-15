@@ -774,6 +774,7 @@ namespace ChompGame.MainGame
         private void HandlePlayerDeath()
         {
             _deathHandler.HandlePlayerDeath();
+            _scenePartsDestroyed.Reset(GameSystem.Memory);
         }
     }
 }

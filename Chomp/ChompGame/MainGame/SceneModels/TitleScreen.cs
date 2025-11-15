@@ -32,6 +32,8 @@ namespace ChompGame.MainGame.SceneModels
         const int LoadY = 32;
         const int DelY = 40;
 
+        const int ChompTile = 2;
+        const int ChompTile2 = 4;
 
         private readonly ChompGameModule _gameModule;
         
@@ -64,16 +66,17 @@ namespace ChompGame.MainGame.SceneModels
         {
             GemPalette();
 
-            if (_state.Value >= State.StarFadein && _state.Value < State.Title)
+            if (_state.Value >= State.StarFadein && _state.Value < State.TitleFadeIn)
             {
                 if(_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
                 {
                     SetTitleTiles();
                     SetTitleSprites();
-                    _gameModule.MusicModule.CurrentSong = MusicModule.SongName.None;
+                    _gameModule.MusicModule.PlayPosition = 24000;
                     _gameModule.GameSystem.CoreGraphicsModule.FadeAmount = 0;
                     _gameModule.TileModule.Scroll.Y = 0;
-                    _state.Value = State.Title;
+                    _state.Value = State.TitleFadeIn;
+                    _gameModule.GameSystem.CoreGraphicsModule.FadeAmount = 15;
                     return;
                 }
             }
@@ -122,12 +125,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 PlaceGems();
 
-                var chompIndex = ChompSpriteIndex();
-                if (chompIndex == -1)
-                    chompIndex = CreateChompSprite();
-
-
-                var chomp = _gameModule.SpritesModule.GetSprite(chompIndex);
+                var chomp = CreateChompSpriteIfNeeded();
                 chomp.Visible = true;
 
                 if (_gameModule.LevelTimer.IsMod(16))
@@ -151,8 +149,7 @@ namespace ChompGame.MainGame.SceneModels
             {
                 PlaceGems(24 - (_state.Value - State.ChompsEat));
 
-                var chompIndex = ChompSpriteIndex();
-                var chomp = _gameModule.SpritesModule.GetSprite(chompIndex);
+                var chomp = CreateChompSpriteIfNeeded();
 
                 if (_gameModule.LevelTimer.IsMod(16))
                 {
@@ -164,6 +161,9 @@ namespace ChompGame.MainGame.SceneModels
 
                 _gameModule.TileModule.Scroll.X = _gameModule.RandomModule.Generate(2);
                 _gameModule.TileModule.Scroll.Y = _gameModule.RandomModule.Generate(2);
+
+                _gameModule.SpritesModule.Scroll.X = _gameModule.RandomModule.Generate(1);
+                _gameModule.SpritesModule.Scroll.Y = _gameModule.RandomModule.Generate(1);
 
 
                 if (_gameModule.LevelTimer.IsMod(8))
@@ -180,8 +180,7 @@ namespace ChompGame.MainGame.SceneModels
                 _gameModule.TileModule.Scroll.X = 0;
                 _gameModule.TileModule.Scroll.Y = 0;
 
-                var chompIndex = ChompSpriteIndex();
-                var chomp = _gameModule.SpritesModule.GetSprite(chompIndex);
+                var chomp = CreateChompSpriteIfNeeded();
 
                 if (_gameModule.LevelTimer.IsMod(16))
                 {
@@ -209,7 +208,7 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_state.Value == State.TitleFadeIn)
             {
-                if (_gameModule.LevelTimer.Value.IsMod(16))
+                if (_gameModule.LevelTimer.Value.IsMod(2))
                 {
                     _gameModule.GameSystem.CoreGraphicsModule.FadeAmount--;
                     if (_gameModule.GameSystem.CoreGraphicsModule.FadeAmount == 0)
@@ -220,7 +219,7 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_state.Value == State.Title)
             {
-                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                var menuSprite = _gameModule.SpritesModule.GetSprite(1);
                 if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
                 {
                     if (menuSprite.Y < DelY)
@@ -276,7 +275,7 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_state.Value == State.Load || _state.Value == State.Delete)
             {
-                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                var menuSprite = _gameModule.SpritesModule.GetSprite(1);
 
 
                 if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
@@ -311,8 +310,8 @@ namespace ChompGame.MainGame.SceneModels
             }
             else if (_state.Value == State.StartGame || _state.Value == State.StartLoadedGame)
             {
-                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
-                var chompSprite = _gameModule.SpritesModule.GetSprite(1);
+                var menuSprite = _gameModule.SpritesModule.GetSprite(1);
+                var chompSprite = _gameModule.SpritesModule.GetSprite(0);
 
                 if (!chompSprite.Visible)
                 {
@@ -391,10 +390,8 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             int gemIndex = CreateGemSprite();
-            int chompIndex = CreateChompSprite();
-
             var gem = _gameModule.SpritesModule.GetSprite(gemIndex);
-            var chomp = _gameModule.SpritesModule.GetSprite(chompIndex);
+            var chomp = CreateChompSpriteIfNeeded();
 
             chomp.Visible = false;
 
@@ -447,7 +444,7 @@ namespace ChompGame.MainGame.SceneModels
             _gameModule.TileModule.NameTable[x + 9, 2] = Left;
             _gameModule.TileModule.NameTable[x + 9, 3] = Left;
 
-            x = 4;
+            x = 5;
             int y = 6;
 
             // START
@@ -543,14 +540,14 @@ namespace ChompGame.MainGame.SceneModels
         {
             get
             {
-                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                var menuSprite = _gameModule.SpritesModule.GetSprite(1);
                 int tileY = menuSprite.Y / _gameModule.Specs.TileHeight;
 
                 return (tileY - 8) / 2;
             }
             set
             {
-                var menuSprite = _gameModule.SpritesModule.GetSprite(0);
+                var menuSprite = _gameModule.SpritesModule.GetSprite(1);
                 menuSprite.Y = (byte)((8 + (value * 2)) * _gameModule.Specs.TileHeight);
             }
         }
@@ -604,7 +601,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private int CreateGemSprite()
         {
-            var spriteIndex = _gameModule.SpritesModule.GetFreeSpriteIndex();
+            var spriteIndex = _gameModule.SpritesModule.GetFreeSpriteIndex(1);
             var sprite = _gameModule.SpritesModule.GetSprite(spriteIndex);
 
             sprite.Tile = 1;
@@ -617,12 +614,13 @@ namespace ChompGame.MainGame.SceneModels
             return spriteIndex;
         }
 
-        private int CreateChompSprite()
+        private Sprite CreateChompSpriteIfNeeded()
         {
-            var spriteIndex = _gameModule.SpritesModule.GetFreeSpriteIndex();
-            var sprite = _gameModule.SpritesModule.GetSprite(spriteIndex);
+            var sprite = _gameModule.SpritesModule.GetSprite(0);
+            if(sprite.Visible && (sprite.Tile == ChompTile || sprite.Tile == ChompTile2))
+                return sprite;
 
-            sprite.Tile = 2;
+            sprite.Tile = ChompTile;
             sprite.SizeX = 2;
             sprite.SizeY = 2;
 
@@ -632,19 +630,7 @@ namespace ChompGame.MainGame.SceneModels
             sprite.Tile2Offset = 1;
             sprite.Visible = true;
             sprite.Palette = SpritePalette.Fire;
-            return spriteIndex;
-        }
-
-        private int ChompSpriteIndex()
-        {
-            for(int i = 0; i < _gameModule.Specs.MaxSprites; i++)
-            {
-                var s = _gameModule.SpritesModule.GetSprite(i);
-                if (s.Visible && (s.Tile == 2 || s.Tile == 4))
-                    return i;
-            }
-
-            return -1;
+            return sprite;
         }
 
         private void SetPalette()
@@ -707,11 +693,29 @@ namespace ChompGame.MainGame.SceneModels
 
         public void OnHBlank()
         {
-            if (_state.Value < State.Title)
+            if (_state.Value < State.TitleFadeIn)
                 return;
 
             var screenY = _gameModule.GameSystem.CoreGraphicsModule.ScreenPoint.Y;
-            var cursor = _gameModule.SpritesModule.GetSprite(0).Y;
+
+            if(_state.Value == State.Title || _state.Value == State.TitleFadeIn || _state.Value == State.StartGame
+                || _state.Value == State.StartLoadedGame)
+            {
+                if(screenY >= 24 && screenY < 32)
+                {
+                    _gameModule.TileModule.Scroll.X = 2;
+                }
+                else if (screenY >= 32 && screenY < 40)
+                {
+                    _gameModule.TileModule.Scroll.X = 1;
+                }
+                else
+                {
+                    _gameModule.TileModule.Scroll.X = 0;
+                }
+            }
+
+            var cursor = _gameModule.SpritesModule.GetSprite(1).Y;
             if (screenY >= cursor)
             {
                 if(screenY < cursor + 4)

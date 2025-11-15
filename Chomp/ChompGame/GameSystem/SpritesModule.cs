@@ -26,9 +26,9 @@ namespace ChompGame.GameSystem
             return new Sprite(_sprite0Address + Sprite.ByteLength * index, GameSystem.Memory, Specs, Scroll);
         }
 
-        public byte GetFreeSpriteIndex()
+        public byte GetFreeSpriteIndex(byte startFrom = 0)
         {
-            for(byte b = 0; b < Specs.MaxSprites; b++)
+            for(byte b = startFrom; b < Specs.MaxSprites; b++)
             {
                 if (GetSprite(b).Tile == 0)
                     return b;
