@@ -30,7 +30,7 @@ namespace ChompGame.MainGame
     {
         public const bool BossTest = false;
 
-        public const bool QuickReward = false;
+        public const bool QuickReward = true;
 
         public const bool LevelSkipEnabled = false;
 
@@ -43,7 +43,7 @@ namespace ChompGame.MainGame
 
         private static List<string> _log = new List<string>();
 
-        public static bool EnableFly = true;
+        public static bool EnableFly = false;
         public static DebugWatch Watch1 { get; set; }
         public static DebugWatch Watch2 { get; set; }
         public static DebugWatch Watch3 { get; set; }

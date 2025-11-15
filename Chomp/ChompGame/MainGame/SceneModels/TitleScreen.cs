@@ -240,8 +240,15 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     if (menuSprite.Y == StartY)
                     {
-                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
-                        _state.Value = State.StartGame;
+                        if (_gameModule.SaveManager.AnySaveSlotsFree())
+                        {
+                            _gameModule.AudioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                            _state.Value = State.StartGame;
+                        }
+                        else
+                        {
+                            _gameModule.AudioService.PlaySound(ChompAudioService.Sound.PlayerHit);
+                        }
                     }
                     else if (menuSprite.Y == LoadY)
                     {

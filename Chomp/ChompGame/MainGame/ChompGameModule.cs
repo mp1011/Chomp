@@ -486,9 +486,9 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level1_11_Boss;
             _lastExitType.Value = ExitType.Right;
-            _gameState.Value = GameState.Title;
+            _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
@@ -668,7 +668,17 @@ namespace ChompGame.MainGame
 
         public void PlayScene()
         {
-            if(_deathTimer.Value == 0 && GameSystem.CoreGraphicsModule.FadeAmount > 0)
+            if (ExitsModule.ActiveExit.ExitType != ExitType.None && GameSystem.CoreGraphicsModule.FadeAmount >= 1)
+            {
+                GameSystem.CoreGraphicsModule.FadeAmount++;
+
+                if(GameSystem.CoreGraphicsModule.FadeAmount == 15)
+                    HandleLevelExit();
+
+                return;
+            }
+            
+            if (_deathTimer.Value == 0 && GameSystem.CoreGraphicsModule.FadeAmount > 0)
             {
                 GameSystem.CoreGraphicsModule.FadeAmount--;
             }
@@ -691,33 +701,8 @@ namespace ChompGame.MainGame
             ExitsModule.CheckExits(_sceneSpriteControllers.Player, _currentScene);
             if(ExitsModule.ActiveExit.ExitType != ExitType.None)
             {
-                GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}", DebugLogFlags.LevelTransition);
-
-                var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
-                if(newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
-                {
-                    _scenePartsDestroyed.Reset(GameSystem.Memory);
-                }
-                CurrentLevel = newLevel;
-
-                _gameState.Value = IsLevelStart(newLevel) ? GameState.LevelCard : GameState.LoadScene;
-                if (ExitsModule.ActiveExit.ExitLevelOffset == -1)
-                    _gameState.Value = GameState.LoadScene;
-
-                _levelCard.Reset();
-                GameDebug.DebugLog($"Entering level {CurrentLevel}", DebugLogFlags.LevelTransition);
-
-
-                _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
-                if (SceneBuilder.IsTransitionLevel(CurrentLevel))
-                    _lastTransitionExitType.Value = _lastExitType.Value;
-
-                _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
-
-                if (_carryingBomb.Value)
-                    GameDebug.DebugLog("Player is carrying bomb", DebugLogFlags.LevelTransition);
-                else
-                    GameDebug.DebugLog("Player is NOT carrying bomb", DebugLogFlags.LevelTransition);
+                GameSystem.CoreGraphicsModule.FadeAmount = 1;
+                GameDebug.DebugLog($"Exiting level {CurrentLevel} via {ExitsModule.ActiveExit.ExitType}", DebugLogFlags.LevelTransition); 
             }
 
             if(_currentScene.Theme == ThemeType.GlitchCore || _currentScene.Theme == ThemeType.Final)
@@ -728,6 +713,35 @@ namespace ChompGame.MainGame
             {
                 _mistAutoscrollBgModule.Update();
             }
+        }
+
+        private void HandleLevelExit()
+        {
+            var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
+            if (newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
+            {
+                _scenePartsDestroyed.Reset(GameSystem.Memory);
+            }
+            CurrentLevel = newLevel;
+
+            _gameState.Value = IsLevelStart(newLevel) ? GameState.LevelCard : GameState.LoadScene;
+            if (ExitsModule.ActiveExit.ExitLevelOffset == -1)
+                _gameState.Value = GameState.LoadScene;
+
+            _levelCard.Reset();
+            GameDebug.DebugLog($"Entering level {CurrentLevel}", DebugLogFlags.LevelTransition);
+
+
+            _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
+            if (SceneBuilder.IsTransitionLevel(CurrentLevel))
+                _lastTransitionExitType.Value = _lastExitType.Value;
+
+            _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
+
+            if (_carryingBomb.Value)
+                GameDebug.DebugLog("Player is carrying bomb", DebugLogFlags.LevelTransition);
+            else
+                GameDebug.DebugLog("Player is NOT carrying bomb", DebugLogFlags.LevelTransition);
         }
 
         private void SaveCurrentGame()
@@ -774,7 +788,6 @@ namespace ChompGame.MainGame
         private void HandlePlayerDeath()
         {
             _deathHandler.HandlePlayerDeath();
-            _scenePartsDestroyed.Reset(GameSystem.Memory);
         }
     }
 }

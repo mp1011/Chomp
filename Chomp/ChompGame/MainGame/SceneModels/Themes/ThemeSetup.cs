@@ -49,6 +49,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
         {
             ThemeSetup setup = themeType switch {
                 ThemeType.Plains => new PlainsThemeSetup(chompGameModule),
+                ThemeType.PlainsMidBoss => new PlainsThemeSetup(chompGameModule),
                 ThemeType.PlainsEvening => new PlainsThemeSetup(chompGameModule),
                 ThemeType.PlainsBoss => new PlainsBossThemeSetup(chompGameModule),
                 ThemeType.Ocean => new OceanThemeSetup(chompGameModule),

@@ -117,7 +117,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 var sprite = GetSprite();
                 sprite.Tile = (byte)(baseTile + 1);
             }
-            else if (_openState == 10)
+            else if (_openState >= 10 && _openState < 20)
             {
                 var sprite = GetSprite();
                 sprite.Visible = false;
@@ -141,7 +141,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _openState.Value = 0;
             }
 
-            if ((_levelTimer.Value % 3) == 0)
+            if ((_levelTimer.Value % 2) == 0)
                 _openState.Value++;
         }
 

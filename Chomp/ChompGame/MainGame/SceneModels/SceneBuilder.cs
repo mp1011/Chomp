@@ -237,7 +237,6 @@ namespace ChompGame.MainGame.SceneModels
             _transitionLevels = new BitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddBytes(26);
             _transitionLevels[(int)Level.Level1_1_Start] = true;
-            _transitionLevels[(int)Level.Level1_5_Vertical] = true;
             _transitionLevels[(int)Level.Level1_10_Stair] = true;
             _transitionLevels[(int)Level.Level1_12_Horizontal2] = true;
             _transitionLevels[(int)Level.Level1_17_Boss] = true;
@@ -427,10 +426,10 @@ namespace ChompGame.MainGame.SceneModels
              bgPosition: 0
           );
 
-            //Level1_11_Boss
+            _ = Level.Level1_11_Boss;
             SceneDefinition.NoScrollFlat(
                     specs: specs,
-                    theme: ThemeType.Plains,
+                    theme: ThemeType.PlainsMidBoss,
                     enemy1: EnemyIndex.Midboss,
                     enemy2: EnemyIndex.Midboss,
                     spriteGroup: SpriteGroup.Boss,
@@ -2826,7 +2825,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => PitScenePart(b, 12, PrefabSize.Four, scene),
                 b => PitScenePart(b, 24, PrefabSize.Four, scene),
                 b => PitScenePart(b, 28, PrefabSize.Eight, scene),
-                b => new SpriteScenePart(b, ScenePartType.EnemyType1, 40, 0, scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType2, 40, 12, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 26, 12, scene),
                 b => PitScenePart(b, 48, PrefabSize.Eight, scene),
                 b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len24, 48, 12, scene),

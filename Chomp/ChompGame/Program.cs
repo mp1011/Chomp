@@ -12,7 +12,7 @@ namespace ChompGame
         [STAThread]
         static void Main()
         {
-            RunChompGame(RomLoad.Disk); 
+            RunChompGame(RomLoad.Code); 
         }
 
         private static Game1 RunGame(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)

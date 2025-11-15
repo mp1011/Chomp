@@ -74,6 +74,9 @@ namespace ChompGame.MainGame
             if (_currentScene.IsAutoScroll)
                 coinsAdded *= 2;
 
+            if (_timer.Value != 0)
+                return;
+
             if(coinsAdded >= _nextReward.Value)
             {
                 _audioService.PlaySound(ChompAudioService.Sound.Reward);

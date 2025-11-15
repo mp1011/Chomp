@@ -310,9 +310,9 @@ namespace ChompGame.MainGame.SceneModels
                ColorIndex.Red3);
 
             DefinePalette(PaletteKey.ChompBoss,
-                ColorIndex.Red1,
-                ColorIndex.Red3,
-                ColorIndex.White);
+                ColorIndex.Black, 
+                ColorIndex.Green2, 
+                ColorIndex.White); 
 
             DefinePalette(PaletteKey.Bullet,
                 ColorIndex.Red2,

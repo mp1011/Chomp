@@ -50,6 +50,16 @@ namespace ChompGame.MainGame
             return false;
         }
 
+        public bool AnySaveSlotsFree()
+        {
+            for (int slot = 0; slot < 4; slot++)
+            {
+                if (!IsSaveSlotValid(slot))
+                    return true;
+            }
+            return false;
+        }
+
         public int SaveSlotAddress(int slot)
         {
             return _gameModule.GameSystem.Memory.GetAddress(AddressLabels.CartMemory) + (slot * SaveSlotSize);

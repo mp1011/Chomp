@@ -3,10 +3,12 @@ using ChompGame.Data.Memory;
 
 namespace ChompGame.MainGame.SceneModels
 {
+    // Max 31
     public enum ThemeType : byte
     {
         Plains = 0,
         PlainsEvening,
+        PlainsMidBoss,
         PlainsBoss,
         Ocean,
         OceanAutoscroll,
@@ -30,7 +32,7 @@ namespace ChompGame.MainGame.SceneModels
         TechBaseBoss,
         GlitchCore,
         Final,
-        FinalBoss
+        FinalBoss //26
     }
 
     static class ThemeBuilder
@@ -56,6 +58,15 @@ namespace ChompGame.MainGame.SceneModels
                fg2: PaletteKey.Gray,
                enemy1: PaletteKey.BlueGrayEnemy,
                enemy2: PaletteKey.Gray);
+
+            _ = ThemeType.PlainsMidBoss;
+            new Theme(memoryBuilder,
+                bg1: PaletteKey.PlainsFarMountains,
+                bg2: PaletteKey.PlainsCloseMountains,
+                fg1: PaletteKey.PlainsGround,
+                fg2: PaletteKey.Gray,
+                enemy1: PaletteKey.ChompBoss,
+                enemy2: PaletteKey.Gray);
 
             _ = ThemeType.PlainsBoss;
             new Theme(memoryBuilder,
