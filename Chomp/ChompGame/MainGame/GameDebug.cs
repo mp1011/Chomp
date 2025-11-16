@@ -28,7 +28,7 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
-        public const bool BossTest = true;
+        public const bool BossTest = false;
 
         public const bool QuickReward = false;
 

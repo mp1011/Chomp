@@ -9,6 +9,7 @@ namespace ChompGame.MainGame
     {
         public const int FullHealth = GameDebug.OneHp ? 1 : 8;
         public const int InitialLives = 3;
+        public const int MaxLives = 9;
 
         private readonly TileModule _tileModule;
         private readonly CoreGraphicsModule _coreGraphicsModule;
@@ -105,6 +106,9 @@ namespace ChompGame.MainGame
 
         public void SetLives(byte value)
         {
+            if(value > MaxLives)
+                value = MaxLives;
+
             _lives.Value = value;
             _tileModule.NameTable[0, 1] = GetDigitTile((char)('0' + value));
             _tileModule.NameTable[1, 1] = _tileBlank;
