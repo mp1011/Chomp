@@ -184,7 +184,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
 
             Motion.YSpeed = -_fallSpringSpeed;
-            WorldSprite.Y = _specs.ScreenHeight;
+
+            if(FallCheck == FallCheck.ScreenHeight)
+                WorldSprite.Y = _specs.ScreenHeight;
+            else if(FallCheck == FallCheck.NametableHeight)
+                WorldSprite.Y = _specs.NameTablePixelHeight;
             HarmPlayer(2);
         }
 

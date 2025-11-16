@@ -11,7 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers.Base
     {
         None,
         ScreenHeight,
-        WrapAround
+        NametableHeight
     }
 
     abstract class ActorController : ISpriteController
@@ -209,12 +209,11 @@ namespace ChompGame.MainGame.SpriteControllers.Base
                 return;
             }
 
-            //todo, not sure how this was supposed to work
-            //if (FallCheck == FallCheck.WrapAround && WorldSprite.Y < _spritesModule.Specs.ScreenHeight + 4)
-            //{
-            //    HandleFall();
-            //    return;
-            //}
+            if (FallCheck == FallCheck.NametableHeight && WorldSprite.Y >= _spritesModule.Specs.NameTablePixelHeight)
+            {
+                HandleFall();
+                return;
+            }
         }
 
         protected virtual void HandleFall()

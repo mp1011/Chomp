@@ -256,16 +256,19 @@ namespace ChompGame.MainGame.SceneModels
             _transitionLevels[(int)Level.Level4_31_Midboss] = true;
             _transitionLevels[(int)Level.Level4_32_Desert4] = true;
             _transitionLevels[(int)Level.Level4_34_DesertRain1] = true;
+            _transitionLevels[(int)Level.Level4_40_Boss] = true;
             _transitionLevels[(int)Level.Level5_1_Mist] = true;
             _transitionLevels[(int)Level.Level5_5_Forest] = true;
             _transitionLevels[(int)Level.Level5_13_Forest_Corner2] = true;
             _transitionLevels[(int)Level.Level5_22_MidBoss] = true;
             _transitionLevels[(int)Level.Level5_23_Plane_Begin] = true;
+            _transitionLevels[(int)Level.Level5_27_Boss] = true;
             _transitionLevels[(int)Level.Level6_1_Techbase] = true;
             _transitionLevels[(int)Level.Level6_7_Techbase4] = true;
             _transitionLevels[(int)Level.Level6_13_Techbase7] = true;
             _transitionLevels[(int)Level.Level6_17_Midboss] = true;
             _transitionLevels[(int)Level.Level6_18_Techbase11] = true;
+            _transitionLevels[(int)Level.Level6_37_Boss] = true;
             _transitionLevels[(int)Level.Level7_1_GlitchCore] = true;
             _transitionLevels[(int)Level.Level7_9_TotalGlitch] = true;
             _transitionLevels[(int)Level.Level7_16_RunRoom] = true;
@@ -2954,7 +2957,6 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level1_17_Boss, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),

@@ -60,21 +60,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         protected override void UpdatePartPositions()
         {
-            _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
+            if (_phase.Value <= Phase.BossAppear)
+                _position.X = 40;
+            else
+                _position.X = (byte)(WorldSprite.X - 8 - _tileModule.Scroll.X);
+
             _position.Y = (byte)(WorldSprite.Y - 66);
 
-            var sprite = GetSprite();
             var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
-            jawSprite.X = (byte)(sprite.X - 7);
-            jawSprite.Y = (byte)(sprite.Y + 8 + _jawPosition.Value);
+            jawSprite.X = (byte)(WorldSprite.X - 7);
+            jawSprite.Y = (byte)(WorldSprite.Y + 8 + _jawPosition.Value);
         }
-        private void PositionBossAbovePlayer()
+        private void PositionBossAtScreenCorner()
         {
-            WorldSprite.X = _player.X + 16;
-            int maxX = (_tileModule.NameTable.Width - 4) * _spritesModule.Specs.TileWidth;
-            if (WorldSprite.X > maxX)
-                WorldSprite.X = maxX;
-
+            WorldSprite.X = _worldScroller.ViewPane.Right - 16;           
             WorldSprite.Y = 80;
 
             Visible = true;
@@ -107,32 +106,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             WorldSprite.FlipX = false;
         }
 
-
-        private void BossTest()
-        {
-            CreateBoss();
-            PositionBossAbovePlayer();
-            _motion.SetXSpeed(20);
-
-            _internalTimer.Value = 0;
-            _phase.Value = Phase.FireRain;
-
-            Theme theme = new Theme(_graphicsModule.GameSystem.Memory, ThemeType.PlainsBoss);
-            var targetSpritePalette = _paletteModule.GetPalette(theme.Enemy1);
-            var targetBossPalette = _paletteModule.GetPalette(theme.Background2);
-
-            var spritePalette = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
-            spritePalette.SetColor(1, (byte)targetSpritePalette.GetColorIndex(1));
-            spritePalette.SetColor(2, (byte)targetSpritePalette.GetColorIndex(2));
-            spritePalette.SetColor(3, (byte)targetSpritePalette.GetColorIndex(3));
-
-            var bossPalette = _paletteModule.BgPalette2;
-            bossPalette.SetColor(1, (byte)targetBossPalette.GetColorIndex(1));
-            bossPalette.SetColor(2, (byte)targetBossPalette.GetColorIndex(2));
-            bossPalette.SetColor(3, (byte)targetBossPalette.GetColorIndex(3));
-        }
-
-
         protected override void UpdateActive()
         {
             if (_phase.Value >= Phase.BossAppear || _internalTimer.Value >= BossLightningAppearValue)
@@ -145,14 +118,22 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 if (WorldSprite.X > 128)
                     WorldSprite.X = 128;
-
-                UpdatePartPositions();
             }
 
             if (_phase.Value == Phase.Init)
             {
-                CollisionEnabled = false;
-
+                if (CollisionEnabled)
+                {
+                    _worldScroller.ModifyTiles((t, _) =>
+                    {
+                        for (int x = 24; x < t.Width; x++)
+                        {
+                            t[x, t.Height - 1] = 0;
+                            t[x, t.Height - 2] = 0;
+                        }
+                    });
+                    CollisionEnabled = false;
+                }
                 _musicModule.CurrentSong = MusicModule.SongName.None;
                 WorldSprite.X = 0;
                 WorldSprite.Y = 0;
@@ -160,10 +141,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _paletteModule.BgColor = ColorIndex.Black;
                 if (_player.X > 32)
                 {
+                    CreateBoss();
                     _phase.Value = Phase.Lightning;
                 }
-
-                // BossTest();
             }
             else if (_phase.Value == Phase.Lightning)
             {
@@ -171,11 +151,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 if (strikeValue == 0)
                 {
-                    if (_internalTimer.Value >= BossLightningAppearValue)
-                    {
-                        PositionBossAbovePlayer();
-                    }
-
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                 }
 
@@ -190,11 +165,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 {
                     _internalTimer.Value++;
 
-                    if (_internalTimer.Value == BossLightningAppearValue)
-                    {
-                        CreateBoss();
-                        PositionBossAbovePlayer();
-                    }
 
                     if (_internalTimer.Value == 0)
                     {
@@ -207,8 +177,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             if (_phase.Value == Phase.BossAppear)
             {
-                PositionBossAbovePlayer();
-
                 if (_levelTimer.IsMod(16))
                 {
                     Theme theme = new Theme(_graphicsModule.GameSystem.Memory, ThemeType.PlainsBoss);
@@ -238,17 +206,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             else if (_phase.Value == Phase.Float)
             {
                 CollisionEnabled = true;
+
                 if (_jawPosition.Value > 0)
                     _jawPosition.Value--;
 
-                int targetX = _player.X + 16;
-
-                int maxX = (_tileModule.NameTable.Width - 4) * _spritesModule.Specs.TileWidth;
-                if (targetX > maxX)
-                    targetX = maxX;
+                int targetX = 100;
 
                 if (_levelTimer.IsMod(8))
-                    _motion.TurnTowards(WorldSprite, new Point(targetX, 80), FloatTurnAngle, FloatSpeed);
+                    _motion.TurnTowards(WorldSprite, new Point(targetX, 90), FloatTurnAngle, FloatSpeed);
 
                 _motionController.Update();
 
@@ -287,10 +252,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     _jawPosition.Value++;
 
                 _motion.SetYSpeed(20);
-
-                if (WorldSprite.X < _player.X)
-                    _motion.SetXSpeed(20);
-
                 _motionController.Update();
 
                 if (_levelTimer.IsMod(32))
@@ -358,7 +319,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 else
                 {
                     _paletteModule.BgColor = ColorIndex.Black;
-                    PositionBossAbovePlayer();
+                    PositionBossAtScreenCorner();
 
                     Visible = false;
                     var jawSprite = _spritesModule.GetSprite(_jawSpriteIndex);
@@ -396,6 +357,18 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     }
                 }
             }
+
+
+            if(_phase.Value > Phase.Init && _phase.Value <= Phase.BossAppear)
+            {
+                PositionBossAtScreenCorner();
+            }
+
+            if (_phase.Value >= Phase.Lightning)
+            {
+                UpdatePartPositions();
+            }
+
         }
         private void FireBullet()
         {
@@ -407,6 +380,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 bullet.WorldSprite.Y = WorldSprite.Y + 8;
                 bullet.WorldSprite.FlipX = true;
                 bullet.Motion.XSpeed = -40;
+                bullet.DestroyOnTimer = true;
                 bullet.WorldSprite.ConfigureSprite(bullet.GetSprite());
                 _audioService.PlaySound(ChompAudioService.Sound.Fireball);
             }
@@ -469,7 +443,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 else
                     _motion.SetYSpeed(0);
 
-                if (_levelTimer.IsMod(16))
+                if (_levelTimer.IsMod(8))
                 {
                     _internalTimer.Value++;
                     CreateExplosion();
