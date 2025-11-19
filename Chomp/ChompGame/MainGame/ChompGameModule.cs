@@ -486,9 +486,9 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level2_3_Beach;
+            _currentLevel.Value = Level.Level2_1_Intro;
             _lastExitType.Value = ExitType.Right;
-            _gameState.Value = GameState.LevelCard;
+            _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);

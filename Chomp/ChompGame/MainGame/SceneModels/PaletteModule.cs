@@ -837,6 +837,18 @@ namespace ChompGame.MainGame.SceneModels
                 var coinPallete = GameSystem.CoreGraphicsModule.GetBackgroundPalette(BgPalette.Coin);
                 CyclePalette2(coinPallete);
 
+
+                if(_currentScene.Theme == ThemeType.OceanAutoscroll)
+                {
+                    var p = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Platform);
+                    byte c = (byte)p.GetColorIndex(3);
+
+                    if(c == ColorIndex.Yellow1)
+                        p.SetColor(3, ColorIndex.Yellow3);
+                    else
+                        p.SetColor(3, ColorIndex.Yellow1);
+                }
+
                 if (_currentScene.Theme == ThemeType.DesertInterior)
                 {
                     if (Lighten(BgPalette2, 2))

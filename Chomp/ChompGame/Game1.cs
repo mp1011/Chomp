@@ -13,7 +13,7 @@ namespace ChompGame
 {
     public class Game1 : Game
     {
-        public bool DebugDrawMode = false;
+        public bool DebugDrawMode = true;
 
         private Specs _specs;
         private TileInspector _tileInspector;

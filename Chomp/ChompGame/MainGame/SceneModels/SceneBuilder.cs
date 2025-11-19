@@ -241,6 +241,7 @@ namespace ChompGame.MainGame.SceneModels
             _transitionLevels[(int)Level.Level1_12_Horizontal2] = true;
             _transitionLevels[(int)Level.Level1_17_Boss] = true;
             _transitionLevels[(int)Level.Level2_1_Intro] = true;
+            _transitionLevels[(int)Level.Level2_2_Fly2] = true;
             _transitionLevels[(int)Level.Level2_3_Beach] = true;
             _transitionLevels[(int)Level.Level2_12_Boss] = true;
             _transitionLevels[(int)Level.Level3_1_City] = true;

@@ -6,6 +6,7 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System.Windows.Markup;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
@@ -14,6 +15,8 @@ namespace ChompGame.MainGame.SpriteControllers
         public const int TurnAngle = 4;
         public const int BossHp = GameDebug.BossTest ? 1 : 4;
 
+
+        private readonly MusicModule _musicModule;
         private readonly PlayerController _playerController;
         private WorldSprite _player => _playerController.WorldSprite;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
@@ -24,18 +27,20 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly RandomModule _randomModule;
         private const int NumTailSections = 6;
         private PrecisionMotion _firstTailSectionMotion;
+        private GameByte _pathTarget;
+        private GameBit _counterAttack;
 
-        protected override int PointsForEnemy => 500;
+        protected override int PointsForEnemy => 1000;
 
         enum Phase : byte 
         {
             Init=0,
-            Chase=1,
-            SlowChase=2,
+            MoveToCenter=1,
+            Chase=2,
             Pause=3,
-            Loop=4,
-            ReCenter=5,
-            Dying=6,
+            PathMotion=4,
+            Counterattack=5,
+            Dying =6,
             Dead=7
         }
 
@@ -56,9 +61,15 @@ namespace ChompGame.MainGame.SpriteControllers
             _bullets = bullets;
             _prizes = prizes;
             _randomModule = gameModule.RandomModule;
+            _musicModule = gameModule.MusicModule;
 
-            var phase = new MaskedByte(_stateTimer.Address, Bit.Left4, memoryBuilder.Memory, 4);
+            var phase = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right4, memoryBuilder.Memory, 0);
             _phase = new GameByteEnum<Phase>(phase);
+
+            _pathTarget = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)112, memoryBuilder.Memory, leftShift: 4);
+            _counterAttack = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
+
             _specs = gameModule.Specs;
             _tail = new ChompTail(memoryBuilder, NumTailSections, gameModule);
          
@@ -86,125 +97,184 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _stateTimer.Value = 0;
             _phase.Value = p;
+
+            if(p == Phase.Init)
+            {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
+                GameDebug.Watch1 = new DebugWatch("PHASE", () => (int)_phase.Value);
+                GameDebug.Watch2 = new DebugWatch("ST", () => (int)_stateTimer.Value);
+                GameDebug.Watch3 = new DebugWatch("HP", () => (int)_hitPoints.Value);
+
+                InitTail();
+            }
+            else if(p == Phase.PathMotion)
+            {
+                _pathTarget.Value = (byte)(_rng.GenerateByte() % 5);
+            }
+            else if (p == Phase.Dying)
+            {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
+            }
         }
 
-        private void CheckRecenter()
+        public override BombCollisionResponse HandleBombCollision(WorldSprite player)
         {
-            if (_phase.Value == Phase.ReCenter)
-                return;
-
-            if(WorldSprite.X < 0
-                || WorldSprite.X > _specs.ScreenWidth
-                || WorldSprite.Y < 0
-                || WorldSprite.Y > _specs.ScreenHeight)
+            if (!_counterAttack.Value)
             {
-                SetPhase(Phase.ReCenter);
+                _counterAttack.Value = true;
+                SetPhase(Phase.Pause);
             }
+            return base.HandleBombCollision(player);
         }
 
         protected override void UpdateActive()
         {
-            if (_phase.Value > Phase.Init)
-            {
-                if (WorldSprite.X < -4)
-                {
-                    WorldSprite.X = -4;
-                    SetPhase(Phase.ReCenter);
-                }
-
-                if (WorldSprite.X > _specs.ScreenWidth + 4)
-                    WorldSprite.X = _specs.ScreenWidth + 4;
-            }
-
             _motionController.Update();
-            if (_levelTimer.IsMod(16))
-                _stateTimer.Value++;
 
             if (_rng.RandomChance(50) && _levelTimer.Value.IsMod(64))
                 SpawnCoins();
 
             UpdateTail();
 
-            if(_phase.Value != Phase.Init)
-                CheckRecenter();
+            if (WorldSprite.X < 0)
+                WorldSprite.X = 0;
+            if (WorldSprite.Y < 8)
+                WorldSprite.Y = 8;
 
-            switch (_phase.Value)
+            if (_phase.Value == Phase.Init)
             {
-                case Phase.Init:
-                    if (_stateTimer.Value < 3)
-                        InitTail();
+                if (_stateTimer.Value == 0)
+                {
+                    _stateTimer.Value = 1;
+                    InitTail();
+                }
+
+                if (_levelTimer.IsMod(8))
+                    _stateTimer.Value++;
+
+                if (_stateTimer.Value == 8)
+                {
+                    _musicModule.CurrentSong = MusicModule.SongName.Threat;
 
                     _motion.XSpeed = -40;
                     _motion.TargetXSpeed = -20;
                     _motion.XAcceleration = 5;
 
-                    if (WorldSprite.X < 48)
-                        SetPhase(Phase.SlowChase);
+                    SetPhase(Phase.MoveToCenter);
+                }
+            }
+            else if (_phase.Value == Phase.MoveToCenter)
+            {
+                var target = new Point(32, 32);
+                _motion.TargetTowards(WorldSprite, target, 20);
 
-                    return;
-                case Phase.Chase:
-                    var speed = 60 - _stateTimer.Value * 3;
-                    _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
-
-                    if (_stateTimer.Value == 10 || WorldSprite.X <= 0)
-                        SetPhase(Phase.Pause);
-                    return;
-                case Phase.SlowChase:
-                    speed = 20;
-                    _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
-
-                    if (_stateTimer.Value == 10)
-                        SetPhase(Phase.Chase);
-                    return;
-
-                case Phase.Pause:
-                    _motion.TargetXSpeed = 0;
-                    _motion.TargetYSpeed = 0;
-                    _motion.XAcceleration = 2;
-                    _motion.YAcceleration = 2;
-
-                    if (_stateTimer.Value == 6)
-                    {
-                        if (_randomModule.RandomChance(70))
-                            SetPhase(Phase.SlowChase);
-                        else
-                            SetPhase(Phase.Loop);
-                    }
-                    return;
-
-                case Phase.Loop:
-
+                var pos = new Point(WorldSprite.X, WorldSprite.Y);
+                if (pos.DistanceSquared(target) < 64)
+                {
+                    _stateTimer.Value++;
                     if (_stateTimer.Value == 0)
                     {
-                        _motion.TargetXSpeed = 20;
-                        _motion.XAcceleration = 5;
+                        SetPhase(Phase.Chase);
                     }
+                }
 
-                    if (_stateTimer.Value > 1)
-                    {
-                        _motion.Turn(8, 40);
-
-                        if (_levelTimer.IsMod(16))
-                            FireBullet();
-                    }
-            
-                    if (_stateTimer.Value == 15)
-                        SetPhase(Phase.Pause);
-
-                    return;
-
-                case Phase.ReCenter:
-                    var target = new Point(32, 32);
-                    _motion.TargetTowards(WorldSprite, target, 20);
-
-                    var pos = new Point(WorldSprite.X, WorldSprite.Y);
-                    if (pos.DistanceSquared(target) < 64)
-                        SetPhase(Phase.Pause);
-
-                    return;
+                return;
             }
+            else if (_phase.Value == Phase.Chase)
+            {
+                if (_levelTimer.IsMod(32))
+                {
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                        SetPhase(Phase.Pause);
+                }
 
+                var speed = 20 + (_stateTimer.Value * 2);
+                if (speed > 40)
+                    speed = 40;
+                _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
+                return;
+            }
+            else if (_phase.Value == Phase.PathMotion)
+            {
+                if (_levelTimer.IsMod(32))
+                {
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                        SetPhase(Phase.PathMotion);             
+                }
+
+                var target = PathTarget();
+                var dist = WorldSprite.Center.DistanceSquared(target);
+                if (dist < 40)
+                {
+                    _pathTarget.Value = (byte)((_pathTarget.Value + 1) % 5);
+                }
+
+                _motion.TurnTowards(WorldSprite, PathTarget(), TurnAngle, 50);
+                return;
+            }
+            else if (_phase.Value == Phase.Pause)
+            {
+                _motion.TargetXSpeed = 0;
+                _motion.TargetYSpeed = 0;
+                _motion.XAcceleration = 2;
+                _motion.YAcceleration = 2;
+                if (_levelTimer.IsMod(4))
+                {
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == 0)
+                    {
+                        if (_counterAttack.Value)
+                        {
+                            _counterAttack.Value = false;
+                            SetPhase(Phase.Counterattack);
+                        }
+                        else if (_rng.GenerateByte() > 128)
+                            SetPhase(Phase.PathMotion);
+                        else
+                            SetPhase(Phase.Chase);
+                    }
+                }
+            }
+            else if (_phase.Value == Phase.Counterattack)
+            {
+                if (_stateTimer.Value == 0)
+                {
+                    _motion.TargetXSpeed = 20;
+                    _motion.XAcceleration = 5;
+                }
+
+                if (_levelTimer.IsMod(16))
+                    _stateTimer.Value++;
+
+                if (_stateTimer.Value > 1)
+                {
+                    _motion.Turn(8, 40);
+
+                    if (_levelTimer.IsMod(16))
+                        FireBullet();
+                }
+
+                if (_stateTimer.Value == 15)
+                    SetPhase(Phase.Chase);
+            }
         }
+
+        private Point PathTarget()
+        {
+            int offset = 16;
+
+            var i = _pathTarget.Value % 5;
+            return _pathTarget.Value switch             {
+                0 => new Point(offset, offset), // top left
+                1 => new Point(_specs.ScreenWidth - 16, _specs.ScreenHeight - 16), // bottom right
+                2 => new Point(offset, _specs.ScreenHeight - 16), // bottom left
+                3 => new Point(_specs.ScreenWidth - 16, 16), // top left                            
+                _ => new Point(_specs.ScreenWidth / 2, _specs.ScreenHeight / 2),
+            };
+        }
+
 
         private void SpawnCoins()
         {
@@ -219,6 +289,7 @@ namespace ChompGame.MainGame.SpriteControllers
             prize.WorldSprite.Y = 16 + (_rng.GenerateByte() % (_specs.ScreenHeight - 20)) ;
             prize.Variation = PrizeController.Coin3;
             prize.AfterSpawn(_prizes);
+            prize.WorldSprite.UpdateSprite();
         }
 
         private void FireBullet()
@@ -272,8 +343,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 return new Point(section.X, section.Y);
             }
-
-           
             PrecisionMotion sectionMotion = new PrecisionMotion(_spritesModule.GameSystem.Memory,
                 _firstTailSectionMotion.Address + (sectionNumber * PrecisionMotion.Bytes));
            
@@ -290,7 +359,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 return target;
 
             var targetOffset = angleTo
-                .AdjustLength(100)
+                .AdjustLength(100) 
                 .RotateDeg(180)
                 .AdjustLength(4);
 
@@ -303,7 +372,10 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 base.UpdateDying();
                 if (WorldSprite.Status == WorldSpriteStatus.Active)
+                {
                     GetSprite().Palette = Palette;
+                    SetPhase(Phase.Pause);
+                }
 
                 return;
             }
@@ -325,8 +397,11 @@ namespace ChompGame.MainGame.SpriteControllers
                 return;
             }
 
-            if(_phase.Value != Phase.Dying)            
+            if (_phase.Value != Phase.Dying)
+            {
+                _statusBar.AddToScore((uint)PointsForEnemy);
                 SetPhase(Phase.Dying);
+            }
 
             _stateTimer.Value++;
 

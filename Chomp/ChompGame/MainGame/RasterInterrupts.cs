@@ -120,8 +120,30 @@ namespace ChompGame.MainGame
                 }
                 else if (_coreGraphicsModule.ScreenPoint.Y >= waterBegin)
                 {
+
                     int waterY = _coreGraphicsModule.ScreenPoint.Y - waterBegin;
                     _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((waterY + 5) / 16.0));
+
+
+                    if (waterY == 0)
+                    {
+                        var palette = _coreGraphicsModule.GetBackgroundPalette(BgPalette.Background);
+                        _gameModule.PaletteModule.LoadPalette(_gameModule.PaletteModule.BgPalette1.Address, palette);
+                    }
+                    else if (waterY >= 0 && waterY.IsMod(2) && waterY < 4)
+                    {
+                        var palette = _coreGraphicsModule.GetBackgroundPalette(BgPalette.Background);
+                        _gameModule.PaletteModule.Lighten(palette, 1);
+                        _gameModule.PaletteModule.Lighten(palette, 2);
+                        _gameModule.PaletteModule.Lighten(palette, 3);
+                    }
+                    else if (waterY >= 8 && waterY.IsMod(2) && waterY < 16)
+                    {
+                        var palette = _coreGraphicsModule.GetBackgroundPalette(BgPalette.Background);
+                        _gameModule.PaletteModule.Darken(palette, 1);
+                        _gameModule.PaletteModule.Darken(palette, 2);
+                        _gameModule.PaletteModule.Darken(palette, 3);
+                    }                    
                 }
             }
             else
