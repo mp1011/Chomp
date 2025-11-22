@@ -13,6 +13,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class PlayerController : ActorController
     {
+        private ChompGameModule _gameModule;
         private RasterInterrupts _rasterInterrupts;
         protected ActorMotionController _motionController;
 
@@ -53,6 +54,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(spriteType, gameModule, memoryBuilder, spriteTileIndex)
         {
             _rasterInterrupts = gameModule.RasterInterrupts;
+            _gameModule = gameModule;
             var state = memoryBuilder.AddByte();
             _scene = gameModule.CurrentScene;
             _specs = gameModule.Specs;
@@ -271,14 +273,37 @@ namespace ChompGame.MainGame.SpriteControllers
                 Motion.YSpeed = 0;
             }
 
-            if ((collisionInfo.IsOnGround || _onPlatform.Value) 
-                && _inputModule.Player1.AKey == GameKeyState.Pressed)
+            HandleJump(collisionInfo);
+
+
+            _onPlatform.Value = false;
+        }
+
+        private void HandleJump(CollisionInfo collisionInfo)
+        {
+            bool onGround = collisionInfo.IsOnGround || _onPlatform.Value;
+            bool doJump = false;
+            if (_inputModule.Player1.AKey == GameKeyState.Pressed)
             {
+                if (onGround)
+                    doJump = true;
+                else if(_gameModule.GraceJumpCounter == 0)
+                    _gameModule.GraceJumpCounter = 3;
+            }
+
+            if(onGround && _gameModule.GraceJumpCounter > 0)
+                doJump = true;
+
+            if(_gameModule.GraceJumpCounter > 0 && _levelTimer.IsMod(4))
+                _gameModule.GraceJumpCounter--;
+
+            if (doJump)
+            {
+                _gameModule.GraceJumpCounter = 0;
                 _audioService.PlaySound(ChompAudioService.Sound.Jump);
                 Motion.YSpeed = -_motionController.JumpSpeed;
             }
 
-            _onPlatform.Value = false;
         }
 
         protected void CheckAfterHitInvincability()

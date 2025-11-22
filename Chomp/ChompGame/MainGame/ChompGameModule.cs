@@ -64,6 +64,14 @@ namespace ChompGame.MainGame
         private readonly StatusBar _statusBar;
         private readonly DynamicBlockController _dynamicBlockController;
 
+        private HighNibble _graceJumpCounter;
+
+        public int GraceJumpCounter
+        {
+            get => _graceJumpCounter.Value;
+            set => _graceJumpCounter.Value = (byte)value;
+        }   
+
         private NBitPlane _masterPatternTable;
         private LevelBuilder _levelBuilder;
 
@@ -191,7 +199,7 @@ namespace ChompGame.MainGame
             memoryBuilder.AddByte();
 
             _lastTransitionExitType = new NibbleEnum<ExitType>(new LowNibble(memoryBuilder));
-            // unused bits
+            _graceJumpCounter = new HighNibble(memoryBuilder);
             memoryBuilder.AddByte();
             _lastTransitionExitType.Value = ExitType.Right;
 
