@@ -176,7 +176,7 @@ namespace ChompGame.MainGame.Editors
                 CycleTile(_bottomTiles);
             else if (EditorInputHelper.IsKeyPressed(Keys.NumPad3))
                 CycleTile(_bottomRightTiles);
-            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad8))
+            else if (EditorInputHelper.IsKeyPressed(Keys.NumPad6))
                 CycleTile(_rightTiles);
             else if (EditorInputHelper.IsKeyPressed(Keys.NumPad9))
                 CycleTile(_topRightTiles);

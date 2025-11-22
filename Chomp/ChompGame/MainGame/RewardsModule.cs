@@ -71,9 +71,6 @@ namespace ChompGame.MainGame
 
         public void CheckRewards(int coinsAdded)
         {
-            if (_currentScene.IsAutoScroll)
-                coinsAdded *= 2;
-
             if (_timer.Value != 0)
                 return;
 

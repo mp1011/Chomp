@@ -3079,7 +3079,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => new SpriteScenePart(b, ScenePartType.EnemyType2, 13, 20, scene),
                 b => new ExitScenePart(b, ExitType.Left, -1, scene),
                 b => new ExitScenePart(b, ExitType.Right, 2, scene),
-                b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 3, 42, scene)
+                b => new SpriteScenePart(b, ScenePartType.DoorFowardExit, 16, 42, scene)
             );
             CheckDestroyBits(Level.Level2_5_Hub, header, scene, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded);
 
@@ -3161,8 +3161,7 @@ namespace ChompGame.MainGame.SceneModels
 
             scene = new SceneDefinition(Level.Level2_12_Boss, builder.Memory, specs);
             header = new ScenePartsHeader(builder,
-                b => new SpriteScenePart(b, ScenePartType.Bomb, x: 12, y: 16, definition: scene),
-                b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 16, definition: scene),
+                b => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 0, y: 16, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 0, y: 0, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 2, y: 0, definition: scene),
                 b => new DynamicScenePart(b, DynamicBlockType.Coin, topLeft: false, topRight: false, bottomLeft: false, bottomRight: false, x: 4, y: 0, definition: scene),

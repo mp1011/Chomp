@@ -27,7 +27,6 @@ namespace ChompGame.MainGame.SpriteControllers
         private readonly RandomModule _randomModule;
         private const int NumTailSections = 6;
         private PrecisionMotion _firstTailSectionMotion;
-        private GameByte _pathTarget;
         private GameBit _counterAttack;
 
         protected override int PointsForEnemy => 1000;
@@ -38,10 +37,9 @@ namespace ChompGame.MainGame.SpriteControllers
             MoveToCenter=1,
             Chase=2,
             Pause=3,
-            PathMotion=4,
-            Counterattack=5,
-            Dying =6,
-            Dead=7
+            Counterattack=4,
+            Dying =5,
+            Dead=6
         }
 
         protected override bool DestroyWhenFarOutOfBounds => false;
@@ -66,7 +64,6 @@ namespace ChompGame.MainGame.SpriteControllers
             var phase = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right4, memoryBuilder.Memory, 0);
             _phase = new GameByteEnum<Phase>(phase);
 
-            _pathTarget = new MaskedByte(memoryBuilder.CurrentAddress, (Bit)112, memoryBuilder.Memory, leftShift: 4);
             _counterAttack = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
             memoryBuilder.AddByte();
 
@@ -106,10 +103,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 GameDebug.Watch3 = new DebugWatch("HP", () => (int)_hitPoints.Value);
 
                 InitTail();
-            }
-            else if(p == Phase.PathMotion)
-            {
-                _pathTarget.Value = (byte)(_rng.GenerateByte() % 5);
             }
             else if (p == Phase.Dying)
             {
@@ -194,26 +187,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     speed = 40;
                 _motion.TurnTowards(WorldSprite, _player.Center, TurnAngle, speed);
                 return;
-            }
-            else if (_phase.Value == Phase.PathMotion)
-            {
-                if (_levelTimer.IsMod(32))
-                {
-                    _stateTimer.Value++;
-                    if (_stateTimer.Value == 0)
-                        SetPhase(Phase.PathMotion);             
-                }
-
-                var target = PathTarget();
-                var dist = WorldSprite.Center.DistanceSquared(target);
-                if (dist < 40)
-                {
-                    _pathTarget.Value = (byte)((_pathTarget.Value + 1) % 5);
-                }
-
-                _motion.TurnTowards(WorldSprite, PathTarget(), TurnAngle, 50);
-                return;
-            }
+            }           
             else if (_phase.Value == Phase.Pause)
             {
                 _motion.TargetXSpeed = 0;
@@ -230,8 +204,6 @@ namespace ChompGame.MainGame.SpriteControllers
                             _counterAttack.Value = false;
                             SetPhase(Phase.Counterattack);
                         }
-                        else if (_rng.GenerateByte() > 128)
-                            SetPhase(Phase.PathMotion);
                         else
                             SetPhase(Phase.Chase);
                     }
@@ -261,21 +233,6 @@ namespace ChompGame.MainGame.SpriteControllers
             }
         }
 
-        private Point PathTarget()
-        {
-            int offset = 16;
-
-            var i = _pathTarget.Value % 5;
-            return _pathTarget.Value switch             {
-                0 => new Point(offset, offset), // top left
-                1 => new Point(_specs.ScreenWidth - 16, _specs.ScreenHeight - 16), // bottom right
-                2 => new Point(offset, _specs.ScreenHeight - 16), // bottom left
-                3 => new Point(_specs.ScreenWidth - 16, 16), // top left                            
-                _ => new Point(_specs.ScreenWidth / 2, _specs.ScreenHeight / 2),
-            };
-        }
-
-
         private void SpawnCoins()
         {
             if (!_prizes.CanAddNew())
@@ -300,6 +257,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _audioService.PlaySound(ChompAudioService.Sound.Fireball);
 
+            bullet.DestroyOnCollision = false;
+            bullet.DestroyOnTimer = true;
             bullet.WorldSprite.Center = WorldSprite.Center;
             bullet.Motion.YSpeed = _motion.YSpeed;
             bullet.Motion.XSpeed = _motion.XSpeed;
@@ -392,7 +351,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 else if (_stateTimer.Value < 14)
                 {
                     if (_levelTimer.IsMod(4))
+                    {
+                        CreateExplosion(WorldSprite.X - 2 + (_rng.Generate(2) * 3), 
+                                        WorldSprite.Y - 2 + (_rng.Generate(2) * 3));
+
                         _stateTimer.Value++;
+                    }
                 }
                 return;
             }
@@ -410,11 +374,6 @@ namespace ChompGame.MainGame.SpriteControllers
                 _stateTimer.Value = 0;
                 if (!DestroyNextTail())
                 {
-                    CreateExplosion(WorldSprite.X, WorldSprite.Y);
-                    CreateExplosion(WorldSprite.X + 4, WorldSprite.Y + 4);
-                    CreateExplosion(WorldSprite.X + 2, WorldSprite.Y);
-                    CreateExplosion(WorldSprite.X + 2, WorldSprite.Y + 2);
-
                     SetPhase(Phase.Dead);
                 }
             }            

@@ -139,6 +139,8 @@ namespace ChompGame.MainGame
         public SaveManager SaveManager { get; }
 
         public FinalBossHelper FinalBossHelper => _finalBossHelper;
+        
+        public SceneSpriteControllers SceneSpriteControllers => _sceneSpriteControllers;
 
         public Level CurrentLevel
         {
@@ -326,9 +328,12 @@ namespace ChompGame.MainGame
                 case GameState.LoadScene:
                     LoadScene();
                     break;
-                case GameState.PlayScene:                  
+                case GameState.PlayScene:
                     if (_timer.Value.IsMod(16))
-                        _longTimer.Value++;
+                    {
+                        if(_currentScene.Theme != ThemeType.MistAutoscroll || _longTimer.Value < 255)
+                            _longTimer.Value++;
+                    }
 
                     if (_tileEditor.CheckActivation())
                         _gameState.Value = GameState.TileEditor;
@@ -353,6 +358,7 @@ namespace ChompGame.MainGame
                         _gameState.Value = GameState.PlayScene;
                     break;
                 case GameState.LevelCard:
+                    _bossBackgroundHandling.Value = false;
                     _inputModule.OnLogicUpdate();
                     if (_levelCard.Update())
                         _gameState.Value = GameState.LoadScene;
@@ -486,7 +492,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level2_1_Intro;
+            _currentLevel.Value = Level.Level2_12_Boss;
             _lastExitType.Value = ExitType.Right;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
@@ -721,6 +727,11 @@ namespace ChompGame.MainGame
             if (newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
             {
                 _scenePartsDestroyed.Reset(GameSystem.Memory);
+                if(IsLevelStart(newLevel))
+                {
+                    _statusBar.Health = StatusBar.FullHealth;
+                    _lastTransitionExitType.Value = ExitType.Right;
+                }
             }
             CurrentLevel = newLevel;
 

@@ -47,6 +47,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _variation = new LowNibble(memoryBuilder);
             _state = new NibbleEnum<BirdState>(new HighNibble(memoryBuilder.CurrentAddress, memoryBuilder.Memory));
             memoryBuilder.AddByte();
+
             Palette = gameModule.CurrentScene.Theme.IsCityTheme() ? SpritePalette.Enemy2 : SpritePalette.Player;
         }
 
@@ -133,6 +134,9 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if ((_levelTimer % 32) == 0)
             {
+                if(_variation.Value > 0)
+                    _variation.Value--;
+
                 _stateTimer.Value++;
 
                 if (_variation.Value == 2 && WorldSprite.X < 48)
@@ -143,7 +147,14 @@ namespace ChompGame.MainGame.SpriteControllers
                     _motion.TargetTowards(WorldSprite, _player, _motionController.WalkSpeed);
                 }
             }
+
+            if (_variation.Value == 0)
+            {
+                if (WorldSprite.CheckInBounds() != BoundsCheck.InBounds)
+                    Destroy();
+            }
         }
+
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
@@ -158,7 +169,10 @@ namespace ChompGame.MainGame.SpriteControllers
             _state.Value = BirdState.Hover;
         }
 
-        public void AfterSpawn(ISpriteControllerPool pool) { }
+        public void AfterSpawn(ISpriteControllerPool pool) 
+        {
+            _variation.Value = 15;
+        }
     }
 
 }

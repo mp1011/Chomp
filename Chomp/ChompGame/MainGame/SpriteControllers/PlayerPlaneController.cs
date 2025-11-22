@@ -32,6 +32,12 @@ namespace ChompGame.MainGame.SpriteControllers
             head.Palette = SpritePalette.Player;
         }
 
+        public override void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType, SceneSpriteControllers sceneSpriteControllers)
+        {
+            WorldSprite.X = 8;
+            WorldSprite.Y = _specs.ScreenHeight / 2;
+        }
+
         public override bool CollidesWith(IWithBounds other)
         {
             if (_statusBar.Health == 0)

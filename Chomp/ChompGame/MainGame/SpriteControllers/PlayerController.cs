@@ -93,7 +93,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public virtual void OnBossDead() { }
 
-        public void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType,
+        public virtual void SetInitialPosition(NBitPlane levelMap, ExitType lastExitType,
             SceneSpriteControllers sceneSpriteControllers)
         {
             switch(lastExitType)

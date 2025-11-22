@@ -28,7 +28,7 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
-        public const bool BossTest = true;
+        public const bool BossTest = false;
 
         public const bool QuickReward = false;
 
@@ -39,7 +39,7 @@ namespace ChompGame.MainGame
         public const bool OneHp = false;
 
 
-        private const DebugLogFlags _debugLogFlags = DebugLogFlags.LevelTransition;
+        private const DebugLogFlags _debugLogFlags = DebugLogFlags.SpriteSpawn;
 
         private static List<string> _log = new List<string>();
 

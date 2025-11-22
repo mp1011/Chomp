@@ -352,14 +352,18 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_scene.IsMidBossScene || _gameModule.LevelTimerLong.Value < lastSpawnTime + 32)
                 return;
 
+            bool anyAlive = false;
             foreach(var pool in _spriteControllers)
             {
                 pool.Execute(c =>
                 {
                     if (c.Status == WorldSpriteStatus.Active)
-                        return;
+                        anyAlive = true;
                 });          
             }
+
+            if (anyAlive)
+                return;
 
             _gameModule.ExitsModule.GotoNextLevel();
         }

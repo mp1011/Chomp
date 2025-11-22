@@ -6,6 +6,7 @@ using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System.Security.Principal;
 
 namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
@@ -15,10 +16,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private BossPart _eye2, _eye3, _eye4, _arm1, _arm2;
         private Tentacle _tentacle1, _tentacle2;
         private NibbleEnum<Phase> _phase;      
-        private NibbleArray _eyeState;
+        private DenseTwoBitArray _partState;
 
-        private MaskedByte _bulletCounter;
+        private LowNibble _bulletCounter;
         private TwoBit _eyeHit;
+        private GameBit _tentacle1Hit;
+        private GameBit _tentacle2Hit;
 
         private enum Phase : byte
         {
@@ -179,22 +182,25 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));
             memoryBuilder.AddByte();
 
-            _eyeState = new NibbleArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
-            memoryBuilder.AddBytes(2);
-
-            _bulletCounter = new MaskedByte(memoryBuilder.CurrentAddress, Bit.Right6, memoryBuilder.Memory);
-            _eyeHit = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+            _partState = new DenseTwoBitArray(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
             memoryBuilder.AddByte();
+
+            _bulletCounter = new LowNibble(memoryBuilder.CurrentAddress, memoryBuilder.Memory);
+            _eyeHit = new TwoBit(memoryBuilder.Memory, memoryBuilder.CurrentAddress, 6);
+            _tentacle1Hit = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
+            _tentacle2Hit = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
+            memoryBuilder.AddByte();
+
+
+            GameDebug.Watch1 = new DebugWatch("St", () => _stateTimer.Value);
         }
 
         protected override string BossTiles { get; } =
-            @"1335004332
-              9BBB33BBBA
-              9BBBBBBBBA
-              0CBBBBBBD0
-              0CBBBBBBD0
-              009BBBBA00
-              000C88D000";
+            @"00BC000
+              0BII900
+              7IIII90
+              GIIIIH0
+              6GFFF50";
 
         protected override string BlankBossTiles { get; } =
             @"0000000000
@@ -246,7 +252,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 {
 
                     if (_tentacle1.Update() & _tentacle2.Update())
-                        SetPhase(Phase.Sway);
+                        SetPhase(Phase.PrepareShoot);
 
                     UpdatePartPositions();
                 }
@@ -261,6 +267,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 if (WorldSprite.X < 30 || _motion.TargetXSpeed == 0)
                     _motion.TargetXSpeed = 16;
+
+                if(_levelTimer.IsMod(64))
+                {
+                    if(WorldSprite.X < _player.X)
+                        _motion.TargetXSpeed = 16;
+                    else
+                        _motion.TargetXSpeed = -16;
+                }
 
                 if (WorldSprite.Y < 70 || _motion.TargetYSpeed == 0)
                     _motion.TargetYSpeed = 4;
@@ -285,7 +299,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     _stateTimer.Value++;
 
                 if (_stateTimer.Value == 15)
-                    SetPhase(Phase.PrepareShoot);
+                    SetPhase(Phase.Sway);
             }
             else if (_phase.Value == Phase.PrepareShoot)
             {
@@ -315,39 +329,47 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 }
                 _motionController.Update();
 
-                if (_levelTimer.IsMod(4))
+                if (_levelTimer.IsMod(8))
                 {
                     _bulletCounter.Value++;
-                    if (_bulletCounter.Value <= 3)
+                    if (_bulletCounter.Value <= 1)
                         IncEyeState(0);
-                    if (_bulletCounter.Value >= 5 && _bulletCounter.Value < 8)
+                    if (_bulletCounter.Value >= 3 && _bulletCounter.Value < 5)
                         IncEyeState(1);
-                    if (_bulletCounter.Value >= 10 && _bulletCounter.Value < 13)
+                    if (_bulletCounter.Value >= 5 && _bulletCounter.Value < 7)
                         IncEyeState(2);
-                    if (_bulletCounter.Value >= 13 && _bulletCounter.Value < 16)
-                        IncEyeState(3);
-
-                    if(_bulletCounter.Value > 30)
-                        _bulletCounter.Value = 0;
+                    if (_bulletCounter.Value >= 7 && _bulletCounter.Value < 10)
+                        IncEyeState(3);                   
                 }
 
                 if (_levelTimer.IsMod(64))
                 {
+                    if(AnyBombs())
+                    {
+                        if (_partState[0] < 3) _partState[0] = 0;
+                        if (_partState[1] < 3) _partState[1] = 0;
+                        if (_partState[2] < 3) _partState[2] = 0;
+                        if (_partState[3] < 3) _partState[3] = 0;
+
+                        SetPhase(Phase.Sway);
+                        return;
+                    }
+
                     _stateTimer.Value++;
                     if (_stateTimer.Value == 0)
                     {
-                        if (_eyeState[0] < 3) _eyeState[0] = 0;
-                        if (_eyeState[1] < 3) _eyeState[1] = 0;
-                        if (_eyeState[2] < 3) _eyeState[2] = 0;
-                        if (_eyeState[3] < 3) _eyeState[3] = 0;
+                        if (_partState[0] < 3) _partState[0] = 0;
+                        if (_partState[1] < 3) _partState[1] = 0;
+                        if (_partState[2] < 3) _partState[2] = 0;
+                        if (_partState[3] < 3) _partState[3] = 0;
 
-                        SetPhase(Phase.Sway);
+                        SetPhase(Phase.PrepareShoot);
                     }
                 }
             }
 
-            _position.X = (byte)(WorldSprite.X - 28 - _tileModule.Scroll.X);
-            _position.Y = (byte)(WorldSprite.Y - 66);
+            _position.X = (byte)(WorldSprite.X - 12 - _tileModule.Scroll.X);
+            _position.Y = (byte)(WorldSprite.Y - 68);
 
             if (_phase.Value >= Phase.Sway)
             {
@@ -359,14 +381,27 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
         }
 
+
+        private bool AnyBombs()
+        {
+            bool anyBombs = false;
+            _gameModule.SceneSpriteControllers.BombControllers.Execute(c =>
+            {
+                anyBombs = true;
+            });
+
+            return anyBombs;
+        }
+
         protected override void UpdateDying()
         {
-            _position.X = (byte)(WorldSprite.X - 28 - _tileModule.Scroll.X);
-            _position.Y = (byte)(WorldSprite.Y - 66);
+            _musicModule.CurrentSong = MusicModule.SongName.None;
+            _position.X = (byte)(WorldSprite.X - 12 - _tileModule.Scroll.X);
+            _position.Y = (byte)(WorldSprite.Y - 68);
 
             if (_stateTimer.Value == 0)
             {
-                if (_levelTimer.IsMod(32))
+                if (_levelTimer.IsMod(8))
                 {
                     var pt1 = _tentacle1.DestroyNextSection();
                     var pt2 = _tentacle2.DestroyNextSection();
@@ -399,7 +434,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.DissolveFromBottom;
 
-                if(_levelTimer.IsMod(16))
+                if(_levelTimer.IsMod(4))
                 {
                     _bossBackgroundHandler.BossBgEffectValue++;
                     if (_bossBackgroundHandler.BossBgEffectValue == 0)
@@ -408,31 +443,34 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     }
                 }
 
-                if (_levelTimer.IsMod(16))
+                if (_stateTimer.Value < 5 && _levelTimer.IsMod(4))
                 {
-                    var randomX = _rng.Generate(5);
+                    var randomX = _rng.Generate(3) * 2;
+                    var randomY = _rng.Generate(3);
 
-                    CreateExplosion(WorldSprite.X - 24 + randomX, WorldSprite.Y + 28 - (2 * _stateTimer.Value));
+                    CreateExplosion(WorldSprite.X - 8 + randomX, WorldSprite.Y + randomY);
                     _audioService.PlaySound(ChompAudioService.Sound.Break);
                 }
 
                 if (_levelTimer.Value.IsMod(32))
                 {
                     _stateTimer.Value++;
-                    if(_stateTimer.Value == 12)
+                    if(_stateTimer.Value == 2)
                     {
                         _eye2.Sprite.Tile = 0;
                         WorldSprite.Visible = false;
                     }
-                    if (_stateTimer.Value == 10)
+                    if (_stateTimer.Value == 3)
                     {
                         _eye3.Sprite.Tile = 0;
                         _eye4.Sprite.Tile = 0;
                     }
 
-                    if (_stateTimer.Value == 0)
+                    if (_stateTimer.Value == 10)
                     {
                         EraseBossTiles();
+                        _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+                        _bossBackgroundHandler.BossBgEffectValue = 0;
                         Destroy();
                         _exitsModule.GotoNextLevel();
                         _player.Y = _gameModule.Specs.ScreenHeight + 8;
@@ -451,7 +489,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void UpdateEyePalette(byte index)
         {
-            var state = _eyeState[index];
+            var state = _partState[index];
             if (state == 3)
                 GetEyeSprite(index).Palette = SpritePalette.Fire;
             else if (state == 0)
@@ -462,14 +500,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void IncEyeState(byte index)
         {
-            if (_eyeState[index] == 3)
+            if (_partState[index] == 3)
                 return;
-            
-            _eyeState[index]++;
-            if (_eyeState[index] == 3)
+
+            _partState[index]++;
+            if (_partState[index] == 3)
             {
                 FireBullet(GetEyeSprite(index));
-                _eyeState[index] = 0;
+                _partState[index] = 0;
             }            
         }
 
@@ -479,12 +517,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (bullet == null)
                 return;
 
+            bullet.DestroyOnTimer = true;
             bullet.WorldSprite.TileIndex = SpriteTileIndex.Extra1;
             bullet.WorldSprite.X = source.X;
             bullet.WorldSprite.Y = source.Y;
             bullet.WorldSprite.FlipX = true;
 
-            var angle = bullet.WorldSprite.Center.GetVectorTo(_player.Center, 24);
+            int bulletSpeed = 24;
+            for(int i = 0; i < 4; i++)
+            {
+                if (_partState[i] == 3)
+                    bulletSpeed += 8;
+            }
+
+            var angle = bullet.WorldSprite.Center.GetVectorTo(_player.Center, bulletSpeed);
             angle = angle.RotateDeg(-16 + _rng.Generate(5));
 
             bullet.Motion.XSpeed = angle.X;
@@ -570,13 +616,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             var a1 = _arm1.PrepareSprite(SpriteTileIndex.Enemy2);
             a1.FlipX = false;
-            _arm1.XOffset = -22;
-            _arm1.YOffset = 20;
+            _arm1.XOffset = -8;
+            _arm1.YOffset = 16;
 
             var a2 = _arm2.PrepareSprite(SpriteTileIndex.Enemy2);
             a2.FlipX = false;
             _arm2.XOffset = 4;
-            _arm2.YOffset = 20;
+            _arm2.YOffset = 16;
 
             _tentacle1.Initialize();
             _tentacle2.Initialize();
@@ -624,19 +670,54 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             int x = WorldSprite.X;
             int y = WorldSprite.Y;
 
+            // Check eyes
             var eyeHit = CheckBombEyeCollision(0, bomb)
                 || CheckBombEyeCollision(1, bomb)
                 || CheckBombEyeCollision(2, bomb)
                 || CheckBombEyeCollision(3, bomb);
 
+            bool tentacleHit = false;
+
+            if (!eyeHit)
+            {
+                var spotValue = _levelTimer.Value % Tentacle.NumSections;
+
+                // Tentacle 1
+                var t1Sprite = _tentacle1.GetSprite(spotValue);
+                if (t1Sprite.Visible)
+                {
+                    WorldSprite.X = t1Sprite.X;
+                    WorldSprite.Y = t1Sprite.Y;
+                    if (base.CollidesWithBomb(bomb))
+                    {
+                        _tentacle1Hit.Value = true;
+                        tentacleHit = true;
+                    }
+                }
+
+                // Tentacle 2
+                var t2Sprite = _tentacle2.GetSprite(spotValue);
+                if (t2Sprite.Visible)
+                {
+                    WorldSprite.X = t2Sprite.X;
+                    WorldSprite.Y = t2Sprite.Y;
+                    if (base.CollidesWithBomb(bomb))
+                    {
+                        _tentacle2Hit.Value = true;
+                        tentacleHit = true;
+                    }
+                }
+            }
+
             WorldSprite.X = x;
             WorldSprite.Y = y;
-            return eyeHit;
+            return eyeHit || tentacleHit;
         }
+
 
         private bool CheckBombEyeCollision(int eyeIndex, WorldSprite bomb)
         {
-            if (_eyeState[eyeIndex] == 3)
+            if (_partState[eyeIndex] == 3)
                 return false;
 
             var eyeSprite = GetEyeSprite(eyeIndex);
@@ -651,6 +732,16 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         }
         protected override void UpdatePartPositions()
         {
+            _eye2.XOffset = -5;
+            _eye2.YOffset = 1;
+
+            _eye3.XOffset = -1;
+            _eye3.YOffset = 6;
+
+            _eye4.XOffset = -6;
+            _eye4.YOffset = 7;
+
+
             _eye2.UpdatePosition(WorldSprite);
             _eye3.UpdatePosition(WorldSprite);
             _eye4.UpdatePosition(WorldSprite);
@@ -661,17 +752,43 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle2.UpdatePosition(_arm2);
         }
 
-        public override BombCollisionResponse HandleBombCollision(WorldSprite player)
+        public override BombCollisionResponse HandleBombCollision(WorldSprite bomb)
         {
-            _eyeState[_eyeHit.Value] = 3;
+            // Tentacle hit logic
+            if (_tentacle1Hit.Value)
+            {
+                int section = _levelTimer.Value % Tentacle.NumSections;
+                var sectionSprite = _tentacle1.GetSprite(section);
+                _tentacle1.TargetRight = bomb.X < sectionSprite.X;
+                _tentacle1Hit.Value = false;
+                _audioService.PlaySound(ChompAudioService.Sound.EnemyHit);
+                return BombCollisionResponse.Bounce;
+            }
+            if (_tentacle2Hit.Value)
+            {
+                int section = _levelTimer.Value % Tentacle.NumSections;
+                var sectionSprite = _tentacle2.GetSprite(section);
+                _tentacle2.TargetRight = bomb.X < sectionSprite.X;
+                _tentacle2Hit.Value = false;
+                _audioService.PlaySound(ChompAudioService.Sound.EnemyHit);
+                return BombCollisionResponse.Bounce;
+            }
+
+            _partState[_eyeHit.Value] = 3;
             _audioService.PlaySound(ChompAudioService.Sound.Lightning);
 
-            if(_eyeState[0] == 3 
-                && _eyeState[1] == 3
-                && _eyeState[2] == 3
-                && _eyeState[3] == 3)
+            if(GameDebug.BossTest)
+                SetPhase(Phase.Dying);
+            else if (_partState[0] == 3
+                && _partState[1] == 3
+                && _partState[2] == 3
+                && _partState[3] == 3)
             {
                 SetPhase(Phase.Dying);
+            }
+            else
+            {
+                SetPhase(Phase.PrepareShoot);
             }
 
             return BombCollisionResponse.Destroy;
