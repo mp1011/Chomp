@@ -210,12 +210,22 @@ namespace ChompGame.MainGame.SpriteControllers
                 if(distSq > 0)
                 {
                     allReachedTarget = false;
-                    var angle = (distSq > 4 * 4) ?
-                        tailSprite.Center.GetVectorTo(target, Speed - (2 * (index + 1))) :
-                        tailSprite.Center.GetVectorTo(target, 24);
 
-                    sectionMotion.XSpeed = angle.X;
-                    sectionMotion.YSpeed = angle.Y;
+
+                    if (distSq > 400)
+                    {
+                        tailSprite.X = target.X;
+                        tailSprite.Y = target.Y;
+                    }
+                    else
+                    {
+                        var angle = (distSq > 4 * 4) ?
+                            tailSprite.Center.GetVectorTo(target, Speed - (2 * (index + 1))) :
+                            tailSprite.Center.GetVectorTo(target, 24);
+
+                        sectionMotion.XSpeed = angle.X;
+                        sectionMotion.YSpeed = angle.Y;
+                    }
 
                     sectionMotion.Apply(tailSprite);
                 }

@@ -500,7 +500,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level3_2_Building1;
+            _currentLevel.Value = Level.Level6_36_TechbaseEnd;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

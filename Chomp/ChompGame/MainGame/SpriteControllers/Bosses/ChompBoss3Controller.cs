@@ -315,6 +315,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 _music.CurrentSong = MusicModule.SongName.None;
                 _phase.Value = Phase.Dying;
                 _stateTimer.Value = 0;
+                _bullets.Execute(x => x.Destroy());
             }
             if (_armLength.Value > 0)
             {
