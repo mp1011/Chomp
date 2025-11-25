@@ -48,7 +48,7 @@ namespace ChompGame.Data
 
             for (byte i = 0; i < _items.Length; i++)
             {
-                if (_items[i].Status >= WorldSpriteStatus.Active)
+                if (_items[i].Status >= WorldSpriteStatus.Hidden)
                     continue;
 
                 return true;
@@ -67,7 +67,7 @@ namespace ChompGame.Data
 
             for (byte i = 0; i < _items.Length; i++)
             {
-                if (_items[i].Status >= WorldSpriteStatus.Active)
+                if (_items[i].Status >= WorldSpriteStatus.Hidden)
                     continue;
 
                 _items[i].SpriteIndex = freeSpriteIndex;
@@ -88,7 +88,7 @@ namespace ChompGame.Data
 
             for (byte i = 0; i < _items.Length; i++)
             {
-                if (_items[i].Status >= WorldSpriteStatus.Active)
+                if (_items[i].Status >= WorldSpriteStatus.Hidden)
                     continue;
 
                 _items[i].SpriteIndex = freeSpriteIndex;

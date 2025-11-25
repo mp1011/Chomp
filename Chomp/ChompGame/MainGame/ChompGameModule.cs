@@ -500,13 +500,13 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level2_12_Boss;
-            _lastExitType.Value = ExitType.Right;
+            _currentLevel.Value = Level.Level3_2_Building1;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
+            _lastExitType.Value = ExitType.Right;
         }
 
         public void RestartScene()

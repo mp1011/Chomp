@@ -48,11 +48,20 @@ namespace ChompGame.MainGame.SpriteControllers
             if (collisionInfo.YCorrection < 0)
             {
                 _state.Value++;
-                _motion.YSpeed = _rng.RandomItem(-30, -20, -10);
+                if (_motion.YSpeed > 0)
+                {
+                    if (_rng.GenerateByte() < 128)
+                        _motion.YSpeed = (int)(-_motion.YSpeed * 1.2);
+                    else if (_rng.GenerateByte() < 128)
+                        _motion.YSpeed = (int)(-_motion.YSpeed * 2.0);
+                    else 
+                        _motion.YSpeed = (int)(-_motion.YSpeed);
 
-                _motion.XSpeed = (_rng.GenerateByte() % 24) - 12;
-                if (_state.Value == 2)
-                    Explode();
+
+                    _motion.XSpeed = (_rng.GenerateByte() % 24) - 12;
+                    if (_state.Value == 2)
+                        Explode();
+                }
             }
         }
 

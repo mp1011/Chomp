@@ -83,7 +83,8 @@ namespace ChompGame.MainGame.SceneModels
         TechBaseFg2,
         FinalFg,
         FinalBg,
-        Max = FinalBg
+        BombLight2,
+        Max = BombLight2
     }
 
     class PaletteModule : Module, IHBlankHandler
@@ -264,6 +265,11 @@ namespace ChompGame.MainGame.SceneModels
             DefinePalette(PaletteKey.BombLight,
               ColorIndex.Gray1,
               ColorIndex.Gray2,
+              ColorIndex.Yellow5);
+
+            DefinePalette(PaletteKey.BombLight2,
+              ColorIndex.BlueGray1,
+              ColorIndex.BlueGray2,
               ColorIndex.Yellow5);
 
             DefinePalette(PaletteKey.Player,

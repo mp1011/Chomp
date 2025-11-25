@@ -184,7 +184,7 @@ namespace ChompGame.MainGame.SceneModels
                 bg2: PaletteKey.CityBg,
                 fg1: PaletteKey.CityFg,
                 fg2: PaletteKey.Gray,
-                bomb: PaletteKey.Gray,
+                bomb: PaletteKey.BombLight2,
                 enemy1: PaletteKey.GreenEnemy,
                 enemy2: PaletteKey.Gray);
 
@@ -226,7 +226,7 @@ namespace ChompGame.MainGame.SceneModels
                 fg2: PaletteKey.BombLight,
                 bomb: PaletteKey.BombLight,
                 enemy1: PaletteKey.GreenEnemy,
-                enemy2: PaletteKey.Gray);
+                enemy2: PaletteKey.BlueGrayEnemy);
 
             _ = ThemeType.CityTrain;
             new Theme(memoryBuilder,

@@ -48,7 +48,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public bool IsPlayerOnPlatform => _playerOnPlatform.Value;
 
         protected override bool DestroyWhenFarOutOfBounds => false;
-        protected override bool AlwaysActive => _platformType.Value != PlatformType.Vanishing;
+        protected override bool AlwaysActive => false;
 
         public PlatformController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Platform, gameModule, memoryBuilder, SpriteTileIndex.Platform)
@@ -152,5 +152,7 @@ namespace ChompGame.MainGame.SpriteControllers
             
             return new CollisionInfo();
         }
+
+        public override string ToString() => $"{Status} {WorldSprite.X},{WorldSprite.Y}";
     }
 }

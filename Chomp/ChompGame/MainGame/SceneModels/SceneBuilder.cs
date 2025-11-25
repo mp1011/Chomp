@@ -690,7 +690,7 @@ namespace ChompGame.MainGame.SceneModels
                 theme: ThemeType.City,
                 spriteGroup: SpriteGroup.Normal,
                 enemy1: EnemyIndex.Lizard,
-                enemy2: EnemyIndex.Bird,
+                enemy2: EnemyIndex.Bird,                
                 bottom: 2,
                 top: 0,
                 upper: 1);

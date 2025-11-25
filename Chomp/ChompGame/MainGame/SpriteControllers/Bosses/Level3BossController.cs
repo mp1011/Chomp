@@ -656,24 +656,29 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             var leftEyeSprite = _leftEye.PrepareSprite(SpriteTileIndex.Enemy1);
             leftEyeSprite.Tile2Offset = 1;
             leftEyeSprite.FlipX = true;
+            leftEyeSprite.FlipY = false;
+
             _leftEye.XOffset = 14;
             _leftEye.YOffset = 8;
 
             var rightEyeSprite = _rightEye.PrepareSprite(SpriteTileIndex.Enemy1);
             rightEyeSprite.Tile2Offset = 1;
             rightEyeSprite.FlipX = false;
+            rightEyeSprite.FlipY = false;
             _rightEye.XOffset = 26;
             _rightEye.YOffset = 8;
 
             var leftJawSprite = _leftJaw.PrepareSprite(SpriteTileIndex.Enemy2);
             leftJawSprite.Tile2Offset = 0;
             leftJawSprite.FlipX = false;
+            leftJawSprite.FlipY = false;
             _leftJaw.XOffset = 16;
             _leftJaw.YOffset = 20;
 
             var rightJawSprite = _rightJaw.PrepareSprite(SpriteTileIndex.Enemy2);
             rightJawSprite.Tile2Offset = 0;
             rightJawSprite.FlipX = true;
+            rightJawSprite.FlipY = false;
             _rightJaw.XOffset = 26;
             _rightJaw.YOffset = 20;
 

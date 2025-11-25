@@ -12,7 +12,8 @@ namespace ChompGame.MainGame.SpriteControllers
     class TurretBulletController : ActorController, ICollidesWithPlayer, ICollidableSpriteController
     {
         private const byte STATUS_IDLE = 0;
-        private const byte STATUS_FIRE = 16;
+        private const byte STATUS_PREFIRE = 16;
+        private const byte STATUS_FIRE = 20;
         private const byte STATUS_EXPLODE = 60;
 
         private MaskedByte _state;
@@ -88,22 +89,30 @@ namespace ChompGame.MainGame.SpriteControllers
             if (_levelTimer.IsMod(timerMod))
                 _state.Value++;
 
-            if(_state.Value < STATUS_FIRE)
+            if (_state.Value < STATUS_PREFIRE)
             {
                 WorldSprite.Visible = false;
                 _motionController.Motion.XSpeed = 0;
                 _motionController.Motion.YSpeed = 0;
             }
-            else if(_state.Value == STATUS_FIRE)
+            else if (_state.Value == STATUS_PREFIRE)
             {
                 FireBullet();
             }
-            else if(_state.Value >= STATUS_EXPLODE)
+            else if (_state.Value < STATUS_FIRE)
+            {
+                WorldSprite.Visible = !WorldSprite.Visible;
+            }
+            else if (_state.Value >= STATUS_EXPLODE)
             {
                 WorldSprite.TileIndex = SpriteTileIndex.Explosion;
             }
 
-            _motionController.Update();
+            if (_state.Value >= STATUS_FIRE)
+            {
+                _motionController.Update();
+                WorldSprite.Visible = true;
+            }
 
             var collisionInfo = _collisionDetector.DetectCollisions(WorldSprite, _motionController.Motion);
             if (collisionInfo.XCorrection != 0 || collisionInfo.YCorrection != 0)            
