@@ -26,7 +26,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected TileModule _tileModule;
         protected PaletteModule _paletteModule;
         protected GameByteGridPoint _position;
-       
+
         protected WorldSprite _player;
         protected GameByte _internalTimer;
         protected MusicModule _musicModule;
@@ -45,7 +45,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public LevelBossController(ChompGameModule gameModule,
             WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers,
-            SystemMemoryBuilder memoryBuilder) 
+            SystemMemoryBuilder memoryBuilder)
             : base(SpriteType.LevelBoss, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _player = player;
@@ -60,7 +60,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _paletteModule = gameModule.PaletteModule;
             _position = gameModule.BossBackgroundHandler.BossPosition;
             _bossBackgroundHandler = gameModule.BossBackgroundHandler;
-                     
+
             var motionController = new ActorMotionController(gameModule, memoryBuilder, SpriteType.LevelBoss, WorldSprite);
             _motion = motionController.Motion;
 
@@ -71,6 +71,7 @@ namespace ChompGame.MainGame.SpriteControllers
             gameModule.CollissionDetector.BossBgHandling = true;
         }
 
+        protected override void HandleFall() { }
         protected override void BeforeInitializeSprite()
         {
             _position.X = 200;

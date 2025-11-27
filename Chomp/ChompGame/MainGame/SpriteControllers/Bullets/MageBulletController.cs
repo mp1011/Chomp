@@ -53,7 +53,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _state.Value++;
             _motion.Apply(WorldSprite);
 
-            if (_state.Value == 0)
+            if (_state.Value >= 180)
                 Destroy();
         }
 
@@ -61,7 +61,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             int speed = 30 + (_state.Value);
             if (speed > 50)
-                speed = 50;
+                speed = 80;
 
             _motion.TargetTowards(WorldSprite, _player.Center, speed);
         }

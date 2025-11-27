@@ -75,7 +75,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
               000000000";
 
 
-        protected override string BlankBossTiles => "0";
+        protected override string BlankBossTiles =>
+            @"000000000
+              000000000
+              000000000
+              000000000
+              000000000
+              000000000
+              000000000
+              000000000";
 
         protected override void BeforeInitializeSprite()
         {
@@ -670,6 +678,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         {
             if(_phase.Value < Phase.Dying1)
             {
+                _bulletControllers.Execute(p => p.Destroy());
                 _statusBar.AddToScore((uint)PointsForEnemy);
 
                 _phase.Value = Phase.Dying1;
@@ -717,7 +726,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 if (_bossBackgroundHandler.BossBgEffectValue < 255)
                 {                    
-                    _bossBackgroundHandler.BossBgEffectValue++;                    
+                    _bossBackgroundHandler.BossBgEffectValue++;
+                    if (_bossBackgroundHandler.BossBgEffectValue == 255)
+                        EraseBossTiles();
+
                     _leftHorn.XOffset -= 1;
                     _rightHorn.XOffset += 1;
 
@@ -726,6 +738,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         _leftHorn.Sprite.Visible = false;
                         _rightHorn.Sprite.Visible = false;
                     }
+
+                    if (_levelTimer.Value.IsMod(8))
+                        _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                 }
                 else
                 {
@@ -736,10 +751,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     if(_levelTimer.Value.IsMod(8))
                         _stateTimer.Value++;
 
-                    if (_stateTimer.Value == 8)
-                    {
+                    if (_stateTimer.Value == 15)
+                    { 
                         Destroy();
-                        _exitsModule.GotoNextLevel();
+                       _exitsModule.GotoNextLevel();
                     }
                 }
             }
@@ -786,7 +801,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (_phase.Value < Phase.LeapOut)
                 return false;
 
-            return bomb.Bounds.Intersects(new Rectangle(WorldSprite.X - 4, WorldSprite.Y, 8, 16));
+            return bomb.Bounds.Intersects(new Rectangle(WorldSprite.X - 4, WorldSprite.Y, 8, 8));
         }
 
         public override BombCollisionResponse HandleBombCollision(WorldSprite player)
@@ -846,7 +861,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             bullet.AcceleratedMotion.YAcceleration = 3;
             bullet.AcceleratedMotion.XAcceleration = 3;
-            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center, 50);
+            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center, 60);
 
             return bullet;
         }

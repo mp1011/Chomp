@@ -76,11 +76,13 @@ namespace ChompGame.MainGame.SpriteControllers
             }
 
             bool doJump = _levelTimer.Value == 0 &&
-                        _player.Center.X > WorldSprite.Center.X - 16 &&
-                        _player.Center.X < WorldSprite.Center.X + 16;
+                        _player.Center.X > WorldSprite.Center.X - 20 &&
+                        _player.Center.X < WorldSprite.Center.X + 20;
 
             doJump = doJump || _player.Bounds.Right > WorldSprite.Bounds.Left && _player.Bounds.Left < WorldSprite.Bounds.Right;
 
+            if (_stateTimer.Value > 0)
+                doJump = false;
 
             if (_stateTimer.Value == 0 && collision.IsOnGround && doJump)
             {

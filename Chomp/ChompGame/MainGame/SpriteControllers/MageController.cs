@@ -63,7 +63,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private void PositionNearPlayer()
         {
-            WorldSprite.Y = _player.Y - (4 + (_rng.Generate(3) * 2));
+            WorldSprite.Y = _player.Y - (10 + (_rng.Generate(3) * 2));
             WorldSprite.X = _player.X - 30 + (_rng.Generate(4) * 4);
 
             if (WorldSprite.Y < _worldScroller.ViewPane.Top)
@@ -158,7 +158,9 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if (_phase.Value == Phase.Attack)
             {
-                _motion.YAcceleration = 5;
+                _motion.TargetXSpeed = 0;
+                _motion.TargetYSpeed = 0;
+
                 WorldSprite.Visible = true;
                 CollisionEnabled = true;
 
