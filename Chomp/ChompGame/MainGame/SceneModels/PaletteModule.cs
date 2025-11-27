@@ -844,7 +844,7 @@ namespace ChompGame.MainGame.SceneModels
                 CyclePalette2(coinPallete);
 
 
-                if(_currentScene.Theme == ThemeType.OceanAutoscroll)
+                if(_currentScene.Theme == ThemeType.OceanAutoscroll || _currentScene.Theme == ThemeType.MistAutoscroll)
                 {
                     var p = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Platform);
                     byte c = (byte)p.GetColorIndex(3);

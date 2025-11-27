@@ -425,12 +425,14 @@ namespace ChompGame.MainGame.SpriteControllers
                 }
             }
 
-            if(_phase.Value < Phase.Dying)            
+            if (_phase.Value < Phase.Dying)
+            {
                 SetPhase(Phase.Dying);
+                _statusBar.AddToScore((uint)PointsForEnemy);
+            }
 
             if (_phase.Value == Phase.Dying)
             {
-                _statusBar.AddToScore((uint)PointsForEnemy);
 
                 _music.CurrentSong = MusicModule.SongName.None;
                 if (_levelTimer.IsMod(8))

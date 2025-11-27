@@ -269,6 +269,7 @@ namespace ChompGame.MainGame.SceneModels
             _transitionLevels[(int)Level.Level6_13_Techbase7] = true;
             _transitionLevels[(int)Level.Level6_17_Midboss] = true;
             _transitionLevels[(int)Level.Level6_18_Techbase11] = true;
+            _transitionLevels[(int)Level.Level6_36_TechbaseEnd] = true;
             _transitionLevels[(int)Level.Level6_37_Boss] = true;
             _transitionLevels[(int)Level.Level7_1_GlitchCore] = true;
             _transitionLevels[(int)Level.Level7_9_TotalGlitch] = true;
@@ -2119,7 +2120,7 @@ namespace ChompGame.MainGame.SceneModels
                 EnemyIndex.Mage,
                 EnemyIndex.Ufo,
                 SpriteGroup.Normal,
-                2,
+                0,
                 1,
                 0,
                 1,
@@ -4630,7 +4631,7 @@ namespace ChompGame.MainGame.SceneModels
 
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 3, delay: 5, variation: UfoController.Hook, scene),
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.Hook, scene),
-                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Hook, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Hook, scene),
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 10, delay: 5, variation: UfoController.Hook, scene),
 
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 15, variation: PrizeController.Coin3, scene),
@@ -4648,7 +4649,7 @@ namespace ChompGame.MainGame.SceneModels
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.SPath, scene),
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
 
-                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 6, delay: 15, variation: PrizeController.Coin3, scene),
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene)

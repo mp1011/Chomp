@@ -198,6 +198,8 @@ namespace ChompGame.MainGame.SpriteControllers
                 {
                     _stateTimer.Value = 0;
                     _phase.Value = Phase.Wait;
+                    if (_gameModule.CurrentScene.Theme == ThemeType.MistAutoscroll)
+                        Destroy();
                 }
             }
             else if (_phase.Value == Phase.Wait)

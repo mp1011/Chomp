@@ -159,6 +159,19 @@ namespace ChompGame.MainGame
                 {
                     int cloudY = _coreGraphicsModule.ScreenPoint.Y - cloudEnd;
                     _tileModule.Scroll.X = (byte)(_autoScroll.Value * ((-cloudY + 5) / 16.0));
+
+                    if(cloudY == -32)
+                    {
+                        var palette = _coreGraphicsModule.GetBackgroundPalette(BgPalette.Background);
+                        _gameModule.PaletteModule.LoadPalette(_gameModule.PaletteModule.BgPalette1.Address, palette);
+                    }
+                    else if (cloudY.IsMod(3))
+                    {
+                        var palette = _coreGraphicsModule.GetBackgroundPalette(BgPalette.Background);
+                        _gameModule.PaletteModule.Darken(palette, 1);
+                        _gameModule.PaletteModule.Darken(palette, 2);
+                        _gameModule.PaletteModule.Darken(palette, 3);
+                    }
                 }
                 else if (_coreGraphicsModule.ScreenPoint.Y >= cloudEnd)
                 {

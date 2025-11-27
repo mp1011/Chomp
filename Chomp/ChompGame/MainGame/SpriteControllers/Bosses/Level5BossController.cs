@@ -357,15 +357,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.Attack2)
             {
-                if(_levelTimer.IsMod(16))
-                {
-                    if(_stateTimer.Value < 8)
-                        CreateAimedBullet();
+                if (_levelTimer.IsMod(32))
+                { 
                     _stateTimer.Value++;
 
                     if (_stateTimer.Value == 0)
                         SetPhase(Phase.Drop);
                 }
+
+                if (_levelTimer.IsMod(16))
+                {
+                    if (_stateTimer.Value < 12)
+                        CreateAimedBullet();
+                }
+
             }
             else if(_phase.Value == Phase.Drop)
             {

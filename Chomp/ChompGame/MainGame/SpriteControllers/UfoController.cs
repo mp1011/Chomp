@@ -25,11 +25,11 @@ namespace ChompGame.MainGame.SpriteControllers
         private LowNibble _variation;
         private HighNibble _extra;
         protected override int PointsForEnemy => 250;
-        protected override bool DestroyWhenFarOutOfBounds => false;
+        protected override bool DestroyWhenFarOutOfBounds => true;
 
         protected override bool DestroyWhenOutOfBounds => false;
 
-        protected override bool AlwaysActive => true;
+        protected override bool AlwaysActive => false;
 
         public byte Variation { get => _variation.Value; set => _variation.Value = value; }
 
