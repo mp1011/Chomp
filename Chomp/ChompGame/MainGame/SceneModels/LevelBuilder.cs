@@ -1235,16 +1235,16 @@ namespace ChompGame.MainGame.SceneModels
 
                     break;
                 default:
-                    bullets = new EnemyOrBulletSpriteControllerPool<BossBulletController>(
+                    var cBullets = new EnemyOrBulletSpriteControllerPool<ChompEnemyBulletController>(
                           15,
                           _gameModule.SpritesModule,
-                          () => new BossBulletController(_gameModule, memoryBuilder, destroyOnCollision: true));
+                          () => new ChompEnemyBulletController(_gameModule, memoryBuilder));
 
-                    spritePools[extraIndex] = bullets;
+                    spritePools[extraIndex] = cBullets;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompEnemyController>(
                             size: 4,
                             spritesModule: _gameModule.SpritesModule,
-                            () => new ChompEnemyController(playerController.WorldSprite, bullets, _gameModule, memoryBuilder));
+                            () => new ChompEnemyController(playerController.WorldSprite, cBullets, _gameModule, memoryBuilder));
 
                     break;
             }

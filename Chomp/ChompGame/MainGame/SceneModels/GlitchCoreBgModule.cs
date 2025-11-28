@@ -89,7 +89,7 @@ namespace ChompGame.MainGame.SceneModels
                 int x = (_levelDestructTimer.Value - 4) * 2;
                 int y = _scroller.LevelNameTable.Height - 4;
 
-                byte delay = 16;
+                byte delay = 18;
                 if (x >= _scroller.LevelNameTable.Width - 2)
                     delay = 28;
 
@@ -145,6 +145,8 @@ namespace ChompGame.MainGame.SceneModels
                 _scroller.OffsetCamera(_rng.Generate(1), _rng.Generate(1));
 
                 if (_levelDestructTimer.Value == 2 && _timer.IsMod(8))
+                    _audioService.PlaySound(ChompAudioService.Sound.Lightning);
+                else if(_levelDestructTimer.Value > 2 && _timer.IsMod(16) && _rng.Generate(2) > 0)
                     _audioService.PlaySound(ChompAudioService.Sound.Lightning);
 
             }

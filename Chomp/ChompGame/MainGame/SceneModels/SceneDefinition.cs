@@ -185,7 +185,7 @@ namespace ChompGame.MainGame.SceneModels
                     ScrollStyle.Horizontal => FallCheck.ScreenHeight,
                     ScrollStyle.None => FallCheck.ScreenHeight,
                     ScrollStyle.Vertical => FallCheck.None,
-                    _ => IsLevelBossScene ? FallCheck.NametableHeight : FallCheck.None };
+                    _ => IsLevelBossScene || Theme == ThemeType.Final ? FallCheck.NametableHeight : FallCheck.None };
 
         public IEnumerable<SpriteType> Sprites
         {

@@ -14,7 +14,7 @@ namespace ChompGame.MainGame.SpriteControllers
     {
         private const int Speed = 20;
         private readonly PaletteModule _paletteModule;
-        private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
+        private readonly EnemyOrBulletSpriteControllerPool<ChompEnemyBulletController> _bullets;
         private readonly Specs _specs;
         private WorldSprite _player;
         private CoreGraphicsModule _graphics;
@@ -23,7 +23,7 @@ namespace ChompGame.MainGame.SpriteControllers
         protected override bool AlwaysActive => true;
 
         public ChompEnemyController(WorldSprite player,
-            EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
+            EnemyOrBulletSpriteControllerPool<ChompEnemyBulletController> bullets,
             ChompGameModule gameModule, 
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
@@ -47,7 +47,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _hitPoints.Value = 2;
+            _hitPoints.Value = 1;
             _motion.XAcceleration = 5;
             _motion.YAcceleration = 5;
         }
@@ -62,24 +62,23 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionController.Update();
 
-            if(_levelTimer.IsMod(8))
+            if(_levelTimer.IsMod(16))
             {
                 _stateTimer.Value++;
 
-                int bspeed = 30;
                 if(_stateTimer.Value == 2)
                 {
-                    FireBullet(-bspeed, -bspeed);
-                    FireBullet(bspeed, -bspeed);
-                    FireBullet(-bspeed, bspeed);
-                    FireBullet(bspeed, bspeed);
+                    FireBullet(0);
+                    FireBullet(90);
+                    FireBullet(180);
+                    FireBullet(270);
                 }
                 if (_stateTimer.Value == 6)
                 {
-                    FireBullet(-bspeed, 0);
-                    FireBullet(bspeed, 0);
-                    FireBullet(0, -bspeed);
-                    FireBullet(0, bspeed);
+                    FireBullet(45);
+                    FireBullet(135);
+                    FireBullet(225);
+                    FireBullet(315);
                 }
             }
         }
@@ -98,30 +97,24 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if (WorldSprite.Y < 8)
                 return Speed;
-            else if (WorldSprite.Y > _player.Y)
+            else if (WorldSprite.Y > _player.Y - 8)
                 return -Speed;
             else
                 return _rng.Generate(1) == 0 ? -Speed : Speed;
         }
 
-        private void FireBullet(int x, int y)
+        private void FireBullet(int angle)
         {
             var bullet = _bullets.TryAddNew();
             if (bullet == null)
                 return;
 
-            bullet.DestroyOnTimer = true;
-            bullet.DestroyOnCollision = false;
-
+         
             bullet.WorldSprite.X = WorldSprite.X + 4;
             bullet.WorldSprite.Y = WorldSprite.Y + 4;
             _audioService.PlaySound(ChompAudioService.Sound.Fireball);
 
-
-            bullet.AcceleratedMotion.YAcceleration = 2;
-            bullet.AcceleratedMotion.XAcceleration = 2;
-            bullet.AcceleratedMotion.TargetXSpeed = x;
-            bullet.AcceleratedMotion.TargetYSpeed = y;
+            bullet.Angle = angle;
         }
 
         private void FadeIn()
@@ -132,22 +125,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _paletteModule.FadeColor(spritePalette, targetSpritePalette, 1);
             _paletteModule.FadeColor(spritePalette, targetSpritePalette, 2);
             _paletteModule.FadeColor(spritePalette, targetSpritePalette, 3);
-        }
-
-        private void CreateExplosion()
-        {
-            var bullet = _bullets.TryAddNew();
-            if (bullet == null)
-                return;
-
-            bullet.EnsureInFrontOf(this);
-            bullet.WorldSprite.Center = WorldSprite.Center.Add(
-                _rng.RandomItem(-4, -2, 0, 2, 4),
-                _rng.RandomItem(-4, 2, 0, 2, 4));
-
-            bullet.Motion.YSpeed = 0;
-            bullet.Motion.XSpeed = 0;
-            bullet.Explode();
         }
     }
 }

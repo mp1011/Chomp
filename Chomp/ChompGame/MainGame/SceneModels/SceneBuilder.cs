@@ -274,6 +274,7 @@ namespace ChompGame.MainGame.SceneModels
             _transitionLevels[(int)Level.Level7_1_GlitchCore] = true;
             _transitionLevels[(int)Level.Level7_9_TotalGlitch] = true;
             _transitionLevels[(int)Level.Level7_16_RunRoom] = true;
+            _transitionLevels[(int)Level.Level7_33_Final17_Chamber] = true;
             _transitionLevels[(int)Level.Level7_40_FinalBoss] = true;
             _transitionLevels[(int)Level.Level7_41_FinalBossEpilogue] = true;
         }
@@ -5161,48 +5162,38 @@ namespace ChompGame.MainGame.SceneModels
                         (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_17_Final1, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-                    (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 36, y: 4, definition: scene),
                     (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_18_Final2, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                   (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
-                  (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 28, y: 4, definition: scene),
                   (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_19_Final3, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
-                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
                 (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
                 (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_20_Final4, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_21_Final5_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_22_Final6_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_23_Final7_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_24_Final8_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
              (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_25_Final9_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_26_Final10_Chamber, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-              (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 2, definition: scene),
               (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
 
@@ -5236,20 +5227,16 @@ namespace ChompGame.MainGame.SceneModels
              (b, scene) => new ExitScenePart(b, ExitType.Right, -1, scene));
 
             AddLevel(Level.Level7_29_Final13, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
             (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
-            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
             (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
             AddLevel(Level.Level7_30_Final14, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-           (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
            (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
            (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));
 
 
             AddLevel(Level.Level7_31_Final15, builder, specs, ref destroyBitsNeeded, ref maxDestroyBitsNeeded,
-               (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 18, y: 4, definition: scene),
                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 38, y: 4, definition: scene),
                (b, scene) => new SpriteScenePart(b, ScenePartType.EnemyType1, x: 58, y: 4, definition: scene),
                (b, scene) => new ExitScenePart(b, ExitType.Right, 1, scene));

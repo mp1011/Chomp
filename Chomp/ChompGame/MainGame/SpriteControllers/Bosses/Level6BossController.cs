@@ -299,7 +299,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(_phase.Value == Phase.ForceScroll)
             {
-                if (_levelTimer.IsMod(16))
+                if (_levelTimer.IsMod(18))
                     RainBullet();
 
                 if(_levelTimer.IsMod(24))
@@ -362,7 +362,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     if (_levelTimer.IsMod(24))
                     {
                         _stateTimer.Value++;
-                        FireBulletFromRight();
+                        FireBulletFromTop();
                     }
                 }
 
@@ -389,7 +389,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (_levelTimer.IsMod(8))
                 {
                     _stateTimer.Value++;
-                    if(_stateTimer.Value <= 5)
+                    if(_stateTimer.Value <= 4)
                     {
                         FireArcBullet();
                     }
@@ -489,7 +489,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             bullet.AcceleratedMotion.TargetYSpeed = 80; 
         }
 
-        private void FireBulletFromRight()
+        private void FireBulletFromTop()
         {
             var bullet = _bulletControllers.TryAddNew();
             if (bullet == null)
@@ -498,12 +498,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             bullet.DestroyOnCollision = true;
             bullet.DestroyOnTimer = true;
 
-            bullet.WorldSprite.X = _worldScroller.ViewPane.Right;
-            bullet.WorldSprite.Y = 64 + _rng.Generate(4) * 4;
+            bullet.WorldSprite.X = 24 + (4 * _rng.Generate(4));
+            bullet.WorldSprite.Y = 64;
 
 
-            bullet.AcceleratedMotion.SetYSpeed(30);
-            bullet.AcceleratedMotion.SetXSpeed(-40);
+            bullet.AcceleratedMotion.SetYSpeed(60);
+            bullet.AcceleratedMotion.SetXSpeed(2);
         }
 
         private void FireFastBullet()
@@ -515,13 +515,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             bullet.DestroyOnCollision = true;
             bullet.DestroyOnTimer = true;
 
-            bullet.WorldSprite.X = WorldSprite.X + 16;
+            bullet.WorldSprite.X = WorldSprite.X + 16 + _rng.Generate(3)*2;
             bullet.WorldSprite.Y = WorldSprite.Y + 4;
             _audioService.PlaySound(ChompAudioService.Sound.Fireball);
 
 
-            bullet.AcceleratedMotion.SetYSpeed(0);
-            bullet.AcceleratedMotion.SetXSpeed(127);
+            bullet.AcceleratedMotion.SetYSpeed(-100);
+            bullet.AcceleratedMotion.SetXSpeed(0);
         }
 
         private void FireArcBullet()
@@ -741,7 +741,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if (_phase.Value <= Phase.BossAppear)
                 return false;
 
-            return bomb.Bounds.Intersects(_eye1.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye2.WorldSprite.Bounds);
+            if (_phase.Value == Phase.ForceScrollChase)
+                return false;
+
+            return bomb.Bounds.Intersects(_eye1.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye2.WorldSprite.Bounds) ||
+                   bomb.Bounds.Intersects(_eye3.WorldSprite.Bounds) || bomb.Bounds.Intersects(_eye4.WorldSprite.Bounds);
         }
 
         public override bool CollidesWithPlayer(PlayerController player)
