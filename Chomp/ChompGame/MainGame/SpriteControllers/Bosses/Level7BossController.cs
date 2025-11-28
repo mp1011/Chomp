@@ -207,6 +207,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye1.Sprite.Palette = SpritePalette.Fire;
                 _eye2.Sprite.Palette = SpritePalette.Fire;
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2End;
+                ResetBombs();
             }
         }
 
@@ -641,15 +642,47 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     FadeIn(false);
 
                 _motion.TargetXSpeed = 0;
+
+                // move to upper position
                 if (_stateTimer.Value == 0)
                 {
                     _jawOpen.Value = false;
                     MoveBossToY(70);
 
                     if (Math.Abs(WorldSprite.Y - 70) < 2)
+                    {
                         _stateTimer.Value++;
+                        _extraVar.Value = 0;
+                    }
                 }
-                else if (_stateTimer.Value == 1)
+                // flash before attack
+                else if (_stateTimer.Value == 1 || _stateTimer.Value == 4)
+                {
+                    if(_extraVar.Value == 0)
+                    {
+                        var bossPalette = _paletteModule.BgPalette2;
+                        bossPalette.SetColor(1, ColorIndex.Yellow1);
+                        bossPalette.SetColor(2, ColorIndex.Yellow2);
+                        bossPalette.SetColor(3, ColorIndex.Yellow3);
+                        _extraVar.Value++;
+                    }
+                    else
+                    {
+                        if(_levelTimer.IsMod(16))
+                        {
+                            FadeIn(false);
+                            _extraVar.Value++;
+                        }
+
+                        if(_extraVar.Value == 3)
+                        {
+                            _extraVar.Value = 0;
+                            _stateTimer.Value++;
+                        }
+                    }
+                }
+                // beam attack
+                else if (_stateTimer.Value == 2)
                 {
                     if (_levelTimer.IsMod(16))
                         _jawOpen.Value = !_jawOpen.Value;
@@ -661,11 +694,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                         _extraVar.Value++;
 
-                        if (_extraVar.Value == 4)
-                            _stateTimer.Value = 2;
+                        if (_extraVar.Value == 3)
+                            _stateTimer.Value++;
                     }
                 }
-                else if (_stateTimer.Value == 2)
+                // move to lower position
+                else if (_stateTimer.Value == 3)
                 {
                     _jawOpen.Value = false;
                     if (MoveBossToY(90))
@@ -675,13 +709,14 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                         if (_extraVar.Value >= 8)
                         {
-                            _stateTimer.Value = 3;
+                            _stateTimer.Value++;
                             _extraVar.Value = 0;
                         }
                     }
                     _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLower;
                 }
-                else if (_stateTimer.Value == 3)
+                // lower beam attack
+                else if (_stateTimer.Value == 5)
                 {
                     if (_levelTimer.IsMod(16))
                         _jawOpen.Value = !_jawOpen.Value;
@@ -693,7 +728,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         _audioService.PlaySound(ChompAudioService.Sound.Lightning);
                         _extraVar.Value++;
 
-                        if (_extraVar.Value >= 4)
+                        if (_extraVar.Value >= 3)
                         {
                             if(_phase.Value == Phase.BeamAttack)
                                 SetPhase(Phase.Attack1);
@@ -1128,6 +1163,9 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _audioService.PlaySound(ChompAudioService.Sound.Break);         
             _hitPoints.Value--;
 
+            if (_hitPoints.Value == 3 || _hitPoints.Value == 5)
+                _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
+
             if(_phase.Value < Phase.BeginPhase2)
             {
                 if (_hitPoints.Value == 0)
@@ -1186,10 +1224,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         public override bool CollidesWithPlayer(PlayerController player)
         {
-            //if (_phase.Value <= Phase.BossAppear)
-            //    return false;
+            if (_phase.Value != Phase.BeamAttack && _phase.Value != Phase.BeamAttack2)
+                return false;
 
-            return false; //todo
+            if (_bossBackgroundHandler.BossBgEffectType != BackgroundEffectType.FinalBossLowerBeam)
+                return false;
+
+            var relY = player.WorldSprite.Y - WorldSprite.Y;
+
+            return relY >= 16 && relY <= 24;
         }
 
         private void EnsureBombOrCoins()
