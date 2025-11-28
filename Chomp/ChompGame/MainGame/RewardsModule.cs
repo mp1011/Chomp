@@ -86,6 +86,20 @@ namespace ChompGame.MainGame
             }
         }
 
+        public void GiveHealth(SceneSpriteControllers sceneSpriteControllers)
+        {
+            _audioService.PlaySound(ChompAudioService.Sound.Reward);
+
+            var prize = sceneSpriteControllers.PrizeControllers.TryAddNew();
+            if (prize != null)
+            {
+                prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 16;
+                prize.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
+
+                _rewardSpriteIndex.Value = prize.SpriteIndex;
+            }
+        }
+
         public bool CheckExtraLife(uint scoreBefore, uint scoreAfter)
         {
             for (int i = 0; i < _extraLifeScores.Length; i++)

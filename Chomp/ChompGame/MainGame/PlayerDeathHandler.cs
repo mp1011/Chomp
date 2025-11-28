@@ -42,7 +42,6 @@ namespace ChompGame.MainGame
                     if (_statusBar.Lives > 0)
                     { 
                         _gameState.Value = ChompGameModule.GameState.RestartScene;
-                        _gameModule.ScenePartsDestroyed.Reset(_gameModule.GameSystem.Memory);
                         SetLastTransitionLevel();
                     }
                     else

@@ -500,7 +500,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_33_Final17_Chamber;
+            _currentLevel.Value = Level.Level7_40_FinalBoss;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -514,7 +514,10 @@ namespace ChompGame.MainGame
             _statusBar.Health = StatusBar.FullHealth;
             _gameState.Value = GameState.LevelCard;
             _levelCard.Reset();
-            _scenePartsDestroyed.Reset(GameSystem.Memory);
+
+            if(_currentLevel.Value != Level.Level7_40_FinalBoss)
+                _scenePartsDestroyed.Reset(GameSystem.Memory);
+
             _lastExitType.Value = _lastTransitionExitType.Value;
         }
 

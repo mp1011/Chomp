@@ -32,9 +32,9 @@ namespace ChompGame.MainGame
 
         public const bool QuickReward = false;
 
-        public const bool LevelSkipEnabled = false;
+        public const bool LevelSkipEnabled = true;
 
-        public const bool InfiniteHp = false;
+        public const bool InfiniteHp = false ;
 
         public const bool OneHp = false;
 

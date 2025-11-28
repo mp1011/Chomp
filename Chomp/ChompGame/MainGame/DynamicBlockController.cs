@@ -1,5 +1,6 @@
 ﻿using ChompGame.Data;
 using ChompGame.Data.Memory;
+using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Helpers;
 using ChompGame.MainGame.SceneModels;
@@ -193,15 +194,37 @@ namespace ChompGame.MainGame
 
                 if (block.Type != DynamicBlockType.Coin)
                     continue;
-
+                
                 block.State.TopLeft = true;
-                block.State.TopRight = true;
-                block.State.BottomLeft = true;
+                block.State.TopRight = false;
+                block.State.BottomLeft = false; 
                 block.State.BottomRight = true;
                 _gameModule.WorldScroller.ModifyTiles((t, a) => SetTiles(block, t, a));
       
                 address += block.ByteLength;
             }
+        }
+
+        public bool AnyCoins()
+        {
+            int address = _blockCount.Address + 1;
+
+            for (int index = 0; index < _blockCount.Value; index++)
+            {
+                DynamicBlock block = new DynamicBlock(_gameModule.GameSystem.Memory, address, _scene, _gameModule.Specs);
+
+                if (block.Type != DynamicBlockType.Coin)
+                    continue;
+
+                if (block.State.TopLeft)
+                    return true;
+                if (block.State.BottomRight)
+                    return true;
+
+                address += block.ByteLength;
+            }
+
+            return false;
         }
 
         public void PositionFreeCoinBlocksNearPlayer(byte tileX, byte tileY)
