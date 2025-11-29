@@ -293,6 +293,17 @@ namespace ChompGame.MainGame.SpriteModels
                animationStyle: AnimationStyle.NoAnimation,
                collidesWithBackground: false,
                flipXWhenMovingLeft: false);
+
+            _ = SpriteType.Gem;
+            new SpriteDefinition(memoryBuilder,
+               secondTileOffset: 1,
+               sizeX: 1,
+               sizeY: 1,
+               gravityStrength: GravityStrength.None,
+               movementSpeed: MovementSpeed.VerySlow,
+               animationStyle: AnimationStyle.NoAnimation,
+               collidesWithBackground: false,
+               flipXWhenMovingLeft: false);
         }
     }
 }

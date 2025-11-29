@@ -23,6 +23,9 @@ namespace ChompGame.MainGame.SpriteControllers
         private CoreGraphicsModule _graphics;
         private BossPart _eye1, _eye2;
         private GameByte _rotation;
+
+        private EnemyOrBulletSpriteControllerPool<GemSpriteController> _gemControllers;
+
         protected override int PointsForEnemy => 1000;
 
         enum Phase : byte 
@@ -43,10 +46,12 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public ChompFinalBossController(WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BossBulletController> bullets,
-            ChompGameModule gameModule, 
+            ChompGameModule gameModule,
+            EnemyOrBulletSpriteControllerPool<GemSpriteController> gems,
             SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
+            _gemControllers = gems;
             _graphics = gameModule.GameSystem.CoreGraphicsModule;
             _paletteModule = gameModule.PaletteModule;
             _exitModule = gameModule.ExitsModule;
@@ -179,9 +184,9 @@ namespace ChompGame.MainGame.SpriteControllers
             else if(_phase.Value == Phase.Attack1)
             {
                 if (_stateTimer.Value < 8)
-                    MoveToward(_player.X + 16, _player.Y - 24, 16);
+                    MoveToward(_player.X + 16, _player.Y - 28, 16);
                 else
-                    MoveToward(_player.X - 16, _player.Y - 24, 16);
+                    MoveToward(_player.X - 16, _player.Y - 28, 16);
 
                 if (_levelTimer.IsMod(32))
                 {
@@ -397,6 +402,12 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.X = 44;
                 WorldSprite.Y = 90;
                 SetupBossParts();
+
+                for(int i = 0; i < 8; i++)
+                {
+                    var gem = _gemControllers.TryAddNew();
+                    gem.Index = (byte)i;
+                }
 
             }
         }

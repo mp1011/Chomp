@@ -2703,7 +2703,7 @@ namespace ChompGame.MainGame.SceneModels
             SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.FinalBoss);
 
             _ = Level.Level7_41_FinalBossEpilogue;
-            SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.FinalBoss);
+            SceneDefinition.BossScene(memoryBuilder, specs, ThemeType.FinalBossEnd);
 
         }
 

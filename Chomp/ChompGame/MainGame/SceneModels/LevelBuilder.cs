@@ -1227,11 +1227,14 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.SpritesModule,
                         () => new Boss6BulletController(_gameModule, memoryBuilder));
 
+                    var gemControllers = new EnemyOrBulletSpriteControllerPool<GemSpriteController>(8, _gameModule.SpritesModule, () => 
+                    new GemSpriteController(_gameModule, playerController, bossBulletControllers, memoryBuilder));
                     spritePools[extraIndex] = bossBulletControllers;
+                    spritePools[extraIndex + 1] = gemControllers;
                     spritePools[enemyIndex] = new EnemyOrBulletSpriteControllerPool<ChompFinalBossController>(
                             size: 1,
                             spritesModule: _gameModule.SpritesModule,
-                            () => new ChompFinalBossController(playerController.WorldSprite, bossBulletControllers, _gameModule, memoryBuilder));
+                            () => new ChompFinalBossController(playerController.WorldSprite, bossBulletControllers, _gameModule, gemControllers, memoryBuilder));
 
                     break;
                 default:

@@ -500,7 +500,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_40_FinalBoss;
+            _currentLevel.Value = Level.Level7_41_FinalBossEpilogue;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

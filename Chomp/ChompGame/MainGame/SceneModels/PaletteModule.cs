@@ -84,14 +84,14 @@ namespace ChompGame.MainGame.SceneModels
         FinalFg,
         FinalBg,
         BombLight2,
-        Max = BombLight2
+        Gem,
+        Max = Gem
     }
 
     class PaletteModule : Module, IHBlankHandler
     {
         private GameBit _bossBgHandling;
         private int _paletteAddress;
-        private ChompGameModule _gameModule;
         private readonly CoreGraphicsModule _graphicsModule;
         private GameByte _timer;
         private SceneDefinition _currentScene;
@@ -494,6 +494,12 @@ namespace ChompGame.MainGame.SceneModels
            ColorIndex.DarkGray2,
            ColorIndex.Gray1);
 
+            DefinePalette(PaletteKey.Gem,
+             ColorIndex.Black,
+             ColorIndex.White,
+             ColorIndex.Blue3,
+             ColorIndex.Blue1);
+
         }
         public void SetScene(SceneDefinition sceneDefinition, Level level, SystemMemory memory, GameBit bossBgHandling)
         {
@@ -844,7 +850,13 @@ namespace ChompGame.MainGame.SceneModels
                 CyclePalette2(coinPallete);
 
 
-                if(_currentScene.Theme == ThemeType.OceanAutoscroll || _currentScene.Theme == ThemeType.MistAutoscroll)
+                if(_currentScene.Theme == ThemeType.FinalBossEnd)
+                {
+                    var gemPalette = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Enemy2);
+                    CyclePalette3(gemPalette);
+                }
+
+                if (_currentScene.Theme == ThemeType.OceanAutoscroll || _currentScene.Theme == ThemeType.MistAutoscroll)
                 {
                     var p = GameSystem.CoreGraphicsModule.GetSpritePalette(SpritePalette.Platform);
                     byte c = (byte)p.GetColorIndex(3);

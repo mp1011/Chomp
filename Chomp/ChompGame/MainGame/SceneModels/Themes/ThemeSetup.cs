@@ -74,7 +74,7 @@ namespace ChompGame.MainGame.SceneModels.Themes
                 ThemeType.GlitchCore => new GlitchCoreThemeSetup(chompGameModule),
                 ThemeType.Final => new FinalAreaThemeSetup(chompGameModule),
                 ThemeType.FinalBoss => new FinalBossThemeSetup(chompGameModule),
-
+                ThemeType.FinalBossEnd => new FinalBossThemeSetup(chompGameModule),
                 _ => throw new NotImplementedException()
             };
 

@@ -30,7 +30,8 @@ namespace ChompGame.MainGame.SpriteModels
         BossLeg,
         BossHorn,
         Boulder,
-        Ufo, //25   
+        Ufo, 
+        Gem, // 26
         Max=31
     }
 
