@@ -164,12 +164,13 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.Y + 0 + _rng.RandomItem(-8, -4, 0, 4, 8));            
         }
 
-        protected void CreateExplosion(int x, int y)
+        protected void CreateExplosion(int x, int y, bool decorative=false)
         {
             var explosion = _bulletControllers.TryAddNew();
             if (explosion != null)
             {
                 explosion.Explode();
+                explosion.CollisionEnabled = !decorative;
                 explosion.WorldSprite.X = x;
                 explosion.WorldSprite.Y = y;
             }

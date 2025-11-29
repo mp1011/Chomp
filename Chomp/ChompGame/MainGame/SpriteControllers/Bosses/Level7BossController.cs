@@ -61,7 +61,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             BeamAttack,
             Attack2,
             BeamAttack2,
-            Dying
+            Dying,
+            Dead
         }
 
         protected override int BossHP => 7;
@@ -106,7 +107,21 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _eye2.UpdatePosition(WorldSprite);
         }
 
-        protected override string BlankBossTiles => "0";
+        protected override string BlankBossTiles =>
+            @"0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000
+              0000000000000000";
 
         protected override void BeforeInitializeSprite()
         {
@@ -208,6 +223,10 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _eye2.Sprite.Palette = SpritePalette.Fire;
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2End;
                 ResetBombs();
+            }
+            else if(p == Phase.Dead)
+            {
+                EraseBossTiles();                
             }
         }
 
@@ -784,10 +803,19 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (_phase.Value == Phase.Dying)
             {
-                if (_levelTimer.IsMod(64) && _stateTimer.Value < 15)
-                    _stateTimer.Value++;
+                int jawDestroyTime = 6;
 
-                int jawDestroyTime = 8;
+                if (_levelTimer.IsMod(64) && _stateTimer.Value < 15)
+                { 
+                    _stateTimer.Value++;
+                    if (_stateTimer.Value == jawDestroyTime)
+                    {
+                        EraseJawTiles();
+                        _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+                        _bossBackgroundHandler.BossBgEffectValue = 0;
+                    }
+                }
+
                 _motion.TargetXSpeed = 0;
                 _motion.TargetYSpeed = 0;
 
@@ -806,15 +834,53 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     }
                 }
 
-                if (_stateTimer.Value >= 12)
+                if (_stateTimer.Value >= jawDestroyTime)
                 {
-                    if (_levelTimer.IsMod(16))
-                        FadeOut();
-                }
-                else if(_stateTimer.Value == 15)
-                {
-                    FadeOut();
-                    EraseBossTiles();
+                    if (_levelTimer.IsMod(8))
+                        _audioService.PlaySound(ChompAudioService.Sound.Lightning);
+
+                    if(_stateTimer.Value >= jawDestroyTime + 3)
+                    {
+                        if(_levelTimer.IsMod(32))
+                            FadeOut(includeBg: false);
+                    }
+                    else
+                    {
+                        if (_levelTimer.IsMod(16))
+                        {
+                            _jawOpen.Value = !_jawOpen.Value;
+                            var bossPalette = _paletteModule.BgPalette2;
+                            bossPalette.SetColor(1, ColorIndex.Red3);
+                            bossPalette.SetColor(2, ColorIndex.Red2);
+                            bossPalette.SetColor(3, ColorIndex.Red1);
+                        }
+                        else if (_levelTimer.IsMod(4))
+                        {
+                            FadeIn(false);
+                        }
+                    }
+
+                    if (_levelTimer.IsMod(3) || _levelTimer.IsMod(5))
+                    {
+                        _audioService.PlaySound(ChompAudioService.Sound.Break);
+
+                        CreateExplosion(WorldSprite.X + -28 + _rng.Generate(6), WorldSprite.Y + -4 + _rng.Generate(4), decorative: true);
+                        CreateExplosion(WorldSprite.X + -28 + _rng.Generate(6), WorldSprite.Y + -10 + _rng.Generate(4), decorative: true);
+                    }
+
+
+                    if (_eye1.WorldSprite.Y > 110)
+                    {
+                        _eye1.Sprite.Visible = false;
+                        _eye2.Sprite.Visible = false;                               
+                    }
+
+                    if (_eye1.WorldSprite.Y < 114)
+                        Motion.YSpeed = 8;
+                    else if (_eye1.WorldSprite.Y == 117)
+                        SetPhase(Phase.Dead);
+                    else 
+                        Motion.YSpeed = 2;
                 }
                 else
                 {
@@ -831,24 +897,17 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         FadeIn(false);
                     }
 
-                    if (_stateTimer.Value == jawDestroyTime)
-                    {
-                        EraseJawTiles();
-                        _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-                        _bossBackgroundHandler.BossBgEffectValue = 0;
-                    }
-
                     if (_levelTimer.IsMod(3) || _levelTimer.IsMod(5))
                     {
                         _audioService.PlaySound(ChompAudioService.Sound.Break);
-                        CreateExplosion(WorldSprite.X + -20 + _rng.Generate(5), WorldSprite.Y + -2 + _rng.Generate(4));
-
-                        if (_stateTimer.Value < jawDestroyTime)
-                            CreateExplosion(WorldSprite.X + -16 + _rng.Generate(5), WorldSprite.Y + 28 + _rng.Generate(2));
+                        
+                        CreateExplosion(WorldSprite.X + -16 + _rng.Generate(5), WorldSprite.Y + 28 + _rng.Generate(2), decorative: true);
+                        CreateExplosion(WorldSprite.X + -16 + _rng.Generate(5), WorldSprite.Y + 20 + _rng.Generate(2), decorative: true);                        
                     }
                 }
-
-
+            }
+            else if (_phase.Value == Phase.Dead)
+            {
                 if (_musicModule.PlayPosition >= 26500)
                     _exitsModule.GotoNextLevel();
             }
@@ -1124,7 +1183,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
         }
 
-        private void FadeOut()
+        private void FadeOut(bool includeBg = true)
         {
             Theme theme = new Theme(_graphicsModule.GameSystem.Memory, ThemeType.CityBoss);
             var spritePalette = _graphicsModule.GetSpritePalette(SpritePalette.Enemy1);
@@ -1137,10 +1196,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _paletteModule.DarkenToBlack(bossPalette, 2);
             _paletteModule.DarkenToBlack(bossPalette, 3);
 
-            var fgPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Foreground);
-            _paletteModule.DarkenToBlack(fgPalette, 1);
-            _paletteModule.DarkenToBlack(fgPalette, 2);
-            _paletteModule.DarkenToBlack(fgPalette, 3);
+            if (includeBg)
+            {
+                var fgPalette = _graphicsModule.GetBackgroundPalette(BgPalette.Foreground);
+                _paletteModule.DarkenToBlack(fgPalette, 1);
+                _paletteModule.DarkenToBlack(fgPalette, 2);
+                _paletteModule.DarkenToBlack(fgPalette, 3);
+            }
         }
 
         protected override void UpdateDying()
