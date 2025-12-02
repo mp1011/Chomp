@@ -216,6 +216,7 @@ namespace ChompGame.MainGame.SceneModels
         Level7_39_BeforeBoss3,
         Level7_40_FinalBoss,
         Level7_41_FinalBossEpilogue,
+        Ending
     }
 
     class SceneBuilder

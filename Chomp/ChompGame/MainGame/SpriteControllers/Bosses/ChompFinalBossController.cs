@@ -36,7 +36,8 @@ namespace ChompGame.MainGame.SpriteControllers
             Attack3,
             Attack4,
             Attack5,
-            Dying
+            Dying,
+            Dead
         }
       
         private GameByteEnum<Phase> _phase;
@@ -143,6 +144,24 @@ namespace ChompGame.MainGame.SpriteControllers
 
             bullet.AcceleratedMotion.SetXSpeed(-32 + _rng.Generate(6));
             bullet.AcceleratedMotion.SetYSpeed(-32 + _rng.Generate(6));
+        }
+
+        private void FireRandomBullet2(Point origin)
+        {
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            var bullet = _bullets.TryAddNew();
+            if (bullet == null)
+                return;
+
+            bullet.DestroyOnTimer = true;
+            bullet.DestroyOnCollision = true;
+
+            bullet.WorldSprite.X = origin.X;
+            bullet.WorldSprite.Y = origin.Y;
+
+            bullet.AcceleratedMotion.SetXSpeed(-32 + _rng.Generate(6));
+            bullet.AcceleratedMotion.SetYSpeed(24 + _rng.Generate(4));
         }
 
         private void FireGravityBullet(Point origin)
@@ -267,7 +286,7 @@ namespace ChompGame.MainGame.SpriteControllers
             {
                 MoveToward(60, 70, 8);
 
-                if (_levelTimer.IsMod(32))
+                if (_levelTimer.IsMod(64))
                 {
                     _stateTimer.Value++;
                     if (_stateTimer.Value == 0)
@@ -278,8 +297,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 if (_levelTimer.IsMod(8))
                 {
-                    FireRandomBullet(_eye1.WorldSprite.Center);
-                    FireRandomBullet(_eye2.WorldSprite.Center);
+                    FireRandomBullet2(_eye1.WorldSprite.Center);
+                    FireRandomBullet2(_eye2.WorldSprite.Center);
 
                     CreateExplosion();
                 }
@@ -295,7 +314,9 @@ namespace ChompGame.MainGame.SpriteControllers
                     {
                         _eye1.Sprite.Visible = false;
                         _eye2.Sprite.Visible = false;
-                        Destroy();
+                        WorldSprite.Visible = false;
+                        CollisionEnabled = false;
+                        SetPhase(Phase.Dead);
                     }
                 }
 
@@ -306,8 +327,29 @@ namespace ChompGame.MainGame.SpriteControllers
                     CreateExplosion();
                 }
             }
+            else if(_phase.Value == Phase.Dead)
+            {
+                if (_stateTimer.Value == 0)
+                {
+                    if (_levelTimer.Value == 0)
+                    {
+                        _gemControllers.Execute(p => { p.Expanding = true; });
+                        _stateTimer.Value = 1;
+                    }
+                }
+                else
+                {
+                    if (_levelTimer.Value.IsMod(32))
+                    {
+                        _stateTimer.Value++;
 
-            UpdateOffset();
+                        if (_music.PlayPosition >= 90000)
+                            _exitModule.GotoNextLevel();
+                    }
+                }
+            }
+
+                UpdateOffset();
             _motionController.Update();
             UpdatePartPositions();
         }

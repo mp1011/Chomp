@@ -30,12 +30,21 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private LowNibble _index;
         private GameBit _collected;
-        
+        private GameBit _expanding;
+
         public byte Index
         {
             get => _index.Value;
             set => _index.Value = value;
         }
+
+        public bool Expanding
+        {
+            get => _expanding.Value;
+            set => _expanding.Value = value;
+        }
+        
+
         public GemSpriteController(
                 ChompGameModule gameModule,
                 PlayerController playerController,
@@ -48,6 +57,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _bullets = bullets;
             _index = new LowNibble(memoryBuilder);
             _collected = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit7, memoryBuilder.Memory);
+            _expanding = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit6, memoryBuilder.Memory);
 
             memoryBuilder.AddByte();
             _audioService = gameModule.AudioService;
@@ -97,7 +107,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     _collected.Value = true;
                 }
             }
-            else
+            else if(WorldSprite.Visible)
             {
                 var center = _playerController.WorldSprite.Center;
 
@@ -106,7 +116,14 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 angle = (angle + (45 * Index)) % 360;
 
-                Point offset = new Point(0, 12).RotateDeg((int)angle);
+                var radius = 12;
+                if (_expanding)
+                    radius = 12 + _levelTimer.Value / 8;
+
+                if (_expanding && _levelTimer.Value == 255)
+                    WorldSprite.Visible = false;
+
+                Point offset = new Point(0, radius).RotateDeg((int)angle);
                 WorldSprite.X = (byte)(center.X + offset.X);
                 WorldSprite.Y = (byte)(center.Y + offset.Y);
 

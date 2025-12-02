@@ -34,7 +34,7 @@ namespace ChompGame.MainGame
 
         public const bool LevelSkipEnabled = true;
 
-        public const bool InfiniteHp = false ;
+        public const bool InfiniteHp = true ;
 
         public const bool OneHp = false;
 

@@ -21,6 +21,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private ICollidableSpriteControllerPool _enemies;
         private SpriteControllerPool<BombController> _bombs;
 
+        private PlayerController _playerController;
+
         private GameBit _jawOpen;
         private MaskedByte _extraVar;
       
@@ -29,10 +31,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         protected override bool DestroyWhenOutOfBounds => false;
 
 
-        public Level7BossController(ChompGameModule gameModule, WorldSprite player, SpriteControllerPool<BombController> bombs, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) 
-            : base(gameModule, player, bulletControllers, memoryBuilder)
+        public Level7BossController(ChompGameModule gameModule, PlayerController player, SpriteControllerPool<BombController> bombs, EnemyOrBulletSpriteControllerPool<BossBulletController> bulletControllers, SystemMemoryBuilder memoryBuilder) 
+            : base(gameModule, player.WorldSprite, bulletControllers, memoryBuilder)
         {
             _bombs = bombs;
+            _playerController = player;
             _phase = new NibbleEnum<Phase>(new LowNibble(memoryBuilder));           
             memoryBuilder.AddByte();
           
@@ -956,7 +959,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void ResetBombs()
         {
-            _bombs.Execute(p => p.Destroy());            
+            _bombs.Execute(p => p.Destroy());
+            _playerController.IsHoldingBomb = false;
         }
 
         private void FireBulletAtAngle(Point origin, int angle, int speed)

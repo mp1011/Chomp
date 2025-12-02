@@ -204,6 +204,17 @@ namespace ChompGame.MainGame.SceneModels
             return false;
         }
 
+        public bool Lighten(Palette palette, int index, int times)
+        {
+            var result = false;
+            while(times-- > 0)
+            {
+                result = Lighten(palette, index);
+            }
+
+            return result;
+        }
+
         public override void OnStartup()
         {
             _timer = new GameByte(GameSystem.Memory.GetAddress(AddressLabels.MainTimer), GameSystem.Memory);

@@ -68,6 +68,12 @@
 /processorParam:Quality=Best
 /build:Music/Dusk.ogg
 
+#begin Music/Ending.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Ending.ogg
+
 #begin Music/FinalBossPart1.ogg
 /importer:OggImporter
 /processor:SongProcessor

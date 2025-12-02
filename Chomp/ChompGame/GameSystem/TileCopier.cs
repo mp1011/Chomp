@@ -151,6 +151,34 @@ namespace ChompGame.GameSystem
                 GameSystem.Memory);
         }
 
+        public void CopyTilesForEnding()
+        {
+            // star bg
+            _masterPatternTable.CopyTilesTo(
+                destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+                source: new InMemoryByteRectangle(5, 6, 1, 1),
+                destinationPoint: new Point(1, 0),
+                _gameModule.Specs,
+                GameSystem.Memory);
+         
+            // gem sprite
+            _masterPatternTable.CopyTilesTo(
+                destination: GameSystem.CoreGraphicsModule.SpritePatternTable,
+                source: new InMemoryByteRectangle(15, 0, 1, 1),
+                destinationPoint: new Point(1, 0),
+                _gameModule.Specs,
+                GameSystem.Memory);
+
+            // star sprite
+            _masterPatternTable.CopyTilesTo(
+                destination: GameSystem.CoreGraphicsModule.SpritePatternTable,
+                source: new InMemoryByteRectangle(5, 6, 1, 1),
+                destinationPoint: new Point(2, 0),
+                _gameModule.Specs,
+                GameSystem.Memory);
+        }
+
+
         public void CopyTilesForLevelCard()
         {
             _masterPatternTable.CopyTilesTo(

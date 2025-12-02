@@ -50,7 +50,8 @@ namespace ChompGame.MainGame
             TileEditor,
             LevelCard,
             Paused,
-            Title
+            Title,
+            Ending
         }
 
 
@@ -104,6 +105,7 @@ namespace ChompGame.MainGame
         private FinalBossHelper _finalBossHelper;
 
         private TitleScreen _titleScreen;
+        private Ending _ending;
         private LevelCard _levelCard;
         private PlayerDeathHandler _deathHandler;
 
@@ -294,6 +296,7 @@ namespace ChompGame.MainGame
             _collisionDetector = new CollisionDetector(Specs, _bossBackgroundHandling);
             _levelCard = new LevelCard(this, _longTimer);
             _titleScreen = new TitleScreen(this, _longTimer, memoryBuilder);
+            _ending = new Ending(this, _longTimer, memoryBuilder);
 
             _deathHandler = new PlayerDeathHandler(this, _deathTimer, _statusBar, _gameState);
         }
@@ -334,7 +337,16 @@ namespace ChompGame.MainGame
                     RestartScene();
                     break;
                 case GameState.LoadScene:
-                    LoadScene();
+                    if (_currentLevel.Value == Level.Ending)
+                    {
+                        _longTimer.Value = 0;
+                        _gameState.Value = GameState.Ending;
+                    }
+                    else
+                        LoadScene();
+                    break;
+                case GameState.Ending:
+                    _ending.Update();
                     break;
                 case GameState.PlayScene:
                     if (_timer.Value.IsMod(16))
@@ -500,7 +512,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_41_FinalBossEpilogue;
+            _currentLevel.Value = Level.Level7_40_FinalBoss; ;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -787,6 +799,8 @@ namespace ChompGame.MainGame
                     _levelCard.OnHBlank();
                 else if (_gameState.Value == GameState.Title)
                     _titleScreen.OnHBlank();
+                else if (_gameState.Value == GameState.Ending)
+                    _ending.OnHBlank();
             }
 
             PaletteModule.OnHBlank();
