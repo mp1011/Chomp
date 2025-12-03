@@ -4,13 +4,11 @@ using ChompGame.Extensions;
 using ChompGame.GameSystem;
 using ChompGame.Graphics;
 using ChompGame.Helpers;
-using ChompGame.MainGame.Editors;
 using ChompGame.MainGame.SceneModels;
 using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using ChompGame.MainGame.WorldScrollers;
 using ChompGame.ROM;
-using System.Linq;
 
 namespace ChompGame.MainGame
 {
@@ -98,7 +96,7 @@ namespace ChompGame.MainGame
         private BossBackgroundHandler _bossBackgroundHandler;
         private SceneDefinition _currentScene;
         private ScenePartsDestroyed _scenePartsDestroyed;
-        private TileEditor _tileEditor;
+       // private TileEditor _tileEditor;
 
         private GlitchCoreBgModule _glitchCoreBgModule;
         private MistAutoscrollBgModule _mistAutoscrollBgModule;
@@ -177,7 +175,7 @@ namespace ChompGame.MainGame
             _statusBar = new StatusBar(this, GameRAM);
             SpriteTileTable = new SpriteTileTable();
             _dynamicBlockController = new DynamicBlockController(this, SpriteTileTable);
-            _tileEditor = new TileEditor(_tileModule);
+            //_tileEditor = new TileEditor(_tileModule);
 
             SaveManager = new SaveManager(this);
         }
@@ -318,6 +316,12 @@ namespace ChompGame.MainGame
             _gameState.Value = GameState.NewGame;
             _audioService.OnStartup();
 
+            if(_romLoad == RomLoad.Code)
+            {
+                // write cart to disk
+                var cart = GameSystem.Memory.Span(GameSystem.Memory.GetAddress(AddressLabels.CartMemory), -1);
+                System.IO.File.WriteAllBytes("chomp.cart", cart);
+            }
         }
 
         public void OnLogicUpdate()
@@ -359,10 +363,7 @@ namespace ChompGame.MainGame
                             _longTimer.Value++;
                     }
 
-                    if (_tileEditor.CheckActivation())
-                        _gameState.Value = GameState.TileEditor;
-                    else
-                        PlayScene();
+                    PlayScene();
 
                     if (GameDebug.LevelSkipEnabled && _inputModule.Player1.StartKey == GameKeyState.Pressed && _inputModule.Player1.UpKey == GameKeyState.Down)
                     {
@@ -378,7 +379,7 @@ namespace ChompGame.MainGame
                     GameOver();
                     break;
                 case GameState.TileEditor:
-                    if(!_tileEditor.Update())
+                   // if(!_tileEditor.Update())
                         _gameState.Value = GameState.PlayScene;
                     break;
                 case GameState.LevelCard:
@@ -517,7 +518,7 @@ namespace ChompGame.MainGame
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
             _currentLevel.Value = Level.Level1_1_Start;
-            _gameState.Value = GameState.LoadScene;
+            _gameState.Value = GameState.Title;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
@@ -795,18 +796,15 @@ namespace ChompGame.MainGame
 
         public void OnHBlank()
         {
-            if (!_tileEditor.IsRunning)
-            {
-                _rasterInterrupts.OnHBlank();
-                _bossBackgroundHandler.OnHBlank();
-                if (_gameState.Value == GameState.LevelCard)
-                    _levelCard.OnHBlank();
-                else if (_gameState.Value == GameState.Title)
-                    _titleScreen.OnHBlank();
-                else if (_gameState.Value == GameState.Ending)
-                    _ending.OnHBlank();
-            }
-
+            _rasterInterrupts.OnHBlank();
+            _bossBackgroundHandler.OnHBlank();
+            if (_gameState.Value == GameState.LevelCard)
+                _levelCard.OnHBlank();
+            else if (_gameState.Value == GameState.Title)
+                _titleScreen.OnHBlank();
+            else if (_gameState.Value == GameState.Ending)
+                _ending.OnHBlank();
+       
             PaletteModule.OnHBlank();
             _tileModule.OnHBlank();
             _spritesModule.OnHBlank();

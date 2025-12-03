@@ -1,9 +1,6 @@
 ﻿using ChompGame.Extensions;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace ChompGame.Helpers
 {
@@ -19,7 +16,7 @@ namespace ChompGame.Helpers
 
         public static DirectoryInfo GetContentFolder()
         {
-            var projectFolder = _binFolder.GetAncestor("ChompGame");
+            var projectFolder = _binFolder.GetAncestor("ChompGame.Dev");
             return projectFolder.GetChild("Content");
         }
     }

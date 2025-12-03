@@ -12,17 +12,12 @@ namespace ChompGame
         [STAThread]
         static void Main()
         {
-            RunChompGame(RomLoad.Code); 
-        }
-
-        private static Game1 RunGame(Func<GraphicsDevice, ContentManager, MainSystem> createSystem)
-        {
-            var game = new Game1(createSystem);
+            var init = InitSystem(RomLoad.Disk);
+            var game = new Game1(init);
             game.Run();
-        
-            return game;
         }
-        private static Game1 RunChompGame(RomLoad romLoad)
+        
+        public static Func<GraphicsDevice, ContentManager, MainSystem> InitSystem(RomLoad romLoad)
         {
             var specs = new ChompGameSpecs();
 
@@ -45,7 +40,7 @@ namespace ChompGame
                                        s.GetModule<RewardsModule>(),
                                        s.GetModule<PaletteModule>()));
 
-            return RunGame(gameSystem);
+            return gameSystem;
         }
     }
 

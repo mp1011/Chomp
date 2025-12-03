@@ -66,6 +66,9 @@ namespace ChompGame.GameSystem
             get => (int)MediaPlayer.PlayPosition.TotalMilliseconds;
             set
             {
+                if (!Enabled)
+                    return;
+
                 var song = _contentManager.Load<Song>(@"Music\" + _currentSong.Value.ToString());
                 MediaPlayer.IsRepeating = CurrentSongRepeats();
                 MediaPlayer.Play(song, TimeSpan.FromMilliseconds(value));

@@ -2,7 +2,7 @@
 
 namespace ChompGame.GameSystem
 {
-    class ScreenRenderSize
+    public class ScreenRenderSize
     {
         public int Width { get; set; }
         public int Height { get; set; }
