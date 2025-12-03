@@ -87,6 +87,12 @@ namespace ChompGame.MainGame.SceneModels
                 LoadTiles();
                 SetPalette();
 
+                for(int i = 0; i < _gameModule.Specs.MaxSprites; i++)
+                {
+                    var s = _gameModule.SpritesModule.GetSprite(i);
+                    s.Tile = 0;
+                }
+
                 _state.Value = State.StarFadein;
             }
             else if (_state.Value == State.StarFadein)

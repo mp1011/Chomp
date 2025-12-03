@@ -9,11 +9,21 @@ namespace ChompGame.MainGame.SceneModels
 {
     class Ending
     {
+        private const int Letter_Left = 2;
+        private const int Letter_Right = 3;
+        private const int Letter_UL = 4;
+        private const int Letter_BL = 5;
+        private const int Letter_NMid = 6;
+        private const int Letter_D1 = 8;
+        private const int Letter_D2 = 9;
+
         private bool _startPart2 = false;
+        private bool _startPart3 = false;
+
         private const int StarIndexBegin = 0;
         private const int StarCount = 8;
         private const int GemIndexBegin = StarIndexBegin + StarCount;
-        private const int GemCount = 8; 
+        private const int GemCount = 8;
 
         private ChompGameModule _gameModule;
         private GameByte _state;
@@ -35,8 +45,14 @@ namespace ChompGame.MainGame.SceneModels
             set => _state2.Value = value;
         }
 
-        public void Update()
+        public bool Update()
         {
+            _gameModule.InputModule.OnLogicUpdate();
+            if(_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed)
+            {
+                return true;
+            }
+
             GemPalette();
             if (_state.Value == 0)
             {
@@ -51,9 +67,11 @@ namespace ChompGame.MainGame.SceneModels
                 SetSprites();
                 _state.Value++;
                 _state2.Value = 0;
-                
-                if(_startPart2)
+
+                if (_startPart2)
                     _state.Value = 40;
+                else if (_startPart3)
+                    _state.Value = 121;
 
                 _gameModule.MusicModule.CurrentSong = GameSystem.MusicModule.SongName.Ending;
             }
@@ -65,11 +83,11 @@ namespace ChompGame.MainGame.SceneModels
                 if (_state.Value < 41 && _gameModule.LevelTimer.IsMod(8))
                     _gameModule.TileModule.Scroll.Y--;
 
-                if(_state.Value < 41)
+                if (_state.Value < 41)
                     ScrollStars();
 
                 if (CoreGraphicsModule.FadeAmount == 0 && _state.Value == 1)
-                {                     
+                {
                     _state.Value++;
                 }
 
@@ -145,7 +163,7 @@ namespace ChompGame.MainGame.SceneModels
                     if (_gameModule.LevelTimer.IsMod(4))
                         _state.Value++;
 
-                    if(_state.Value >= 85)
+                    if (_state.Value >= 85)
                     {
                         BlinkSprite(0);
                         BlinkSprite(1);
@@ -161,7 +179,7 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.SpritesModule.GetSprite(3).Tile = 0;
                     }
                 }
-                else if(_state.Value >= 100 && _state.Value < 120)
+                else if (_state.Value >= 100 && _state.Value < 120)
                 {
                     if (_gameModule.LevelTimer.IsMod(4))
                         Part2RealScroll++;
@@ -169,7 +187,52 @@ namespace ChompGame.MainGame.SceneModels
                     if (_gameModule.LevelTimer.IsMod(4))
                         _state.Value++;
                 }
+                else if (_state.Value == 120)
+                {
+                    if (_gameModule.LevelTimer.IsMod(4))
+                        Part2RealScroll++;
+
+                    if (_gameModule.LevelTimer.IsMod(8) && CoreGraphicsModule.FadeAmount < 15)
+                        CoreGraphicsModule.FadeAmount++;
+
+                    if (CoreGraphicsModule.FadeAmount == 15)
+                        _state.Value = 121;
+                }
+                else if (_state.Value == 121)
+                {
+                    LoadVRAM();
+                    SetTilesForPart3();
+                    SetSpritesPart3();
+                    SetPalette();
+                    _gameModule.TileModule.Scroll.X = 0;
+                    _gameModule.TileModule.Scroll.Y = 80;
+                    _state.Value++;
+
+                    CoreGraphicsModule.FadeAmount = 0;
+                }
+                else if (_state.Value >= 122)
+                {
+                    ScrollStars();
+
+                    if (_gameModule.LevelTimer.IsMod(8))
+                    {
+                        if (_gameModule.TileModule.Scroll.Y < 128)
+                            _gameModule.TileModule.Scroll.Y++;
+                    }
+
+                    if (_gameModule.LevelTimer.IsMod(64))
+                    {
+                        _state.Value++;
+                        if (_state.Value == 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
             }
+
+            return false;
         }
 
         private void BlinkSprite(int index)
@@ -215,7 +278,7 @@ namespace ChompGame.MainGame.SceneModels
 
         private void ScrollStars()
         {
-            for(int i = StarIndexBegin; i < StarCount; i++)
+            for (int i = StarIndexBegin; i < StarCount; i++)
             {
                 if (_gameModule.LevelTimer.Value.IsMod((byte)(i + 1)))
                 {
@@ -227,7 +290,7 @@ namespace ChompGame.MainGame.SceneModels
                         star.Y = 0;
                         star.X = _gameModule.RandomModule.GenerateByte().Mod(_gameModule.GameSystem.Specs.ScreenWidth);
                     }
-                }                
+                }
             }
         }
 
@@ -251,9 +314,9 @@ namespace ChompGame.MainGame.SceneModels
 
                 var gem = _gameModule.SpritesModule.GetSprite(i);
 
-                if (_gameModule.LevelTimer.Value.IsMod((byte)(moveMod * 1.5)))               
+                if (_gameModule.LevelTimer.Value.IsMod((byte)(moveMod * 1.5)))
                     gem.Y--;
-                
+
                 if (gem.Y <= 31)
                     gem.Y = 31;
                 else
@@ -265,11 +328,14 @@ namespace ChompGame.MainGame.SceneModels
 
         public void OnHBlank()
         {
+            if (_state.Value >= 121)
+                return;
+
             if (_state.Value < 3)
                 return;
 
-            if(_state.Value >= 41)
-            {                
+            if (_state.Value >= 41)
+            {
                 int mtnY = 32;
                 if (CoreGraphicsModule.ScreenPoint.Y == mtnY)
                     _gameModule.TileModule.Scroll.X = (byte)(Part2RealScroll / 4);
@@ -280,8 +346,8 @@ namespace ChompGame.MainGame.SceneModels
                 if (_state.Value > 50)
                 {
                     int beamPos = _state.Value - 50;
-    
-                    if(CoreGraphicsModule.ScreenPoint.Y == 0)
+
+                    if (CoreGraphicsModule.ScreenPoint.Y == 0)
                         SetPalettePart2();
 
                     if (CoreGraphicsModule.ScreenPoint.Y >= beamPos - 4 && CoreGraphicsModule.ScreenPoint.Y < beamPos)
@@ -351,7 +417,7 @@ namespace ChompGame.MainGame.SceneModels
 
             int beamSize = _state.Value - 3;
 
-            if (CoreGraphicsModule.ScreenPoint.Y >= 32 - beamSize && 
+            if (CoreGraphicsModule.ScreenPoint.Y >= 32 - beamSize &&
                 CoreGraphicsModule.ScreenPoint.Y < 32 + beamSize)
             {
                 int yDiff = Math.Abs(CoreGraphicsModule.ScreenPoint.Y - 32);
@@ -359,7 +425,7 @@ namespace ChompGame.MainGame.SceneModels
                 int shade = beamSize - yDiff;
                 if (shade > 7)
                     shade = 7;
-                                    
+
                 var palette = CoreGraphicsModule.GetBackgroundPalette(0);
                 palette.SetColor(0, ColorIndex.Blue(shade).Value);
             }
@@ -383,7 +449,7 @@ namespace ChompGame.MainGame.SceneModels
             _gameModule.RasterInterrupts.SetScene(null);
             _gameModule.PaletteModule.SetScene(null, Level.Level1_1_Start, _gameModule.GameSystem.Memory, _gameModule.BossBackgroundHandling);
 
-            _gameModule.TileCopier.CopyTilesForEnding();           
+            _gameModule.TileCopier.CopyTilesForEnding();
         }
 
         private void LoadVRAMPart2()
@@ -503,9 +569,34 @@ namespace ChompGame.MainGame.SceneModels
             }
 
             AddLizard(0, 56 + 16);
-            AddLizard(1, 56 + 48);
+            AddLizard(1, 56 + 32);
             AddOgre(2, 56 + 32);
             AddOgre(3, 56 + 56);
+
+        }
+
+        private void SetSpritesPart3()
+        {
+            for (int i = 0; i < _gameModule.Specs.MaxSprites; i++)
+            {
+                var sprite = _gameModule.SpritesModule.GetSprite(i);
+                if(i < 8)
+                {
+                    sprite.SizeX = 1;
+                    sprite.SizeY = 1;
+                    sprite.Tile2Offset = 0;
+                    sprite.Tile = 1;
+                    sprite.Visible = true;
+                    sprite.Priority = false;
+                    sprite.Palette = SpritePalette.Player;
+
+                    sprite.X = _gameModule.RandomModule.GenerateByte().Mod(_gameModule.GameSystem.Specs.ScreenWidth);
+                    sprite.Y = _gameModule.RandomModule.GenerateByte().Mod(_gameModule.GameSystem.Specs.ScreenHeight);
+                }
+                else 
+                    sprite.Tile = 0;
+            }
+
 
         }
 
@@ -567,7 +658,7 @@ namespace ChompGame.MainGame.SceneModels
 
             _gameModule.TileModule.NameTable.ForEach((x, y, b) =>
             {
-                if(y == groundY - 1 || y == groundY - 2)
+                if (y == groundY - 1 || y == groundY - 2)
                 {
                     _gameModule.TileModule.NameTable[x, y] = 6;
                 }
@@ -577,7 +668,7 @@ namespace ChompGame.MainGame.SceneModels
                 }
                 else if (y > groundY)
                 {
-                    if(y.IsMod(2))
+                    if (y.IsMod(2))
                         _gameModule.TileModule.NameTable[x, y] = (byte)(8 + (x.IsMod(2) ? 0 : 1));
                     else
                         _gameModule.TileModule.NameTable[x, y] = (byte)(8 + (x.IsMod(2) ? 1 : 0));
@@ -588,7 +679,7 @@ namespace ChompGame.MainGame.SceneModels
             });
 
             int mtnY = groundY - 3;
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
             {
                 byte tile = i switch {
                     0 => 1,
@@ -606,6 +697,33 @@ namespace ChompGame.MainGame.SceneModels
                 _gameModule.TileModule.NameTable[16 + i, mtnY] = tile;
                 _gameModule.TileModule.NameTable[24 + i, mtnY] = tile;
             }
+        }
+
+
+        private void SetTilesForPart3()
+        {
+            int x = 4;
+            int y = 6;
+            // E
+            _gameModule.TileModule.NameTable[x, y] = Letter_UL;
+            _gameModule.TileModule.NameTable[x, y + 1] = Letter_UL;
+            _gameModule.TileModule.NameTable[x, y + 2] = Letter_BL;
+
+            //N
+            _gameModule.TileModule.NameTable[x + 3, y] = Letter_Left;
+            _gameModule.TileModule.NameTable[x + 3, y + 1] = Letter_NMid ;
+            _gameModule.TileModule.NameTable[x + 3, y + 2] = Letter_Left;
+            _gameModule.TileModule.NameTable[x + 4, y] = Letter_Left;
+            _gameModule.TileModule.NameTable[x + 4, y + 1] = Letter_Left;
+            _gameModule.TileModule.NameTable[x + 4, y + 2] = Letter_Left;
+
+            //D
+            _gameModule.TileModule.NameTable[x + 6, y] = Letter_UL;
+            _gameModule.TileModule.NameTable[x + 6, y + 1] = Letter_Left;
+            _gameModule.TileModule.NameTable[x + 6, y + 2] = Letter_BL;
+            _gameModule.TileModule.NameTable[x + 7, y] = Letter_D1;
+            _gameModule.TileModule.NameTable[x + 7, y + 1] = Letter_Left;
+            _gameModule.TileModule.NameTable[x + 7, y + 2] = Letter_D2;
         }
     }
 }

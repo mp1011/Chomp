@@ -160,7 +160,23 @@ namespace ChompGame.GameSystem
                 destinationPoint: new Point(1, 0),
                 _gameModule.Specs,
                 GameSystem.Memory);
-         
+
+            // letters
+            _masterPatternTable.CopyTilesTo(
+              destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+              source: new InMemoryByteRectangle(0, 9, 5, 1),
+              destinationPoint: new Point(2, 0),
+              _gameModule.Specs,
+              GameSystem.Memory);
+
+            // letters2
+            _masterPatternTable.CopyTilesTo(
+              destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+              source: new InMemoryByteRectangle(5, 9, 2, 1),
+              destinationPoint: new Point(0, 1),
+              _gameModule.Specs,
+              GameSystem.Memory);
+
             // gem sprite
             _masterPatternTable.CopyTilesTo(
                 destination: GameSystem.CoreGraphicsModule.SpritePatternTable,
@@ -177,7 +193,6 @@ namespace ChompGame.GameSystem
                 _gameModule.Specs,
                 GameSystem.Memory);
         }
-
 
         public void CopyTilesForLevelCard()
         {

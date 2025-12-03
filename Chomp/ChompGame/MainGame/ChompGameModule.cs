@@ -346,7 +346,11 @@ namespace ChompGame.MainGame
                         LoadScene();
                     break;
                 case GameState.Ending:
-                    _ending.Update();
+                    if(_ending.Update())
+                    {
+                        _gameState.Value = GameState.Title;
+                        _longTimer.Value = 0;
+                    }
                     break;
                 case GameState.PlayScene:
                     if (_timer.Value.IsMod(16))
@@ -512,7 +516,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level7_40_FinalBoss; ;
+            _currentLevel.Value = Level.Level1_1_Start;
             _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
