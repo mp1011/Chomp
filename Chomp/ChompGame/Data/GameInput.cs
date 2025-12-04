@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data.Memory;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace ChompGame.Data
@@ -67,28 +68,18 @@ namespace ChompGame.Data
         {
             _lastState.Value = _currentState.Value;
 
-            var state = Keyboard.GetState();
+            var keyState = Keyboard.GetState();
+            var padState = GamePad.GetState(PlayerIndex.One);
 
-            if (_player == 1)
-            {
-                _up.Value = state.IsKeyDown(Keys.Up);
-                _down.Value = state.IsKeyDown(Keys.Down);
-                _left.Value = state.IsKeyDown(Keys.Left);
-                _right.Value = state.IsKeyDown(Keys.Right);
-                _a.Value = state.IsKeyDown(Keys.A);
-                _b.Value = state.IsKeyDown(Keys.S);
-                _start.Value = state.IsKeyDown(Keys.Space);
-            }
-            else if (_player == 2)
-            {
-                _up.Value = state.IsKeyDown(Keys.NumPad8);
-                _down.Value = state.IsKeyDown(Keys.NumPad2);
-                _left.Value = state.IsKeyDown(Keys.NumPad4);
-                _right.Value = state.IsKeyDown(Keys.NumPad6);
-                _a.Value = state.IsKeyDown(Keys.OemPeriod);
-                _b.Value = state.IsKeyDown(Keys.OemQuestion);
-                _start.Value = state.IsKeyDown(Keys.Enter);
-            }
+            float analogThreshold = 0.3f;
+
+            _up.Value = keyState.IsKeyDown(Keys.Up) || padState.IsButtonDown(Buttons.DPadUp) || padState.ThumbSticks.Left.Y >= analogThreshold;
+            _down.Value = keyState.IsKeyDown(Keys.Down) || padState.IsButtonDown(Buttons.DPadDown) || padState.ThumbSticks.Left.Y <= -analogThreshold;
+            _left.Value = keyState.IsKeyDown(Keys.Left) || padState.IsButtonDown(Buttons.DPadLeft) || padState.ThumbSticks.Left.X <= -analogThreshold;
+            _right.Value = keyState.IsKeyDown(Keys.Right) || padState.IsButtonDown(Buttons.DPadRight) || padState.ThumbSticks.Left.X >= analogThreshold;
+            _a.Value = keyState.IsKeyDown(Keys.A) || padState.IsButtonDown(Buttons.A) || padState.IsButtonDown(Buttons.Y);
+            _b.Value = keyState.IsKeyDown(Keys.S) || padState.IsButtonDown(Buttons.B) || padState.IsButtonDown(Buttons.X);
+            _start.Value = keyState.IsKeyDown(Keys.Space) || padState.IsButtonDown(Buttons.Start);           
         }
     }
 }
