@@ -149,12 +149,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void SetPhase(Phase p)
         {
-            GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
-            GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-            GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
-         //   GameDebug.Watch4 = new DebugWatch("Extra Var", () => _extraVar.Value);
-            GameDebug.Watch4 = new DebugWatch("HP", () => _hitPoints.Value);
-
             _phase.Value = p;
             _stateTimer.Value = 0;
             _extraVar.Value = 0;

@@ -98,9 +98,9 @@ namespace ChompGame.MainGame.SpriteControllers
             if(p == Phase.Init)
             {
                 _musicModule.CurrentSong = MusicModule.SongName.None;
-                GameDebug.Watch1 = new DebugWatch("PHASE", () => (int)_phase.Value);
-                GameDebug.Watch2 = new DebugWatch("ST", () => (int)_stateTimer.Value);
-                GameDebug.Watch3 = new DebugWatch("HP", () => (int)_hitPoints.Value);
+             //   GameDebug.Watch1 = new DebugWatch("PHASE", () => (int)_phase.Value);
+             //   GameDebug.Watch2 = new DebugWatch("ST", () => (int)_stateTimer.Value);
+             //   GameDebug.Watch3 = new DebugWatch("HP", () => (int)_hitPoints.Value);
 
                 InitTail();
             }

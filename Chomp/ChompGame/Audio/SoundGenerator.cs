@@ -36,7 +36,7 @@ namespace ChompGame.Audio
                 buffer[(2 * i) + 1] = (byte)(value >> 8);
             }
 
-            System.IO.File.WriteAllBytes("sound.dat", buffer);
+           // System.IO.File.WriteAllBytes("sound.dat", buffer);
             return new SoundEffect(buffer, SampleRate, AudioChannels.Mono);
         }
 

@@ -49,7 +49,8 @@ namespace ChompGame.MainGame
             LevelCard,
             Paused,
             Title,
-            Ending
+            Ending,
+            Cheat
         }
 
 
@@ -178,6 +179,12 @@ namespace ChompGame.MainGame
             //_tileEditor = new TileEditor(_tileModule);
 
             SaveManager = new SaveManager(this);
+        }
+
+        public void Cheat()
+        {
+            _longTimer.Value = 0;
+            _gameState.Value = GameState.Cheat;
         }
 
         public override void BuildMemory(SystemMemoryBuilder memoryBuilder)
@@ -334,6 +341,9 @@ namespace ChompGame.MainGame
 
             switch (_gameState.Value)
             {
+                case GameState.Cheat:
+                    CheatMenu();
+                    break;
                 case GameState.NewGame:
                     InitGame();
                     break;
@@ -406,6 +416,116 @@ namespace ChompGame.MainGame
             }
         }
 
+        private void CheatMenu()
+        {
+            if (_longTimer.Value == 0)
+            {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
+                TileCopier.CopyTilesForStatusBar();
+
+                _tileModule.NameTable.Reset();
+                _tileModule.AttributeTable.Reset();
+                _tileModule.Scroll.X = 0;
+                _tileModule.Scroll.Y = 0;
+
+                _tileModule.NameTable[7, 7] = 16;
+                _tileModule.NameTable[7, 9] = 16;
+
+                _longTimer.Value = 1;
+                GameSystem.CoreGraphicsModule.FadeAmount = 0;
+
+                var palette = GameSystem.CoreGraphicsModule.GetBackgroundPalette(0);
+                palette.SetColor(0, ColorIndex.Black);
+                palette.SetColor(1, ColorIndex.Yellow1);
+                palette.SetColor(2, ColorIndex.Gray1);
+                palette.SetColor(3, ColorIndex.White);
+            }
+            else
+            {
+                _inputModule.OnLogicUpdate();
+                int levelNum = _tileModule.NameTable[7, 7] - 15;
+                if(levelNum < 7 && _inputModule.Player1.UpKey == GameKeyState.Pressed)
+                {
+                    _tileModule.NameTable[7, 7] = (byte)(_tileModule.NameTable[7, 7] + 1);
+                    _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                }
+                if (levelNum > 1 && _inputModule.Player1.DownKey == GameKeyState.Pressed)
+                {
+                    _tileModule.NameTable[7, 7] = (byte)(_tileModule.NameTable[7, 7] - 1);
+                    _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                }
+
+                int subNum = _tileModule.NameTable[7, 9] - 15;
+                if (subNum < 4 && _inputModule.Player1.RightKey == GameKeyState.Pressed)
+                {
+                    _tileModule.NameTable[7, 9] = (byte)(_tileModule.NameTable[7, 9] + 1);
+                    _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                }
+                if (subNum > 1 && _inputModule.Player1.LeftKey == GameKeyState.Pressed)
+                {
+                    _tileModule.NameTable[7, 9] = (byte)(_tileModule.NameTable[7, 9] - 1);
+                    _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
+                }
+
+                if(_inputModule.Player1.StartKey == GameKeyState.Pressed)
+                {
+                    _audioService.PlaySound(ChompAudioService.Sound.Break);
+                    _statusBar.SetLives(9);
+
+                    _currentLevel.Value = CheatStartLevel(levelNum, subNum);
+                    _gameState.Value = GameState.LoadScene;
+                }
+            }
+        }
+
+        private Level CheatStartLevel(int levelNum, int subNum)
+        {
+            return levelNum switch {
+                1 => subNum switch {
+                    1 => Level.Level1_1_Start,
+                    2 => Level.Level1_11_Boss,
+                    3 => Level.Level1_12_Horizontal2,
+                    _ => Level.Level1_17_Boss
+                },
+                2 => subNum switch {
+                    1 => Level.Level2_1_Intro,
+                    2 => Level.Level2_2_Fly2,
+                    3 => Level.Level2_3_Beach,
+                    _ => Level.Level1_17_Boss
+                },
+                3 => subNum switch {
+                    1 => Level.Level3_1_City,
+                    2 => Level.Level3_20_Midboss,
+                    3 => Level.Level3_21_CityAfterMidboss,
+                    _ => Level.Level3_26_Boss
+                },
+                4 => subNum switch {
+                    1 => Level.Level4_1_Desert,
+                    2 => Level.Level4_31_Midboss,
+                    3 => Level.Level4_32_Desert4,
+                    _ => Level.Level4_40_Boss
+                },
+                5 => subNum switch {
+                    1 => Level.Level5_1_Mist,
+                    2 => Level.Level5_22_MidBoss,
+                    3 => Level.Level5_23_Plane_Begin,
+                    _ => Level.Level5_27_Boss
+                },
+                6 => subNum switch {
+                    1 => Level.Level6_1_Techbase,
+                    2 => Level.Level6_17_Midboss,
+                    3 => Level.Level6_18_Techbase11,
+                    _ => Level.Level6_37_Boss
+                },
+                _ => subNum switch {
+                    1 => Level.Level7_1_GlitchCore,
+                    2 => Level.Level7_16_RunRoom,
+                    3 => Level.Level7_40_FinalBoss,
+                    _ => Level.Level7_41_FinalBossEpilogue
+                },
+            };
+        }
+
         private bool CheckPause()
         {
             if(_deathTimer.Value == 0 && _inputModule.Player1.StartKey == GameKeyState.Pressed)
@@ -450,14 +570,14 @@ namespace ChompGame.MainGame
                 int wordX = 4;
                 int wordY = 16;
 
+                TileModule.NameTable[wordX++, wordY] = 9;
+                TileModule.NameTable[wordX++, wordY] = 6;
+                TileModule.NameTable[wordX++, wordY] = 10;
+                wordX++;
                 TileModule.NameTable[wordX++, wordY] = 8;
                 TileModule.NameTable[wordX++, wordY] = 6;
-                TileModule.NameTable[wordX++, wordY] = 9;
-                wordX++;
-                TileModule.NameTable[wordX++, wordY] = 1;
-                TileModule.NameTable[wordX++, wordY] = 10;
                 TileModule.NameTable[wordX++, wordY] = 11;
-                TileModule.NameTable[wordX++, wordY] = 12;
+                TileModule.NameTable[wordX++, wordY] = 3;
 
                 _deathTimer.Value = 1;
             }
@@ -517,7 +637,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_1_Start;
+            _currentLevel.Value = Level.Level2_1_Intro;
             _gameState.Value = GameState.Title;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;

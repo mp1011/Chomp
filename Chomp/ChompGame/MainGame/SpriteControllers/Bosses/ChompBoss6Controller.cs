@@ -80,10 +80,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _arm2 = new ChompTail(memoryBuilder, ArmSize, gameModule);
 
             memoryBuilder.AddByte();
-
-
-
-            GameDebug.Watch1 = new DebugWatch("T", () => _stateTimer.Value);
         }
 
         protected override void BeforeInitializeSprite()

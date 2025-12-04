@@ -70,8 +70,6 @@ namespace ChompGame.MainGame.SpriteControllers
             _rotation = memoryBuilder.AddByte();
             _specs = gameModule.Specs;
             Palette = SpritePalette.Enemy1;
-
-            GameDebug.Watch1 = new DebugWatch("T", () => _stateTimer.Value);
         }
 
         protected override void BeforeInitializeSprite()

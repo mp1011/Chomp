@@ -234,6 +234,14 @@ namespace ChompGame.GameSystem
                Specs,
                GameSystem.Memory);
 
+            _masterPatternTable.CopyTilesTo(
+               destination: GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+               source: new InMemoryByteRectangle(3, 10, 2, 1),
+               destinationPoint: new Point(1, 1),
+               Specs,
+               GameSystem.Memory);
+
+
         }
 
         public void CopyTilesForSprite(int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, NBitPlane target)

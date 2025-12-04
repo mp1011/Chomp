@@ -15,8 +15,6 @@ namespace ChompGame.MainGame.SceneModels
             _longTimer = gameModule.LevelTimerLong;
             _timer = gameModule.LevelTimer;
             _gameModule = gameModule;
-
-            GameDebug.Watch1 = new DebugWatch("ScrollY", () => _gameModule.TileModule.Scroll.Y);
         }
 
         public void Update()

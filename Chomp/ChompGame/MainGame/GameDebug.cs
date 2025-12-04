@@ -28,6 +28,15 @@ namespace ChompGame.MainGame
 
     public static class GameDebug
     {
+        static GameDebug()
+        {
+#if !DEBUG
+            if(BossTest || QuickReward || LevelSkipEnabled || InfiniteHp || OneHp || EnableFly)
+                throw new Exception("cheats enabled in Release");
+#endif 
+        }
+            
+
         public const bool BossTest = false;
 
         public const bool QuickReward = false;
@@ -38,12 +47,13 @@ namespace ChompGame.MainGame
 
         public const bool OneHp = false;
 
+        public static bool EnableFly = false;
+
 
         private const DebugLogFlags _debugLogFlags = DebugLogFlags.SpriteSpawn;
 
         private static List<string> _log = new List<string>();
 
-        public static bool EnableFly = false;
         public static DebugWatch Watch1 { get; set; }
         public static DebugWatch Watch2 { get; set; }
         public static DebugWatch Watch3 { get; set; }

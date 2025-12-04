@@ -69,8 +69,6 @@ namespace ChompGame.MainGame.SpriteControllers
             memoryBuilder.AddByte();
 
             _anchor = memoryBuilder.AddByte();
-
-            GameDebug.Watch1 = new DebugWatch("T", () => _stateTimer.Value);
         }
 
         protected override void BeforeInitializeSprite()

@@ -133,6 +133,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         }
                     });
                     CollisionEnabled = false;
+                    _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
                 }
                 _musicModule.CurrentSong = MusicModule.SongName.None;
                 WorldSprite.X = 0;

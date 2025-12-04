@@ -97,10 +97,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void SetPhase(Phase p)
         {
-      //      GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
-         //   GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-            GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
-
             _phase.Value = p;
             _stateTimer.Value = 0;
 
@@ -283,8 +279,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             if(_phase.Value == Phase.BeforeBoss)
             {
                 WorldSprite.Visible = false;
+
                 if (_player.X > 64)
+                {
+                    _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
                     SetPhase(Phase.GroundFall);
+                }
             }
             else if(_phase.Value == Phase.GroundFall)
             {

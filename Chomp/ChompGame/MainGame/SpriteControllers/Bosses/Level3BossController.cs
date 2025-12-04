@@ -86,9 +86,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(p == Phase.Init)
             {
-                GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
-                GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-                GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
+                _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
 
                 SetBossTiles();
                 SetupBossParts();

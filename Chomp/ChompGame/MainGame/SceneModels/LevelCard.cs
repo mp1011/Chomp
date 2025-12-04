@@ -45,10 +45,6 @@ namespace ChompGame.MainGame.SceneModels
 
         public bool Update()
         {
-            GameDebug.Watch1 = new DebugWatch("Timer", () => _timer.Value);
-            GameDebug.Watch2 = new DebugWatch("State", () => (int)_state.Value);
-
-
             if (_gameModule.InputModule.Player1.StartKey.IsDown() ||
                 _gameModule.InputModule.Player1.AKey.IsDown() ||
                 _gameModule.InputModule.Player1.BKey.IsDown())

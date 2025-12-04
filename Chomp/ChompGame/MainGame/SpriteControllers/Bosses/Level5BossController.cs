@@ -102,10 +102,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void SetPhase(Phase p)
         {
-            GameDebug.Watch1 = new DebugWatch("Boss X", () => WorldSprite.X);
-            GameDebug.Watch2 = new DebugWatch("Boss Y", () => WorldSprite.Y);
-            GameDebug.Watch3 = new DebugWatch("State Timer", () => _stateTimer.Value);
-
             _phase.Value = p;
             _stateTimer.Value = 0;
 
@@ -117,6 +113,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if(p == Phase.Init)
             {
+                _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.Nemesis;
                 SetBossTiles();              
                 SetupBossParts();

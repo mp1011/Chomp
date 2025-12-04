@@ -22,8 +22,6 @@ namespace ChompGame.MainGame.WorldScrollers
             _levelTimer  = levelTimer;
             _lastUpdateX = new GameByte(_seamTile.Address, memoryBuilder.Memory);
             _scrollOffset = memoryBuilder.AddByte();
-            GameDebug.Watch1 = new DebugWatch("PX", () => _focusSprite.X);
-            GameDebug.Watch2 = new DebugWatch("SX", () => _tileModule.Scroll.X);
         }
 
         public override Rectangle ViewPane

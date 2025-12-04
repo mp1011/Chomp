@@ -38,6 +38,7 @@ namespace ChompGame.MainGame.SceneModels
         private readonly ChompGameModule _gameModule;
         
         private GameByteEnum<State> _state;
+        private MaskedByte _cheatValue;
 
         private MainSystem GameSystem => _gameModule.GameSystem;
         enum State : byte
@@ -59,12 +60,79 @@ namespace ChompGame.MainGame.SceneModels
         public TitleScreen(ChompGameModule gameModule, GameByte state, SystemMemoryBuilder builder)
         {
             _gameModule = gameModule;
-            _state = new GameByteEnum<State>(state);
+            var state1 = new MaskedByte(state.Address, Bit.Right5, builder.Memory);
+            _cheatValue = new MaskedByte(state.Address, Bit.Left3, builder.Memory, leftShift: 5);
+            _state = new GameByteEnum<State>(state1);
+        }
+
+        private bool CheckCheat()
+        {
+           switch(_cheatValue.Value)
+            {
+                case 0:
+                    if (_gameModule.InputModule.Player1.UpKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if(_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 1:
+                    if (_gameModule.InputModule.Player1.UpKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 2:
+                    if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 3:
+                    if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 4:
+                    if (_gameModule.InputModule.Player1.LeftKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 5:
+                    if (_gameModule.InputModule.Player1.AKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 6:
+                    if (_gameModule.InputModule.Player1.RightKey == GameKeyState.Released)
+                        _cheatValue.Value++;
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+                case 7:
+                    if (_gameModule.InputModule.Player1.BKey == GameKeyState.Released)
+                    {
+                        _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Reward);
+                        _gameModule.Cheat();
+                        return true;
+                    }
+                    else if (_gameModule.InputModule.Player1.AnyWasUp())
+                        _cheatValue.Value = 0;
+                    break;
+
+            }
+
+            return false;
         }
 
         public void Update()
         {
             GemPalette();
+
+            if (CheckCheat())
+                return;
 
             if (_state.Value >= State.StarFadein && _state.Value < State.TitleFadeIn)
             {

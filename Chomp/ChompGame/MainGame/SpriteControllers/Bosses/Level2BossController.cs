@@ -190,9 +190,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _tentacle1Hit = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit4, memoryBuilder.Memory);
             _tentacle2Hit = new GameBit(memoryBuilder.CurrentAddress, Bit.Bit5, memoryBuilder.Memory);
             memoryBuilder.AddByte();
-
-
-            GameDebug.Watch1 = new DebugWatch("St", () => _stateTimer.Value);
         }
 
         protected override string BossTiles { get; } =
@@ -546,13 +543,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             if(phase == Phase.BeforeBoss)
             {
+               
                 _bossBackgroundHandler.ShowCoins = true;
                 WorldSprite.X = 80;
                 WorldSprite.Y = 64;          
-                _paletteModule.BgColor = 0;
+                _paletteModule.BgColor = 1;
             }
             else if(phase == Phase.FadeIn)
             {
+                _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
                 _bossBackgroundHandler.BossBgEffectValue = 100;
                 WorldSprite.X = 80;
                 WorldSprite.Y = 80;

@@ -19,6 +19,13 @@ namespace ChompGame.Data
         public GameKeyState BKey => GetState(_b, _wasB);
         public GameKeyState StartKey => GetState(_start, _wasStart);
 
+        public bool AnyWasUp() => UpKey == GameKeyState.Released 
+            || DownKey == GameKeyState.Released
+            || LeftKey == GameKeyState.Released || RightKey == GameKeyState.Released
+            || AKey == GameKeyState.Released
+            || BKey == GameKeyState.Released
+            || StartKey == GameKeyState.Released;
+
 
         public GameInput(SystemMemoryBuilder memoryBuilder, int player)
         {
