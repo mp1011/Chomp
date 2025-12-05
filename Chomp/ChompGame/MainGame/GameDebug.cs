@@ -50,7 +50,7 @@ namespace ChompGame.MainGame
         public static bool EnableFly = false;
 
 
-        private const DebugLogFlags _debugLogFlags = DebugLogFlags.SpriteSpawn;
+        private const DebugLogFlags _debugLogFlags = DebugLogFlags.None;
 
         private static List<string> _log = new List<string>();
 

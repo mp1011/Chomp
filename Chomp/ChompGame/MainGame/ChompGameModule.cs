@@ -331,6 +331,12 @@ namespace ChompGame.MainGame
             }
         }
 
+        public void Reset()
+        {
+            _gameState.Value = GameState.NewGame;
+            _longTimer.Value = 0;
+        }
+
         public void OnLogicUpdate()
         {
             _musicModule.Update();
@@ -637,7 +643,7 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level2_1_Intro;
+            _currentLevel.Value = Level.Level1_1_Start;
             _gameState.Value = GameState.Title;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
@@ -665,13 +671,14 @@ namespace ChompGame.MainGame
             _timer.Value = 0;
             _gameState.Value = GameState.LevelCard;
             _currentLevel.Value = Level.Level1_1_Start;
-
+            GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
             _lastExitType.Value = ExitType.Right;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
+            _scenePartsDestroyed.Reset(GameSystem.Memory);
         }
 
         public void LoadGame(int saveSlot)

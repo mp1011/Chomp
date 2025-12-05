@@ -1,4 +1,5 @@
 ﻿using ChompGame.Data;
+using ChompGame.Option;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace ChompGame.GameSystem
         private IModule[] _modules;
         private IMasterModule _masterModule;
 
+        public GameOptions Options { get; }
         public Specs Specs { get; }
         public SystemMemory Memory { get; }
 
@@ -21,8 +23,10 @@ namespace ChompGame.GameSystem
 
         public MainSystem(Specs specs, GraphicsDevice graphicsDevice,
             Func<MainSystem,CoreGraphicsModule> createCoreGraphicsModule,
+            GameOptions options,
             params Func<MainSystem, IModule>[] createModules)
         {
+            Options = options;
             GameRAM = new GameRAM(specs);
             GraphicsDevice = graphicsDevice;
             Specs = specs;
@@ -47,6 +51,7 @@ namespace ChompGame.GameSystem
             foreach (var module in _modules)
                 module.OnStartup();
 
+            
             var romBegin = Memory.GetAddress(MainGame.AddressLabels.CartMemory);
             System.IO.File.WriteAllBytes("chomp.cart", Memory.ToArray().Skip(romBegin).ToArray());
         }

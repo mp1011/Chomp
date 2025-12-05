@@ -19,7 +19,6 @@ namespace ChompGame.MainGame.SpriteControllers.Platforms
 
         public bool IsPlatformSolid => true;
 
-
         public MovingPlatformHandler(PlatformController controller, IMotionController motionController)
         {
             _platformController = controller;

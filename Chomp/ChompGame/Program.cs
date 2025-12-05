@@ -1,6 +1,7 @@
 ﻿using ChompGame.GameSystem;
 using ChompGame.MainGame;
 using ChompGame.MainGame.SceneModels;
+using ChompGame.Option;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -20,9 +21,11 @@ namespace ChompGame
         public static Func<GraphicsDevice, ContentManager, MainSystem> InitSystem(RomLoad romLoad)
         {
             var specs = new ChompGameSpecs();
+            var options = GameOptions.Load();
 
             Func<GraphicsDevice, ContentManager, MainSystem> gameSystem =
                 (GraphicsDevice gd, ContentManager cm) => new MainSystem(specs, gd, s => new CoreGraphicsModule(s),
+                options,
                 s => new InputModule(s),
                 s => new SpritesModule(s),
                 s => new TileModule(s),

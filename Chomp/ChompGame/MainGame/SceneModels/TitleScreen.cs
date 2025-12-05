@@ -151,6 +151,7 @@ namespace ChompGame.MainGame.SceneModels
 
             if (_state.Value == State.Init)
             {
+                _gameModule.MusicModule.CurrentSong = MusicModule.SongName.None;
                 _gameModule.MusicModule.CurrentSong = MusicModule.SongName.Story;
                 LoadTiles();
                 SetPalette();
@@ -294,6 +295,8 @@ namespace ChompGame.MainGame.SceneModels
             else if (_state.Value == State.Title)
             {
                 var menuSprite = _gameModule.SpritesModule.GetSprite(1);
+
+
                 if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
                 {
                     if (menuSprite.Y < DelY)
@@ -386,6 +389,11 @@ namespace ChompGame.MainGame.SceneModels
                 {
                     _gameModule.AudioService.PlaySound(ChompAudioService.Sound.DoorClose);
                     SetTitleTiles();
+                    if (_state.Value == State.Load)
+                        menuSprite.Y = LoadY;
+                    else
+                        menuSprite.Y = DelY;
+
                     _state.Value = State.Title;
                 }
             }

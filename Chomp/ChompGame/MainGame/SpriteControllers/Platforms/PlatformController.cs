@@ -48,7 +48,7 @@ namespace ChompGame.MainGame.SpriteControllers
         public bool IsPlayerOnPlatform => _playerOnPlatform.Value;
 
         protected override bool DestroyWhenFarOutOfBounds => false;
-        protected override bool AlwaysActive => false;
+        protected override bool AlwaysActive => PlatformType == PlatformType.LeftRight;
 
         public PlatformController(ChompGameModule gameModule, SystemMemoryBuilder memoryBuilder) 
             : base(SpriteType.Platform, gameModule, memoryBuilder, SpriteTileIndex.Platform)
