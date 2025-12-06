@@ -549,7 +549,7 @@ namespace ChompGame.MainGame
                     1 => Level.Level2_1_Intro,
                     2 => Level.Level2_2_Fly2,
                     3 => Level.Level2_3_Beach,
-                    _ => Level.Level1_17_Boss
+                    _ => Level.Level2_12_Boss
                 },
                 3 => subNum switch {
                     1 => Level.Level3_1_City,
@@ -694,13 +694,13 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_3_Pit;
-            _gameState.Value = GameState.LoadScene;
+            _currentLevel.Value = Level.Level1_1_Start;
+            _gameState.Value = GameState.Title;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _lastExitType.Value = ExitType.Right;
+            _lastExitType.Value = ExitType.Top;
         }
 
         public void RestartScene()
