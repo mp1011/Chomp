@@ -105,6 +105,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     break;
                 case ExitType.Left:
                     SetInitialPosition_Horizontal(levelMap, new Point(levelMap.Width-1, levelMap.Height - 1), -1);
+                    GetSprite().FlipX = true;
                     break;
                 case ExitType.Bottom:
                     SetInitialPosition_Vertical(levelMap, new Point(levelMap.Width/2, 3), 1);

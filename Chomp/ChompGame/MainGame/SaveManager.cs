@@ -81,14 +81,14 @@ namespace ChompGame.MainGame
             }
         }
 
-        public void SaveCurrentGame(int slot)
+        public void SaveCurrentGame(int slot, bool carryingBomb)
         {
             var statusBar = _gameModule.StatusBar;
 
             // 0: current level
             // 1 - 4: score
-            // 5: lives
-            // 6: last exit-type
+            // 5: lives and carrying bomb (high bit)
+            // 6: last exit-type(low) and health(high)
             // 7-22: scene parts destroyed
             // 23-24: two-byte Fletcher-16 checksum (high, low)
 
@@ -97,8 +97,8 @@ namespace ChompGame.MainGame
 
             GameSystem.Memory.BlockCopy(statusBar.ScorePtr, ++index, 4);
             index += 4;
-            GameSystem.Memory[index++] = statusBar.Lives;
-            GameSystem.Memory[index++] = (byte)_gameModule.LastExitType;
+            GameSystem.Memory[index++] = (byte)(statusBar.Lives | (byte)(carryingBomb ? 128 : 0)); 
+            GameSystem.Memory[index++] = (byte)((byte)_gameModule.LastExitType | (byte)(statusBar.Health << 4));
 
             index = _gameModule.ScenePartsDestroyed.WriteToSaveBuffer(GameSystem.Memory, index);
 

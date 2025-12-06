@@ -9,6 +9,7 @@ using ChompGame.MainGame.SpriteControllers;
 using ChompGame.MainGame.SpriteModels;
 using ChompGame.MainGame.WorldScrollers;
 using ChompGame.ROM;
+using static ChompGame.GameSystem.MusicModule;
 
 namespace ChompGame.MainGame
 {
@@ -473,8 +474,11 @@ namespace ChompGame.MainGame
                     _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
                 }
 
-                if(_inputModule.Player1.StartKey == GameKeyState.Pressed)
+                _musicModule.CurrentSong = CheatSong(levelNum, subNum);
+
+                if (_inputModule.Player1.StartKey == GameKeyState.Pressed)
                 {
+                    StartGame();
                     _audioService.PlaySound(ChompAudioService.Sound.Break);
                     _statusBar.SetLives(9);
 
@@ -482,6 +486,54 @@ namespace ChompGame.MainGame
                     _gameState.Value = GameState.LoadScene;
                 }
             }
+        }
+
+        private MusicModule.SongName CheatSong(int levelNum, int subNum)
+        {
+            return levelNum switch {
+                1 => subNum switch {
+                    1 => SongName.Adventure,
+                    2 => SongName.Threat,
+                    3 => SongName.Adventure2,
+                    _ => SongName.Nemesis
+                },
+                2 => subNum switch {
+                    1 => SongName.Flight,
+                    2 => SongName.Threat,
+                    3 => SongName.SeaDreams,
+                    _ => SongName.Nemesis
+                },
+                3 => subNum switch {
+                    1 => SongName.City,
+                    2 => SongName.Threat,
+                    3 => SongName.Railway,
+                    _ => SongName.Nemesis
+                },
+                4 => subNum switch {
+                    1 => SongName.Dusk,
+                    2 => SongName.Threat,
+                    3 => SongName.Infiltration,
+                    _ => SongName.Nemesis
+                },
+                5 => subNum switch {
+                    1 => SongName.Moonstruck,
+                    2 => SongName.Threat,
+                    3 => SongName.Space,
+                    _ => SongName.Nemesis
+                },
+                6 => subNum switch {
+                    1 => SongName.CommandCenter,
+                    2 => SongName.Threat,
+                    3 => SongName.Infiltration,
+                    _ => SongName.Nemesis
+                },
+                _ => subNum switch {
+                    1 => SongName.SystemMalfunction,
+                    2 => SongName.VeryDefinitelyFinalDungeon,
+                    3 => SongName.FinalFight,
+                    _ => SongName.Ending
+                },
+            };
         }
 
         private Level CheatStartLevel(int levelNum, int subNum)
@@ -639,12 +691,11 @@ namespace ChompGame.MainGame
             else
                 return Level.Level7_1_GlitchCore;
         }
-
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            _currentLevel.Value = Level.Level1_1_Start;
-            _gameState.Value = GameState.Title;
+            _currentLevel.Value = Level.Level1_3_Pit;
+            _gameState.Value = GameState.LoadScene;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
@@ -689,21 +740,27 @@ namespace ChompGame.MainGame
 
             // 0: current level
             // 1 - 4: score
-            // 5: lives
-            // 6: last exit-type
+            // 5: lives and carrying bomb(high bit)
+            // 6: last exit-type(low) and health(high)
             // 7-22: scene parts destroyed
             _currentLevel.Value = (Level)GameSystem.Memory[saveAddress];
             GameSystem.Memory.BlockCopy(saveAddress + 1, _statusBar.ScorePtr, 4);
-            _statusBar.SetLives(GameSystem.Memory[saveAddress + 5]);
-            _lastExitType.Value = (ExitType)(GameSystem.Memory[saveAddress + 6]);
+
+            var livesAndCarryingBomb = GameSystem.Memory[saveAddress + 5];
+            _statusBar.SetLives((byte)(livesAndCarryingBomb & 0x0F));
+            _carryingBomb.Value = (livesAndCarryingBomb & 0x80) != 0;
+
+            var exitTypeAndHealth = GameSystem.Memory[saveAddress + 6];
+
+            _lastExitType.Value = (ExitType)(exitTypeAndHealth & 0x0F);
+            _statusBar.Health = (byte)(exitTypeAndHealth >> 4);
             _scenePartsDestroyed.ReadFromSaveBuffer(GameSystem.Memory, saveAddress + 7);
 
             _longTimer.Value = 0;
             _timer.Value = 0;
             _gameState.Value = GameState.LevelCard;
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
-            GameSystem.CoreGraphicsModule.FadeAmount = 0;       
-            _statusBar.Health = StatusBar.FullHealth;
+            GameSystem.CoreGraphicsModule.FadeAmount = 0;
         }
 
         public void LoadScene()
@@ -748,15 +805,15 @@ namespace ChompGame.MainGame
                 GameSystem.CoreGraphicsModule.SpritePatternTable,
                 GameSystem.Memory);
 
-            PatternTableExporter.ExportPatternTable(
-                GameSystem.GraphicsDevice, 
-                GameSystem.CoreGraphicsModule.SpritePatternTable,
-                "spritePatternTable.png");
+            //PatternTableExporter.ExportPatternTable(
+            //    GameSystem.GraphicsDevice, 
+            //    GameSystem.CoreGraphicsModule.SpritePatternTable,
+            //    "spritePatternTable.png");
 
-            PatternTableExporter.ExportPatternTable(
-                GameSystem.GraphicsDevice,
-                GameSystem.CoreGraphicsModule.BackgroundPatternTable,
-                "backgroundPatternTable.png");
+            //PatternTableExporter.ExportPatternTable(
+            //    GameSystem.GraphicsDevice,
+            //    GameSystem.CoreGraphicsModule.BackgroundPatternTable,
+            //    "backgroundPatternTable.png");
 
 
 
@@ -912,7 +969,7 @@ namespace ChompGame.MainGame
 
         private void SaveCurrentGame()
         {
-            SaveManager.SaveCurrentGame(_saveSlot.Value);
+            SaveManager.SaveCurrentGame(_saveSlot.Value, _carryingBomb.Value);
         }
 
         public void OnVBlank()

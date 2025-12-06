@@ -14,6 +14,18 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 {
     class Level7BossController : LevelBossController
     {
+        private const string _timeFormat = @"m\:ss\:ff";
+
+
+
+        private readonly int Part1LoopStart = (int)TimeSpan.ParseExact("0:29:53", _timeFormat, null).TotalMilliseconds;
+        private readonly int Part1LoopEnd = (int)TimeSpan.ParseExact("1:52:00", _timeFormat, null).TotalMilliseconds;
+        private readonly int Part2Transition = (int)TimeSpan.ParseExact("1:36:00", _timeFormat, null).TotalMilliseconds;
+        private readonly int Part2LoopStart = (int)TimeSpan.ParseExact("2:20:00", _timeFormat, null).TotalMilliseconds;
+        private readonly int Part2LoopEnd = (int)TimeSpan.ParseExact("4:31:30", _timeFormat, null).TotalMilliseconds;
+        private readonly int Part3Transition = (int)TimeSpan.ParseExact("4:32:00", _timeFormat, null).TotalMilliseconds;
+
+
         private const int JawParts = 3;
         private NibbleEnum<Phase> _phase;
         private BossPart _eye1, _eye2;
@@ -161,7 +173,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (p == Phase.EyesAppear)
             {
-                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart1;
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalFight;
                 BossInit();
             }
             else if (p == Phase.EnemySpawn)
@@ -171,8 +183,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _gameModule.CollissionDetector.BossBgHandling = false;
                 SetBackgroundForEnemySpawn();
                 EnsurePlayerPositionSafe();
-                _enemies = _gameModule.FinalBossHelper.SetEnemy(EnemyToSpawn());  
-                
+                _enemies = _gameModule.FinalBossHelper.SetEnemy(EnemyToSpawn());
+
                 _dynamicBlockController.RestoreCoins();
                 _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
             }
@@ -183,7 +195,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 ResetBackground();
                 ResetBombs();
             }
-            else if( p == Phase.Hurt)
+            else if (p == Phase.Hurt)
             {
                 _eye1.Sprite.Palette = SpritePalette.Fire;
                 _eye2.Sprite.Palette = SpritePalette.Fire;
@@ -195,18 +207,20 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 _hitPoints.Value = (byte)BossHP;
                 _eye1.Sprite.Palette = SpritePalette.Fire;
                 _eye2.Sprite.Palette = SpritePalette.Fire;
-                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart1End;
+                _musicModule.PlayPosition = Part2Transition;
 
                 SetBackgroundForPhase2();
                 _bossBackgroundHandler.ShowCoins = false;
                 _gameModule.CollissionDetector.BossBgHandling = true;
-                // GameDebug.Watch3 = new DebugWatch("Music Timer", () => (int)_musicModule.PlayPosition);
+
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalFight;
+                _musicModule.PlayPosition = Part2Transition;
             }
             else if (p == Phase.BeginPhase2)
             {
-                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2;
+                // _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2;
             }
-            else if(p == Phase.Attack1)
+            else if (p == Phase.Attack1)
             {
                 _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.FinalBossLower;
             }
@@ -218,12 +232,12 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 _eye1.Sprite.Palette = SpritePalette.Fire;
                 _eye2.Sprite.Palette = SpritePalette.Fire;
-                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalBossPart2End;
+                _musicModule.PlayPosition = Part3Transition;
                 ResetBombs();
             }
-            else if(p == Phase.Dead)
+            else if (p == Phase.Dead)
             {
-                EraseBossTiles();                
+                EraseBossTiles();
             }
         }
 
@@ -353,8 +367,28 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
         }
 
+        private void CheckSongLoop()
+        {
+            //if (_gameModule.InputModule.Player1.UpKey == GameKeyState.Pressed)
+            //    _musicModule.PlayPosition = Part1LoopEnd - 5000;
+
+            //if (_gameModule.InputModule.Player1.DownKey == GameKeyState.Pressed)
+            //    _musicModule.PlayPosition = Part2LoopEnd - 5000;
+
+            if (_phase.Value == Phase.Transition || _phase.Value >= Phase.Dying)
+                return;
+            
+            if (_musicModule.PlayPosition >= Part1LoopEnd && _musicModule.PlayPosition < Part2LoopStart)
+                _musicModule.PlayPosition = Part1LoopStart;
+                       
+            if (_musicModule.PlayPosition >= Part2LoopEnd)
+                _musicModule.PlayPosition = Part2LoopStart;            
+        }
+
         protected override void UpdateActive()
         {
+            CheckSongLoop();
+
             if(_phase.Value == Phase.BeforeBoss)
             {
                 WorldSprite.Visible = false;
@@ -371,6 +405,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         BossInit();
                         _stateTimer.Value = 1;
                         _phase.Value = Phase.BeforeBoss_Continue;
+
+                        _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalFight;
                     }
                 }
                 else
@@ -604,9 +640,11 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 {
                     _paletteModule.BgColor = ColorIndex.Black;
                     BossIntroMotion();
+
+                    CreateRandomAimedBullet();
                 }
 
-                if (_musicModule.PlayPosition >= 37550)
+                if (_musicModule.PlayPosition >= Part2LoopStart)
                     SetPhase(Phase.BeginPhase2);
             }
             else if(_phase.Value == Phase.BeginPhase2)
@@ -905,7 +943,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (_phase.Value == Phase.Dead)
             {
-                if (_musicModule.PlayPosition >= 26500)
+                if (_musicModule.PlayPosition >= Part3Transition)
                     _exitsModule.GotoNextLevel();
             }
         }

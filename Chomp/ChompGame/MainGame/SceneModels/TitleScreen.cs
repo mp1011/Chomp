@@ -382,6 +382,7 @@ namespace ChompGame.MainGame.SceneModels
                         _gameModule.AudioService.PlaySound(ChompAudioService.Sound.Break);
                         SetTitleTiles();
                         _state.Value = State.Title;
+                        menuSprite.Y = DelY;
                     }
                 }
                 else if (_gameModule.InputModule.Player1.AKey == GameKeyState.Pressed ||

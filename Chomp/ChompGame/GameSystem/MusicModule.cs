@@ -33,11 +33,7 @@ namespace ChompGame.GameSystem
             Infiltration,
             SystemMalfunction,
             VeryDefinitelyFinalDungeon,
-            FinalBossPart1,
-            FinalBossPart1End,
-            FinalBossPart2,
-            FinalBossPart2End,
-            FinalBossPart3,
+            FinalFight,
             Story,
             Ending
         }
@@ -66,7 +62,7 @@ namespace ChompGame.GameSystem
             get => (int)MediaPlayer.PlayPosition.TotalMilliseconds;
             set
             {
-                if (!Enabled)
+                if (!Enabled || !IsPlaying)
                     return;
 
                 var song = _contentManager.Load<Song>(@"Music\" + _currentSong.Value.ToString());
@@ -134,7 +130,7 @@ namespace ChompGame.GameSystem
         {
             return _currentSong.Value switch
             {
-                SongName.FinalBossPart1End => false,
+                SongName.FinalFight => false,
                 SongName.Story => false,
                 SongName.Ending => false,
                 _ => true

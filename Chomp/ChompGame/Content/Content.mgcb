@@ -74,35 +74,11 @@
 /processorParam:Quality=Best
 /build:Music/Ending.ogg
 
-#begin Music/FinalBossPart1.ogg
+#begin Music/FinalFight.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:Music/FinalBossPart1.ogg
-
-#begin Music/FinalBossPart1End.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/FinalBossPart1End.ogg
-
-#begin Music/FinalBossPart2.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/FinalBossPart2.ogg
-
-#begin Music/FinalBossPart2End.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/FinalBossPart2End.ogg
-
-#begin Music/FinalBossPart3.ogg
-/importer:OggImporter
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/FinalBossPart3.ogg
+/build:Music/FinalFight.ogg
 
 #begin Music/Flight.ogg
 /importer:OggImporter

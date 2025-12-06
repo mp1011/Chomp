@@ -419,6 +419,7 @@ namespace ChompGame.MainGame.SpriteControllers
                         SetPhase(Phase.Fall);
                     }
                 }
+                return;
             }
 
             if (_phase.Value < Phase.Dying)

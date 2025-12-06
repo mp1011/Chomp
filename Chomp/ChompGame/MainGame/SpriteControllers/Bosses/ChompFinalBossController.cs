@@ -8,11 +8,16 @@ using ChompGame.MainGame.SpriteControllers.Base;
 using ChompGame.MainGame.SpriteControllers.Bosses;
 using ChompGame.MainGame.SpriteModels;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompFinalBossController : EnemyController
     {
+        private const string _timeFormat = @"m\:ss\:ff";
+        private readonly int Part3Start = (int)TimeSpan.ParseExact("4:32:00", _timeFormat, null).TotalMilliseconds;
+
+
         private readonly PaletteModule _paletteModule;
         private readonly WorldScroller _scroller;
         private readonly EnemyOrBulletSpriteControllerPool<BossBulletController> _bullets;
@@ -100,7 +105,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void OnSpriteCreated(Sprite sprite)
         {
-            _music.CurrentSong = MusicModule.SongName.None;
             _hitPoints.Value = 1;
             SetPhase(Phase.Init);
             sprite.Priority = true;
@@ -183,9 +187,12 @@ namespace ChompGame.MainGame.SpriteControllers
 
         protected override void UpdateActive()
         {
-            _music.CurrentSong = MusicModule.SongName.FinalBossPart3;
+            _music.CurrentSong = MusicModule.SongName.FinalFight;
+            if (_music.PlayPosition < Part3Start)
+                _music.PlayPosition = Part3Start;
+
             if (_phase.Value ==  Phase.Init)
-            {
+            {                
                 if(_levelTimer.IsMod(16))
                     MoveToward(_player.X, _player.Y - 24, 16);
 
@@ -438,7 +445,6 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if (phase == Phase.Init)
             {
-                _music.CurrentSong = MusicModule.SongName.FinalBossPart3;
                 WorldSprite.X = 44;
                 WorldSprite.Y = 90;
                 SetupBossParts();
