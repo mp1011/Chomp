@@ -26,14 +26,13 @@ namespace ChompGame.MainGame.SceneModels
         CityBoss,
         CityEvening,
         CityTrain,
-        Space,
         TechBase,
         TechBase2,
         TechBaseBoss,
         GlitchCore,
         Final,
         FinalBoss,
-        FinalBossEnd //27
+        FinalBossEnd,
     }
 
     static class ThemeBuilder
@@ -235,12 +234,9 @@ namespace ChompGame.MainGame.SceneModels
                 bg2: PaletteKey.CityBgEvening,
                 fg1: PaletteKey.CityFgEvening,
                 fg2: PaletteKey.BombLight,
-                bomb: PaletteKey.Gray,
+                bomb: PaletteKey.BombLight2,
                 enemy1: PaletteKey.GreenEnemy,
-                enemy2: PaletteKey.Gray);
-
-            _ = ThemeType.Space;
-            new Theme(memoryBuilder, PaletteKey.Test, PaletteKey.PlainsGround, PaletteKey.Test, PaletteKey.Test, PaletteKey.GreenEnemy, PaletteKey.Bullet);
+                enemy2: PaletteKey.BombLight2);
 
             _ = ThemeType.TechBase;
             new Theme(memoryBuilder,

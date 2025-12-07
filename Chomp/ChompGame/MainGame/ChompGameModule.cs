@@ -700,7 +700,7 @@ namespace ChompGame.MainGame
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
-            _lastExitType.Value = ExitType.Top;
+            _lastExitType.Value = ExitType.Right;
         }
 
         public void RestartScene()
@@ -886,7 +886,7 @@ namespace ChompGame.MainGame
         }
 
         public void PlayScene()
-        {
+        {       
             if (ExitsModule.ActiveExit.ExitType != ExitType.None && GameSystem.CoreGraphicsModule.FadeAmount >= 1)
             {
                 GameSystem.CoreGraphicsModule.FadeAmount++;
@@ -937,6 +937,7 @@ namespace ChompGame.MainGame
         private void HandleLevelExit()
         {
             var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
+
             if (newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
             {
                 _scenePartsDestroyed.Reset(GameSystem.Memory);

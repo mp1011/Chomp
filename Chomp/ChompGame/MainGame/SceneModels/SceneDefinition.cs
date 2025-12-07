@@ -108,7 +108,7 @@ namespace ChompGame.MainGame.SceneModels
 
         public int Address => _scrollStyle.Address;
 
-        public bool IsMidBossScene => HasSprite(SpriteType.Chomp);
+        public bool IsMidBossScene => _theme.Value != ThemeType.Final && HasSprite(SpriteType.Chomp);
         public bool IsLevelBossScene => HasSprite(SpriteType.LevelBoss);
 
         public int GroundFillStart => 8;
@@ -558,8 +558,13 @@ namespace ChompGame.MainGame.SceneModels
         }
 
         public SceneDefinition(Level level, SystemMemory memory, Specs specs)
-            :this(memory.GetAddress(AddressLabels.SceneDefinitions) + ((int)level * SceneDefinition.Bytes), memory,specs)
+            :this(SceneAddress(level,memory), memory,specs)
         { 
+        }
+
+        private static int SceneAddress(Level level, SystemMemory memory)
+        {
+            return memory.GetAddress(AddressLabels.SceneDefinitions) + ((int)level * SceneDefinition.Bytes);
         }
 
         public int GetGroundFillTile(int row, int col)
