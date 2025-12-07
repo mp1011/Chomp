@@ -25,7 +25,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
 
         public const int ArmSize = 6;
-        public const int BossHp = GameDebug.BossTest ? 1 : 5;
+        public const int BossHp = GameDebug.BossTest ? 1 : 4;
         private readonly PaletteModule _paletteModule;
         private readonly WorldScroller _scroller;
         private readonly EnemyOrBulletSpriteControllerPool<WavingBossBulletController> _bullets;
@@ -189,15 +189,15 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if(_phase.Value == Phase.Attack)
             {
-                if(_levelTimer.IsMod(128))                
+                if(_levelTimer.Value == 0)         
                     FireBullet();
 
                 switch (_hitPoints.Value)
                 {
-                    case 4:
+                    case 3:
                         AttackPhaseMotion(LeftX, LeftY);
                         break;
-                    case 3:
+                    case 2:
                         AttackPhaseMotion(RightX, RightY);
                         break;
                     default:
@@ -370,11 +370,11 @@ namespace ChompGame.MainGame.SpriteControllers
 
                 switch(_hitPoints.Value)
                 {
-                    case 4:
+                    case 3:
                         WorldSprite.X = LeftX;
                         WorldSprite.Y = LeftY;
                         break;
-                    case 3:
+                    case 2:
                         WorldSprite.X = RightX;
                         WorldSprite.Y = RightY;
                         break;

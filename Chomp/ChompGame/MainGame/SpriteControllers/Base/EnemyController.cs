@@ -47,6 +47,9 @@ namespace ChompGame.MainGame.SpriteControllers.Base
             if (_levelTimer.Value.IsMod(4))
                 _stateTimer.Value--;
 
+            if (_hitPoints.Value == 0)
+                CollisionEnabled = false;
+
             if (_stateTimer.Value == 0)
             {
                 if (_hitPoints.Value == 0)

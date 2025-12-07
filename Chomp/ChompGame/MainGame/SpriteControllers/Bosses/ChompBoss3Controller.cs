@@ -11,6 +11,7 @@ namespace ChompGame.MainGame.SpriteControllers
 {
     class ChompBoss3Controller : EnemyController
     {
+        private ChompGameModule _gameModule;
         public const int BossHp = GameDebug.BossTest ? 1 : 4;
         private const int StopY = 20;
 
@@ -86,8 +87,8 @@ namespace ChompGame.MainGame.SpriteControllers
 
         public ChompBoss3Controller(WorldSprite player,
             EnemyOrBulletSpriteControllerPool<BouncingBossBulletController> bullets,
-            ChompGameModule gameModule, 
-            SystemMemoryBuilder memoryBuilder) 
+            ChompGameModule gameModule,
+            SystemMemoryBuilder memoryBuilder)
             : base(SpriteType.Chomp, SpriteTileIndex.Enemy1, gameModule, memoryBuilder)
         {
             _music = gameModule.MusicModule;
@@ -96,13 +97,16 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _phase = new GameByteEnum<Phase>(memoryBuilder.AddByte());
             _specs = gameModule.Specs;
- 
+
             Palette = SpritePalette.Enemy1;
 
             _armAngle = memoryBuilder.AddShort();
             _armLength = memoryBuilder.AddByte();
             _arm1 = new Arm(memoryBuilder, gameModule);
             _arm2 = new Arm(memoryBuilder, gameModule);
+
+
+            _gameModule = gameModule;
         }
 
         protected override void BeforeInitializeSprite()
@@ -124,7 +128,6 @@ namespace ChompGame.MainGame.SpriteControllers
             switch (_phase.Value)
             {
                 case Phase.Init:
-
                     WorldSprite.X = (_specs.ScreenWidth / 2) - 4;
                     WorldSprite.Y = 0;
 

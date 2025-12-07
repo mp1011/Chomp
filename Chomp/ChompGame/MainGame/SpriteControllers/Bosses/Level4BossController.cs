@@ -859,7 +859,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             bullet.AcceleratedMotion.YAcceleration = 3;
             bullet.AcceleratedMotion.XAcceleration = 3;
-            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center, 60);
+            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center.Add(0,-4), 80);
 
             return bullet;
         }

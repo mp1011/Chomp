@@ -445,6 +445,15 @@ namespace ChompGame.MainGame.SceneModels
                 nameTable[nameTable.Width - 2, y] = 0;
             }
 
+            if(_gameModule.CurrentLevel == Level.Level7_11_TotalGlitch)
+            {
+                nameTable[24, 10] = 1;
+                nameTable[24, 11] = 1;
+                nameTable[25, 10] = 1;
+                nameTable[25, 11] = 1;
+
+            }
+
             return nameTable;
         }
         

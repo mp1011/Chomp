@@ -62,6 +62,12 @@ namespace ChompGame.Option
 
             if (_awaitingKey)
             {
+                if(keyState.IsKeyDown(Keys.Escape) || padState.IsButtonDown(Buttons.Back))
+                {
+                    Active = false;
+                    return false;
+                }
+
                 if (keys.Any())
                 {
                     _options.KeyboardBindings[CurrentKey] = keys.First();

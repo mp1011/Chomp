@@ -512,7 +512,7 @@ namespace ChompGame.MainGame
                 4 => subNum switch {
                     1 => SongName.Dusk,
                     2 => SongName.Threat,
-                    3 => SongName.Infiltration,
+                    3 => SongName.Stronghold,
                     _ => SongName.Nemesis
                 },
                 5 => subNum switch {
@@ -765,6 +765,7 @@ namespace ChompGame.MainGame
 
         public void LoadScene()
         {
+            GraceJumpCounter = 0;
             SaveCurrentGame();
             _bossBackgroundHandling.Value = false;
             _longTimer.Value = 0;

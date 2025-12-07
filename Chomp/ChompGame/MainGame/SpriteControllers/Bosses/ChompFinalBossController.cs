@@ -348,7 +348,7 @@ namespace ChompGame.MainGame.SpriteControllers
                     {
                         _stateTimer.Value++;
 
-                        if (_music.PlayPosition >= 90000)
+                        if (_music.IsPlaying == false)
                             _exitModule.GotoNextLevel();
                     }
                 }

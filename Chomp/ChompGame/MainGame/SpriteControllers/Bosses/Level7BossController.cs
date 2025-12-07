@@ -202,6 +202,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (p == Phase.Transition)
             {
+                _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
                 _bossBackgroundHandler.ShowCoins = false;
                 _dynamicBlockController.ResetCoinsForLevelBoss();
                 _hitPoints.Value = (byte)BossHP;
@@ -1261,9 +1262,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             _audioService.PlaySound(ChompAudioService.Sound.Break);         
             _hitPoints.Value--;
 
-            if (_hitPoints.Value == 3 || _hitPoints.Value == 5)
-                _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
-
             if(_phase.Value < Phase.BeginPhase2)
             {
                 if (_hitPoints.Value == 0)
@@ -1281,6 +1279,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     {
                         _hitPoints.Value = (byte)BossHP;
                         SetPhase(Phase.Attack2);
+                        _gameModule.RewardsModule.GiveHealth(_gameModule.SceneSpriteControllers);
                     }
                     else
                     {

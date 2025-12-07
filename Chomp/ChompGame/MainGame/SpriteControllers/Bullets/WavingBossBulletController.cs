@@ -45,13 +45,13 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if(_initialX.Value == 0 || WorldSprite.X > _initialX + 8)
             {
-                _motion.TargetXSpeed = -50;
-                _motion.XAcceleration = 5;
+                _motion.TargetXSpeed = -40;
+                _motion.XAcceleration = 7;
             }
             else if (WorldSprite.X < _initialX - 8)
             {
-                _motion.TargetXSpeed = 50;
-                _motion.XAcceleration = 5;
+                _motion.TargetXSpeed = 40;
+                _motion.XAcceleration = 7;
             }
 
             if (_initialX.Value == 0)            

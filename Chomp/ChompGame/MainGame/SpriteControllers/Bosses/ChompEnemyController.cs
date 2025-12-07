@@ -63,15 +63,8 @@ namespace ChompGame.MainGame.SpriteControllers
             if(_levelTimer.IsMod(16))
             {
                 _stateTimer.Value++;
-
-                if(_stateTimer.Value == 2)
-                {
-                    FireBullet(0);
-                    FireBullet(90);
-                    FireBullet(180);
-                    FireBullet(270);
-                }
-                if (_stateTimer.Value == 6)
+               
+                if (_stateTimer.Value == 4)
                 {
                     FireBullet(45);
                     FireBullet(135);
