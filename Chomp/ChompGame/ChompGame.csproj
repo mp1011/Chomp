@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
@@ -19,6 +19,12 @@
 		<LogicalName>Icon.bmp</LogicalName>
 	</EmbeddedResource>
 </ItemGroup>
+<ItemGroup>
+    <Content Update="Content\**">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+</ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
@@ -34,6 +40,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </None>
+    <None Update="setup.iss">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Installer\" />
   </ItemGroup>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
 	    <Message Text="Restoring dotnet tools" Importance="High" />
