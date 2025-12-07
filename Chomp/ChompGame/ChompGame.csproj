@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,9 +11,6 @@
     <StartupObject>ChompGame.Program</StartupObject>
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="GameSystem\PlatformerModule.cs" />
-  </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Icon.ico">
 		<LogicalName>Icon.ico</LogicalName>
@@ -35,6 +32,7 @@
   <ItemGroup>
     <None Update="chomp.cart">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </None>
   </ItemGroup>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
