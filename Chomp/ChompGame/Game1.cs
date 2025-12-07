@@ -203,10 +203,10 @@ namespace ChompGame
                 _spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: _crtEffect);
                
                 _spriteBatch.Draw(_renderTarget, new Rectangle(
-                                   x: (int)(_themeScreenRenderSize.X + (_themeScreenRenderSize.Width * 0.090)),
-                                   y: (int)(_themeScreenRenderSize.Y + (_themeScreenRenderSize.Height * 0.15)),
-                                   width: (int)(_themeScreenRenderSize.Width * 0.60),
-                                   height: (int)(_themeScreenRenderSize.Height * 0.65)), Color.White);
+                                   x: (int)(_themeScreenRenderSize.X + (_themeScreenRenderSize.Width * 0.082)),
+                                   y: (int)(_themeScreenRenderSize.Y + (_themeScreenRenderSize.Height * 0.125)),
+                                   width: (int)(_themeScreenRenderSize.Width * 0.63),
+                                   height: (int)(_themeScreenRenderSize.Height * 0.69)), Color.White);
                 _spriteBatch.End();
                 
                 _spriteBatch.Begin();
@@ -216,7 +216,7 @@ namespace ChompGame
                                     width: _themeScreenRenderSize.Width,
                                     height: _themeScreenRenderSize.Height), Color.White);
                 _spriteBatch.End();                
-        }
+            }
             else
             {
                 var aspectRatio = (double)_renderTarget.Height / _renderTarget.Width;
