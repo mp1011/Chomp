@@ -45,9 +45,9 @@ namespace ChompGame.MainGame.SceneModels
 
         public bool Update()
         {
-            if (_gameModule.InputModule.Player1.StartKey.IsDown() ||
-                _gameModule.InputModule.Player1.AKey.IsDown() ||
-                _gameModule.InputModule.Player1.BKey.IsDown())
+            if (_gameModule.InputModule.Player1.StartKey == GameKeyState.Pressed ||
+                _gameModule.InputModule.Player1.AKey == GameKeyState.Pressed ||
+                _gameModule.InputModule.Player1.BKey == GameKeyState.Pressed)
             {
                 if (_state.Value < Phase.FadeOut)
                 {

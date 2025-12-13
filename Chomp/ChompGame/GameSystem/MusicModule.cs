@@ -10,7 +10,11 @@ namespace ChompGame.GameSystem
 {
     class MusicModule : Module
     {
+#if DEBUG 
         public const bool Enabled = true;
+#else
+        public const bool Enabled = true;
+#endif
 
         private readonly ContentManager _contentManager;
 

@@ -45,7 +45,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _gameModule = gameModule;
             _player = player;
             _worldScroller = gameModule.WorldScroller;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _bulletControllers = bulletControllers;
             Palette = SpritePalette.Enemy1;
             _rng = gameModule.RandomModule;
@@ -95,7 +95,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 WorldSprite.Visible = false;
                 CollisionEnabled = false;
 
-                if (PlayerIsClose())
+                if (_gameModule.CurrentScene.Theme == ThemeType.MistAutoscroll || PlayerIsClose())
                 {
                     _stateTimer.Value = 0;
                     _phase.Value = Phase.Appear;

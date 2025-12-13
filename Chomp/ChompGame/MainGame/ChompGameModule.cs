@@ -123,7 +123,7 @@ namespace ChompGame.MainGame
         public GameByte LevelTimer => _timer;
         public GameByte LevelTimerLong => _longTimer;
         public WorldScroller WorldScroller => _worldScroller;
-        public CollisionDetector CollissionDetector => _collisionDetector;
+        public CollisionDetector CollisionDetector => _collisionDetector;
         public StatusBar StatusBar => _statusBar;
         public ChompAudioService AudioService => _audioService;
         public InputModule InputModule => _inputModule;
@@ -335,7 +335,6 @@ namespace ChompGame.MainGame
         public void Reset()
         {
             _gameState.Value = GameState.NewGame;
-            _longTimer.Value = 0;
         }
 
         public void OnLogicUpdate()
@@ -345,6 +344,13 @@ namespace ChompGame.MainGame
 
             if(_gameState.Value != GameState.Paused)
                 _timer.Value++;
+
+            if(_gameState.Value != GameState.PlayScene && _gameState.Value != GameState.Paused)
+            {
+                _bossBackgroundHandler.BossBgEffectValue = 0;
+                _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;                
+                BossBackgroundHandling.Value  = false;
+            }
 
             switch (_gameState.Value)
             {
@@ -374,10 +380,19 @@ namespace ChompGame.MainGame
                     }
                     break;
                 case GameState.PlayScene:
-                    if (_timer.Value.IsMod(16))
+
+                    if (_currentScene.IsAutoScroll)
                     {
-                        if(_currentScene.Theme != ThemeType.MistAutoscroll || _longTimer.Value < 255)
-                            _longTimer.Value++;
+                        if (_timer.Value.IsMod(16))
+                        {
+                            if (_currentScene.Theme != ThemeType.MistAutoscroll || _longTimer.Value < 255)
+                                _longTimer.Value++;
+                        }
+                    }
+                    else
+                    {
+                        if (_timer.Value.IsMod(16) && _longTimer.Value > 0)
+                            _longTimer.Value--;
                     }
 
                     PlayScene();
@@ -454,11 +469,13 @@ namespace ChompGame.MainGame
                 if(levelNum < 7 && _inputModule.Player1.UpKey == GameKeyState.Pressed)
                 {
                     _tileModule.NameTable[7, 7] = (byte)(_tileModule.NameTable[7, 7] + 1);
+                    _tileModule.NameTable[7, 9] = 16;
                     _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
                 }
                 if (levelNum > 1 && _inputModule.Player1.DownKey == GameKeyState.Pressed)
                 {
                     _tileModule.NameTable[7, 7] = (byte)(_tileModule.NameTable[7, 7] - 1);
+                    _tileModule.NameTable[7, 9] = 16;
                     _audioService.PlaySound(ChompAudioService.Sound.ButtonPress);
                 }
 
@@ -602,6 +619,7 @@ namespace ChompGame.MainGame
         {
             if(_deathTimer.Value == 0)
             {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
                 for (int i = 0; i < Specs.MaxSprites; i++)
                 {
                     var sprite = SpritesModule.GetSprite(i);
@@ -672,6 +690,8 @@ namespace ChompGame.MainGame
             _statusBar.AddToScore(0);
             _statusBar.SetLives(StatusBar.InitialLives);
             RestartScene();
+            _lastExitType.Value = ExitType.Right;
+            _longTimer.Value = 0;
         }
 
         private Level GameOverRestartLevel()
@@ -694,13 +714,22 @@ namespace ChompGame.MainGame
         private void InitGame()
         {
             _bossBackgroundHandler.BossBgEffectType = BackgroundEffectType.None;
+            BossBackgroundHandling.Value = false;
+            _longTimer.Value = 0;
             _currentLevel.Value = Level.Level1_1_Start;
+            _musicModule.CurrentSong = SongName.None;
             _gameState.Value = GameState.Title;
             GameSystem.CoreGraphicsModule.FadeAmount = 0;
             _statusBar.Score = 0;
             _statusBar.SetLives(StatusBar.InitialLives);
             _statusBar.Health = StatusBar.FullHealth;
             _lastExitType.Value = ExitType.Right;
+            _lastTransitionExitType.Value = ExitType.Right;
+
+            _tileModule.Scroll.X = 0;
+            _tileModule.Scroll.Y = 0;
+            _spritesModule.Scroll.X = 0;
+            _spritesModule.Scroll.Y = 0;
         }
 
         public void RestartScene()
@@ -936,6 +965,7 @@ namespace ChompGame.MainGame
 
         private void HandleLevelExit()
         {
+            var previousLevel = CurrentLevel;
             var newLevel = (Level)((int)CurrentLevel + ExitsModule.ActiveExit.ExitLevelOffset);
 
             if (newLevel > CurrentLevel && SceneBuilder.IsTransitionLevel(newLevel))
@@ -958,7 +988,7 @@ namespace ChompGame.MainGame
 
 
             _lastExitType.Value = ExitsModule.ActiveExit.ExitType;
-            if (SceneBuilder.IsTransitionLevel(CurrentLevel))
+            if (previousLevel < CurrentLevel && SceneBuilder.IsTransitionLevel(CurrentLevel))
                 _lastTransitionExitType.Value = _lastExitType.Value;
 
             _sceneSpriteControllers.CheckBombCarry(_carryingBomb);
@@ -1011,7 +1041,7 @@ namespace ChompGame.MainGame
 
         private void HandlePlayerDeath()
         {
-            _deathHandler.HandlePlayerDeath();
+            _deathHandler.HandlePlayerDeath();            
         }
     }
 }

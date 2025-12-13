@@ -375,6 +375,24 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (_phase.Value == Phase.Land)
             {
+                if (_bulletControllers.ActiveCount < 8)
+                {
+                    if (_player.X < WorldSprite.X)
+                    {
+                        FireArcBullet2(_rng.Generate(3) * -4);
+                        FireArcBullet2(_rng.Generate(3) * -4);
+                        FireArcBullet2(_rng.Generate(3) * -4);
+                        FireArcBullet2(_rng.Generate(3) * -4);
+                    }
+                    else
+                    {
+                        FireArcBullet2(_rng.Generate(3) * 4);
+                        FireArcBullet2(_rng.Generate(3) * 4);
+                        FireArcBullet2(_rng.Generate(3) * 4);
+                        FireArcBullet2(_rng.Generate(3) * 4);
+                    }
+                }
+
                 PlaceOnGround(_leg1);
                 PlaceOnGround(_leg2);
                 PlaceOnGround(_leg3);
@@ -439,22 +457,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                         _motion.TargetYSpeed = 60;
                         _motion.YAcceleration = 4;
 
-                        if (WorldSprite.X > 70)
+                        if (WorldSprite.X > 80 || _player.X < WorldSprite.X)
                         {
                             _motion.XSpeed = -40;
                         }
-                        else if (WorldSprite.X < 30)
+                        else
                         {
                             _motion.XSpeed = 40;
                         }
-                        else
-                        {
-                            _motion.XSpeed = _rng.Generate(1) switch {
-                                0 => -40,
-                                _ => 40,
-                            };
-                        }
-
+                      
                         _motion.TargetXSpeed = 0;
                         _motion.XAcceleration = 1;
                     }
@@ -533,7 +544,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void FireBulletsForWalkingPhase()
         {
-            if (_stateTimer.Value != 1 || !_levelTimer.IsMod(4))
+            if (_stateTimer.Value != 1 || !_levelTimer.IsMod(32))
                 return;
 
             if(_bulletControllers.ActiveCount <= 3)
@@ -843,6 +854,26 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             return bullet;
         }
 
+        private BossBulletController FireArcBullet2(int xSpeed)
+        {
+            var bullet = _bulletControllers.TryAddNew();
+            if (bullet == null)
+                return null;
+
+            bullet.AcceleratedMotion.SetXSpeed(xSpeed);
+            bullet.AcceleratedMotion.YSpeed = -40;
+            bullet.AcceleratedMotion.TargetYSpeed = 60;
+            bullet.AcceleratedMotion.YAcceleration = 4;
+
+            bullet.DestroyOnTimer = false;
+            bullet.DestroyOnCollision = true;
+            bullet.WorldSprite.X = WorldSprite.X;
+            bullet.WorldSprite.Y = WorldSprite.Y - 18;
+            _audioService.PlaySound(ChompAudioService.Sound.Fireball);
+
+            return bullet;
+        }
+
         private BossBulletController FireAimedBullet()
         {
             var bullet = _bulletControllers.TryAddNew();
@@ -859,14 +890,15 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
             bullet.AcceleratedMotion.YAcceleration = 3;
             bullet.AcceleratedMotion.XAcceleration = 3;
-            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center.Add(0,-4), 80);
+            int xOff = 16 - _rng.Generate(3);
+            bullet.AcceleratedMotion.TargetTowards(bullet.WorldSprite, _player.Bounds.Center.Add(xOff, -8), 80);
 
             return bullet;
         }
 
         public override bool CollidesWithPlayer(PlayerController player)
         {
-            if (_phase.Value <= Phase.Init)
+            if (_phase.Value <= Phase.Init || _phase.Value >= Phase.Dying1)
                 return false;
 
             return player.WorldSprite.Bounds.Intersects(_leftHorn.WorldSprite.Bounds)

@@ -68,7 +68,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             Palette = SpritePalette.Enemy1;
 
-            gameModule.CollissionDetector.BossBgHandling = true;
+            gameModule.CollisionDetector.BossBgHandling = true;
         }
 
         protected override void HandleFall() { }

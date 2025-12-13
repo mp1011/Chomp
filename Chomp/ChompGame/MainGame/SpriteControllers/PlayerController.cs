@@ -63,7 +63,7 @@ namespace ChompGame.MainGame.SpriteControllers
             _dynamicBlockController = gameModule.DynamicBlocksController;
 
             _inputModule = gameModule.InputModule;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
 
             _onPlane = new GameBit(state.Address, Bit.Bit4, memoryBuilder.Memory);
             _onPlatform = new GameBit(state.Address, Bit.Bit5, memoryBuilder.Memory);
@@ -199,6 +199,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             if(_statusBar.Health == 0)
             {
+                CollisionEnabled = false;
                 GetSprite().FlipY = true;
                 AcceleratedMotion.TargetYSpeed = _motionController.FallSpeed;
                 Motion.XSpeed = 0;
@@ -381,7 +382,19 @@ namespace ChompGame.MainGame.SpriteControllers
 
                         Motion.YSpeed = -_recoilSpeed;
 
-                        HarmPlayer(1);
+                        if (_gameModule.CurrentScene.IsAutoScroll)
+                        {
+                            HarmPlayer(1);
+                        }
+                        else
+                        {
+                            if (_gameModule.LevelTimerLong.Value > 0)
+                                HarmPlayer(2);
+                            else
+                                HarmPlayer(1);
+
+                            _gameModule.LevelTimerLong.Value = 10;
+                        }
                     }
                 }
             });

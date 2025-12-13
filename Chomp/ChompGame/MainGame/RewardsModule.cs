@@ -93,9 +93,9 @@ namespace ChompGame.MainGame
             var prize = sceneSpriteControllers.PrizeControllers.TryAddNew();
             if (prize != null)
             {
-                prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 16;
+                prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 8;
                 prize.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
-
+                prize.WorldSprite.UpdateSprite();
                 _rewardSpriteIndex.Value = prize.SpriteIndex;
             }
         }
@@ -138,8 +138,7 @@ namespace ChompGame.MainGame
             {
                 var bomb = sceneSpriteControllers.BombControllers.TryAddNew();
                 if (bomb != null)
-                {
-                   
+                {                   
                     if (_currentScene.IsAutoScroll)
                     {
                         bomb.WorldSprite.X = 64;
@@ -156,6 +155,7 @@ namespace ChompGame.MainGame
                         bomb.AcceleratedMotion.SetYSpeed(-80);
                         bomb.FallCheck = _currentScene.SpriteFallCheck;
                     }
+                    bomb.WorldSprite.UpdateSprite();
                     _rewardSpriteIndex.Value = bomb.SpriteIndex;
                     return true;
                 }
@@ -176,6 +176,7 @@ namespace ChompGame.MainGame
                         prize.WorldSprite.X = sceneSpriteControllers.Player.WorldSprite.X + 16;
                         prize.WorldSprite.Y = sceneSpriteControllers.Player.WorldSprite.Y - 8;
                     }
+                    prize.WorldSprite.UpdateSprite();
 
                     _rewardSpriteIndex.Value = prize.SpriteIndex;
                     return true;

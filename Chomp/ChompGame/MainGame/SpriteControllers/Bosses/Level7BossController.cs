@@ -23,9 +23,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
         private readonly int Part2Transition = (int)TimeSpan.ParseExact("1:36:00", _timeFormat, null).TotalMilliseconds;
         private readonly int Part2LoopStart = (int)TimeSpan.ParseExact("2:20:00", _timeFormat, null).TotalMilliseconds;
         private readonly int Part2LoopEnd = (int)TimeSpan.ParseExact("4:31:30", _timeFormat, null).TotalMilliseconds;
-        private readonly int Part3Transition = (int)TimeSpan.ParseExact("4:32:00", _timeFormat, null).TotalMilliseconds;
-
-
+      
         private const int JawParts = 3;
         private NibbleEnum<Phase> _phase;
         private BossPart _eye1, _eye2;
@@ -180,7 +178,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 _eye1.Sprite.Visible = false;
                 _eye2.Sprite.Visible = false;
-                _gameModule.CollissionDetector.BossBgHandling = false;
+                _gameModule.CollisionDetector.BossBgHandling = false;
                 SetBackgroundForEnemySpawn();
                 EnsurePlayerPositionSafe();
                 _enemies = _gameModule.FinalBossHelper.SetEnemy(EnemyToSpawn());
@@ -212,7 +210,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
                 SetBackgroundForPhase2();
                 _bossBackgroundHandler.ShowCoins = false;
-                _gameModule.CollissionDetector.BossBgHandling = true;
+                _gameModule.CollisionDetector.BossBgHandling = true;
 
                 _musicModule.CurrentSong = GameSystem.MusicModule.SongName.FinalFight;
                 _musicModule.PlayPosition = Part2Transition;
@@ -233,7 +231,6 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 _eye1.Sprite.Palette = SpritePalette.Fire;
                 _eye2.Sprite.Palette = SpritePalette.Fire;
-                _musicModule.PlayPosition = Part3Transition;
                 ResetBombs();
             }
             else if (p == Phase.Dead)
@@ -642,7 +639,8 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                     _paletteModule.BgColor = ColorIndex.Black;
                     BossIntroMotion();
 
-                    CreateRandomAimedBullet();
+                    if (_musicModule.PlayPosition <= Part2LoopStart - 5000)
+                        CreateRandomAimedBullet();
                 }
 
                 if (_musicModule.PlayPosition >= Part2LoopStart)
@@ -944,8 +942,13 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             }
             else if (_phase.Value == Phase.Dead)
             {
-                if (_musicModule.PlayPosition >= Part3Transition)
-                    _exitsModule.GotoNextLevel();
+                if(_levelTimer.IsMod(16))
+                {
+                    _stateTimer.Value++;
+
+                    if(_stateTimer.Value >= 10)
+                        _exitsModule.GotoNextLevel();
+                }
             }
         }
 
@@ -1196,7 +1199,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
 
         private void FadeIn(bool includeFg)
         {
-            Theme theme = new Theme(_graphicsModule.GameSystem.Memory, ThemeType.CityBoss);
+            Theme theme = new Theme(_graphicsModule.GameSystem.Memory, ThemeType.FinalBoss);
             var targetSpritePalette = _paletteModule.GetPalette(theme.Enemy1);
             var targetBossPalette = _paletteModule.GetPalette(theme.Background2);
 

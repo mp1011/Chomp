@@ -52,7 +52,7 @@ namespace ChompGame.MainGame.SpriteControllers
                 SystemMemoryBuilder memoryBuilder)
             : base(SpriteType.Gem, gameModule, memoryBuilder, SpriteTileIndex.Extra2)
         {
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _playerController = playerController;
             _bullets = bullets;
             _index = new LowNibble(memoryBuilder);

@@ -46,7 +46,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.Bomb, gameModule, memoryBuilder, SpriteTileIndex.Bomb)
         {
             _scenePartsDestroyed = gameModule.ScenePartsDestroyed;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _playerController = playerController;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             var state = memoryBuilder.AddByte();

@@ -627,7 +627,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
             {
                 SetPhase(Phase.Dying1);
                 _statusBar.AddToScore((uint)PointsForEnemy);
-
+                _musicModule.CurrentSong = GameSystem.MusicModule.SongName.None;
             }
 
             PositionBoss();

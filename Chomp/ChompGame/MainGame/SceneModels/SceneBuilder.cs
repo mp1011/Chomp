@@ -2795,7 +2795,7 @@ namespace ChompGame.MainGame.SceneModels
                 b => PitScenePart(b, 40, PrefabSize.Four, scene),
 
                 b => new PlatformScenePart(b, ScenePartType.Platform_UpDown, PlatformDistance.Len24, 36, 8, scene),
-                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len32, 10, 12, scene),
+                b => new PlatformScenePart(b, ScenePartType.Platform_LeftRight, PlatformDistance.Len16, 14, 12, scene),
                 b => PitScenePart(b, 8, PrefabSize.Eight, scene),
                 b => PitScenePart(b, 16, PrefabSize.Four, scene),
                 b => new SpriteScenePart(b, ScenePartType.EnemyType1, 48, 0, scene),
@@ -4665,15 +4665,15 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 8, delay: 5, variation: PrizeController.Coin3, scene),
 
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: UfoController.SPath, scene),
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 1, variation: UfoController.SPath, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: 0, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 1, variation: 0, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 5, delay: 14, variation: PrizeController.Coin5Diag, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
 
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: UfoController.Hook, scene),
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.Hook, scene),
-                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Hook, scene),
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 10, delay: 5, variation: UfoController.Hook, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 3, delay: 5, variation: 1, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: 0, scene),
+                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: 0, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 10, delay: 5, variation: 1, scene),
 
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 2, delay: 15, variation: PrizeController.Coin3, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
@@ -4681,7 +4681,9 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
 
 
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 7, delay: 5, variation: UfoController.SPath, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 7, delay: 5, variation: 0, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 7, delay: 5, variation: 0, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 7, delay: 5, variation: 0, scene),
 
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 10, variation: UfoController.Chase, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 7, delay: 5, variation: PrizeController.Coin3, scene),
@@ -4690,11 +4692,18 @@ namespace ChompGame.MainGame.SceneModels
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 11, delay: 5, variation: UfoController.SPath, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin5Diag2, scene),
 
-                (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 2, delay: 5, variation: 0, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 5, delay: 5, variation: 0, scene),
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 10, delay: 5, variation: 0, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 6, delay: 15, variation: PrizeController.Coin3, scene),
                (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 5, variation: PrizeController.Coin3, scene),
-               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene)
-                              );
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.Coin, position: 12, delay: 15, variation: PrizeController.Coin3, scene),
+                 (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType1, position: 4, delay: 5, variation: 1, scene),
+
+               (b, scene) => new AutoscrollScenePart(b, ScenePartType.EnemyType2, position: 7, delay: 5, variation: UfoController.Chase, scene)
+               );
 
             AddLevel(
        Level.Level5_26_Plane3,

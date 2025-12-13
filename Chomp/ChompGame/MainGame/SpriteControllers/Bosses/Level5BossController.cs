@@ -517,7 +517,7 @@ namespace ChompGame.MainGame.SpriteControllers.Bosses
                 if (_phase.Value < Phase.Dying)
                 {
                     _statusBar.AddToScore((uint)PointsForEnemy);
-
+                    _musicModule.CurrentSong = GameSystem.MusicModule.SongName.None;
                     SetPhase(Phase.Dying);
 
                     _bulletControllers.Execute(b =>

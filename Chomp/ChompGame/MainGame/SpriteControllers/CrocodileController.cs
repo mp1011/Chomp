@@ -21,7 +21,7 @@ namespace ChompGame.MainGame.SpriteControllers
         {
             _player = player;
             Palette = SpritePalette.Enemy1;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
         }
 
         protected override void OnSpriteCreated(Sprite sprite)

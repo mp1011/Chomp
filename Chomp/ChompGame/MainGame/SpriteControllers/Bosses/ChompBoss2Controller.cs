@@ -341,6 +341,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             if(_phase.Value == Phase.Dead)
             {
+                _musicModule.CurrentSong = MusicModule.SongName.None;
                 if (_stateTimer.Value == 14)
                 {
                     _playerController.OnBossDead();             

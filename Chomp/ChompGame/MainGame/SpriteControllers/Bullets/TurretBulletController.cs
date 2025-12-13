@@ -36,7 +36,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.LizardBullet, gameModule, memoryBuilder, tileIndex)
         {
             _gameModule = gameModule;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _audioService = gameModule.AudioService;
             _motionController = new SimpleMotionController(memoryBuilder, WorldSprite,
                new SpriteDefinition(SpriteType.LizardBullet, memoryBuilder.Memory));

@@ -118,7 +118,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
         private CollisionInfo GetPlayerCollisionInfo(PlayerController playerController)
         {
-            if (playerController.Motion.YSpeed < 0)
+            if (playerController.Motion.YSpeed < 0 || !playerController.CollisionEnabled)
                 return new CollisionInfo();
 
             _platformHandler.BeforeGetPlayerCollisionInfo(playerController);

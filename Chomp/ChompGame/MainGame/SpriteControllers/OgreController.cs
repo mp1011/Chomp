@@ -18,7 +18,7 @@ namespace ChompGame.MainGame.SpriteControllers
             : base(SpriteType.Ogre, index, gameModule, memoryBuilder)
         {
             _player = player;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _bulletControllers = bulletControllers;
             Palette = SpritePalette.Enemy1;
         }

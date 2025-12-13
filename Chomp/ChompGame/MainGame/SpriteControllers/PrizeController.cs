@@ -91,7 +91,7 @@ namespace ChompGame.MainGame.SpriteControllers
 
             _motionController = motionController;
             _motion = motionController.Motion;
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _audioService = gameModule.AudioService;
             _statusBar = gameModule.StatusBar;
             Palette = SpritePalette.Platform;

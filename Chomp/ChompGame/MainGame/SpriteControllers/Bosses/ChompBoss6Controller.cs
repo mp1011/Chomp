@@ -189,8 +189,13 @@ namespace ChompGame.MainGame.SpriteControllers
             }
             else if(_phase.Value == Phase.Attack)
             {
-                if(_levelTimer.Value == 0)         
-                    FireBullet();
+                if (_levelTimer.Value.IsMod(24))
+                {
+                    _stateTimer.Value++;
+
+                    if (_stateTimer.Value == 0 || _stateTimer.Value == 8)
+                        FireBullet();
+                }
 
                 switch (_hitPoints.Value)
                 {

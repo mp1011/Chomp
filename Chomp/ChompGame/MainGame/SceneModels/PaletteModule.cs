@@ -501,8 +501,8 @@ namespace ChompGame.MainGame.SceneModels
 
             DefinePalette(PaletteKey.FinalBg,
            ColorIndex.Black,
-           ColorIndex.DarkGray1,
-           ColorIndex.DarkGray2,
+           ColorIndex.BlueGray1,
+           ColorIndex.BlueGray3,
            ColorIndex.Gray1);
 
             DefinePalette(PaletteKey.Gem,

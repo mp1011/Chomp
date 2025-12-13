@@ -28,7 +28,7 @@ namespace ChompGame.MainGame.SpriteControllers
             bool destroyOnCollision,
             SpriteType spriteType = SpriteType.BossBullet) : base(spriteType, gameModule, memoryBuilder, SpriteTileIndex.Extra1)
         {
-            _collisionDetector = gameModule.CollissionDetector;
+            _collisionDetector = gameModule.CollisionDetector;
             _audioService = gameModule.AudioService;
             _dynamicBlockController = gameModule.DynamicBlocksController;
             _specs = gameModule.Specs;

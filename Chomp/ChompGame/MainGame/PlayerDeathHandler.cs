@@ -49,13 +49,12 @@ namespace ChompGame.MainGame
                     _deathTimer.Value = 0;
                 }
             }
-
         }
 
         private void SetLastTransitionLevel()
         {
             while(!SceneBuilder.IsTransitionLevel(_gameModule.CurrentLevel))
-                _gameModule.CurrentLevel--;
+                _gameModule.CurrentLevel--;            
         }
     }
 }
